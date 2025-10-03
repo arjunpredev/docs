@@ -510,9 +510,9 @@ Returns the raw markdown content in the response
 | Fast Spec | 10 credits | Deducted immediately when request starts |
 | Deep Spec | 50 credits | Deducted immediately when request starts |
 
-### What is a "Generation"?
+### What is a "Credit"?
 
-A generation = one AI model inference call. Specs require multiple LLM calls for:
+A credit = one AI model inference call. Specs require multiple LLM calls for:
 - Architecture analysis
 - Feature breakdown
 - Milestone planning
@@ -521,7 +521,7 @@ A generation = one AI model inference call. Specs require multiple LLM calls for
 
 **Cost is per spec request, not per feature.** Generate as many features in one spec as needed.
 
-### Generation Sources (Priority Order)
+### Credit Sources (Priority Order)
 
 1. **Prototype Credits** - Used first if available
 2. **Daily Allocation** - Based on subscription tier
@@ -1306,7 +1306,7 @@ Deep Spec requires **Solo Premium** or **Enterprise** subscription.
 | Feature | Fast Spec | Deep Spec |
 |---------|-----------|-----------|
 | Cost | 10 credits | 50 credits |
-| Processing Time | 2-5 min | 5-15 min |
+| Processing Time | 30-40 sec | 2-3 min |
 | Structure | Milestones → Stories | Milestones → Stories → Subtasks |
 | Acceptance Criteria | Basic | ✅ Detailed per story |
 | Granular Subtasks | ❌ | ✅ Implementation tasks |
@@ -2269,12 +2269,12 @@ Potential technical challenges and mitigation strategies.
 
 ### Fast Spec
 - **Cost:** 10 credits per request
-- **Processing Time:** ~30-45 seconds
+- **Processing Time:** ~30-40 seconds
 - **Best For:** MVPs, prototypes, rapid iteration
 
 ### Deep Spec
 - **Cost:** 50 credits per request
-- **Processing Time:** ~5-15 minutes
+- **Processing Time:** ~2-3 minutes
 - **Best For:** Complex systems, enterprise applications
 
 ## What is a "Credit"?

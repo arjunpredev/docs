@@ -56,6 +56,7 @@ Content-Type: application/json
 |---------|-----------|-----------|
 | Cost | 10 credits | 50 credits |
 | Processing Time | 30-40 sec | 2-3 min |
+| Structure | Milestones → Stories | Milestones → Stories → Subtasks |
 | Detail Level | Comprehensive | Ultra-detailed |
 | Best For | MVPs, prototypes | Enterprise, complex systems |
 | Feature Analysis | ✅ | ✅✅✅ |
@@ -128,6 +129,54 @@ Content-Type: application/json
   "message": "Request queued for processing. Use /api/spec-status/:requestId to check status."
 }
 ```
+
+## Output Structure: Milestones → Stories → Subtasks
+
+Deep Spec follows a **three-level hierarchy** for comprehensive implementation planning:
+
+```markdown
+### - [ ] **Milestone 2**: User authentication and profile management
+
+- [ ] **User Registration** - (M): As a: new user, I want to: register an account with email and password, So that: I can access the platform
+  - **Acceptance Criteria:**
+    - [ ] User can register with valid email and password
+    - [ ] Email verification sent upon registration
+    - [ ] Duplicate emails handled gracefully
+    - [ ] Password strength requirements enforced
+  - [ ] DB: Create/verify table_users migration - (M)
+  - [ ] Infra: Configure Clerk (external_clerk) & auth settings - (M)
+  - [ ] FE: Implement /RegisterPage UI comp_registerPage_mainForm - (M)
+  - [ ] FE: Add client-side validation & reCAPTCHA on register form - (M)
+  - [ ] API: Implement registerWithEmail mutation in router_route_registerPage - (M)
+  - [ ] Backend: Create user record in table_users and auth_methods - (M)
+  - [ ] Integration: Connect API to Clerk for email confirmation/session - (M)
+  - [ ] QA: Write unit and integration tests for registration flow - (M)
+  - [ ] Docs: Document registration API and front-end behavior - (M)
+
+- [ ] **Password Reset** - (M): As a: registered user, I want to: reset my password securely, So that: I can regain access
+  - **Acceptance Criteria:**
+    - [ ] User can request password reset link via valid email
+    - [ ] Reset link expires after a defined period
+    - [ ] New password must meet strength requirements
+    - [ ] System invalidates existing sessions after password change
+  - [ ] DB: Create password_resets table migration - (M)
+  - [ ] API: Implement requestPasswordReset mutation (validate, create token) - (M)
+  - [ ] API: Implement verifyResetToken and finalizeReset mutation - (M)
+  - [ ] Frontend: Add Password Reset Request page (/auth/password-reset) - (M)
+  - [ ] Frontend: Add Password Reset Form page (/auth/reset?token=) - (M)
+  - [ ] Auth Integration: Wire Clerk for account lookup and session invalidation - (M)
+  - [ ] Infra: Email service integration and template for reset link - (M)
+  - [ ] Security: Add reCAPTCHA and rate limiting to request endpoint - (M)
+  - [ ] Testing: End-to-end tests for reset flow - (M)
+  - [ ] Docs: Document API, pages, and operational runbook - (M)
+```
+
+**Key Characteristics:**
+- ✅ High-level milestones group related features
+- ✅ Detailed user stories with comprehensive acceptance criteria
+- ✅ **Granular implementation subtasks** (DB, API, Frontend, Testing, Docs)
+- ✅ Subtasks categorized by layer (DB, Infra, FE, API, Backend, QA, Docs)
+- ✅ Task-level complexity estimates for precise planning
 
 ## What Makes Deep Spec Different
 

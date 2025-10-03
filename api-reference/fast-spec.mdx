@@ -184,6 +184,41 @@ Content-Type: application/json
 
 Poll every 10-15 seconds for best UX.
 
+## Output Structure: Milestones → Stories
+
+Fast Spec follows a **two-level hierarchy** optimized for rapid development:
+
+```markdown
+### - [ ] **Milestone 1**: User authentication and profile management
+
+- [ ] **User Registration** - (M): As a: new user, I want to: register an account with email and password, So that: I can access the platform
+  - **Acceptance Criteria:**
+    - [ ] User can register with valid email and password
+    - [ ] Email verification sent upon registration
+    - [ ] Duplicate emails handled gracefully
+    - [ ] Password strength requirements enforced
+
+- [ ] **User Login** - (S): As a: registered user, I want to: log in securely, So that: I can access my account
+  - **Acceptance Criteria:**
+    - [ ] User can log in with correct credentials
+    - [ ] Invalid credentials rejected with clear message
+    - [ ] Session persists across browser tabs
+    - [ ] Password reset option available
+
+- [ ] **User Profile** - (M): As a: registered user, I want to: manage my profile, So that: I can update my information
+  - **Acceptance Criteria:**
+    - [ ] User can view and edit profile details
+    - [ ] Shipping addresses can be saved
+    - [ ] Password can be changed with re-authentication
+    - [ ] Account can be deactivated
+```
+
+**Key Characteristics:**
+- ✅ High-level milestones group related features
+- ✅ User stories with acceptance criteria
+- ✅ Complexity estimates (XS, S, M, L, XL)
+- ❌ No granular implementation subtasks
+
 ## Free Trial
 
 Solo users get **one free Fast Spec trial** before requiring a subscription.
