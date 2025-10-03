@@ -1,127 +1,134 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
-  "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
-  },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
-  }
+	"$schema": "https://mintlify.com/docs.json",
+	"theme": "mint",
+	"name": "Architect API Documentation",
+	"colors": {
+		"primary": "#16A34A",
+		"light": "#07C983",
+		"dark": "#15803D"
+	},
+	"favicon": "/favicon.svg",
+	"navigation": {
+		"tabs": [
+			{
+				"tab": "Getting Started",
+				"groups": [
+					{
+						"group": "Overview",
+						"pages": ["introduction", "why-architect-api", "quickstart"]
+					}
+				]
+			},
+			{
+				"tab": "API Reference",
+				"groups": [
+					{
+						"group": "Core API",
+						"pages": [
+							"api-reference/overview",
+							"api-reference/fast-spec",
+							"api-reference/deep-spec",
+							"api-reference/spec-status",
+							"api-reference/trial-status"
+						]
+					}
+				]
+			},
+			{
+				"tab": "MCP Integration",
+				"groups": [
+					{
+						"group": "Integration Guide",
+						"pages": [
+							"mcp-integration/overview",
+							"mcp-integration/setup",
+							"mcp-integration/usage"
+						]
+					}
+				]
+			},
+			{
+				"tab": "Guides",
+				"groups": [
+					{
+						"group": "Best Practices",
+						"pages": [
+							"guides/use-cases",
+							"guides/integration-patterns",
+							"guides/best-practices",
+							"guides/choosing-spec-level"
+						]
+					}
+				]
+			},
+			{
+				"tab": "Examples",
+				"groups": [
+					{
+						"group": "Sample Workflows",
+						"pages": [
+							"examples/new-project",
+							"examples/feature-addition",
+							"examples/sample-output"
+						]
+					}
+				]
+			}
+		],
+		"global": {
+			"anchors": [
+				{
+					"anchor": "Get Started",
+					"href": "https://mintlify.com/docs",
+					"icon": "rocket"
+				},
+				{
+					"anchor": "Community",
+					"href": "https://mintlify.com/community",
+					"icon": "slack"
+				},
+				{
+					"anchor": "Blog",
+					"href": "https://mintlify.com/blog",
+					"icon": "newspaper"
+				}
+			]
+		}
+	},
+	"logo": {
+		"light": "/logo/light.svg",
+		"dark": "/logo/dark.svg"
+	},
+	"navbar": {
+		"links": [
+			{
+				"label": "pre.dev",
+				"href": "https://pre.dev"
+			}
+		],
+		"primary": {
+			"type": "button",
+			"label": "Get API Key",
+			"href": "https://pre.dev"
+		}
+	},
+	"contextual": {
+		"options": [
+			"copy",
+			"view",
+			"chatgpt",
+			"claude",
+			"perplexity",
+			"mcp",
+			"cursor",
+			"vscode"
+		]
+	},
+	"footer": {
+		"socials": {
+			"x": "https://x.com/predev",
+			"github": "https://github.com/predev",
+			"linkedin": "https://linkedin.com/company/predev"
+		}
+	}
 }

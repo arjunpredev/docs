@@ -1,0 +1,287 @@
+---
+title: "POST /api/deep-spec - Generate Ultra-Detailed Specifications"
+description: "Complete documentation for the Deep Spec endpoint. Generate exhaustive, enterprise-grade project specifications."
+---
+
+# POST /api/deep-spec
+
+Generate an ultra-detailed, comprehensive project specification.
+
+## Overview
+
+- **Cost:** 50 generations
+- **Use Cases:** Complex systems, enterprise applications, critical projects
+- **Generation Time:** ~5-15 minutes (sync) or instant return (async)
+- **Output:** Exhaustive analysis, detailed architecture, comprehensive planning
+
+## Subscription Required
+
+Deep Spec requires **Solo Premium** or **Enterprise** subscription.
+
+## Endpoint
+
+```
+POST https://api.pre.dev/api/deep-spec
+```
+
+## Headers
+
+```
+x-api-key: YOUR_API_KEY
+Content-Type: application/json
+```
+
+Or for enterprise:
+
+```
+x-enterprise-api-key: YOUR_ORG_API_KEY
+Content-Type: application/json
+```
+
+## Request Body
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `input` | string | ✅ | Description of what you want to build |
+| `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
+| `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
+| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
+
+### Deep Spec vs Fast Spec
+
+| Feature | Fast Spec | Deep Spec |
+|---------|-----------|-----------|
+| Cost | 10 generations | 50 generations |
+| Generation Time | 2-5 min | 5-15 min |
+| Detail Level | Comprehensive | Ultra-detailed |
+| Best For | MVPs, prototypes | Enterprise, complex systems |
+| Feature Analysis | ✅ | ✅✅✅ |
+| Architecture Depth | ✅ | ✅✅✅ |
+| Risk Analysis | ✅ | ✅✅✅ |
+| User Stories | ✅ | ✅✅✅ |
+
+## Example Requests
+
+### New Enterprise Project
+
+```json
+{
+  "input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system.",
+  "outputFormat": "url"
+}
+```
+
+### Complex Feature Addition
+
+```json
+{
+  "input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations to existing healthcare platform",
+  "currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices",
+  "outputFormat": "url"
+}
+```
+
+### Async Generation
+
+```json
+{
+  "input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
+  "outputFormat": "url",
+  "async": true
+}
+```
+
+## Response
+
+### Success Response (Sync Mode)
+
+**When `outputFormat: "url"` (default):**
+```json
+{
+  "output": "https://pre.dev/s/abc123",
+  "outputFormat": "url",
+  "isNewBuild": true,
+  "fileUrl": "https://pre.dev/s/abc123"
+}
+```
+
+**When `outputFormat: "markdown"`:**
+```json
+{
+  "markdown": "# Enterprise Healthcare Platform Specification\n\n## Executive Summary...",
+  "outputFormat": "markdown",
+  "isNewBuild": false,
+  "fileUrl": "https://pre.dev/s/abc123"
+}
+```
+
+### Success Response (Async Mode)
+
+**Immediate response when `async: true`:**
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "pending",
+  "message": "Request queued for processing. Use /api/spec-status/:requestId to check status."
+}
+```
+
+## What Makes Deep Spec Different
+
+Deep Spec provides **enterprise-grade analysis** that goes far beyond Fast Spec:
+
+### Enhanced Feature Analysis
+- **Detailed user journey mapping** for each feature
+- **Comprehensive edge case analysis**
+- **Advanced user story elaboration** with detailed acceptance criteria
+- **Cross-feature dependency mapping**
+
+### Advanced Architecture Planning
+- **Detailed system design diagrams** (when applicable)
+- **Comprehensive database schema design**
+- **Advanced security architecture** planning
+- **Scalability modeling** and capacity planning
+- **Performance optimization strategies**
+
+### Extensive Risk Assessment
+- **Detailed technical risk analysis** with mitigation strategies
+- **Comprehensive security threat modeling**
+- **Regulatory compliance mapping** (GDPR, HIPAA, SOX, etc.)
+- **Operational risk assessment** and business continuity planning
+
+### Enterprise-Ready Planning
+- **Detailed implementation roadmap** with critical path analysis
+- **Resource allocation recommendations**
+- **Stakeholder communication strategies**
+- **Change management planning**
+- **Training and documentation requirements**
+
+## When to Use Deep Spec
+
+### Enterprise Applications
+- **Healthcare platforms** with regulatory requirements
+- **Financial systems** with compliance needs
+- **Large-scale SaaS platforms** with complex workflows
+- **Mission-critical internal tools**
+
+### Complex System Requirements
+- **Multi-tenant architectures**
+- **Real-time processing systems**
+- **High-throughput applications**
+- **Systems requiring 99.9%+ uptime**
+
+### Large Team Coordination
+- **Projects with 5+ developers**
+- **Cross-functional team collaboration**
+- **Extended development timelines** (6+ months)
+- **Projects requiring detailed handoffs**
+
+## Code Examples
+
+### cURL - Enterprise Healthcare Platform
+
+```bash
+curl -X POST https://api.pre.dev/api/deep-spec \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, telemedicine capabilities, and HIPAA compliance for a multi-location hospital system with 500+ providers.",
+    "outputFormat": "url"
+  }'
+```
+
+### Python - Financial Services Platform
+
+```python
+import requests
+
+response = requests.post(
+    'https://api.pre.dev/api/deep-spec',
+    headers={'x-api-key': 'YOUR_API_KEY'},
+    json={
+        'input': 'Build a fintech platform with banking services, investment management, cryptocurrency trading, regulatory compliance (SEC, FINRA), and real-time market data integration for retail and institutional investors.',
+        'outputFormat': 'url',
+        'async': True  # Deep specs benefit from async processing
+    }
+)
+
+result = response.json()
+print(f"Request ID: {result['requestId']}")
+```
+
+### JavaScript - Complex SaaS Application
+
+```javascript
+const response = await fetch('https://api.pre.dev/api/deep-spec', {
+  method: 'POST',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    input: 'Build a comprehensive SaaS project management platform with advanced workflow automation, AI-powered insights, enterprise integrations, multi-tenant architecture, and real-time collaboration for teams of 1000+ users.',
+    outputFormat: 'url',
+    async: true
+  })
+});
+
+const result = await response.json();
+console.log(`Request ID: ${result.requestId}`);
+```
+
+## Deep Spec Output Structure
+
+### 1. Executive Summary & Business Case
+- Detailed problem statement and solution approach
+- Success metrics and KPIs
+- Stakeholder analysis
+- High-level timeline and milestones
+
+### 2. Comprehensive Feature Catalog
+- Detailed feature specifications with user stories
+- Complex workflow documentation
+- Integration requirements mapping
+- Third-party service dependencies
+
+### 3. Enterprise Architecture Design
+- System architecture diagrams
+- Database design specifications
+- API design and integration patterns
+- Security architecture blueprint
+
+### 4. Implementation Strategy
+- Detailed development phases with dependencies
+- Critical path identification
+- Risk mitigation strategies
+- Quality assurance approach
+
+### 5. Operational Considerations
+- Deployment strategy and environment planning
+- Monitoring and alerting requirements
+- Backup and disaster recovery planning
+- Support and maintenance guidelines
+
+## Best Practices for Deep Spec
+
+### Input Quality for Complex Projects
+- **Detailed business requirements** - Include specific compliance needs
+- **Technical constraints** - Existing systems, performance requirements
+- **Scale expectations** - User numbers, data volume, transaction rates
+- **Integration landscape** - Existing tools, APIs, third-party services
+
+### Planning for Enterprise Projects
+- **Allocate sufficient time** - Deep specs can take 10-15 minutes
+- **Use async mode** for the best experience with complex inputs
+- **Review thoroughly** - Deep specs contain extensive detail requiring careful review
+- **Share with stakeholders** - Use as a comprehensive project brief
+
+### Cost Considerations
+- **Higher investment upfront** - 50 generations vs 10 for Fast Spec
+- **Significant time savings downstream** - Reduces costly rework and scope changes
+- **Better resource allocation** - Clear requirements prevent over/under-engineering
+
+<Card title="Next: Check Status Endpoint" icon="arrow-right" href="/api-reference/spec-status">
+  Monitor async specification generation progress.
+</Card>

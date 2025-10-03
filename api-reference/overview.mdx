@@ -1,0 +1,258 @@
+---
+title: "API Reference Overview"
+description: "Complete guide to Architect API authentication, endpoints, rate limits, and error handling."
+---
+
+# API Reference Overview
+
+## Base URL
+
+```
+https://api.pre.dev/api
+```
+
+## Authentication
+
+The Architect API supports two authentication methods:
+
+### Solo Authentication
+
+Use `x-api-key` header with your user ID
+
+```bash
+x-api-key: YOUR_USER_ID
+```
+
+**Where to get your API key:**
+
+1. Log in to [pre.dev](https://pre.dev)
+2. Go to **Settings** → **API Keys**
+3. Copy your **User ID** (this is your API key)
+
+**Format:** Your user ID is a string like `user_2abc123def456`
+
+### Enterprise Authentication
+
+Use `x-enterprise-api-key` header with your organization's API key
+
+```bash
+x-enterprise-api-key: YOUR_ORG_API_KEY
+```
+
+**Where to get enterprise API key:**
+
+1. Log in to [pre.dev](https://pre.dev)
+2. Go to **Organization Settings** → **API Keys**
+3. Generate or copy enterprise API key
+4. **Note:** Requires active enterprise subscription
+
+**Format:** Enterprise keys are 32+ character strings like `ek_prod_abc123...`
+
+### Authentication Differences
+
+| Feature | Solo | Enterprise |
+|---------|------|------------|
+| API Key Location | User settings | Organization settings |
+| Cost Tracking | Per user | Per organization |
+| Access Control | Individual | All org members |
+| Subscription | Individual plan | Org-wide plan |
+
+## Endpoints Overview
+
+| Endpoint | Method | Purpose | Auth Required |
+|----------|--------|---------|---------------|
+| `/fast-spec` | POST | Generate quick comprehensive spec | ✅ |
+| `/deep-spec` | POST | Generate ultra-detailed spec | ✅ |
+| `/spec-status/:id` | GET | Check async generation status | ✅ |
+| `/fast-api-trial-status` | GET | Check free trial eligibility | ✅ |
+
+## Request Modes
+
+### Synchronous (Default)
+
+Request waits for completion, returns spec immediately
+
+```json
+{
+  "async": false
+}
+```
+
+### Asynchronous
+
+Request returns immediately with request ID, poll for status
+
+```json
+{
+  "async": true
+}
+```
+
+## Output Formats
+
+### URL Format (Default)
+
+Returns a hosted URL to the specification file
+
+```json
+{
+  "outputFormat": "url"
+}
+```
+
+### Markdown Format
+
+Returns the raw markdown content in the response
+
+```json
+{
+  "outputFormat": "markdown"
+}
+```
+
+## Generation Costs
+
+| Endpoint | Cost | What You Pay For |
+|----------|------|------------------|
+| Fast Spec | 10 generations | Deducted immediately when request starts |
+| Deep Spec | 50 generations | Deducted immediately when request starts |
+
+### What is a "Generation"?
+
+A generation = one AI model inference call. Specs require multiple LLM calls for:
+- Architecture analysis
+- Feature breakdown
+- Milestone planning
+- Story generation
+- Risk assessment
+
+**Cost is per spec request, not per feature.** Generate as many features in one spec as needed.
+
+### Generation Sources (Priority Order)
+
+1. **Prototype Credits** - Used first if available
+2. **Daily Allocation** - Based on subscription tier
+3. **Rollover Credits** - Unused daily credits (if applicable)
+
+Check remaining generations:
+```bash
+GET /api/generation-usage
+```
+
+## Rate Limits
+
+### Daily Limits by Tier
+
+| Tier | Fast Spec | Deep Spec | Notes |
+|------|-----------|-----------|-------|
+| Free Trial | 1 total | ❌ | One-time only |
+| Solo Premium | Unlimited* | Unlimited* | *Subject to fair use |
+| Enterprise | Unlimited* | Unlimited* | *Subject to fair use |
+
+### Fair Use Policy
+
+- Max 100 spec generations per day per user/org
+- Max 10 concurrent async requests
+- Rate: Max 1 request per 5 seconds
+
+Exceeding limits returns `429 Too Many Requests`.
+
+## Error Handling
+
+### HTTP Status Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| 200 | Success | Process response |
+| 400 | Bad Request | Check request parameters |
+| 401 | Unauthorized | Verify API key |
+| 402 | Insufficient Generations | Purchase credits or upgrade |
+| 403 | Forbidden | Check subscription status |
+| 429 | Rate Limited | Wait and retry |
+| 500 | Server Error | Contact support |
+
+### Common Error Responses
+
+**Insufficient Generations:**
+```json
+{
+  "error": "Insufficient generations available",
+  "message": "Fast Spec requires 10 generations. You have 5 remaining.",
+  "generationsRequired": 10,
+  "generationsAvailable": 5
+}
+```
+
+**Free Trial Exhausted:**
+```json
+{
+  "error": "Free trial already used",
+  "message": "You have already used your free Fast API trial. Please subscribe to Solo Premium to continue.",
+  "requiresSubscription": true
+}
+```
+
+**Invalid Input:**
+```json
+{
+  "error": "Invalid input",
+  "message": "Please provide a valid input string describing your spec"
+}
+```
+
+**Authentication Failed:**
+```json
+{
+  "error": "Invalid enterprise API key",
+  "message": "The provided enterprise API key is not valid"
+}
+```
+
+## Quick Start Examples
+
+<CardGroup cols={2}>
+  <Card title="Fast Spec - New Project" icon="zap">
+    ```bash
+    curl -X POST https://api.pre.dev/api/fast-spec \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "input": "Build a SaaS project management tool",
+        "outputFormat": "url"
+      }'
+    ```
+  </Card>
+
+  <Card title="Deep Spec - Complex System" icon="layers">
+    ```bash
+    curl -X POST https://api.pre.dev/api/deep-spec \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "input": "Build an enterprise healthcare platform",
+        "outputFormat": "url"
+      }'
+    ```
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+### Input Quality
+- Be specific about core features and requirements
+- Include business context and constraints
+- Mention technical preferences if any
+
+### Error Handling
+- Always check response status codes
+- Implement retry logic for rate limits
+- Handle insufficient generation errors gracefully
+
+### Cost Management
+- Use Fast Spec for MVPs and prototypes
+- Reserve Deep Spec for complex, mission-critical projects
+- Monitor your generation usage regularly
+
+<Card title="Next: Fast Spec Endpoint" icon="arrow-right" href="/api-reference/fast-spec">
+  Complete documentation for generating quick specifications.
+</Card>

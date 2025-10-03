@@ -1,0 +1,616 @@
+---
+title: "POST /api/fast-spec - Generate Quick Specifications"
+description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in 2-5 minutes."
+---
+
+# POST /api/fast-spec
+
+Generate a quick, comprehensive project specification.
+
+## Overview
+
+- **Cost:** 10 generations
+- **Use Cases:** MVPs, prototypes, rapid iteration
+- **Generation Time:** ~2-5 minutes (sync) or instant return (async)
+- **Output:** Complete feature breakdown, architecture, milestones
+
+## Endpoint
+
+```
+POST https://api.pre.dev/api/fast-spec
+```
+
+## Headers
+
+```
+x-api-key: YOUR_API_KEY
+Content-Type: application/json
+```
+
+Or for enterprise:
+
+```
+x-enterprise-api-key: YOUR_ORG_API_KEY
+Content-Type: application/json
+```
+
+## Request Body
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `input` | string | ✅ | Description of what you want to build |
+| `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
+| `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
+| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
+
+### Understanding `currentContext` (isNewBuild behavior)
+
+**Omit `currentContext` (New Project - isNewBuild: true):**
+```json
+{
+  "input": "Build a task management SaaS"
+}
+```
+**Generates:** Complete new project including:
+- Initial setup and scaffolding
+- Deployment configuration
+- Documentation structure
+- Support and maintenance guidelines
+- Infrastructure setup
+- CI/CD pipelines
+- Monitoring and logging
+
+**Provide `currentContext` (Feature Addition - isNewBuild: false):**
+```json
+{
+  "input": "Add real-time notifications and activity feed",
+  "currentContext": "Existing Next.js task management app with Supabase, has auth, task CRUD, team features"
+}
+```
+**Generates:** Incremental feature spec including:
+- New features only (respects existing architecture)
+- Integration points with current codebase
+- Migration considerations
+- No redundant setup/deployment (already exists)
+
+**Response includes `isNewBuild` flag:**
+```json
+{
+  "output": "https://pre.dev/s/abc123",
+  "isNewBuild": true,  // or false if currentContext provided
+  "fileUrl": "https://pre.dev/s/abc123"
+}
+```
+
+### Example: New Project
+
+```json
+{
+  "input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging. Include user authentication and role-based permissions.",
+  "outputFormat": "url"
+}
+```
+
+### Example: Feature Addition
+
+```json
+{
+  "input": "Add a calendar view and Gantt chart visualization to the existing project management tool",
+  "currentContext": "We have a task management system with list and board views, user auth, and basic team features",
+  "outputFormat": "url"
+}
+```
+
+### Example: Async Request
+
+```json
+{
+  "input": "Build a comprehensive e-commerce platform with inventory management",
+  "outputFormat": "url",
+  "async": true
+}
+```
+
+## Response
+
+### Success Response (Sync Mode)
+
+**When `outputFormat: "url"` (default):**
+```json
+{
+  "output": "https://pre.dev/s/abc123",
+  "outputFormat": "url",
+  "isNewBuild": true,
+  "fileUrl": "https://pre.dev/s/abc123"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `output` | string | Primary output - the hosted spec URL |
+| `outputFormat` | string | Confirms format used (`"url"` or `"markdown"`) |
+| `isNewBuild` | boolean | `true` = new project, `false` = feature addition |
+| `fileUrl` | string | Always the hosted URL (even if outputFormat is markdown) |
+
+**When `outputFormat: "markdown"`:**
+```json
+{
+  "markdown": "# Project Specification\n\n## Executive Summary...",
+  "outputFormat": "markdown",
+  "isNewBuild": false,
+  "fileUrl": "https://pre.dev/s/abc123"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `markdown` | string | Full markdown content (can be very large) |
+| `outputFormat` | string | Confirms `"markdown"` |
+| `isNewBuild` | boolean | Context flag |
+| `fileUrl` | string | URL where markdown is also hosted (backup access) |
+
+### Success Response (Async Mode)
+
+**Immediate response when `async: true`:**
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "pending",
+  "message": "Request queued for processing. Use /api/spec-status/:requestId to check status."
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `requestId` | string | MongoDB ObjectId to poll for status |
+| `status` | string | `"pending"` initially |
+| `message` | string | Instructions for polling |
+
+**Poll `/api/spec-status/:requestId` to check progress.**
+
+### Async Status Flow
+
+1. **Pending** → Initial queue state
+2. **Processing** → Actively generating spec
+3. **Completed** → Success, output available
+4. **Failed** → Error occurred
+
+**Typical generation times:**
+- Fast Spec: 2-5 minutes
+- Deep Spec: 5-15 minutes
+
+Poll every 10-15 seconds for best UX.
+
+## Free Trial
+
+Solo users get **one free Fast Spec trial** before requiring a subscription.
+
+### How It Works
+
+1. **First Request:** Free (no subscription needed)
+2. **Completion:** Email sent congratulating you + showcasing results
+3. **Subsequent Requests:** Require Solo Premium subscription
+
+### Check Trial Status
+
+```bash
+curl https://api.pre.dev/api/fast-api-trial-status \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+**Response:**
+```json
+{
+  "hasUsedTrial": false,
+  "usedAt": null
+}
+```
+
+or
+
+```json
+{
+  "hasUsedTrial": true,
+  "usedAt": "2025-10-01T14:30:00Z"
+}
+```
+
+### Trial Completion Email
+
+After your free spec completes, you'll receive an email with:
+- Link to your generated specification
+- Highlights of what was included
+- Upgrade options for unlimited access
+- Examples of what you can build next
+
+## Code Examples
+
+### cURL - Complete Flow
+
+**Synchronous Request:**
+```bash
+curl -X POST https://api.pre.dev/api/fast-spec \
+  -H "x-api-key: YOUR_USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Build a real-time collaborative whiteboard with drawing tools, shapes, text, and team presence indicators",
+    "outputFormat": "url"
+  }'
+```
+
+**Asynchronous Request with Polling:**
+```bash
+# Step 1: Start async generation
+RESPONSE=$(curl -X POST https://api.pre.dev/api/fast-spec \
+  -H "x-api-key: YOUR_USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Build a CRM with contact management, deal pipeline, and email integration",
+    "async": true
+  }')
+
+REQUEST_ID=$(echo $RESPONSE | jq -r '.requestId')
+
+# Step 2: Poll for status
+while true; do
+  STATUS=$(curl https://api.pre.dev/api/spec-status/$REQUEST_ID \
+    -H "x-api-key: YOUR_USER_ID")
+
+  STATE=$(echo $STATUS | jq -r '.status')
+
+  if [ "$STATE" = "completed" ]; then
+    echo "Spec ready!"
+    echo $STATUS | jq -r '.output'
+    break
+  elif [ "$STATE" = "failed" ]; then
+    echo "Generation failed"
+    echo $STATUS | jq -r '.errorMessage'
+    break
+  fi
+
+  echo "Status: $STATE - $(echo $STATUS | jq -r '.progress')"
+  sleep 10
+done
+```
+
+### Python - Complete Implementation
+
+```python
+import requests
+import time
+from typing import Dict, Any
+
+class ArchitectAPI:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "https://api.pre.dev/api"
+
+    def generate_spec(
+        self,
+        input_text: str,
+        current_context: str = None,
+        output_format: str = "url",
+        async_mode: bool = False
+    ) -> Dict[str, Any]:
+        """Generate a fast spec."""
+        headers = {
+            "x-api-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "input": input_text,
+            "outputFormat": output_format,
+            "async": async_mode
+        }
+
+        if current_context:
+            payload["currentContext"] = current_context
+
+        response = requests.post(
+            f"{self.base_url}/fast-spec",
+            headers=headers,
+            json=payload
+        )
+
+        response.raise_for_status()
+        return response.json()
+
+    def check_status(self, request_id: str) -> Dict[str, Any]:
+        """Check async generation status."""
+        headers = {"x-api-key": self.api_key}
+
+        response = requests.get(
+            f"{self.base_url}/spec-status/{request_id}",
+            headers=headers
+        )
+
+        response.raise_for_status()
+        return response.json()
+
+    def wait_for_completion(self, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
+        """Wait for async generation to complete."""
+        while True:
+            status = self.check_status(request_id)
+
+            if status["status"] == "completed":
+                return status
+            elif status["status"] == "failed":
+                raise Exception(f"Generation failed: {status.get('errorMessage')}")
+
+            print(f"Status: {status['status']} - {status.get('progress', 'Processing...')}")
+            time.sleep(poll_interval)
+
+# Usage
+api = ArchitectAPI(api_key="YOUR_USER_ID")
+
+# Synchronous (wait for result)
+result = api.generate_spec(
+    input_text="Build a fitness tracking app with workout logging, progress charts, and social features",
+    output_format="url"
+)
+print(f"Spec URL: {result['output']}")
+
+# Asynchronous (poll for result)
+response = api.generate_spec(
+    input_text="Add AI meal planning and nutrition tracking to existing fitness app",
+    current_context="Existing app has workout logging, user profiles, and basic social features built with React Native and Firebase",
+    async_mode=True
+)
+
+result = api.wait_for_completion(response["requestId"])
+print(f"Spec ready: {result['output']}")
+```
+
+### JavaScript/Node.js - Complete Implementation
+
+```javascript
+const fetch = require('node-fetch');
+
+class ArchitectAPI {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.baseUrl = 'https://api.pre.dev/api';
+  }
+
+  async generateSpec({
+    input,
+    currentContext = null,
+    outputFormat = 'url',
+    async = false
+  }) {
+    const headers = {
+      'x-api-key': this.apiKey,
+      'Content-Type': 'application/json'
+    };
+
+    const payload = {
+      input,
+      outputFormat,
+      async
+    };
+
+    if (currentContext) {
+      payload.currentContext = currentContext;
+    }
+
+    const response = await fetch(`${this.baseUrl}/fast-spec`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'API request failed');
+    }
+
+    return response.json();
+  }
+
+  async checkStatus(requestId) {
+    const headers = { 'x-api-key': this.apiKey };
+
+    const response = await fetch(
+      `${this.baseUrl}/spec-status/${requestId}`,
+      { headers }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to check status');
+    }
+
+    return response.json();
+  }
+
+  async waitForCompletion(requestId, pollInterval = 10000) {
+    while (true) {
+      const status = await this.checkStatus(requestId);
+
+      if (status.status === 'completed') {
+        return status;
+      } else if (status.status === 'failed') {
+        throw new Error(`Generation failed: ${status.errorMessage}`);
+      }
+
+      console.log(`Status: ${status.status} - ${status.progress || 'Processing...'}`);
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+  }
+}
+
+// Usage Examples
+
+// Synchronous
+(async () => {
+  const api = new ArchitectAPI('YOUR_USER_ID');
+
+  try {
+    const result = await api.generateSpec({
+      input: 'Build an e-learning platform with video courses, quizzes, certificates, and student progress tracking'
+    });
+
+    console.log('Spec URL:', result.output);
+    console.log('Is new build:', result.isNewBuild);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+})();
+
+// Asynchronous with polling
+(async () => {
+  const api = new ArchitectAPI('YOUR_USER_ID');
+
+  try {
+    // Start generation
+    const response = await api.generateSpec({
+      input: 'Add gamification with points, badges, and leaderboards',
+      currentContext: 'Existing e-learning platform with courses and progress tracking',
+      async: true
+    });
+
+    console.log('Request ID:', response.requestId);
+
+    // Wait for completion
+    const result = await api.waitForCompletion(response.requestId);
+    console.log('Spec ready:', result.output);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+})();
+```
+
+### TypeScript - Type-Safe Implementation
+
+```typescript
+interface SpecRequest {
+  input: string;
+  currentContext?: string;
+  outputFormat?: 'url' | 'markdown';
+  async?: boolean;
+}
+
+interface SpecResponse {
+  output?: string;
+  markdown?: string;
+  outputFormat: 'url' | 'markdown';
+  isNewBuild: boolean;
+  fileUrl: string;
+}
+
+interface AsyncResponse {
+  requestId: string;
+  status: 'pending';
+  message: string;
+}
+
+interface StatusResponse {
+  requestId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress?: string;
+  output?: string;
+  outputFormat?: string;
+  fileUrl?: string;
+  errorMessage?: string;
+  executionTimeMs?: number;
+}
+
+class ArchitectAPI {
+  private apiKey: string;
+  private baseUrl: string = 'https://api.pre.dev/api';
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async generateSpec(request: SpecRequest): Promise<SpecResponse | AsyncResponse> {
+    const response = await fetch(`${this.baseUrl}/fast-spec`, {
+      method: 'POST',
+      headers: {
+        'x-api-key': this.apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'API request failed');
+    }
+
+    return response.json();
+  }
+
+  async checkStatus(requestId: string): Promise<StatusResponse> {
+    const response = await fetch(`${this.baseUrl}/spec-status/${requestId}`, {
+      headers: { 'x-api-key': this.apiKey }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to check status');
+    }
+
+    return response.json();
+  }
+
+  async waitForCompletion(requestId: string, pollInterval: number = 10000): Promise<StatusResponse> {
+    while (true) {
+      const status = await this.checkStatus(requestId);
+
+      if (status.status === 'completed') {
+        return status;
+      } else if (status.status === 'failed') {
+        throw new Error(`Generation failed: ${status.errorMessage}`);
+      }
+
+      console.log(`${status.status}: ${status.progress || 'Processing...'}`);
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+  }
+}
+```
+
+## What You Get
+
+The generated specification includes:
+
+- ✅ **Executive summary**
+- ✅ **Feature breakdown** by category
+- ✅ **Technical architecture** recommendations
+- ✅ **Implementation milestones** with effort estimates
+- ✅ **User stories** and acceptance criteria
+- ✅ **Task checklist** with progress tracking
+  - Task status legend: `[ ]` → `[→]` → `[✓]` → `[⊘]`
+  - Update as your agent completes work
+  - Keep both you and AI aligned on progress
+- ✅ **Risk analysis** and considerations
+- ✅ **Markdown formatted** for direct agent use
+
+## Using Task Tracking
+
+As your agent implements features, actively manage progress:
+
+1. **Mark tasks in progress:** Change `[ ]` to `[→]` when starting
+2. **Mark complete:** Change `[→]` to `[✓]` when done
+3. **Mark skipped:** Change `[ ]` to `[⊘]` if skipping (with reason)
+
+**Pro Tip:** Don't let your agent skip tasks without questioning why. This keeps implementation comprehensive and on-track.
+
+## Best Practices
+
+### Writing Effective Input
+- Be specific about core features
+- Include business context and constraints
+- Mention technical preferences if any
+
+### Managing Your Agent
+- Actively interrupt to ensure tasks are checked off
+- Question every skipped task
+- Verify acceptance criteria before marking complete
+- Triple check that tests are written
+
+<Card title="Next: Deep Spec Endpoint" icon="arrow-right" href="/api-reference/deep-spec">
+  Generate ultra-detailed specifications for complex projects.
+</Card>
