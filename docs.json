@@ -15,7 +15,7 @@
 				"groups": [
 					{
 						"group": "Overview",
-						"pages": ["introduction", "why-architect-api", "quickstart"]
+						"pages": ["index", "why-architect-api", "quickstart"]
 					}
 				]
 			},
