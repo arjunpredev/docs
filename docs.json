@@ -37,7 +37,7 @@
 					},
 					{
 						"group": "Status Endpoints",
-						"pages": ["api-reference/spec-status", "api-reference/trial-status"]
+						"pages": ["api-reference/spec-status"]
 					}
 				]
 			},
