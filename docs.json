@@ -70,19 +70,6 @@
 						]
 					}
 				]
-			},
-			{
-				"tab": "Examples",
-				"groups": [
-					{
-						"group": "Sample Workflows",
-						"pages": [
-							"examples/new-project",
-							"examples/feature-addition",
-							"examples/sample-output"
-						]
-					}
-				]
 			}
 		],
 		"global": {
