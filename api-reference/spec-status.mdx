@@ -1,0 +1,279 @@
+---
+title: "GET /api/spec-status/:requestId - Check Async Generation Status"
+description: "Monitor the progress of asynchronous specification generation requests."
+---
+
+# GET /api/spec-status/:requestId
+
+Check the status of an asynchronous specification generation request.
+
+## Overview
+
+When you make an async request (`"async": true`), use this endpoint to poll for completion status.
+
+## Endpoint
+
+```
+GET https://api.pre.dev/api/spec-status/:requestId
+```
+
+## Parameters
+
+| Parameter | Location | Required | Description |
+|-----------|----------|----------|-------------|
+| `requestId` | Path | ✅ | Request ID returned from async spec generation |
+
+## Example Request
+
+```bash
+curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+## Response
+
+### Pending
+
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "pending",
+  "progress": "Initializing...",
+  "endpoint": "fast_spec",
+  "timestamp": "2025-10-03T10:00:00Z"
+}
+```
+
+### Processing
+
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "processing",
+  "progress": "Generating specification...",
+  "endpoint": "fast_spec",
+  "timestamp": "2025-10-03T10:00:00Z"
+}
+```
+
+### Completed
+
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "completed",
+  "progress": "Completed successfully",
+  "endpoint": "fast_spec",
+  "timestamp": "2025-10-03T10:00:00Z",
+  "completedAt": "2025-10-03T10:03:45Z",
+  "output": "https://pre.dev/s/abc123",
+  "outputFormat": "url",
+  "fileUrl": "https://pre.dev/s/abc123",
+  "executionTimeMs": 225000
+}
+```
+
+### Failed
+
+```json
+{
+  "requestId": "507f1f77bcf86cd799439011",
+  "status": "failed",
+  "progress": "Failed to generate specification",
+  "endpoint": "fast_spec",
+  "timestamp": "2025-10-03T10:00:00Z",
+  "completedAt": "2025-10-03T10:02:15Z",
+  "errorMessage": "Invalid input format",
+  "executionTimeMs": 135000
+}
+```
+
+## Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `requestId` | string | The original request ID |
+| `status` | string | Current status: `"pending"`, `"processing"`, `"completed"`, or `"failed"` |
+| `progress` | string | Human-readable progress description |
+| `endpoint` | string | Which endpoint was used (`"fast_spec"` or `"deep_spec"`) |
+| `timestamp` | string | ISO timestamp of current status |
+| `completedAt` | string | ISO timestamp when request finished (only present when completed or failed) |
+| `output` | string | Generated spec URL (only present when completed) |
+| `outputFormat` | string | Format used for generation (only present when completed) |
+| `fileUrl` | string | Always the hosted URL (only present when completed) |
+| `errorMessage` | string | Error description (only present when failed) |
+| `executionTimeMs` | number | Total execution time in milliseconds (only present when completed or failed) |
+
+## Polling Best Practices
+
+### Polling Interval
+
+- **Recommended:** Poll every 10-15 seconds
+- **Minimum:** Don't poll more frequently than every 5 seconds
+- **Maximum:** No need to poll more than every 30 seconds
+
+### Example Polling Script
+
+```bash
+#!/bin/bash
+
+REQUEST_ID="507f1f77bcf86cd799439011"
+API_KEY="YOUR_API_KEY"
+
+while true; do
+  RESPONSE=$(curl -s https://api.pre.dev/api/spec-status/$REQUEST_ID \
+    -H "x-api-key: $API_KEY")
+
+  STATUS=$(echo $RESPONSE | jq -r '.status')
+
+  case $STATUS in
+    "completed")
+      echo "✅ Spec generation completed!"
+      echo $RESPONSE | jq -r '.output'
+      break
+      ;;
+    "failed")
+      echo "❌ Spec generation failed:"
+      echo $RESPONSE | jq -r '.errorMessage'
+      break
+      ;;
+    "pending"|"processing")
+      echo "$(date): $STATUS - $(echo $RESPONSE | jq -r '.progress')"
+      sleep 10
+      ;;
+    *)
+      echo "Unknown status: $STATUS"
+      break
+      ;;
+  esac
+done
+```
+
+### Python Polling Example
+
+```python
+import requests
+import time
+from typing import Dict, Any
+
+def poll_spec_status(api_key: str, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
+    """Poll for spec generation completion."""
+    while True:
+        response = requests.get(
+            f'https://api.pre.dev/api/spec-status/{request_id}',
+            headers={'x-api-key': api_key}
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        status = data['status']
+
+        if status == 'completed':
+            print("✅ Spec generation completed!")
+            return data
+        elif status == 'failed':
+            print(f"❌ Spec generation failed: {data.get('errorMessage')}")
+            raise Exception(f"Generation failed: {data.get('errorMessage')}")
+        else:
+            print(f"⏳ {status}: {data.get('progress', 'Processing...')}")
+
+        time.sleep(poll_interval)
+
+# Usage
+result = poll_spec_status("YOUR_API_KEY", "507f1f77bcf86cd799439011")
+print(f"Spec URL: {result['output']}")
+```
+
+### JavaScript Polling Example
+
+```javascript
+async function pollSpecStatus(apiKey, requestId, pollInterval = 10000) {
+  while (true) {
+    const response = await fetch(
+      `https://api.pre.dev/api/spec-status/${requestId}`,
+      {
+        headers: { 'x-api-key': apiKey }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to check status');
+    }
+
+    const data = await response.json();
+    const status = data.status;
+
+    if (status === 'completed') {
+      console.log('✅ Spec generation completed!');
+      return data;
+    } else if (status === 'failed') {
+      console.error(`❌ Spec generation failed: ${data.errorMessage}`);
+      throw new Error(`Generation failed: ${data.errorMessage}`);
+    } else {
+      console.log(`⏳ ${status}: ${data.progress || 'Processing...'}`);
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+  }
+}
+
+// Usage
+try {
+  const result = await pollSpecStatus('YOUR_API_KEY', '507f1f77bcf86cd799439011');
+  console.log(`Spec URL: ${result.output}`);
+} catch (error) {
+  console.error('Error:', error.message);
+}
+```
+
+## Expected Generation Times
+
+| Spec Type | Typical Time | Maximum Expected |
+|-----------|--------------|------------------|
+| Fast Spec | 2-5 minutes | 10 minutes |
+| Deep Spec | 5-15 minutes | 25 minutes |
+
+**Note:** Times can vary based on input complexity and system load.
+
+## Error Handling
+
+### Common Issues
+
+**Request ID Not Found:**
+```json
+{
+  "error": "Request not found",
+  "message": "No request found with ID: 507f1f77bcf86cd799439011"
+}
+```
+*Cause:* Invalid request ID or request expired
+
+**Unauthorized:**
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid API key"
+}
+```
+*Cause:* Invalid or missing API key
+
+## Best Practices
+
+### User Experience
+- Show a loading indicator while polling
+- Display progress messages to users
+- Set a reasonable timeout (e.g., 30 minutes)
+- Provide a way to cancel or retry
+
+### Rate Limiting
+- Respect the polling interval recommendations
+- Implement exponential backoff for retries
+- Handle rate limit responses gracefully
+
+### Monitoring
+- Log polling attempts for debugging
+- Track completion times for performance monitoring
+- Alert on unusual failure rates
+
+<Card title="Next: Trial Status Endpoint" icon="arrow-right" href="/api-reference/trial-status">
+  Check free trial eligibility for new users.
+</Card>

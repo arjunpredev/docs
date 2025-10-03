@@ -1,0 +1,96 @@
+---
+title: "MCP Integration Overview"
+description: "Learn about the Model Context Protocol and how to use Architect API directly in AI agents like Claude Desktop and Cursor."
+---
+
+# MCP Integration Overview
+
+## What is MCP?
+
+The **Model Context Protocol (MCP)** is a universal plugin system that allows AI agents to access external tools and APIs seamlessly.
+
+With MCP, you can:
+- Generate specs directly from Claude Desktop, Cursor, or other MCP-enabled agents
+- Have natural conversations that trigger spec generation
+- No need to leave your development environment
+
+## Why Use MCP?
+
+### Interactive Development
+Have a conversation with your AI agent about your project, and generate specs on the fly.
+
+<Card title="Example Conversation" icon="message-circle">
+  **You:** "I want to build a social media app for book lovers. Can you generate a detailed spec for this?"
+
+  **Agent:** *"I've generated a comprehensive specification for your book-focused social network. The spec includes user authentication, book discovery features, reading groups, and more. Here's the link: [spec-url]"*
+</Card>
+
+### Seamless Integration
+Once configured, spec generation is just a natural part of your conversation.
+
+### Universal Compatibility
+Works with any MCP-enabled agent:
+- Claude Desktop
+- Cursor
+- [Other supported agents]
+
+## MCP vs Direct API
+
+| Feature | MCP Integration | Direct API |
+|---------|----------------|------------|
+| Best For | Interactive, exploratory | Programmatic, batch, CI/CD |
+| Setup | One-time config file | Per-request authentication |
+| Use Case | Development workflow | Automation, scripts |
+| Natural Language | ✅ Conversational | ❌ Structured requests |
+
+## How It Works
+
+### 1. Configuration
+Add Architect API to your MCP configuration file with your API key.
+
+### 2. Natural Conversation
+Simply ask your agent to generate a spec in natural language.
+
+### 3. Automatic Generation
+Agent uses Architect API behind the scenes to generate comprehensive specifications.
+
+### 4. Seamless Results
+Get spec URLs and continue your development conversation without interruption.
+
+## Supported Agents
+
+<CardGroup cols={3}>
+  <Card title="Claude Desktop" icon="bot">
+    **Configuration:** Add to Claude's MCP settings
+
+    **Usage:** Natural language spec generation in any conversation
+  </Card>
+
+  <Card title="Cursor" icon="cursor">
+    **Configuration:** Add to Cursor's MCP configuration
+
+    **Usage:** Generate specs while coding and reviewing
+  </Card>
+
+  <Card title="Other Agents" icon="plug">
+    **Configuration:** Standard MCP server setup
+
+    **Usage:** Works with any MCP-compatible agent
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Setup MCP Integration" icon="settings" href="/mcp-integration/setup">
+    Step-by-step setup guide for different agents
+  </Card>
+
+  <Card title="Usage Patterns" icon="lightbulb" href="/mcp-integration/usage">
+    Learn how to use MCP effectively in your workflow
+  </Card>
+</CardGroup>
+
+<Note>
+  **MCP Integration:** Requires active Solo Premium or Enterprise subscription. Free trial available for testing.
+</Note>
