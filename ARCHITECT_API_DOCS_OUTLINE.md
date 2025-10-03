@@ -507,8 +507,8 @@ Returns the raw markdown content in the response
 
 | Endpoint | Cost | What You Pay For |
 |----------|------|------------------|
-| Fast Spec | 10 generations | Deducted immediately when request starts |
-| Deep Spec | 50 generations | Deducted immediately when request starts |
+| Fast Spec | 10 credits | Deducted immediately when request starts |
+| Deep Spec | 50 credits | Deducted immediately when request starts |
 
 ### What is a "Generation"?
 
@@ -554,7 +554,7 @@ Check remaining credits:
 - No burst limits on request rate
 - Exceeding monthly limit: Purchase additional prototype credits or upgrade tier
 
-Exceeding limits returns `402 Payment Required` with details on remaining generations.
+Exceeding limits returns `402 Payment Required` with details on remaining credits.
 
 ## Error Handling
 
@@ -2100,7 +2100,7 @@ Let the agent handle the code. You handle the context boundaries and quality con
 - Basic acceptance criteria
 - No granular subtasks
 
-**Cost:** 10 generations
+**Cost:** 10 credits
 
 ## Deep Spec: When to Use
 
@@ -2119,7 +2119,7 @@ Let the agent handle the code. You handle the context boundaries and quality con
 - **Granular implementation subtasks**
 - Task-level breakdown for delegation
 
-**Cost:** 50 generations
+**Cost:** 50 credits
 
 ## Can I Upgrade?
 
