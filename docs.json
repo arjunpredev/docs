@@ -15,7 +15,12 @@
 				"groups": [
 					{
 						"group": "Overview",
-						"pages": ["index", "why-architect-api", "quickstart"]
+						"pages": [
+							"index",
+							"why-architect-api",
+							"quickstart",
+							"api-reference/overview"
+						]
 					}
 				]
 			},
@@ -23,14 +28,16 @@
 				"tab": "API Reference",
 				"groups": [
 					{
-						"group": "Core API",
-						"pages": [
-							"api-reference/overview",
-							"api-reference/fast-spec",
-							"api-reference/deep-spec",
-							"api-reference/spec-status",
-							"api-reference/trial-status"
-						]
+						"group": "Using the API",
+						"pages": ["api-reference/introduction"]
+					},
+					{
+						"group": "Spec Endpoints",
+						"pages": ["api-reference/fast-spec", "api-reference/deep-spec"]
+					},
+					{
+						"group": "Status Endpoints",
+						"pages": ["api-reference/spec-status", "api-reference/trial-status"]
 					}
 				]
 			},

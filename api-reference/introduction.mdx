@@ -1,33 +1,108 @@
 ---
 title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+description: 'Architect API - Generate comprehensive software specifications with AI'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+# Introduction
 
-## Welcome
+Architect API Reference
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Features
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+<CardGroup cols={2}>
+  <Card 
+    title="Fast Spec" 
+    icon="bolt"
+    href="/api-reference/fast-spec"
+  >
+    Generate comprehensive specifications quickly. Perfect for MVPs and prototypes with balanced depth and speed.
+  </Card>
+  
+  <Card 
+    title="Deep Spec" 
+    icon="layer-group"
+    href="/api-reference/deep-spec"
+  >
+    Generate ultra-detailed specifications for complex systems. Enterprise-grade depth with comprehensive analysis.
+  </Card>
+  
+  <Card 
+    title="Spec Status" 
+    icon="clock"
+    href="/api-reference/spec-status"
+  >
+    Check the status of your async specification generation requests and retrieve results when ready.
+  </Card>
+  
+  <Card 
+    title="Trial Status" 
+    icon="gift"
+    href="/api-reference/trial-status"
+  >
+    Check your free trial eligibility and remaining usage before making your first API call.
+  </Card>
+</CardGroup>
+
+## Base URL
+
+All API endpoints are accessible from:
+
+```
+https://api.pre.dev/api
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+The Architect API uses API key authentication with two methods:
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+### Solo Authentication
+
+Use the `x-api-key` header with your user ID from [pre.dev](https://pre.dev) settings.
+
+```bash
+x-api-key: YOUR_USER_ID
 ```
+
+### Enterprise Authentication
+
+Use the `x-enterprise-api-key` header with your organization's API key.
+
+```bash
+x-enterprise-api-key: YOUR_ORG_API_KEY
+```
+
+<Info>
+  Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys
+</Info>
+
+## Quick Example
+
+```bash
+curl -X POST https://api.pre.dev/api/fast-spec \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Build a task management app with team collaboration",
+    "outputFormat": "url"
+  }'
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="API Overview" 
+    icon="book"
+    href="/api-reference/overview"
+  >
+    Learn about authentication, rate limits, and error handling
+  </Card>
+  
+  <Card 
+    title="Quickstart Guide" 
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get started with your first API call in minutes
+  </Card>
+</CardGroup>
