@@ -1,20 +1,23 @@
 ---
-title: "Architect API Documentation"
+title: "pre.dev Architect API Documentation"
 description: "Generate structured project specifications for AI coding agents via REST API"
 ---
 
 ## Overview
 
-The Architect API transforms project requirements into structured specifications optimized for AI coding agents. It returns comprehensive technical documentation including architecture diagrams, implementation milestones, and task breakdowns.
+The Architect API transforms simple natural language descriptions of software projects into structured specifications optimized for AI coding agents. 
+
+**Input:** Plain English descriptions like "Build a chat app" or "Add authentication to my API"
+
+**Output:** Comprehensive technical specifications with implementation milestones, user stories, and task breakdowns
 
 **Base URL:** `https://api.pre.dev`
 
 ## Key Features
 
 - **Structured Output:** Hierarchical spec format (Milestones → Stories → Subtasks)
-- **Architecture Generation:** System diagrams and component relationships
 - **Task Tracking:** Built-in progress management with markdown checkboxes
-- **Effort Estimation:** Time estimates per milestone and subtask
+- **Complexity Estimation:** Complexity scores per milestone and subtask
 - **Web Sync:** Automatic project creation on pre.dev with unique URL
 
 ## Quick Start
@@ -47,9 +50,9 @@ See [Choosing Spec Level](/guides/choosing-spec-level) for detailed comparison.
 Specs are returned as structured markdown with:
 
 - **Technical Stack:** Recommended technologies and dependencies
-- **Implementation Milestones:** Phased delivery plan with estimates
+- **Implementation Milestones:** Phased delivery plan with complexity estimates
 - **User Stories:** Feature requirements with acceptance criteria
-- **Subtask Breakdown:** Granular implementation steps with checkboxes referencing system architecture
+- **Subtask Breakdown:** Granular implementation steps with checkboxes
 
 ### Task Tracking Format
 
@@ -64,7 +67,6 @@ Specs are returned as structured markdown with:
 
 Each API request creates a synced project at `pre.dev/project/{id}` with:
 
-- Interactive architecture visualization
 - Web-based spec editor for iteration
 - Team collaboration and progress tracking
 - Version history
