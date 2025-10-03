@@ -7,7 +7,7 @@
 		"light": "#FFFFFF",
 		"dark": "#333333"
 	},
-	"favicon": "/favicon.svg",
+	"favicon": "https://pre.dev/favicon.ico",
 	"navigation": {
 		"tabs": [
 			{
@@ -107,7 +107,7 @@
 				{
 					"anchor": "Community",
 					"href": "https://discord.com/invite/ejVTRJ6WXS",
-					"icon": "users"
+					"icon": "message-circle"
 				}
 			]
 		}
