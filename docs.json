@@ -85,19 +85,29 @@
 		"global": {
 			"anchors": [
 				{
-					"anchor": "Get Started",
-					"href": "https://mintlify.com/docs",
-					"icon": "rocket"
+					"anchor": "Create a Project",
+					"href": "https://pre.dev",
+					"icon": "plus"
 				},
 				{
-					"anchor": "Community",
-					"href": "https://mintlify.com/community",
-					"icon": "slack"
+					"anchor": "Find Developers",
+					"href": "https://pre.dev/directory",
+					"icon": "user"
+				},
+				{
+					"anchor": "API Playground",
+					"href": "https://pre.dev/projects/playground",
+					"icon": "code"
 				},
 				{
 					"anchor": "Blog",
-					"href": "https://mintlify.com/blog",
+					"href": "https://pre.dev/blog",
 					"icon": "newspaper"
+				},
+				{
+					"anchor": "Community",
+					"href": "https://discord.com/invite/ejVTRJ6WXS",
+					"icon": "users"
 				}
 			]
 		}
