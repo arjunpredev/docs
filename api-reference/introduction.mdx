@@ -32,13 +32,6 @@ description: 'pre.dev Architect API - Generate comprehensive software specificat
   </Card>
 </CardGroup>
 
-## Base URL
-
-All API endpoints are accessible from:
-
-```
-https://api.pre.dev/api
-```
 
 ## Authentication
 
@@ -67,7 +60,7 @@ x-enterprise-api-key: YOUR_ORG_API_KEY
 ## Quick Example
 
 ```bash
-curl -X POST https://api.pre.dev/api/fast-spec \
+curl -X POST /api/fast-spec \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
