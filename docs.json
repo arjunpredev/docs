@@ -96,8 +96,8 @@
 		}
 	},
 	"logo": {
-		"light": "/logo/light.svg",
-		"dark": "/logo/dark.svg"
+		"light": "https://pre.dev/predev.png",
+		"dark": "https://pre.dev/predev.png"
 	},
 	"navbar": {
 		"links": [
