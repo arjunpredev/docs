@@ -1,0 +1,218 @@
+# Example: Adding Features to Existing Project
+
+## Input
+
+```json
+{
+  "input": "Add a calendar view and Gantt chart visualization to the existing project management tool",
+  "currentContext": "We have a task management system with list and board views, user auth, and basic team features built with Next.js and Supabase",
+  "outputFormat": "url"
+}
+```
+
+## Generated Output Preview
+
+The API generates a feature specification that integrates with your existing architecture:
+
+### Feature Overview
+```
+# Calendar View & Gantt Chart Enhancement
+
+## Current System Context
+- Next.js frontend with TypeScript
+- Supabase database with real-time subscriptions
+- Existing task and project management
+- User authentication and team features
+- List and kanban board views
+
+## New Features
+- Interactive calendar view for task scheduling
+- Gantt chart for project timeline visualization
+- Date-based task filtering and organization
+- Milestone tracking with visual progress
+- Drag-and-drop date assignment
+```
+
+### Integration Points
+```
+## Architecture Integration
+
+### Database Extensions
+- Add `due_date`, `start_date` fields to tasks table
+- Create `milestones` table for project tracking
+- Extend existing project and task relationships
+
+### API Enhancements
+- Build on existing REST endpoints
+- Add calendar-specific queries and filters
+- Maintain current authentication patterns
+- Preserve real-time subscription model
+```
+
+### Implementation Tasks
+
+#### Phase 1: Data Layer (1 week)
+- [ ] Extend Supabase schema with date fields
+- [ ] Create milestone tracking tables
+- [ ] Update existing task queries to include dates
+- [ ] Add date-based filtering functions
+
+#### Phase 2: Calendar Component (1 week)
+- [ ] Build calendar grid component
+- [ ] Implement task rendering on calendar
+- [ ] Add drag-and-drop date assignment
+- [ ] Create month/week/day view toggles
+
+#### Phase 3: Gantt Chart (1.5 weeks)
+- [ ] Design Gantt chart visualization
+- [ ] Implement timeline calculations
+- [ ] Add dependency relationships
+- [ ] Create progress tracking indicators
+
+#### Phase 4: Integration & Polish (0.5 weeks)
+- [ ] Integrate with existing navigation
+- [ ] Add calendar/Gantt view toggles
+- [ ] Implement responsive design
+- [ ] Add loading states and error handling
+
+### User Stories
+
+#### Calendar View
+**As a project manager, I want to:**
+- View all tasks on a calendar interface
+- Drag tasks to change their due dates
+- Filter tasks by date ranges
+- See task density and workload distribution
+
+**Acceptance Criteria:**
+- Monthly, weekly, and daily calendar views
+- Tasks displayed as colored blocks on dates
+- Drag-and-drop date reassignment
+- Integration with existing task modal
+- Responsive design for mobile devices
+
+#### Gantt Chart
+**As a team lead, I want to:**
+- Visualize project timelines graphically
+- See task dependencies and relationships
+- Track milestone progress
+- Identify critical path and bottlenecks
+
+**Acceptance Criteria:**
+- Horizontal timeline with date scale
+- Task bars showing duration and progress
+- Dependency arrows between related tasks
+- Milestone markers with completion status
+- Zoom and pan controls for navigation
+
+### Risk Mitigation
+```
+## Integration Risks
+- **Data Migration:** Existing tasks without dates
+- **Performance:** Calendar rendering with large datasets
+- **UI Consistency:** Matching existing design system
+- **Mobile Experience:** Calendar usability on small screens
+
+## Mitigation Strategies
+- Lazy loading for calendar data
+- Progressive enhancement for existing tasks
+- Design system audit before implementation
+- Mobile-first responsive design approach
+```
+
+## Using with Agents
+
+### With Cursor
+
+1. **Generate the feature spec** with the currentContext provided
+2. **Use the deep link** to open directly in Cursor:
+   ```
+   cursor://file?url=https://pre.dev/s/your-spec-id
+   ```
+3. **Cursor loads the spec** with full context of your existing codebase
+4. **Agent understands** your current architecture and integrates appropriately
+
+**Cursor Advantage:** Your agent can reference existing files and patterns, ensuring seamless integration with your current Next.js/Supabase setup.
+
+### With Lovable
+
+1. **Generate the spec** and use the Lovable deep link:
+   ```
+   https://lovable.dev/projects/create?template=https://pre.dev/s/your-spec-id
+   ```
+2. **Lovable recognizes** this is a feature addition, not a new project
+3. **Focuses on enhancement** rather than full rebuild
+4. **Integrates with existing** component library and patterns
+
+**Lovable Advantage:** Maintains your current design system while adding new calendar and Gantt functionality.
+
+### With Claude Desktop (MCP)
+
+1. **Provide context** in your conversation:
+   ```
+   "I have an existing Next.js project management app with Supabase. I want to add calendar view and Gantt charts. Generate a spec for this."
+   ```
+2. **MCP automatically includes** your current context in the generation
+3. **Claude understands** your existing architecture
+4. **Spec focuses** on integration rather than replacement
+
+**MCP Advantage:** Natural conversation flow while maintaining architectural context.
+
+## Expected Results
+
+After following this example, you'll have:
+
+✅ **Integration-focused specification** that respects your existing codebase
+✅ **Database schema extensions** compatible with current Supabase setup
+✅ **Component designs** that match your existing UI patterns
+✅ **API enhancements** that build on current endpoints
+✅ **Migration strategies** for existing data
+✅ **Risk analysis** specific to your current architecture
+
+## Key Differences from New Projects
+
+### Context Awareness
+- **Respects existing architecture** instead of proposing new stack
+- **Builds on current patterns** rather than establishing new ones
+- **Considers migration** for existing users and data
+- **Maintains consistency** with current user experience
+
+### Scoped Implementation
+- **Focused on new features** only
+- **No redundant setup** (auth, basic CRUD already exist)
+- **Integration points** clearly defined
+- **Incremental deployment** strategy
+
+### Risk Considerations
+- **Backward compatibility** with existing features
+- **Performance impact** on current system
+- **Data integrity** during schema changes
+- **User adoption** of new features
+
+## Best Practices for Feature Additions
+
+### Provide Rich Context
+```
+❌ "Add calendar view"
+✅ "Add calendar view to our existing Next.js project management app that uses Supabase for data, has task management with list/board views, and user authentication already set up"
+```
+
+### Include Technical Details
+- Current tech stack and versions
+- Database schema overview
+- Key architectural patterns
+- Existing integrations or dependencies
+
+### Specify Integration Requirements
+- How new features should interact with existing ones
+- Data flow between old and new components
+- Shared UI patterns and components
+- Performance expectations
+
+### Consider Migration
+- How existing data adapts to new features
+- Backward compatibility requirements
+- Graceful degradation for older clients
+- Data seeding or migration scripts
+
+This example shows how Architect API generates targeted, integration-aware specifications that enhance your existing projects without disrupting current functionality.

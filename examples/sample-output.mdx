@@ -1,0 +1,522 @@
+# Sample Generated Specifications
+
+## Understanding the Spec Output
+
+### File Format
+All specifications are generated as comprehensive markdown files that include:
+- Executive summary
+- Feature breakdown
+- Technical architecture
+- Implementation tasks with checkboxes
+- Milestones and estimates
+- User stories with acceptance criteria
+
+### Task Tracking System
+
+Every spec includes a **task tracking legend** at the top:
+
+```markdown
+# Task Status Legend
+- [ ] To Do
+- [→] In Progress
+- [✓] Complete
+- [\] Skipped (with reason)
+```
+
+This allows you to track progress as your agent implements features.
+
+### Example Task Structure
+
+```markdown
+## Phase 1: Core Authentication
+
+- [ ] Set up user authentication system
+  - [ ] Implement JWT token generation
+  - [ ] Create login/signup endpoints
+  - [ ] Add password hashing with bcrypt
+
+- [ ] Implement role-based access control
+  - [ ] Create user roles table
+  - [ ] Add middleware for permission checking
+```
+
+As your agent completes tasks, update the status:
+- `[ ]` → `[→]` when starting
+- `[→]` → `[✓]` when complete
+- `[ ]` → `[\]` if skipping (add reason why)
+
+---
+
+## Spec Structure Breakdown
+
+### 1. Executive Summary
+High-level overview of the project scope and objectives.
+
+### 2. Feature Categories
+Organized breakdown of all features by domain (Auth, Core Features, Admin, etc.)
+
+### 3. Technical Stack Recommendations
+Suggested technologies based on project requirements.
+
+### 4. Implementation Phases
+Logical grouping of features into development milestones with effort estimates.
+
+### 5. User Stories
+Detailed user stories with acceptance criteria for each major feature.
+
+### 6. Task Checklist
+Granular, actionable tasks organized by phase with checkbox tracking.
+
+### 7. Risk Analysis
+Potential technical challenges and mitigation strategies.
+
+---
+
+## Example 1: E-Commerce Platform (Fast Spec)
+
+**Input:** "Build an e-commerce platform with product catalog, shopping cart, user authentication, and payment processing"
+
+### Generated Fast Spec Excerpt
+
+```markdown
+# E-Commerce Platform Specification
+
+## Executive Summary
+
+A modern e-commerce solution enabling businesses to sell products online with secure payment processing, inventory management, and customer relationship tools.
+
+## Core Features
+
+### Product Management
+- Product catalog with categories and search
+- Inventory tracking and low stock alerts
+- Product images and detailed descriptions
+- Pricing and discount management
+
+### Shopping Experience
+- User-friendly product browsing
+- Shopping cart functionality
+- Guest checkout option
+- Order history and tracking
+
+### User Management
+- User registration and authentication
+- Customer profiles and preferences
+- Order history and reordering
+- Password reset and account security
+
+### Payment Processing
+- Secure payment gateway integration
+- Multiple payment methods (credit card, PayPal)
+- Order confirmation and receipts
+- Refund processing capabilities
+
+## Technical Architecture
+
+### Technology Stack
+- **Frontend:** Next.js 14 with TypeScript
+- **Backend:** Node.js with Express
+- **Database:** PostgreSQL
+- **Authentication:** NextAuth.js
+- **Payments:** Stripe
+- **Deployment:** Vercel
+
+### System Components
+- Web application for customer shopping
+- Admin dashboard for store management
+- REST API for mobile app integration
+- Background job processing for orders
+- Email notification system
+
+## Implementation Phases
+
+### Phase 1: Foundation (2 weeks)
+- [ ] Set up Next.js project with TypeScript
+- [ ] Configure PostgreSQL database
+- [ ] Implement user authentication with NextAuth
+- [ ] Create basic project structure and routing
+
+### Phase 2: Product Catalog (2 weeks)
+- [ ] Build product database schema
+- [ ] Create product listing and detail pages
+- [ ] Implement search and filtering
+- [ ] Add product image upload and management
+
+### Phase 3: Shopping Cart & Checkout (2 weeks)
+- [ ] Implement shopping cart functionality
+- [ ] Build checkout process with form validation
+- [ ] Integrate Stripe payment processing
+- [ ] Add order confirmation and email receipts
+
+### Phase 4: Admin Features (1 week)
+- [ ] Create admin dashboard for product management
+- [ ] Add order management interface
+- [ ] Implement inventory tracking
+- [ ] Build basic analytics and reporting
+
+### Phase 5: Enhancements (1 week)
+- [ ] Add user reviews and ratings
+- [ ] Implement discount codes and promotions
+- [ ] Add order tracking and status updates
+- [ ] Performance optimization and testing
+
+## User Stories
+
+### Product Browsing
+**As a customer, I want to:**
+- Browse products by category
+- Search for specific products
+- View detailed product information
+- See product availability and pricing
+
+**Acceptance Criteria:**
+- Category navigation menu
+- Search bar with autocomplete
+- Product detail page with images
+- Stock status indicators
+- Responsive design for mobile
+
+### Shopping Cart
+**As a customer, I want to:**
+- Add products to my shopping cart
+- View cart contents and totals
+- Update quantities or remove items
+- Proceed to checkout securely
+
+**Acceptance Criteria:**
+- Add to cart buttons on product pages
+- Cart sidebar or page with item list
+- Quantity adjustment controls
+- Cart persistence across sessions
+- Clear call-to-action for checkout
+
+## Risk Analysis
+
+### Payment Security
+**Risk:** Payment data breaches or PCI compliance issues
+**Mitigation:** Use Stripe for payment processing, implement proper error handling, regular security audits
+
+### Inventory Management
+**Risk:** Stock discrepancies between system and reality
+**Mitigation:** Real-time inventory updates, low stock alerts, manual override capabilities
+
+### Performance Scaling
+**Risk:** Slow page loads with large product catalogs
+**Mitigation:** Database indexing, caching strategies, CDN for images, lazy loading
+
+### Mobile Experience
+**Risk:** Poor mobile shopping experience
+**Mitigation:** Mobile-first responsive design, touch-friendly interfaces, optimized performance
+```
+
+---
+
+## Example 2: Healthcare App (Deep Spec)
+
+**Input:** "Build a telemedicine platform with video consultations, appointment scheduling, medical records, and HIPAA compliance"
+
+### Generated Deep Spec Excerpt
+
+```markdown
+# Telemedicine Platform Specification
+
+## Executive Summary
+
+A comprehensive telemedicine solution enabling secure video consultations between healthcare providers and patients, with integrated appointment scheduling, medical record management, and full HIPAA compliance.
+
+## Core Features
+
+### Video Consultations
+- HD video calling with screen sharing
+- Waiting room functionality
+- Session recording for medical records
+- Multi-provider consultation support
+- Emergency call features
+
+### Appointment Management
+- Online booking system
+- Calendar integration for providers
+- Automated reminders and notifications
+- Waitlist management
+- Recurring appointment scheduling
+
+### Medical Records
+- Secure patient data storage
+- Document upload and sharing
+- Prescription management
+- Test result integration
+- Audit trails for all access
+
+### Compliance & Security
+- End-to-end encryption
+- HIPAA compliance framework
+- Role-based access control
+- Data retention policies
+- Emergency data access procedures
+
+## Technical Architecture
+
+### Technology Stack
+- **Frontend:** React with TypeScript
+- **Backend:** Node.js with Express and Socket.io
+- **Database:** PostgreSQL with encrypted fields
+- **Video:** WebRTC with signaling server
+- **Authentication:** OAuth 2.0 with MFA
+- **Security:** AES-256 encryption at rest
+- **Compliance:** HIPAA-compliant hosting (AWS)
+
+### System Components
+- Patient web portal
+- Provider dashboard
+- Video calling infrastructure
+- Secure messaging system
+- Audit logging service
+- Backup and disaster recovery
+
+## Implementation Phases
+
+### Phase 1: Security Foundation (3 weeks)
+- [ ] Set up HIPAA-compliant infrastructure on AWS
+- [ ] Implement encryption for data at rest and in transit
+- [ ] Configure OAuth 2.0 with multi-factor authentication
+- [ ] Set up audit logging and monitoring
+- [ ] Create role-based access control system
+  - [ ] Define user roles (Patient, Provider, Admin)
+  - [ ] Implement permission matrices
+  - [ ] Create middleware for access validation
+  - [ ] Add audit trails for all role changes
+
+### Phase 2: User Management (2 weeks)
+- [ ] Build patient registration and verification
+  - [ ] Create secure registration form with PHI validation
+  - [ ] Implement identity verification process
+  - [ ] Set up email verification with secure tokens
+  - [ ] Add emergency contact information collection
+- [ ] Develop provider credentialing system
+  - [ ] License verification integration
+  - [ ] Specialty and certification tracking
+  - [ ] Provider profile management
+  - [ ] Availability scheduling interface
+- [ ] Implement admin user management
+  - [ ] Bulk user import capabilities
+  - [ ] User deactivation and data retention
+  - [ ] Compliance reporting tools
+
+### Phase 3: Appointment System (3 weeks)
+- [ ] Create appointment scheduling engine
+  - [ ] Build provider availability calendar
+  - [ ] Implement booking algorithm with conflict resolution
+  - [ ] Add appointment type configuration
+  - [ ] Create recurring appointment logic
+- [ ] Develop patient booking interface
+  - [ ] Real-time availability display
+  - [ ] Appointment type selection
+  - [ ] Insurance information collection
+  - [ ] Booking confirmation with reminders
+- [ ] Build provider scheduling tools
+  - [ ] Calendar management interface
+  - [ ] Bulk time slot creation
+  - [ ] Appointment modification workflows
+  - [ ] Automated scheduling rules
+
+### Phase 4: Video Consultation Platform (4 weeks)
+- [ ] Implement WebRTC video infrastructure
+  - [ ] Set up signaling server with Socket.io
+  - [ ] Configure STUN/TURN servers for NAT traversal
+  - [ ] Implement peer-to-peer connection establishment
+  - [ ] Add bandwidth adaptation for low connectivity
+- [ ] Build consultation room interface
+  - [ ] Video call controls (mute, video toggle, screen share)
+  - [ ] Chat sidebar for text communication
+  - [ ] Participant management for multi-provider calls
+  - [ ] Session recording with patient consent
+- [ ] Add medical documentation during calls
+  - [ ] Real-time note taking interface
+  - [ ] SOAP note structure integration
+  - [ ] Voice-to-text transcription
+  - [ ] Automatic saving to medical records
+
+### Phase 5: Medical Records System (3 weeks)
+- [ ] Design secure document storage architecture
+  - [ ] Implement encrypted file storage with AWS S3
+  - [ ] Create document metadata tracking
+  - [ ] Set up access control lists for documents
+  - [ ] Add document versioning and audit trails
+- [ ] Build patient record management
+  - [ ] Medical history intake forms
+  - [ ] Allergy and medication tracking
+  - [ ] Vital signs and measurement logging
+  - [ ] Integration with lab results and imaging
+- [ ] Develop provider documentation tools
+  - [ ] Prescription writing interface
+  - [ ] Referral and order generation
+  - [ ] Clinical decision support integration
+
+### Phase 6: Integration & Compliance (2 weeks)
+- [ ] Implement external system integrations
+  - [ ] EHR/EMR system connections
+  - [ ] Pharmacy system integration
+  - [ ] Lab result automated import
+  - [ ] Insurance claim processing
+- [ ] Complete HIPAA compliance implementation
+  - [ ] Business Associate Agreement management
+  - [ ] Data breach notification system
+  - [ ] Annual security risk assessment
+  - [ ] Patient privacy rights interface
+
+## Detailed User Stories
+
+### Patient Appointment Booking
+**As a patient, I want to:**
+- Schedule appointments with available providers
+- View my upcoming and past appointments
+- Receive automated reminders before appointments
+- Reschedule or cancel appointments easily
+
+**Acceptance Criteria:**
+- **Given** I am a registered patient with verified identity
+- **When** I access the appointment booking system
+- **Then** I see a calendar with available time slots
+- **And** I can filter by provider specialty and insurance
+- **And** I receive confirmation email with appointment details
+- **And** I get reminder notifications 24 hours and 1 hour before
+
+**Technical Requirements:**
+- Real-time availability checking
+- Conflict prevention for double-booking
+- Integration with provider scheduling rules
+- Secure storage of appointment data with audit trails
+
+### Secure Video Consultation
+**As a patient, I want to:**
+- Join video consultations securely
+- Share my screen during consultations
+- Have clear audio and video quality
+- Know that my session is private and encrypted
+
+**Acceptance Criteria:**
+- **Given** I have a scheduled appointment
+- **When** the appointment time arrives
+- **Then** I can join the video call with one click
+- **And** the connection establishes within 10 seconds
+- **And** I see waiting room until provider admits me
+- **And** all communication is end-to-end encrypted
+- **And** I can toggle screen sharing during the call
+
+**Security Requirements:**
+- WebRTC connection with DTLS encryption
+- No unencrypted data transmission
+- Session keys rotated every 24 hours
+- Provider verification before admitting to call
+
+### Provider Documentation
+**As a healthcare provider, I want to:**
+- Document patient encounters during consultations
+- Generate prescriptions electronically
+- Access patient medical history securely
+- Maintain proper medical record keeping
+
+**Acceptance Criteria:**
+- **Given** I am in a video consultation
+- **When** I need to document patient information
+- **Then** I can access the documentation interface
+- **And** I can create structured SOAP notes
+- **And** I can generate prescriptions with e-signature
+- **And** all documentation is automatically saved to medical records
+- **And** I have access to patient's complete medical history
+
+**Compliance Requirements:**
+- All documentation timestamped and auditable
+- Provider identity verification for each entry
+- Automatic backup and redundancy
+- Integration with state prescription monitoring programs
+
+## Risk Analysis & Mitigation
+
+### HIPAA Compliance Risks
+**Risk Level:** Critical
+**Description:** Failure to maintain HIPAA compliance could result in severe penalties
+**Mitigation:**
+- Comprehensive compliance framework implementation
+- Regular third-party security audits
+- Automated compliance monitoring
+- Employee training programs
+- Incident response plan with 24/7 support
+
+### Technical Performance
+**Risk Level:** High
+**Description:** Video consultation quality affects patient care and satisfaction
+**Mitigation:**
+- CDN implementation for global distribution
+- Adaptive bitrate streaming
+- Quality monitoring and alerting
+- Fallback to audio-only for poor connections
+- Mobile device optimization
+
+### Data Security Breaches
+**Risk Level:** Critical
+**Description:** Protected Health Information (PHI) is highly sensitive
+**Mitigation:**
+- AES-256 encryption for all data at rest
+- TLS 1.3 for all data in transit
+- Multi-factor authentication for all users
+- Regular security penetration testing
+- Zero-trust network architecture
+
+### System Availability
+**Risk Level:** High
+**Description:** Healthcare systems must maintain high availability
+**Mitigation:**
+- Multi-region deployment with automatic failover
+- 99.9% uptime SLA with monitoring
+- Comprehensive backup and disaster recovery
+- Regular load testing and capacity planning
+- Emergency maintenance procedures
+
+### Integration Complexity
+**Risk Level:** Medium
+**Description:** Multiple external healthcare systems require complex integrations
+**Mitigation:**
+- HL7 FHIR standard implementation
+- Phased integration approach
+- Comprehensive testing environments
+- Fallback procedures for integration failures
+- Vendor relationship management
+
+### User Adoption
+**Risk Level:** Medium
+**Description:** Healthcare providers and patients may resist new technology
+**Mitigation:**
+- User-centered design with extensive testing
+- Comprehensive training programs
+- Gradual rollout with pilot programs
+- Feedback collection and iterative improvements
+- Support hotline and documentation
+```
+
+---
+
+## Key Takeaways
+
+### Fast Spec Characteristics
+- **30-45 seconds** generation time
+- **High-level milestones** with basic acceptance criteria
+- **Comprehensive but not exhaustive** task breakdown
+- **Perfect for MVPs** and rapid development
+- **10 generations** cost
+
+### Deep Spec Characteristics
+- **2-3 minutes** generation time
+- **Granular subtasks** with detailed acceptance criteria
+- **Implementation-ready** specifications
+- **Ideal for complex systems** and team coordination
+- **50 generations** cost
+
+### Universal Benefits
+- **Structured hierarchy** (milestones → stories → subtasks)
+- **Clear boundaries** for agent implementation
+- **Progress tracking** built into the format
+- **Professional quality** regardless of spec level
+- **Agent-optimized** markdown format
+
+Both specification types provide the **engineered context** that AI agents need to build software effectively, transforming conversational requirements into structured, actionable development plans.

@@ -1,0 +1,178 @@
+# MCP Setup Guide
+
+Get MCP integration running in under 5 minutes.
+
+## Prerequisites
+
+- An MCP-enabled AI agent (Claude Desktop, Cursor, etc.)
+- Your pre.dev API key
+
+## Installation Steps
+
+### 1. Locate Your MCP Configuration
+
+Find your MCP configuration file based on your agent:
+
+**Claude Desktop:**
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Cursor:**
+- Access via Cursor settings → MCP → Edit Configuration
+
+**Other agents:**
+- Check their documentation for MCP configuration location
+
+### 2. Add Architect API Server
+
+Add the following server configuration to your MCP config:
+
+```json
+{
+  "mcpServers": {
+    "predev-architect": {
+      "command": "npx",
+      "args": ["-y", "@predev/architect-mcp-server"],
+      "env": {
+        "PREDEV_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+### 3. Restart Your Agent
+
+- **Claude Desktop:** Quit and restart the application
+- **Cursor:** Reload the window (Cmd/Ctrl + Shift + P → "Developer: Reload Window")
+- **Other agents:** Follow their restart procedure
+
+### 4. Verify Installation
+
+Test that MCP is working by asking your agent to generate a spec:
+
+```
+"Generate a fast spec for a simple todo app"
+```
+
+If working correctly, your agent should respond that it's generating a specification using the Architect API.
+
+## Configuration Examples
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "predev-architect": {
+      "command": "npx",
+      "args": ["-y", "@predev/architect-mcp-server"],
+      "env": {
+        "PREDEV_API_KEY": "your-user-id-here"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+In Cursor settings, add to MCP servers:
+
+```json
+{
+  "predev-architect": {
+    "command": "npx",
+    "args": ["-y", "@predev/architect-mcp-server"],
+    "env": {
+      "PREDEV_API_KEY": "your-user-id-here"
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to your Windsurf MCP configuration:
+
+```json
+{
+  "servers": {
+    "predev-architect": {
+      "command": "npx",
+      "args": ["-y", "@predev/architect-mcp-server"],
+      "env": {
+        "PREDEV_API_KEY": "your-user-id-here"
+      }
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### "Command not found" errors
+
+**Problem:** `npx` is not available in your PATH.
+
+**Solution:** Install Node.js and npm, or use the full path to npx.
+
+### "MCP server failed to start"
+
+**Problem:** Configuration syntax error or missing dependencies.
+
+**Solution:**
+1. Validate your JSON syntax
+2. Ensure `@predev/architect-mcp-server` is accessible
+3. Check that your API key is valid
+
+### "Authentication failed"
+
+**Problem:** Invalid or missing API key.
+
+**Solution:**
+1. Verify your API key in pre.dev settings
+2. Ensure the `PREDEV_API_KEY` environment variable is set correctly
+3. Check that you're using the correct key format (user ID for solo, org key for enterprise)
+
+### Agent doesn't respond to spec requests
+
+**Problem:** MCP server not loaded or not responding.
+
+**Solution:**
+1. Restart your agent completely
+2. Check agent logs for MCP errors
+3. Verify the server is listed in your agent's MCP status
+
+### "Module not found" errors
+
+**Problem:** npm package installation issues.
+
+**Solution:**
+1. Clear npm cache: `npm cache clean --force`
+2. Try installing globally: `npm install -g @predev/architect-mcp-server`
+3. Update npm: `npm install -g npm@latest`
+
+### Connection timeouts
+
+**Problem:** Network issues or server unavailability.
+
+**Solution:**
+1. Check your internet connection
+2. Verify api.pre.dev is accessible
+3. Wait a few minutes and retry (may be temporary server load)
+
+### Need enterprise setup?
+
+**For enterprise users:**
+1. Use `PREDEV_ENTERPRISE_API_KEY` instead of `PREDEV_API_KEY`
+2. Get your enterprise key from organization settings
+3. Ensure your account has enterprise permissions
+
+## Next Steps
+
+Once MCP is configured, you can:
+
+- [Learn how to use MCP with your agent](/mcp-integration/usage)
+- [Explore integration patterns](/guides/integration-patterns)
+- [Check best practices](/guides/best-practices)

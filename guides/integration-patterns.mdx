@@ -1,0 +1,376 @@
+# Integration Patterns
+
+## Pattern 1: Cursor Rules Generation
+
+### Overview
+Generate specs and extract them as Cursor rules to constrain your agent throughout development.
+
+### Implementation
+
+1. **Generate your spec** using the API or MCP
+2. **Extract key constraints** from the spec into Cursor rules format
+3. **Apply rules** to your project for consistent agent behavior
+
+### Example Cursor Rules
+
+**From a generated spec, extract:**
+```json
+{
+  "rules": [
+    {
+      "name": "Architecture Consistency",
+      "description": "Maintain hexagonal architecture with clear separation between domain, application, and infrastructure layers",
+      "examples": [
+        "Use repository pattern for data access",
+        "Keep business logic in domain services",
+        "Use DTOs for API communication"
+      ]
+    },
+    {
+      "name": "Authentication Requirements",
+      "description": "All endpoints must validate JWT tokens and check user permissions",
+      "examples": [
+        "Include authorization middleware on protected routes",
+        "Return 401 for invalid tokens",
+        "Return 403 for insufficient permissions"
+      ]
+    }
+  ]
+}
+```
+
+### Benefits
+- **Consistent Implementation:** Agent follows architectural guidelines
+- **Reduced Review Cycles:** Fewer architectural deviations
+- **Faster Development:** Less back-and-forth on design decisions
+
+## Pattern 2: Lovable/Bolt Direct Paste
+
+### Overview
+Use deep links or direct paste to load specs as project context in no-code platforms.
+
+### Lovable Integration
+
+**Deep Link Pattern:**
+```
+https://lovable.dev/projects/create?template=https://pre.dev/s/abc123
+```
+
+**Process:**
+1. Generate spec with `outputFormat: "url"`
+2. Use the Lovable deep link from your spec page
+3. Spec loads as complete project context
+4. Lovable interprets the markdown structure
+5. Automatic component and page generation
+
+### Bolt Integration
+
+**Similar Pattern:**
+1. Generate spec with hosted URL
+2. Use "Open in Bolt" button
+3. Spec context loads automatically
+4. Bolt creates project structure based on spec
+
+### Benefits
+- **Zero Context Loss:** Complete spec available as context
+- **Rapid Prototyping:** Instant project setup
+- **No Manual Pasting:** Direct integration
+
+## Pattern 3: v0 Component Extraction
+
+### Overview
+Extract specific UI components and patterns from generated specs for targeted implementation.
+
+### Process
+
+1. **Generate comprehensive spec** with detailed UI requirements
+2. **Extract component specifications** from the spec
+3. **Use v0 for component generation** with focused prompts
+
+### Example Component Extraction
+
+**From Spec Section:**
+```
+## User Profile Component
+- Avatar display with fallback
+- Name and bio fields
+- Edit mode toggle
+- Form validation
+- Save/cancel actions
+```
+
+**v0 Prompt:**
+```
+Create a user profile component with:
+- Circular avatar (64px) with initials fallback
+- Editable name and bio fields
+- Toggle between view/edit modes
+- Form validation for required fields
+- Save and cancel buttons
+- Loading states for async operations
+```
+
+### Benefits
+- **Modular Development:** Build components individually
+- **Consistent Design:** All components follow spec guidelines
+- **Iterative Refinement:** Focus on one component at a time
+
+## Pattern 4: Programmatic Spec Management
+
+### Overview
+Integrate spec generation into your development workflow programmatically.
+
+### API Integration Patterns
+
+#### Build Script Integration
+```bash
+# generate-spec.sh
+#!/bin/bash
+curl -X POST https://api.pre.dev/api/fast-spec \
+  -H "x-api-key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"input\": \"$1\", \"outputFormat\": \"markdown\"}" \
+  > docs/spec.md
+
+echo "Spec generated: docs/spec.md"
+```
+
+#### CI/CD Pipeline Integration
+```yaml
+# .github/workflows/generate-spec.yml
+name: Generate Feature Spec
+on:
+  pull_request:
+    types: [opened]
+    paths: ['features/**']
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate Spec
+        run: |
+          curl -X POST https://api.pre.dev/api/fast-spec \
+            -H "x-api-key: ${{ secrets.ARCHITECT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"input\": \"Implement $(cat features/${{ github.event.pull_request.number }}.md)\", \"outputFormat\": \"markdown\"}" \
+            > spec.md
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const spec = require('fs').readFileSync('spec.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Generated Specification\n\n' + spec
+            });
+```
+
+#### Development Tool Integration
+
+**VS Code Extension:**
+```typescript
+// Pseudo-code for extension
+import { ArchitectAPI } from '@predev/architect-api';
+
+export async function generateSpecForSelection() {
+  const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
+  const api = new ArchitectAPI(process.env.ARCHITECT_API_KEY);
+
+  const result = await api.generateSpec({
+    input: `Add feature: ${selectedText}`,
+    currentContext: getCurrentProjectContext(),
+    outputFormat: 'markdown'
+  });
+
+  // Open spec in new tab
+  const doc = await vscode.workspace.openTextDocument({
+    content: result.markdown,
+    language: 'markdown'
+  });
+
+  await vscode.window.showTextDocument(doc);
+}
+```
+
+### Benefits
+- **Automated Documentation:** Specs generated as part of workflow
+- **Consistent Process:** Same spec format across all features
+- **Version Control:** Specs tracked with code changes
+- **Team Standardization:** Uniform approach to feature planning
+
+## Pattern 5: MCP Workflow Integration
+
+### Overview
+Use MCP for conversational spec generation and iterative refinement.
+
+### Claude Desktop Workflow
+
+1. **Conversational Generation:**
+   ```
+   User: "I need to add user notifications to my app"
+   Claude: *Uses MCP to generate spec*
+   Claude: "I've generated a spec for notification features..."
+   ```
+
+2. **Iterative Refinement:**
+   ```
+   User: "Add push notifications too"
+   Claude: *Generates updated spec with push notifications*
+   ```
+
+3. **Implementation Guidance:**
+   ```
+   User: "Let's start implementing the email notifications"
+   Claude: "Looking at the spec, the email notification task is..."
+   ```
+
+### Cursor Workflow
+
+1. **Context-Aware Generation:**
+   - MCP understands current project structure
+   - Generates specs that fit existing codebase
+   - References current files and patterns
+
+2. **Seamless Handoff:**
+   - Spec generates via MCP
+   - Immediately available in Cursor
+   - No context switching required
+
+### Benefits
+- **Natural Interaction:** Generate specs through conversation
+- **Context Awareness:** MCP understands your current work
+- **Iterative Process:** Refine specs conversationally
+- **Integrated Experience:** No leaving your development environment
+
+## Pattern 6: Spec-Driven Testing
+
+### Overview
+Use generated specs as the basis for comprehensive test suites.
+
+### Process
+
+1. **Generate spec** with detailed acceptance criteria
+2. **Extract test scenarios** from acceptance criteria
+3. **Generate test code** based on spec requirements
+
+### Example Test Generation
+
+**From Spec Acceptance Criteria:**
+```
+Given a user is logged in
+When they create a new task
+Then the task should be saved with correct attributes
+And the task should appear in their task list
+And they should receive a success notification
+```
+
+**Generated Test:**
+```typescript
+describe('Task Creation', () => {
+  it('should create task with correct attributes', async () => {
+    const user = await createAuthenticatedUser();
+    const taskData = { title: 'Test Task', description: 'Description' };
+
+    const response = await request(app)
+      .post('/api/tasks')
+      .set('Authorization', `Bearer ${user.token}`)
+      .send(taskData)
+      .expect(201);
+
+    expect(response.body).toMatchObject({
+      id: expect.any(String),
+      title: taskData.title,
+      description: taskData.description,
+      completed: false,
+      createdAt: expect.any(String)
+    });
+  });
+
+  it('should add task to user task list', async () => {
+    // Test implementation
+  });
+
+  it('should send success notification', async () => {
+    // Test implementation
+  });
+});
+```
+
+### Benefits
+- **Complete Coverage:** Tests derived directly from requirements
+- **Consistent Testing:** Same test patterns across features
+- **Requirement Validation:** Tests verify spec implementation
+- **Documentation:** Tests serve as executable documentation
+
+## Pattern 7: Multi-Agent Coordination
+
+### Overview
+Use specs to coordinate multiple AI agents working on different aspects of a project.
+
+### Architecture
+
+```
+Spec Generation → Task Assignment → Parallel Implementation → Integration
+     ↓              ↓                      ↓              ↓
+  Single Source  Clear Boundaries    Coordinated Work  Verified Integration
+  of Truth       of Responsibility   No Conflicts      Meets Requirements
+```
+
+### Implementation
+
+1. **Generate Comprehensive Spec** with granular subtasks
+2. **Assign Tasks by Expertise:**
+   - Backend Agent: API endpoints, database logic
+   - Frontend Agent: UI components, user interactions
+   - Testing Agent: Test suites, QA validation
+3. **Coordinate Integration Points** through spec-defined interfaces
+4. **Validate Against Acceptance Criteria** before completion
+
+### Example Agent Handshake
+
+**Spec Defines:**
+```
+## Integration Point: User Authentication
+- Backend provides: POST /api/auth/login → { token, user }
+- Frontend consumes: Login component calls API, stores token
+- Testing validates: End-to-end login flow works
+```
+
+**Agent Coordination:**
+```
+Backend Agent: "Completed login endpoint, returns JWT token"
+Frontend Agent: "Updated login component to call endpoint"
+Testing Agent: "Validated login flow meets acceptance criteria"
+```
+
+### Benefits
+- **Parallel Development:** Multiple agents work simultaneously
+- **Specialized Expertise:** Each agent focuses on their domain
+- **Clear Interfaces:** Well-defined integration points
+- **Quality Assurance:** Comprehensive validation
+
+## Choosing the Right Pattern
+
+### For Individual Developers
+- **Cursor Rules:** Consistent architecture enforcement
+- **Direct Paste:** Quick project setup in Lovable/Bolt
+- **MCP Integration:** Natural workflow in Claude/Cursor
+
+### For Teams
+- **Programmatic Integration:** Automated spec generation
+- **Multi-Agent Coordination:** Parallel development
+- **Spec-Driven Testing:** Comprehensive quality assurance
+
+### For Enterprises
+- **CI/CD Integration:** Standardized processes
+- **Programmatic Management:** Governance and compliance
+- **Multi-Agent Workflows:** Large-scale coordination
+
+### For Prototyping
+- **Direct Paste Patterns:** Rapid validation
+- **Component Extraction:** Focused development
+- **Iterative Refinement:** Quick feedback cycles

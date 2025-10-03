@@ -1,0 +1,194 @@
+# Example: Starting a New Project
+
+## Input
+
+```json
+{
+  "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles.",
+  "outputFormat": "url"
+}
+```
+
+## Generated Output Preview
+
+The API generates a comprehensive specification that includes:
+
+### Executive Summary
+```
+# Project Management SaaS Platform
+
+## Overview
+A comprehensive project management solution enabling teams to collaborate effectively with kanban boards, sprint planning, time tracking, and external integrations.
+
+## Core Features
+- Team-based project organization
+- Kanban board with drag-and-drop functionality
+- Sprint planning and burndown charts
+- Time tracking and reporting
+- Slack and GitHub integrations
+- Role-based access control
+```
+
+### Technical Architecture
+```
+## Architecture Overview
+
+### Technology Stack
+- **Frontend:** Next.js 14 with TypeScript
+- **Backend:** Node.js with Express
+- **Database:** PostgreSQL with Prisma ORM
+- **Real-time:** Socket.io for live updates
+- **Authentication:** Clerk for user management
+- **Deployment:** Vercel for frontend, Railway for backend
+
+### System Components
+- Web application for project management
+- REST API for integrations
+- Real-time WebSocket server
+- Background job processing
+- File storage and CDN
+```
+
+### Implementation Phases
+
+#### Phase 1: Foundation (2 weeks)
+- [ ] Set up project structure and development environment
+- [ ] Implement user authentication with Clerk
+- [ ] Create database schema with Prisma
+- [ ] Set up basic API structure
+
+#### Phase 2: Core Features (3 weeks)
+- [ ] Build project and team management
+- [ ] Implement kanban board functionality
+- [ ] Add task creation and editing
+- [ ] Create team collaboration features
+
+#### Phase 3: Advanced Features (2 weeks)
+- [ ] Implement sprint planning
+- [ ] Add time tracking
+- [ ] Build reporting dashboards
+- [ ] Integrate Slack notifications
+
+#### Phase 4: Integrations (1 week)
+- [ ] GitHub integration for issue sync
+- [ ] Slack integration for notifications
+- [ ] Webhook system for external services
+
+### Sample User Stories
+
+#### User Authentication & Teams
+**As a user, I want to:**
+- Create and join teams
+- Invite team members with different roles
+- Manage team permissions and access
+
+**Acceptance Criteria:**
+- Users can create teams with unique URLs
+- Team admins can invite members via email
+- Role-based permissions (Admin, Member, Viewer)
+- Secure authentication with proper session management
+
+#### Kanban Board Management
+**As a team member, I want to:**
+- Create and customize kanban boards
+- Move tasks between columns
+- Set up custom workflow stages
+- View board activity and changes
+
+**Acceptance Criteria:**
+- Drag-and-drop task movement
+- Real-time updates for all team members
+- Custom column configuration
+- Task history and audit trail
+
+### Risk Analysis
+- **Integration Complexity:** Slack/GitHub APIs may have rate limits
+- **Real-time Performance:** WebSocket connections for large teams
+- **Data Migration:** Future scaling considerations
+- **Security:** Proper access control for team data
+
+## Using with Agents
+
+### With Cursor
+
+1. **Generate the spec** using the API call above
+2. **Click "Open in Cursor"** on your spec page, or use the deep link:
+   ```
+   cursor://file?url=https://pre.dev/s/your-spec-id
+   ```
+3. **The spec opens directly in Cursor** - no manual copying needed
+4. **Start development** with the complete context loaded
+
+**Cursor Workflow:**
+- Spec remains open as reference during development
+- Use task checkboxes to track progress
+- Reference specific sections when asking questions
+- Agent stays aligned with the architectural vision
+
+### With Lovable
+
+1. **Generate the spec** and get the hosted URL
+2. **Click "Open in Lovable"** or use the direct link:
+   ```
+   https://lovable.dev/projects/create?template=https://pre.dev/s/your-spec-id
+   ```
+3. **Lovable loads the spec** as complete project context
+4. **Automatic project setup** based on the specification
+
+**Lovable Workflow:**
+- Spec transforms into actionable development tasks
+- Break down large specs into manageable phases
+- Focus on one milestone at a time
+- Collaborative development with the spec as guide
+
+### With Bolt
+
+1. **Generate the spec** with `outputFormat: "url"`
+2. **Navigate to your spec page** on pre.dev
+3. **Click "Open in Bolt"** button
+4. **Bolt creates a new project** with the spec as context
+
+**Bolt Workflow:**
+- Best for smaller, focused feature sets
+- Reference spec sections for specific features
+- Quick prototyping and validation
+- Seamless handoff from specification to implementation
+
+### With Claude Desktop (MCP)
+
+1. **Configure MCP** following the [setup guide](/mcp-integration/setup)
+2. **Ask Claude to generate the spec:**
+   ```
+   "Generate a comprehensive spec for a project management SaaS with kanban boards, sprint planning, time tracking, team collaboration, and Slack/GitHub integrations"
+   ```
+3. **Claude uses the Architect API** automatically via MCP
+4. **Spec opens in your browser** with deep links available
+
+**MCP Workflow:**
+- Conversational spec generation and refinement
+- Natural language iteration on requirements
+- Direct integration with Claude's long context window
+- Seamless transition from planning to development
+
+## Expected Results
+
+After following this example, you'll have:
+
+✅ **Complete project roadmap** with 4 implementation phases
+✅ **Technical architecture** decisions made
+✅ **15+ user stories** with detailed acceptance criteria
+✅ **Risk analysis** and mitigation strategies
+✅ **Task tracking system** for progress management
+✅ **Integration specifications** for Slack and GitHub
+✅ **Deployment and infrastructure** recommendations
+
+## Next Steps
+
+1. **Review the generated spec** thoroughly
+2. **Clarify any ambiguous requirements** with stakeholders
+3. **Choose your preferred agent** (Cursor, Lovable, Bolt, or MCP)
+4. **Begin implementation** following the phase structure
+5. **Track progress** using the built-in task system
+6. **Iterate as needed** - specs are living documents
+
+This example demonstrates how Architect API transforms a high-level idea into a production-ready project specification in seconds, enabling you to start building with complete context from day one.

@@ -1,0 +1,217 @@
+# Using MCP with AI Agents
+
+## Basic Usage
+
+Once configured, you can generate specs through natural conversation:
+
+### Example Conversations
+
+**User:** "I want to build a social media app for book lovers. Can you generate a detailed spec for this?"
+
+**Agent:** *Uses Architect API via MCP*
+
+"I've generated a comprehensive specification for your book-focused social network. The spec includes..."
+
+### Triggering Spec Generation
+
+You can naturally request specs with phrases like:
+- "Generate a spec for..."
+- "Create a detailed plan for..."
+- "I need a specification for..."
+- "Plan out an architecture for..."
+
+## Advanced Usage Patterns
+
+### Iterative Refinement
+
+**User:** "Generate a fast spec for a recipe sharing app"
+
+*Reviews output*
+
+**User:** "Now generate a deep spec that includes meal planning and grocery list integration"
+
+### Feature Addition
+
+**User:** "I have an existing recipe app. Generate a spec for adding social features like comments and ratings."
+
+### Context Preservation
+
+**User:** "Generate a spec for adding real-time chat to my existing e-commerce platform that already has user auth, product catalog, and checkout"
+
+The MCP server automatically handles the `currentContext` parameter to ensure new specs respect your existing architecture.
+
+## Best Practices
+
+### Natural Language Descriptions
+
+Write descriptions as you would explain to a senior developer:
+
+✅ **Good:** "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and Slack/GitHub integrations"
+
+❌ **Bad:** "Build app"
+
+### Provide Context When Available
+
+If you're adding to an existing project, mention what already exists:
+
+✅ "Add real-time notifications to my existing chat app that has user auth, message history, and group chats"
+
+### Iterate on Specs
+
+Don't expect perfection on the first try. Use the generated spec as a starting point:
+
+1. Generate initial spec
+2. Review and identify gaps
+3. Request refinements
+4. Iterate until satisfied
+
+### Combine with Agent Capabilities
+
+MCP works best when combined with your agent's existing capabilities:
+
+**User:** "Generate a spec for a fitness tracking app, then help me implement the user authentication module first"
+
+## MCP vs Direct API
+
+### When to Use MCP
+
+**Best for:**
+- Interactive development workflows
+- Exploratory conversations
+- Natural language requirements
+- Working within your development environment
+- Quick iterations and refinements
+
+### When to Use Direct API
+
+**Best for:**
+- Batch processing
+- CI/CD pipeline integration
+- Programmatic generation
+- Automated workflows
+- Large-scale operations
+
+## Agent-Specific Tips
+
+### Claude Desktop
+
+- **Long Context:** Leverage Claude's large context window for complex requirements
+- **Conversational Flow:** MCP integrates seamlessly with natural conversation patterns
+- **Multiple Specs:** Generate multiple related specs in one conversation
+
+### Cursor
+
+- **Deep Linking:** Specs automatically integrate with Cursor's deep linking
+- **Project Context:** MCP understands your current project structure
+- **Seamless Switching:** Move between spec generation and implementation
+
+### Windsurf
+
+- **Integrated Workflow:** MCP fits naturally into Windsurf's development flow
+- **Context Awareness:** Server understands your current workspace
+- **Quick Iterations:** Easy to refine specs without leaving the environment
+
+## Troubleshooting MCP Usage
+
+### Agent Doesn't Recognize Spec Requests
+
+**Problem:** MCP server not responding to generation requests.
+
+**Solutions:**
+1. Verify MCP is properly configured ([setup guide](/mcp-integration/setup))
+2. Try restarting your agent
+3. Check agent logs for MCP errors
+4. Ensure you have sufficient generations available
+
+### Generated Spec Missing Context
+
+**Problem:** Spec doesn't reflect your existing project structure.
+
+**Solutions:**
+1. Be more explicit about existing features in your request
+2. Mention the current tech stack and architecture
+3. Provide the existing project description in your prompt
+
+### Spec Generation Fails
+
+**Problem:** MCP returns an error instead of a spec.
+
+**Solutions:**
+1. Check your API key validity
+2. Verify you have sufficient generations
+3. Simplify your request if it's too complex
+4. Try again (temporary server issues)
+
+## Advanced Patterns
+
+### Spec Chaining
+
+Generate related specs in sequence:
+
+1. "Generate a spec for the core authentication system"
+2. "Now generate a spec for the user profile management that integrates with this auth system"
+3. "Add notification preferences to the profile system"
+
+### Architecture Evolution
+
+Use MCP to evolve your architecture over time:
+
+1. Start with core features
+2. Add complementary features
+3. Integrate third-party services
+4. Scale infrastructure components
+
+### Team Collaboration
+
+Multiple team members can use MCP to:
+- Generate specs for their feature areas
+- Ensure consistency across the project
+- Maintain shared architectural context
+
+## Performance Considerations
+
+### Generation Speed
+
+- **Fast Spec:** 30-45 seconds
+- **Deep Spec:** 2-3 minutes
+- Use async mode for better UX with longer specs
+
+### Rate Limiting
+
+MCP respects the same rate limits as direct API usage. Be mindful of:
+- Concurrent request limits (based on your tier)
+- Monthly generation caps
+- Fair use policies
+
+### Context Window Management
+
+Keep requests focused and specific to avoid:
+- Hitting context limits
+- Generating overly broad specs
+- Missing important details
+
+## Integration with Development Workflow
+
+### Pre-Development Planning
+
+Use MCP at the start of development cycles:
+1. Describe the feature or project
+2. Generate comprehensive spec
+3. Review and refine with the agent
+4. Begin implementation with clear context
+
+### During Development
+
+Use MCP for mid-project additions:
+1. Identify new requirements
+2. Generate incremental specs
+3. Integrate with existing context
+4. Continue development seamlessly
+
+### Post-Development
+
+Use MCP for future enhancements:
+1. Plan next phase features
+2. Generate specs for extensions
+3. Maintain architectural consistency
+4. Scale the application thoughtfully

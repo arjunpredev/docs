@@ -1,0 +1,374 @@
+# Best Practices
+
+## Writing Effective Input
+
+### Be Specific About Core Features
+❌ "Build a social media app"
+✅ "Build a social media app for photographers with portfolio galleries, image tagging, follow system, and commenting"
+
+### Include Business Context
+❌ "Build an e-commerce site"
+✅ "Build an e-commerce site for handmade crafts with artist profiles, custom product options, and commission tracking for a marketplace model"
+
+### Mention Technical Preferences
+If you have specific tech stack requirements, mention them:
+✅ "Build a real-time chat app using Next.js, Socket.io, and PostgreSQL"
+
+## Using Current Context
+
+### When to Use `currentContext`
+
+Use the `currentContext` parameter when:
+- Adding features to an existing codebase
+- Expanding on a previous spec
+- Building on top of established architecture
+
+### How to Provide Context
+
+```json
+{
+  "input": "Add AI-powered search and recommendations",
+  "currentContext": "We have an existing e-commerce platform built with Next.js and MongoDB. Current features include product listings, shopping cart, and user authentication with Clerk."
+}
+```
+
+The spec will now treat this as a **feature addition** and respect your existing architecture.
+
+## Choosing Fast vs Deep Spec
+
+See our detailed guide on [choosing between Fast and Deep Specs](/guides/choosing-spec-level).
+
+## Managing Your Agent with the Spec
+
+> **This is the most important section for getting real value from your specifications.**
+
+### The Spec is a Living Document
+
+Your generated spec isn't just a planning document—it's an **active management tool** for keeping your AI agent on track.
+
+### Core Principle: You're the Context Engineer, Agent is the Implementer
+
+With Architect API, you shift from:
+- ~~Prompt engineering~~ → **Context engineering**
+- ~~Vibe coding~~ → **Vibe PM'ing**
+- ~~Managing code changes~~ → **Managing agent constraints**
+
+**The spec IS your engineered context.** Everything the agent needs to stay on track is encoded in the structured hierarchy.
+
+### Why Structured Context Matters
+
+**Unstructured context (conversation):**
+```
+User: "Build a task manager"
+Agent: "What features?"
+User: "The usual ones"
+Agent: *implements random features*
+```
+❌ Ambiguous, leads to hallucination
+
+**Engineered context (Architect API):**
+```
+Milestone 1: Core Task Management
+  └─ Story 1.1: Task CRUD Operations
+     ├─ Subtask: Create task endpoint
+     ├─ Subtask: Update task endpoint
+     └─ Acceptance: All CRUD operations return proper status codes
+```
+✅ Bounded, hierarchical, verifiable
+
+### ⚠️ Critical Best Practices for Agent Management
+
+#### 1. **Don't Be Afraid to Interrupt**
+
+**Most Important Rule:** Actively interrupt your agent to ensure it's checking off tasks.
+
+```
+You: "Before you continue, mark that authentication task as complete
+     in the spec with [✓]. Show me the updated checklist."
+```
+
+**Why This Matters:**
+- Prevents agents from drifting off scope
+- Keeps you both aligned on progress
+- Makes it immediately obvious if tasks are being skipped
+- Forces the agent to acknowledge completion
+
+#### 2. **Question Every Skipped Task**
+
+If your agent skips a task, **always ask why**:
+
+```
+You: "I notice you skipped the JWT token refresh implementation.
+     Why was that skipped?"
+```
+
+**Good Reasons to Skip:**
+- "We're using Clerk which handles token refresh automatically"
+- "This was already implemented in the existing codebase"
+- "After analysis, this feature isn't needed for MVP scope"
+
+**Bad Reasons (Means Agent Got Distracted):**
+- "I thought it wasn't necessary"
+- "I'll come back to it later"
+- No clear answer
+
+If the reason isn't compelling, **redirect the agent back to the task**.
+
+#### 3. **Enforce Acceptance Criteria Checks**
+
+Before marking anything complete, make the agent **double-check acceptance criteria**:
+
+```
+You: "Before marking this complete, go through each acceptance
+     criterion for the user authentication story and confirm
+     it's met. List each one."
+```
+
+**Pro Tip:** Make this a habit for every major feature. Don't trust "it's done" without verification.
+
+#### 4. **Triple Check Tests**
+
+Both user tests and unit tests are non-negotiable:
+
+```
+You: "Show me:
+     1. The unit tests for this authentication module
+     2. The user flow test covering login/signup
+
+     If either is missing, they need to be written before
+     we mark this task complete."
+```
+
+**Testing Hierarchy:**
+1. Unit tests for core logic
+2. Integration tests for API endpoints
+3. E2E tests for critical user flows
+
+Don't let the agent skip testing. Quality > Speed.
+
+#### 5. **Know When to Start Fresh**
+
+If your agent starts degrading in performance:
+- Giving vague answers
+- Skipping important steps
+- Making sloppy mistakes
+- Losing context of the spec
+
+**Solution:** Spin up a new chat/tab with a fresh context window.
+
+```
+New Chat: "I'm working on [project name]. Here's the spec:
+          [paste spec]. I've completed Phase 1 and 2.
+          Let's continue with Phase 3: [specific section]."
+```
+
+### Practical Workflow Pattern
+
+#### Recommended Agent Management Flow:
+
+1. **Start of Session**
+   ```
+   "Here's our spec: [paste/link]. We're currently on Phase 2,
+    Task 3. Let's work on the next unchecked item."
+   ```
+
+2. **Before Starting Each Task**
+   ```
+   "Mark this task as [→] in progress. Show me the updated
+    checklist so we're aligned."
+   ```
+
+3. **During Implementation**
+   - Check in regularly
+   - Ask agent to summarize what it's building
+   - Verify it matches the spec requirements
+
+4. **Before Marking Complete**
+   ```
+   "Before we check this off:
+    1. Review each acceptance criterion
+    2. Show me the tests
+    3. Confirm no shortcuts were taken
+
+    Then mark it [✓] and update the checklist."
+   ```
+
+5. **Every 5-10 Tasks**
+   ```
+   "Show me the full updated spec with all our progress
+    marked. Let's make sure nothing was missed."
+   ```
+
+### Working with Generated Specs
+
+#### Reading the Output
+
+Specs are organized hierarchically:
+1. **Executive Summary** - Project overview
+2. **Features** - Organized by category
+3. **Milestones** - Grouped implementation phases
+4. **User Stories** - Detailed requirements with acceptance criteria
+5. **Tasks** - Granular checklist items
+
+#### Opening Specs in Agents
+
+**All agents support deep links** - click the "Open in [Agent]" button on your spec page.
+
+**For Cursor:**
+```
+cursor://file?url=YOUR_SPEC_URL
+```
+Opens spec directly in Cursor - no manual paste needed.
+
+**For Lovable:**
+```
+https://lovable.dev/projects/create?template=YOUR_SPEC_URL
+```
+Creates new project with your spec as context.
+
+**For Bolt/v0:**
+Similar deep link support - buttons available on spec page.
+
+**For Claude Desktop (MCP):**
+Spec URL is automatically accessible through MCP integration.
+
+#### Iterating on Specs
+
+You can regenerate specs with updates:
+
+```json
+{
+  "input": "Add OAuth social login with Google and GitHub",
+  "currentContext": "[paste previous spec or describe existing features]"
+}
+```
+
+This generates an **incremental spec** for the new features.
+
+### Agent-Specific Tips
+
+#### Cursor Tips
+- **Deep Link:** Use `cursor://file?url=SPEC_URL` for instant opening
+- Keep spec panel open while developing
+- Reference specific task IDs when asking questions
+- Use spec sections as cursor rules
+
+#### Lovable Tips
+- **Deep Link:** `https://lovable.dev/projects/create?template=SPEC_URL`
+- Spec automatically loads as project context
+- Break large specs into phases
+- Focus on one milestone at a time
+
+#### Bolt Tips
+- Use "Open in Bolt" button from spec page
+- Works best with smaller, focused feature sets
+- Reference spec sections for specific features
+
+#### Claude Desktop (MCP) Tips
+- Spec access is automatic through MCP
+- Leverage Claude's long context window
+- Ask for implementation strategy before coding
+- Use spec to keep agent aligned
+
+#### v0 Tips
+- Extract UI/component sections from spec
+- Use deep link from spec page
+- Generate components matching overall design system
+
+### Common Pitfalls to Avoid
+
+#### ❌ Treating Spec as Static
+Don't generate once and forget. Actively use it to manage progress.
+
+#### ❌ Letting Agent Run Unsupervised
+Check in frequently. Agents drift without human oversight.
+
+#### ❌ Skipping the "Why" Conversation
+If tasks are skipped, understand why. Don't assume agent knows best.
+
+#### ❌ Ignoring Test Requirements
+Testing is in the spec for a reason. Don't let agent skip it.
+
+#### ❌ Not Updating Progress
+Keep the checklist current. It's your source of truth.
+
+### Success Metrics
+
+You're using the spec effectively when:
+- ✅ Every task has a clear status marker
+- ✅ Agent asks permission before skipping tasks
+- ✅ Acceptance criteria are verified before completion
+- ✅ Tests exist for all major features
+- ✅ You can see progress at a glance
+- ✅ Scope creep is caught early
+- ✅ Nothing falls through the cracks
+
+### Context Engineering Principles
+
+#### The Spec as Optimal Agent Context
+
+Your generated spec is professionally engineered context that:
+
+1. **Hierarchical Structure** - Agents can navigate from high-level (milestones) to granular (subtasks)
+2. **Clear Boundaries** - Acceptance criteria define success, task tracking defines scope
+3. **Architectural Grounding** - Diagrams prevent agents from inventing non-existent systems
+4. **Progressive Disclosure** - Agents receive exactly the context depth they need
+5. **Verifiable Checkpoints** - Task completion is objectively verifiable
+
+#### How to Maximize Context Quality
+
+**Load the entire spec at session start:**
+```
+"Here's our complete specification: [paste/link]
+We're implementing Phase 2, Story 2.3.
+Let's start with the first unchecked subtask."
+```
+
+This gives the agent:
+- Full architectural context
+- Phase relationships
+- Technical constraints
+- Success criteria
+
+**Reference specific sections:**
+```
+"According to Story 1.2, Task 3 in the spec, implement the JWT
+authentication middleware with the acceptance criteria listed."
+```
+
+Specific references anchor the agent to engineered context.
+
+**Use task IDs as context anchors:**
+```
+"Before we continue, reference Task 2.1.4 in the spec.
+Does your implementation match the acceptance criteria?"
+```
+
+Task IDs provide unambiguous context pointers.
+
+#### Context Engineering vs. Prompt Engineering
+
+| Prompt Engineering | Context Engineering |
+|-------------------|---------------------|
+| Craft perfect prompts | Generate perfect structure |
+| Iterative refinement | Automated professional quality |
+| Lost in chat history | Persistent, navigable |
+| No verification system | Built-in acceptance criteria |
+| Manual task breakdown | Automatic decomposition |
+| Tribal knowledge | Documented, shareable |
+
+**With Architect API, you engineer context once, use it forever.**
+
+### The Bottom Line
+
+> **The spec makes you a better context engineer, not a better coder.**
+
+Your job shifts from:
+- ~~Writing code~~ → Engineering agent context
+- ~~Debugging syntax~~ → Ensuring requirements are met
+- ~~Crafting prompts~~ → Managing structured constraints
+- ~~Architecture decisions~~ → Following engineered architecture
+- ~~Feature planning~~ → Feature verification
+- ~~Code reviews~~ → Context quality control
+
+Let the agent handle the code. You handle the context boundaries and quality control.

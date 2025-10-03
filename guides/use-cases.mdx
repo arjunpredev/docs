@@ -1,0 +1,301 @@
+# Use Cases
+
+## Use Case 1: Starting a New Project
+
+### The Scenario
+You have an idea for a SaaS application but aren't sure about all the features needed or the technical architecture.
+
+### Without Architect API
+1. Start coding directly in Cursor/Lovable
+2. Realize you're missing features halfway through
+3. Refactor multiple times
+4. End up with technical debt
+
+### With Architect API
+1. Describe your idea to Architect API
+2. Get comprehensive spec with all necessary features
+3. Paste spec into your agent
+4. Agent builds with complete context from day one
+
+### Example: Building a Project Management Tool
+
+**Input:**
+```json
+{
+  "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles.",
+  "outputFormat": "url"
+}
+```
+
+**Result:** Complete specification including:
+- Technical architecture (Next.js, PostgreSQL, real-time updates)
+- 15+ user stories with acceptance criteria
+- Implementation phases with effort estimates
+- Risk analysis and mitigation strategies
+- Task tracking system for progress management
+
+**Time Saved:** 4-6 hours of manual planning and requirements gathering
+
+## Use Case 2: Adding Features to Existing Projects
+
+### The Scenario
+You have a working application and want to add new features without breaking existing functionality.
+
+### Without Architect API
+1. Describe new features in conversation with agent
+2. Agent makes assumptions about existing architecture
+3. Integration issues arise
+4. Multiple refactoring cycles needed
+
+### With Architect API
+1. Provide current codebase context
+2. Get feature spec that respects existing architecture
+3. Seamless integration with current system
+4. No architectural conflicts
+
+### Example: Adding Real-Time Chat to E-commerce Platform
+
+**Input:**
+```json
+{
+  "input": "Add real-time customer support chat with agent assignment, chat history, and file sharing",
+  "currentContext": "Existing e-commerce platform with React frontend, Node.js API, PostgreSQL database, user authentication via JWT, product catalog, shopping cart, and order management",
+  "outputFormat": "url"
+}
+```
+
+**Result:** Feature specification that:
+- Integrates with existing user system
+- Uses current tech stack (Socket.io with existing Node.js setup)
+- Respects current database schema
+- Includes migration considerations
+- Provides implementation tasks that fit the existing codebase
+
+**Benefits:** No architectural conflicts, seamless integration, maintains code quality
+
+## Use Case 3: Team Collaboration
+
+### The Scenario
+Multiple developers need to work together on a complex project with clear division of responsibilities.
+
+### Without Architect API
+- Vague requirements in tickets/issues
+- Developers make different architectural assumptions
+- Integration issues when merging work
+- Inconsistent implementation patterns
+
+### With Architect API
+- Single source of truth for requirements
+- Clear task breakdown for delegation
+- Consistent architectural decisions
+- Progress tracking across team members
+
+### Example: Enterprise CRM Development
+
+**Team Setup:**
+- 3 backend developers
+- 2 frontend developers
+- 1 DevOps engineer
+- 1 QA engineer
+
+**Process:**
+1. Generate comprehensive Deep Spec with granular subtasks
+2. Assign subtasks to team members based on expertise
+3. Each developer works within their bounded context
+4. Daily check-ins to update task progress
+5. QA validates against acceptance criteria
+
+**Benefits:**
+- Parallel development without conflicts
+- Consistent architecture across team
+- Clear completion criteria for each task
+- Reduced integration issues
+
+## Use Case 4: CI/CD Integration
+
+### The Scenario
+You want to automate specification generation as part of your development workflow.
+
+### Implementation
+Use the API in your CI/CD pipeline to generate specs for new features or automated testing scenarios.
+
+### Example: Automated Feature Spec Generation
+
+**GitHub Action Workflow:**
+```yaml
+name: Generate Feature Spec
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  generate-spec:
+    if: github.event.label.name == 'needs-spec'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Spec
+        run: |
+          curl -X POST https://api.pre.dev/api/fast-spec \
+            -H "x-api-key: ${{ secrets.ARCHITECT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"input\": \"${{ github.event.issue.body }}\", \"outputFormat\": \"markdown\"}" \
+            > feature-spec.md
+```
+
+**Benefits:**
+- Consistent spec format across all features
+- Automated documentation generation
+- Integration with existing development workflow
+- Reduced manual overhead
+
+## Use Case 5: Multi-Agent Workflows
+
+### The Scenario
+You want different AI agents to handle different aspects of development (one for backend, one for frontend, etc.).
+
+### Without Architect API
+- Agents have conflicting understandings of requirements
+- Different architectural decisions
+- Integration challenges
+- Inconsistent implementation
+
+### With Architect API
+- All agents work from the same specification
+- Consistent architectural context
+- Clear boundaries for each agent's responsibilities
+- Coordinated development across multiple agents
+
+### Example: Specialized Agent Team
+
+**Agent Roles:**
+- **Architecture Agent:** Reviews and refines the overall system design
+- **Backend Agent:** Implements API endpoints and database logic
+- **Frontend Agent:** Builds user interfaces and client-side logic
+- **Testing Agent:** Creates comprehensive test suites
+
+**Process:**
+1. Generate comprehensive spec with clear separation of concerns
+2. Each agent focuses on their assigned stories/tasks
+3. Regular synchronization to ensure integration points work
+4. Combined testing to validate the complete system
+
+**Benefits:**
+- Specialized expertise for each domain
+- Parallel development across different layers
+- Consistent implementation patterns
+- Comprehensive test coverage
+
+## Use Case 6: Prototyping and Validation
+
+### The Scenario
+You need to quickly validate ideas and get stakeholder feedback before full development.
+
+### Without Architect API
+- Time-consuming manual prototyping
+- Incomplete feature sets in demos
+- Stakeholder feedback on incomplete implementations
+- Multiple revision cycles
+
+### With Architect API
+- Rapid comprehensive specifications
+- Complete feature understanding upfront
+- Better stakeholder alignment
+- Focused development on validated requirements
+
+### Example: Startup MVP Validation
+
+**Process:**
+1. Generate Fast Spec for initial concept
+2. Share spec with stakeholders for feedback
+3. Iterate on spec based on input
+4. Generate Deep Spec for final implementation
+5. Build complete MVP with all features
+
+**Benefits:**
+- Faster validation cycles
+- More complete understanding before coding
+- Reduced development waste
+- Better product-market fit
+
+## Use Case 7: Legacy System Modernization
+
+### The Scenario
+You need to modernize or extend a legacy system with unclear documentation.
+
+### Without Architect API
+- Time spent reverse-engineering existing code
+- Risk of breaking existing functionality
+- Incomplete understanding of system behavior
+- Architectural conflicts between old and new
+
+### With Architect API
+- Structured analysis of existing system
+- Clear modernization path
+- Risk mitigation strategies
+- Gradual migration planning
+
+### Example: Migrating Monolithic App to Microservices
+
+**Input:**
+```json
+{
+  "input": "Modernize our monolithic e-commerce application by extracting the product catalog into a separate microservice with its own database and API",
+  "currentContext": "Legacy PHP monolith with MySQL database, serving product catalog, user management, orders, and payments. High coupling between components, difficult to scale individual features."
+}
+```
+
+**Result:** Modernization specification including:
+- Service boundary analysis
+- Data migration strategies
+- API design for microservice
+- Integration testing approach
+- Rollback procedures
+
+## Use Case 8: Compliance and Audit Requirements
+
+### The Scenario
+You need detailed documentation for regulatory compliance or security audits.
+
+### Without Architect API
+- Manual documentation creation
+- Inconsistent documentation standards
+- Time-consuming audit preparation
+- Risk of documentation gaps
+
+### With Architect API
+- Automated comprehensive documentation
+- Consistent structure and detail level
+- Faster audit preparation
+- Complete requirement traceability
+
+### Example: Healthcare Application Compliance
+
+**For HIPAA-compliant patient management system:**
+- Detailed audit trails specification
+- Security control implementations
+- Data encryption requirements
+- Access control matrices
+- Compliance testing procedures
+
+**Benefits:**
+- Faster compliance certification
+- Reduced audit preparation time
+- Consistent security implementation
+- Clear regulatory requirement mapping
+
+## Common Patterns Across Use Cases
+
+### Iterative Development
+Use Architect API at the start of each development cycle to maintain architectural consistency.
+
+### Context Preservation
+Always provide `currentContext` when adding features to maintain system coherence.
+
+### Team Alignment
+Use shared specs as the single source of truth for all team members and agents.
+
+### Quality Assurance
+Leverage detailed acceptance criteria for comprehensive testing and validation.
+
+### Risk Management
+Use built-in risk analysis to identify and mitigate potential issues early.
