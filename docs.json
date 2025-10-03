@@ -96,8 +96,8 @@
 		}
 	},
 	"logo": {
-		"light": "https://pre.dev/predev.png",
-		"dark": "https://pre.dev/predev.png"
+		"light": "https://pre.dev/predev_logo_name_white.png",
+		"dark": "https://pre.dev/predev_logo_name.png"
 	},
 	"navbar": {
 		"links": [
@@ -110,7 +110,8 @@
 			"type": "button",
 			"label": "Get API Key",
 			"href": "https://pre.dev"
-		}
+		},
+		"logoHeight": "60px"
 	},
 	"contextual": {
 		"options": [
