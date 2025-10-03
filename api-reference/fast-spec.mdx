@@ -10,9 +10,9 @@ Generate a quick, comprehensive project specification.
 
 ## Overview
 
-- **Cost:** 10 generations
+- **Cost:** 10 credits
 - **Use Cases:** MVPs, prototypes, rapid iteration
-- **Generation Time:** ~2-5 minutes (sync) or instant return (async)
+- **Processing Time:** ~2-5 minutes (sync) or instant return (async)
 - **Output:** Complete feature breakdown, architecture, milestones
 
 ## Endpoint
@@ -178,7 +178,7 @@ Content-Type: application/json
 3. **Completed** → Success, output available
 4. **Failed** → Error occurred
 
-**Typical generation times:**
+**Typical processing times:**
 - Fast Spec: 2-5 minutes
 - Deep Spec: 5-15 minutes
 
@@ -243,7 +243,7 @@ curl -X POST https://api.pre.dev/api/fast-spec \
 
 **Asynchronous Request with Polling:**
 ```bash
-# Step 1: Start async generation
+# Step 1: Start async processing
 RESPONSE=$(curl -X POST https://api.pre.dev/api/fast-spec \
   -H "x-api-key: YOUR_USER_ID" \
   -H "Content-Type: application/json" \
@@ -266,7 +266,7 @@ while true; do
     echo $STATUS | jq -r '.output'
     break
   elif [ "$STATE" = "failed" ]; then
-    echo "Generation failed"
+    echo "Processing failed"
     echo $STATUS | jq -r '.errorMessage'
     break
   fi
@@ -320,7 +320,7 @@ class ArchitectAPI:
         return response.json()
 
     def check_status(self, request_id: str) -> Dict[str, Any]:
-        """Check async generation status."""
+        """Check async processing status."""
         headers = {"x-api-key": self.api_key}
 
         response = requests.get(
@@ -332,14 +332,14 @@ class ArchitectAPI:
         return response.json()
 
     def wait_for_completion(self, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
-        """Wait for async generation to complete."""
+        """Wait for async processing to complete."""
         while True:
             status = self.check_status(request_id)
 
             if status["status"] == "completed":
                 return status
             elif status["status"] == "failed":
-                raise Exception(f"Generation failed: {status.get('errorMessage')}")
+                raise Exception(f"Processing failed: {status.get('errorMessage')}")
 
             print(f"Status: {status['status']} - {status.get('progress', 'Processing...')}")
             time.sleep(poll_interval)
@@ -433,7 +433,7 @@ class ArchitectAPI {
       if (status.status === 'completed') {
         return status;
       } else if (status.status === 'failed') {
-        throw new Error(`Generation failed: ${status.errorMessage}`);
+        throw new Error(`Processing failed: ${status.errorMessage}`);
       }
 
       console.log(`Status: ${status.status} - ${status.progress || 'Processing...'}`);
@@ -465,7 +465,7 @@ class ArchitectAPI {
   const api = new ArchitectAPI('YOUR_USER_ID');
 
   try {
-    // Start generation
+    // Start processing
     const response = await api.generateSpec({
       input: 'Add gamification with points, badges, and leaderboards',
       currentContext: 'Existing e-learning platform with courses and progress tracking',
@@ -563,7 +563,7 @@ class ArchitectAPI {
       if (status.status === 'completed') {
         return status;
       } else if (status.status === 'failed') {
-        throw new Error(`Generation failed: ${status.errorMessage}`);
+        throw new Error(`Processing failed: ${status.errorMessage}`);
       }
 
       console.log(`${status.status}: ${status.progress || 'Processing...'}`);

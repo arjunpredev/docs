@@ -527,14 +527,15 @@ A generation = one AI model inference call. Specs require multiple LLM calls for
 2. **Daily Allocation** - Based on subscription tier
 3. **Rollover Credits** - Unused daily credits (if applicable)
 
-Check remaining generations:
-```bash
-GET /api/generation-usage
-```
+Check remaining credits:
+
+**Solo users:** Visit https://pre.dev/project/playground
+
+**Enterprise users:** Visit https://pre.dev/enterprise/dashboard?page=api
 
 ## Rate Limits
 
-### Generation Limits by Tier
+### Credit Limits by Tier
 
 | Tier | Daily Limit | Monthly Limit | Price (Monthly) |
 |------|-------------|---------------|-----------------|
@@ -564,20 +565,20 @@ Exceeding limits returns `402 Payment Required` with details on remaining genera
 | 200 | Success | Process response |
 | 400 | Bad Request | Check request parameters |
 | 401 | Unauthorized | Verify API key |
-| 402 | Insufficient Generations | Purchase credits or upgrade |
+| 402 | Insufficient Credits | Visit dashboard to purchase more credits |
 | 403 | Forbidden | Check subscription status |
 | 429 | Rate Limited | Wait and retry |
 | 500 | Server Error | Contact support |
 
 ### Common Error Responses
 
-**Insufficient Generations:**
+**Insufficient Credits:**
 ```json
 {
-  "error": "Insufficient generations available",
-  "message": "Fast Spec requires 10 generations. You have 5 remaining.",
-  "generationsRequired": 10,
-  "generationsAvailable": 5
+  "error": "Insufficient credits available",
+  "message": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits.",
+  "creditsRequired": 10,
+  "creditsAvailable": 5
 }
 ```
 
@@ -618,7 +619,7 @@ Generate a quick, comprehensive project specification.
 
 ## Overview
 
-- **Cost:** 10 generations
+- **Cost:** 10 credits
 - **Use Cases:** MVPs, prototypes, rapid iteration
 - **Generation Time:** ~30-40 seconds (sync) or instant return (async)
 - **Output:** Milestones → User Stories (no subtasks)
@@ -807,10 +808,10 @@ Poll every 5-10 seconds for best UX.
 **Insufficient Credits:**
 ```json
 {
-  "error": "Insufficient generations available",
-  "message": "Fast Spec requires 10 generations. You have 5 remaining.",
-  "generationsRequired": 10,
-  "generationsAvailable": 5
+  "error": "Insufficient credits available",
+  "message": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits.",
+  "creditsRequired": 10,
+  "creditsAvailable": 5
 }
 ```
 
@@ -1282,7 +1283,7 @@ Generate an ultra-detailed, comprehensive project specification.
 
 ## Overview
 
-- **Cost:** 50 generations
+- **Cost:** 50 credits
 - **Use Cases:** Complex systems, enterprise applications, critical projects
 - **Generation Time:** ~2-3 minutes (sync) or instant return (async)
 - **Output:** Milestones → User Stories with Acceptance Criteria → Granular Subtasks
@@ -1304,8 +1305,8 @@ Deep Spec requires **Solo Premium** or **Enterprise** subscription.
 
 | Feature | Fast Spec | Deep Spec |
 |---------|-----------|-----------|
-| Cost | 10 generations | 50 generations |
-| Generation Time | 2-5 min | 5-15 min |
+| Cost | 10 credits | 50 credits |
+| Processing Time | 2-5 min | 5-15 min |
 | Structure | Milestones → Stories | Milestones → Stories → Subtasks |
 | Acceptance Criteria | Basic | ✅ Detailed per story |
 | Granular Subtasks | ❌ | ✅ Implementation tasks |
@@ -2267,48 +2268,48 @@ Potential technical challenges and mitigation strategies.
 ## Generation Costs
 
 ### Fast Spec
-- **Cost:** 10 generations per request
-- **Generation Time:** ~30-45 seconds
+- **Cost:** 10 credits per request
+- **Processing Time:** ~30-45 seconds
 - **Best For:** MVPs, prototypes, rapid iteration
 
 ### Deep Spec
-- **Cost:** 50 generations per request
-- **Generation Time:** ~5-15 minutes
+- **Cost:** 50 credits per request
+- **Processing Time:** ~5-15 minutes
 - **Best For:** Complex systems, enterprise applications
 
-## What is a "Generation"?
+## What is a "Credit"?
 
-[Explanation of generation system]
+[Explanation of credit system]
 
 ## Subscription Tiers
 
 ### Trial (Free)
-- **1 total generation** (daily and monthly)
+- **1 total credit** (daily and monthly)
 - One free Fast Spec to try
 - No credit card required
 
 ### Solo Plus ($25/month)
-- **20 generations/day**
-- **200 generations/month**
+- **20 credits/day**
+- **200 credits/month**
 - Access to Fast Spec
 - Individual API key
 
 ### Solo Premium ($49/month) **← Recommended**
-- **Unlimited daily generations**
-- **500 generations/month**
+- **Unlimited daily credits**
+- **500 credits/month**
 - Access to Fast Spec & Deep Spec
 - Full API and MCP access
 
 ### Enterprise Premium ($99/month)
-- **Unlimited daily generations**
-- **1,000 generations/month**
+- **Unlimited daily credits**
+- **1,000 credits/month**
 - Organization-wide API keys
 - Team collaboration
 - Priority support
 
 ### Enterprise Advanced (Custom)
-- **Unlimited daily generations**
-- **2,500+ generations/month**
+- **Unlimited daily credits**
+- **2,500+ credits/month**
 - Everything in Enterprise Premium
 - Dedicated support
 - Custom integrations

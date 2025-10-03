@@ -114,12 +114,12 @@ Returns the raw markdown content in the response
 
 | Endpoint | Cost | What You Pay For |
 |----------|------|------------------|
-| Fast Spec | 10 generations | Deducted immediately when request starts |
-| Deep Spec | 50 generations | Deducted immediately when request starts |
+| Fast Spec | 10 credits | Deducted immediately when request starts |
+| Deep Spec | 50 credits | Deducted immediately when request starts |
 
-### What is a "Generation"?
+### What is a "Credit"?
 
-A generation = one AI model inference call. Specs require multiple LLM calls for:
+A credit = one AI model inference call. Specs require multiple LLM calls for:
 - Architecture analysis
 - Feature breakdown
 - Milestone planning
@@ -128,16 +128,17 @@ A generation = one AI model inference call. Specs require multiple LLM calls for
 
 **Cost is per spec request, not per feature.** Generate as many features in one spec as needed.
 
-### Generation Sources (Priority Order)
+### Credit Sources (Priority Order)
 
 1. **Prototype Credits** - Used first if available
 2. **Daily Allocation** - Based on subscription tier
 3. **Rollover Credits** - Unused daily credits (if applicable)
 
-Check remaining generations:
-```bash
-GET /api/generation-usage
-```
+Check remaining credits:
+
+**Solo users:** Visit [https://pre.dev/project/playground](https://pre.dev/project/playground)
+
+**Enterprise users:** Visit [https://pre.dev/enterprise/dashboard?page=api](https://pre.dev/enterprise/dashboard?page=api)
 
 ## Rate Limits
 
@@ -151,7 +152,7 @@ GET /api/generation-usage
 
 ### Fair Use Policy
 
-- Max 100 spec generations per day per user/org
+- Max 100 spec credits per day per user/org
 - Max 10 concurrent async requests
 - Rate: Max 1 request per 5 seconds
 
@@ -166,20 +167,20 @@ Exceeding limits returns `429 Too Many Requests`.
 | 200 | Success | Process response |
 | 400 | Bad Request | Check request parameters |
 | 401 | Unauthorized | Verify API key |
-| 402 | Insufficient Generations | Purchase credits or upgrade |
+| 402 | Insufficient Credits | Visit dashboard to purchase more credits |
 | 403 | Forbidden | Check subscription status |
 | 429 | Rate Limited | Wait and retry |
 | 500 | Server Error | Contact support |
 
 ### Common Error Responses
 
-**Insufficient Generations:**
+**Insufficient Credits:**
 ```json
 {
-  "error": "Insufficient generations available",
-  "message": "Fast Spec requires 10 generations. You have 5 remaining.",
-  "generationsRequired": 10,
-  "generationsAvailable": 5
+  "error": "Insufficient credits available",
+  "message": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits.",
+  "creditsRequired": 10,
+  "creditsAvailable": 5
 }
 ```
 
@@ -246,12 +247,12 @@ Exceeding limits returns `429 Too Many Requests`.
 ### Error Handling
 - Always check response status codes
 - Implement retry logic for rate limits
-- Handle insufficient generation errors gracefully
+- Handle insufficient credit errors gracefully
 
 ### Cost Management
 - Use Fast Spec for MVPs and prototypes
 - Reserve Deep Spec for complex, mission-critical projects
-- Monitor your generation usage regularly
+- Monitor your credit usage via your dashboard regularly
 
 <Card title="Next: Fast Spec Endpoint" icon="arrow-right" href="/api-reference/fast-spec">
   Complete documentation for generating quick specifications.

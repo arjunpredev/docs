@@ -1,12 +1,12 @@
 ---
 title: "Get Spec Status"
 api: "GET https://api.pre.dev/api/spec-status/:requestId"
-description: "Monitor the progress of asynchronous specification generation requests."
+description: "Monitor the progress of asynchronous specification processing requests."
 ---
 
 # GET /api/spec-status/:requestId
 
-Check the status of an asynchronous specification generation request.
+Check the status of an asynchronous specification processing request.
 
 ## Overview
 
@@ -22,7 +22,7 @@ GET https://api.pre.dev/api/spec-status/:requestId
 
 | Parameter | Location | Required | Description |
 |-----------|----------|----------|-------------|
-| `requestId` | Path | ✅ | Request ID returned from async spec generation |
+| `requestId` | Path | ✅ | Request ID returned from async spec processing |
 
 ## Example Request
 
@@ -100,7 +100,7 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 | `timestamp` | string | ISO timestamp of current status |
 | `completedAt` | string | ISO timestamp when request finished (only present when completed or failed) |
 | `output` | string | Generated spec URL (only present when completed) |
-| `outputFormat` | string | Format used for generation (only present when completed) |
+| `outputFormat` | string | Format used for processing (only present when completed) |
 | `fileUrl` | string | Always the hosted URL (only present when completed) |
 | `errorMessage` | string | Error description (only present when failed) |
 | `executionTimeMs` | number | Total execution time in milliseconds (only present when completed or failed) |
@@ -129,12 +129,12 @@ while true; do
 
   case $STATUS in
     "completed")
-      echo "✅ Spec generation completed!"
+      echo "✅ Spec processing completed!"
       echo $RESPONSE | jq -r '.output'
       break
       ;;
     "failed")
-      echo "❌ Spec generation failed:"
+      echo "❌ Spec processing failed:"
       echo $RESPONSE | jq -r '.errorMessage'
       break
       ;;
@@ -158,7 +158,7 @@ import time
 from typing import Dict, Any
 
 def poll_spec_status(api_key: str, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
-    """Poll for spec generation completion."""
+    """Poll for spec processing completion."""
     while True:
         response = requests.get(
             f'https://api.pre.dev/api/spec-status/{request_id}',
@@ -170,11 +170,11 @@ def poll_spec_status(api_key: str, request_id: str, poll_interval: int = 10) -> 
         status = data['status']
 
         if status == 'completed':
-            print("✅ Spec generation completed!")
+            print("✅ Spec processing completed!")
             return data
         elif status == 'failed':
-            print(f"❌ Spec generation failed: {data.get('errorMessage')}")
-            raise Exception(f"Generation failed: {data.get('errorMessage')}")
+            print(f"❌ Spec processing failed: {data.get('errorMessage')}")
+            raise Exception(f"Processing failed: {data.get('errorMessage')}")
         else:
             print(f"⏳ {status}: {data.get('progress', 'Processing...')}")
 
@@ -205,11 +205,11 @@ async function pollSpecStatus(apiKey, requestId, pollInterval = 10000) {
     const status = data.status;
 
     if (status === 'completed') {
-      console.log('✅ Spec generation completed!');
+      console.log('✅ Spec processing completed!');
       return data;
     } else if (status === 'failed') {
-      console.error(`❌ Spec generation failed: ${data.errorMessage}`);
-      throw new Error(`Generation failed: ${data.errorMessage}`);
+      console.error(`❌ Spec processing failed: ${data.errorMessage}`);
+      throw new Error(`Processing failed: ${data.errorMessage}`);
     } else {
       console.log(`⏳ ${status}: ${data.progress || 'Processing...'}`);
       await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -226,7 +226,7 @@ try {
 }
 ```
 
-## Expected Generation Times
+## Expected Processing Times
 
 | Spec Type | Typical Time | Maximum Expected |
 |-----------|--------------|------------------|
