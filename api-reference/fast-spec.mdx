@@ -23,27 +23,53 @@ POST https://api.pre.dev/api/fast-spec
 
 ## Headers
 
+**For JSON requests:**
 ```
 x-api-key: YOUR_API_KEY
 Content-Type: application/json
 ```
 
+**For file upload requests:**
+```
+x-api-key: YOUR_API_KEY
+Content-Type: multipart/form-data
+```
+
 Or for enterprise:
 
+**For JSON requests:**
 ```
 x-enterprise-api-key: YOUR_ORG_API_KEY
 Content-Type: application/json
+```
+
+**For file upload requests:**
+```
+x-enterprise-api-key: YOUR_ORG_API_KEY
+Content-Type: multipart/form-data
 ```
 
 ## Request Body
 
 ### Parameters
 
+**For JSON requests:**
+
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `input` | string | ✅ | Description of what you want to build |
 | `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
+| `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
+| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
+
+**For file upload requests (multipart/form-data):**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | File | ❌ | **Optional:** File to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with `input` text |
+| `input` | string | ❌ | **Optional:** Additional text description when using file upload. Can be empty string if using only file |
+| `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
 
@@ -126,6 +152,36 @@ Content-Type: application/json
     "https://docs.stripe.com"
   ]
 }
+```
+
+### Example: With File Upload
+
+```javascript
+// Prepare file upload
+const formData = new FormData();
+formData.append('file', fileInput.files[0]); // fileInput is your HTML file input
+formData.append('input', '');
+formData.append('outputFormat', 'url');
+formData.append('docURLs', JSON.stringify(["https://docs.pre.dev"]));
+
+const response = await fetch('http://localhost:3001/fast-spec', {
+  method: 'POST',
+  headers: {
+    'x-api-key': '6308d5be-66a5-4b59-ac98-721c2902751f'
+  },
+  body: formData
+});
+```
+
+### Example: File Upload with Additional Context
+
+```javascript
+// Upload a requirements document and add context
+const formData = new FormData();
+formData.append('file', requirementsFile); // PDF or text file with requirements
+formData.append('input', 'Please focus on the authentication and user management features from the uploaded requirements document');
+formData.append('outputFormat', 'markdown');
+formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 ```
 
 ## Response
@@ -528,6 +584,34 @@ class ArchitectAPI {
   }
 })();
 
+// With File Upload
+(async () => {
+  const api = new ArchitectAPI('YOUR_USER_ID');
+
+  try {
+    // For file uploads, use multipart/form-data
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('input', 'Analyze the uploaded requirements document');
+    formData.append('outputFormat', 'url');
+    formData.append('docURLs', JSON.stringify(['https://docs.pre.dev']));
+
+    const response = await fetch(`${api.baseUrl}/fast-spec`, {
+      method: 'POST',
+      headers: {
+        'x-api-key': api.apiKey
+        // Note: Don't set Content-Type for FormData - browser sets it automatically
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+    console.log('Spec URL:', result.output);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+})();
+
 // Asynchronous with polling
 (async () => {
   const api = new ArchitectAPI('YOUR_USER_ID');
@@ -557,6 +641,14 @@ class ArchitectAPI {
 interface SpecRequest {
   input: string;
   currentContext?: string;
+  outputFormat?: 'url' | 'markdown';
+  docURLs?: string[];
+  async?: boolean;
+}
+
+interface FileUploadRequest {
+  file?: File;
+  input?: string;
   outputFormat?: 'url' | 'markdown';
   docURLs?: string[];
   async?: boolean;
