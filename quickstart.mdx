@@ -79,6 +79,32 @@ Get your first specification in under 5 minutes.
     </Accordion>
   </Step>
 
+  <Step title="Enhance with Documentation (Optional)" icon="book">
+    For better results, you can provide documentation URLs that Architect will reference:
+
+    <Accordion title="Add Documentation URLs">
+      ```bash
+      curl -X POST https://api.pre.dev/api/fast-spec \
+        -H "x-api-key: YOUR_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "input": "Build a customer support ticketing system",
+          "outputFormat": "url",
+          "docURLs": [
+            "https://docs.pre.dev",
+            "https://docs.stripe.com"
+          ]
+        }'
+      ```
+    </Accordion>
+
+    <Accordion title="Why Documentation URLs?">
+      Architect leverages external documentation to:
+      - Generate more accurate specifications
+      - Reference specific technical requirements
+    </Accordion>
+  </Step>
+
   <Step title="View Your Specification" icon="eye">
     Your spec is delivered as a comprehensive markdown file that includes:
 

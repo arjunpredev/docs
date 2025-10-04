@@ -44,6 +44,7 @@ Content-Type: application/json
 | `input` | string | ✅ | Description of what you want to build |
 | `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
+| `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
 
 ### Understanding `currentContext` (isNewBuild behavior)
@@ -111,6 +112,19 @@ Content-Type: application/json
   "input": "Build a comprehensive e-commerce platform with inventory management",
   "outputFormat": "url",
   "async": true
+}
+```
+
+### Example: With Documentation URLs
+
+```json
+{
+  "input": "Build a customer support ticketing system with priority levels and file attachments",
+  "outputFormat": "url",
+  "docURLs": [
+    "https://docs.pre.dev",
+    "https://docs.stripe.com"
+  ]
 }
 ```
 
@@ -495,6 +509,25 @@ class ArchitectAPI {
   }
 })();
 
+// With Documentation URLs
+(async () => {
+  const api = new ArchitectAPI('YOUR_USER_ID');
+
+  try {
+    const result = await api.generateSpec({
+      input: 'Build a customer support ticketing system with priority levels and file attachments',
+      docURLs: [
+        'https://docs.pre.dev',
+        'https://docs.stripe.com'
+      ]
+    });
+
+    console.log('Spec URL:', result.output);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+})();
+
 // Asynchronous with polling
 (async () => {
   const api = new ArchitectAPI('YOUR_USER_ID');
@@ -525,6 +558,7 @@ interface SpecRequest {
   input: string;
   currentContext?: string;
   outputFormat?: 'url' | 'markdown';
+  docURLs?: string[];
   async?: boolean;
 }
 

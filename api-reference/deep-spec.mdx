@@ -48,6 +48,7 @@ Content-Type: application/json
 | `input` | string | ✅ | Description of what you want to build |
 | `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
+| `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
 
 ### Deep Spec vs Fast Spec
@@ -91,6 +92,20 @@ Content-Type: application/json
 {
   "input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
   "outputFormat": "url",
+  "async": true
+}
+```
+
+### Example: With Documentation URLs
+
+```json
+{
+  "input": "Build an enterprise healthcare platform with HIPAA compliance and telemedicine capabilities",
+  "outputFormat": "url",
+  "docURLs": [
+    "https://docs.pre.dev",
+    "https://docs.hl7.org"
+  ],
   "async": true
 }
 ```
