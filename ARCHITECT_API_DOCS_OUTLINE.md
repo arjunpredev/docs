@@ -431,10 +431,10 @@ x-api-key: YOUR_USER_ID
 **Format:** Your user ID is a string like `user_2abc123def456`
 
 ### Enterprise Authentication
-Use `x-enterprise-api-key` header with your organization's API key
+Use `x-api-key` header with your organization's API key
 
 ```bash
-x-enterprise-api-key: YOUR_ORG_API_KEY
+x-api-key: YOUR_ORG_API_KEY
 ```
 
 **Where to get enterprise API key:**
@@ -641,7 +641,7 @@ Content-Type: application/json
 Or for enterprise:
 
 ```
-x-enterprise-api-key: YOUR_ORG_API_KEY
+x-api-key: YOUR_ORG_API_KEY
 Content-Type: application/json
 ```
 
