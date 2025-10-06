@@ -40,6 +40,19 @@
 				]
 			},
 			{
+				"tab": "MCP Integration",
+				"groups": [
+					{
+						"group": "Integration Guide",
+						"pages": [
+							"mcp-integration/overview",
+							"mcp-integration/setup",
+							"mcp-integration/usage"
+						]
+					}
+				]
+			},
+			{
 				"tab": "Guides",
 				"groups": [
 					{
