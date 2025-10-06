@@ -26,12 +26,12 @@ The Architect API transforms simple natural language descriptions of software pr
 ## Quick Start
 
 ```bash
-curl -X POST https://api.pre.dev/v1/specs \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+curl -X POST https://api.pre.dev/fast-spec \
   -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
   -d '{
-    "prompt": "Build a REST API for task management with user authentication",
-    "level": "deep"
+    "input": "Build a REST API for task management with user authentication",
+    "outputFormat": "url"
   }'
 ```
 
@@ -41,10 +41,10 @@ curl -X POST https://api.pre.dev/v1/specs \
 
 ## Specification Levels
 
-| Level | Use Case | Output Size | Subtasks |
-|-------|----------|-------------|----------|
-| `fast` | Quick prototypes, MVPs | ~500 lines | High-level only |
-| `deep` | Production features, complex systems | ~2000+ lines | Granular breakdown |
+| Endpoint | Use Case | Cost | Processing Time | Subtasks |
+|----------|----------|------|----------------|----------|
+| `fast-spec` | Quick prototypes, MVPs | 10 credits | ~30-40 seconds | High-level only |
+| `deep-spec` | Production features, complex systems | 50 credits | ~2-3 minutes | Granular breakdown |
 
 See [Choosing Spec Level](/guides/choosing-spec-level) for detailed comparison.
 
@@ -68,13 +68,11 @@ Specs are returned as structured markdown with:
 
 ## Web Dashboard
 
-Each API request creates a synced project at `pre.dev/project/{id}` with:
+Each API request creates a synced project at `pre.dev/projects/{id}` with:
 
 - Web-based spec editor for iteration
 - Team collaboration and progress tracking
 - Version history
-
-Access via the `project_url` field in the API response.
 
 ## Next Steps
 

@@ -1,10 +1,10 @@
 ---
 title: "Generate Deep Spec"
-api: "POST https://api.pre.dev/api/deep-spec"
+api: "POST https://api.pre.dev/deep-spec"
 description: "Complete documentation for the Deep Spec endpoint. Generate exhaustive, enterprise-grade project specifications."
 ---
 
-# POST /api/deep-spec
+# POST /deep-spec
 
 Generate an ultra-detailed, comprehensive project specification.
 
@@ -22,35 +22,35 @@ Deep Spec requires **Solo Premium** or **Enterprise** subscription.
 ## Endpoint
 
 ```
-POST https://api.pre.dev/api/deep-spec
+POST https://api.pre.dev/deep-spec
 ```
 
 ## Headers
 
 **For JSON requests:**
 ```
-x-api-key: YOUR_API_KEY
 Content-Type: application/json
+x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 **For file upload requests:**
 ```
-x-api-key: YOUR_API_KEY
 Content-Type: multipart/form-data
+x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 Or for enterprise:
 
 **For JSON requests:**
 ```
-x-enterprise-api-key: YOUR_ORG_API_KEY
 Content-Type: application/json
+x-enterprise-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 **For file upload requests:**
 ```
-x-enterprise-api-key: YOUR_ORG_API_KEY
 Content-Type: multipart/form-data
+x-enterprise-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 ## Request Body
@@ -154,7 +154,7 @@ formData.append('async', 'true');
 const response = await fetch('https://api.pre.dev/api/deep-spec', {
   method: 'POST',
   headers: {
-    'x-api-key': 'YOUR_API_KEY'
+    'x-api-key': 'd98dc3b4-de9e-4f33-86ac-e784169684c4'
     // Note: Don't set Content-Type for FormData - browser sets it automatically
   },
   body: formData
@@ -314,9 +314,9 @@ Deep Spec provides **enterprise-grade analysis** that goes far beyond Fast Spec:
 ### cURL - Enterprise Healthcare Platform
 
 ```bash
-curl -X POST https://api.pre.dev/api/deep-spec \
-  -H "x-api-key: YOUR_API_KEY" \
+curl -X POST https://api.pre.dev/deep-spec \
   -H "Content-Type: application/json" \
+  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
   -d '{
     "input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, telemedicine capabilities, and HIPAA compliance for a multi-location hospital system with 500+ providers.",
     "outputFormat": "url"
@@ -329,8 +329,11 @@ curl -X POST https://api.pre.dev/api/deep-spec \
 import requests
 
 response = requests.post(
-    'https://api.pre.dev/api/deep-spec',
-    headers={'x-api-key': 'YOUR_API_KEY'},
+    'https://api.pre.dev/deep-spec',
+    headers={
+        'Content-Type': 'application/json',
+        'x-api-key': 'd98dc3b4-de9e-4f33-86ac-e784169684c4'
+    },
     json={
         'input': 'Build a fintech platform with banking services, investment management, cryptocurrency trading, regulatory compliance (SEC, FINRA), and real-time market data integration for retail and institutional investors.',
         'outputFormat': 'url',
@@ -345,11 +348,11 @@ print(f"Request ID: {result['requestId']}")
 ### JavaScript - Complex SaaS Application
 
 ```javascript
-const response = await fetch('https://api.pre.dev/api/deep-spec', {
+const response = await fetch('https://api.pre.dev/deep-spec', {
   method: 'POST',
   headers: {
-    'x-api-key': 'YOUR_API_KEY',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'x-api-key': 'd98dc3b4-de9e-4f33-86ac-e784169684c4'
   },
   body: JSON.stringify({
     input: 'Build a comprehensive SaaS project management platform with advanced workflow automation, AI-powered insights, enterprise integrations, multi-tenant architecture, and real-time collaboration for teams of 1000+ users.',

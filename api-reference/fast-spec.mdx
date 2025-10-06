@@ -1,10 +1,10 @@
 ---
 title: "Generate Fast Spec"
-api: "POST https://api.pre.dev/api/fast-spec"
+api: "POST https://api.pre.dev/fast-spec"
 description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in 30-40 seconds."
 ---
 
-# POST /api/fast-spec
+# POST /fast-spec
 
 Generate a quick, comprehensive project specification.
 
@@ -18,35 +18,35 @@ Generate a quick, comprehensive project specification.
 ## Endpoint
 
 ```
-POST https://api.pre.dev/api/fast-spec
+POST https://api.pre.dev/fast-spec
 ```
 
 ## Headers
 
 **For JSON requests:**
 ```
-x-api-key: YOUR_API_KEY
 Content-Type: application/json
+x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 **For file upload requests:**
 ```
-x-api-key: YOUR_API_KEY
 Content-Type: multipart/form-data
+x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 Or for enterprise:
 
 **For JSON requests:**
 ```
-x-enterprise-api-key: YOUR_ORG_API_KEY
 Content-Type: application/json
+x-enterprise-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 **For file upload requests:**
 ```
-x-enterprise-api-key: YOUR_ORG_API_KEY
 Content-Type: multipart/form-data
+x-enterprise-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 ```
 
 ## Request Body
@@ -303,7 +303,7 @@ Solo users get **one free Fast Spec trial** before requiring a subscription.
 
 ```bash
 curl https://api.pre.dev/api/fast-api-trial-status \
-  -H "x-api-key: YOUR_API_KEY"
+  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4"
 ```
 
 **Response:**
@@ -337,9 +337,9 @@ After your free spec completes, you'll receive an email with:
 
 **Synchronous Request:**
 ```bash
-curl -X POST https://api.pre.dev/api/fast-spec \
-  -H "x-api-key: YOUR_USER_ID" \
+curl -X POST https://api.pre.dev/fast-spec \
   -H "Content-Type: application/json" \
+  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
   -d '{
     "input": "Build a real-time collaborative whiteboard with drawing tools, shapes, text, and team presence indicators",
     "outputFormat": "url"
@@ -349,9 +349,9 @@ curl -X POST https://api.pre.dev/api/fast-spec \
 **Asynchronous Request with Polling:**
 ```bash
 # Step 1: Start async processing
-RESPONSE=$(curl -X POST https://api.pre.dev/api/fast-spec \
-  -H "x-api-key: YOUR_USER_ID" \
+RESPONSE=$(curl -X POST https://api.pre.dev/fast-spec \
   -H "Content-Type: application/json" \
+  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
   -d '{
     "input": "Build a CRM with contact management, deal pipeline, and email integration",
     "async": true
@@ -362,7 +362,7 @@ REQUEST_ID=$(echo $RESPONSE | jq -r '.requestId')
 # Step 2: Poll for status
 while true; do
   STATUS=$(curl https://api.pre.dev/api/spec-status/$REQUEST_ID \
-    -H "x-api-key: YOUR_USER_ID")
+    -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4")
 
   STATE=$(echo $STATUS | jq -r '.status')
 
@@ -402,8 +402,8 @@ class ArchitectAPI:
     ) -> Dict[str, Any]:
         """Generate a fast spec."""
         headers = {
-            "x-api-key": self.api_key,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "x-api-key": self.api_key
         }
 
         payload = {
@@ -450,7 +450,7 @@ class ArchitectAPI:
             time.sleep(poll_interval)
 
 # Usage
-api = ArchitectAPI(api_key="YOUR_USER_ID")
+api = ArchitectAPI(api_key="d98dc3b4-de9e-4f33-86ac-e784169684c4")
 
 # Synchronous (wait for result)
 result = api.generate_spec(
@@ -488,8 +488,8 @@ class ArchitectAPI {
     async = false
   }) {
     const headers = {
-      'x-api-key': this.apiKey,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'x-api-key': this.apiKey
     };
 
     const payload = {
@@ -551,7 +551,7 @@ class ArchitectAPI {
 
 // Synchronous
 (async () => {
-  const api = new ArchitectAPI('YOUR_USER_ID');
+  const api = new ArchitectAPI('d98dc3b4-de9e-4f33-86ac-e784169684c4');
 
   try {
     const result = await api.generateSpec({
@@ -567,7 +567,7 @@ class ArchitectAPI {
 
 // With Documentation URLs
 (async () => {
-  const api = new ArchitectAPI('YOUR_USER_ID');
+  const api = new ArchitectAPI('d98dc3b4-de9e-4f33-86ac-e784169684c4');
 
   try {
     const result = await api.generateSpec({
@@ -586,7 +586,7 @@ class ArchitectAPI {
 
 // With File Upload
 (async () => {
-  const api = new ArchitectAPI('YOUR_USER_ID');
+  const api = new ArchitectAPI('d98dc3b4-de9e-4f33-86ac-e784169684c4');
 
   try {
     // For file uploads, use multipart/form-data
@@ -614,7 +614,7 @@ class ArchitectAPI {
 
 // Asynchronous with polling
 (async () => {
-  const api = new ArchitectAPI('YOUR_USER_ID');
+  const api = new ArchitectAPI('d98dc3b4-de9e-4f33-86ac-e784169684c4');
 
   try {
     // Start processing
@@ -691,8 +691,8 @@ class ArchitectAPI {
     const response = await fetch(`${this.baseUrl}/fast-spec`, {
       method: 'POST',
       headers: {
-        'x-api-key': this.apiKey,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey
       },
       body: JSON.stringify(request)
     });

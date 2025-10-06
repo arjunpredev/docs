@@ -10,19 +10,15 @@ Get your first specification in under 5 minutes.
 <Steps>
   <Step title="Get Your API Key" icon="key">
     <Accordion title="Solo Users">
-      1. Sign up at [pre.dev](https://pre.dev)
-      2. Go to **Settings** → **API Keys**
-      3. Copy your **User ID** (this is your API key)
-
-      Your User ID looks like: `user_2abc123def456`
+      1. Go to [pre.dev/projects/playground](https://pre.dev/projects/playground)
+      2. Click **Get Code**
+      3. Copy the API Key
     </Accordion>
 
     <Accordion title="Enterprise Organizations">
-      1. Sign up at [pre.dev](https://pre.dev)
-      2. Go to **Organization Settings** → **API Keys**
-      3. Generate or copy your enterprise API key
-
-      Enterprise keys look like: `ek_prod_abc123...`
+      1. Go to [pre.dev/enterprise/dashboard?page=api](https://pre.dev/enterprise/dashboard?page=api)
+      2. Click **Get Code**
+      3. Copy the API Key
     </Accordion>
   </Step>
 
@@ -31,9 +27,9 @@ Get your first specification in under 5 minutes.
 
     <Accordion title="cURL">
       ```bash
-      curl -X POST https://api.pre.dev/api/fast-spec \
-        -H "x-api-key: YOUR_API_KEY" \
+      curl -X POST https://api.pre.dev/fast-spec \
         -H "Content-Type: application/json" \
+        -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
         -d '{
           "input": "Build a task management app with team collaboration",
           "outputFormat": "url"
@@ -46,8 +42,11 @@ Get your first specification in under 5 minutes.
       import requests
 
       response = requests.post(
-          'https://api.pre.dev/api/fast-spec',
-          headers={'x-api-key': 'YOUR_API_KEY'},
+          'https://api.pre.dev/fast-spec',
+          headers={
+              'Content-Type': 'application/json',
+              'x-api-key': 'd98dc3b4-de9e-4f33-86ac-e784169684c4'
+          },
           json={
               'input': 'Build a task management app with team collaboration',
               'outputFormat': 'url'
@@ -55,17 +54,17 @@ Get your first specification in under 5 minutes.
       )
 
       result = response.json()
-      print(f"Spec URL: {result['url']}")
+      print(f"Spec URL: {result['output']}")
       ```
     </Accordion>
 
     <Accordion title="JavaScript">
       ```javascript
-      const response = await fetch('https://api.pre.dev/api/fast-spec', {
+      const response = await fetch('https://api.pre.dev/fast-spec', {
         method: 'POST',
         headers: {
-          'x-api-key': 'YOUR_API_KEY',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-api-key': 'd98dc3b4-de9e-4f33-86ac-e784169684c4'
         },
         body: JSON.stringify({
           input: 'Build a task management app with team collaboration',
@@ -74,7 +73,7 @@ Get your first specification in under 5 minutes.
       });
 
       const result = await response.json();
-      console.log(`Spec URL: ${result.url}`);
+      console.log(`Spec URL: ${result.output}`);
       ```
     </Accordion>
   </Step>
@@ -84,9 +83,9 @@ Get your first specification in under 5 minutes.
 
     <Accordion title="Add Documentation URLs">
       ```bash
-      curl -X POST https://api.pre.dev/api/fast-spec \
-        -H "x-api-key: YOUR_API_KEY" \
+      curl -X POST https://api.pre.dev/fast-spec \
         -H "Content-Type: application/json" \
+        -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
         -d '{
           "input": "Build a customer support ticketing system",
           "outputFormat": "url",

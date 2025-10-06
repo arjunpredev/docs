@@ -2,11 +2,14 @@
 
 ## Input
 
-```json
-{
-  "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles.",
-  "outputFormat": "url"
-}
+```bash
+curl -X POST https://api.pre.dev/fast-spec \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
+  -d '{
+    "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles.",
+    "outputFormat": "url"
+  }'
 ```
 
 ## Generated Output Preview
