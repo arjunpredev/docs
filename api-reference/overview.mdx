@@ -68,7 +68,6 @@ x-api-key: YOUR_ORG_API_KEY
 | `/fast-spec` | POST | Generate quick comprehensive spec | ✅ |
 | `/deep-spec` | POST | Generate ultra-detailed spec | ✅ |
 | `/spec-status/:id` | GET | Check async generation status | ✅ |
-| `/fast-api-trial-status` | GET | Check free trial eligibility | ✅ |
 
 ## Request Modes
 
@@ -150,7 +149,6 @@ Check remaining credits:
 
 | Tier | Fast Spec | Deep Spec | Notes |
 |------|-----------|-----------|-------|
-| Free Trial | 1 total | ❌ | One-time only |
 | Solo Premium | Unlimited* | Unlimited* | *Subject to fair use |
 | Enterprise | Unlimited* | Unlimited* | *Subject to fair use |
 
@@ -188,14 +186,6 @@ Exceeding limits returns `429 Too Many Requests`.
 }
 ```
 
-**Free Trial Exhausted:**
-```json
-{
-  "error": "Free trial already used",
-  "message": "You have already used your free Fast API trial. Please subscribe to Solo Premium to continue.",
-  "requiresSubscription": true
-}
-```
 
 **Invalid Input:**
 ```json

@@ -17,7 +17,6 @@ docs/
 │   ├── fast-spec.mdx               # POST /api/fast-spec endpoint
 │   ├── deep-spec.mdx               # POST /api/deep-spec endpoint
 │   ├── spec-status.mdx             # GET /api/spec-status/:requestId
-│   └── trial-status.mdx            # GET /api/fast-api-trial-status
 ├── mcp-integration/
 │   ├── overview.mdx                # What is MCP & why use it
 │   ├── setup.mdx                   # Installation & configuration
@@ -461,7 +460,6 @@ x-api-key: YOUR_ORG_API_KEY
 | `/fast-spec` | POST | Generate quick comprehensive spec | ✅ |
 | `/deep-spec` | POST | Generate ultra-detailed spec | ✅ |
 | `/spec-status/:id` | GET | Check async generation status | ✅ |
-| `/fast-api-trial-status` | GET | Check free trial eligibility | ✅ |
 
 ## Request Modes
 
@@ -539,7 +537,6 @@ Check remaining credits:
 
 | Tier | Daily Limit | Monthly Limit | Price (Monthly) |
 |------|-------------|---------------|-----------------|
-| Trial | 1 | 1 | Free |
 | Solo Plus | 20 | 200 | $25/mo |
 | Solo Premium | Unlimited daily | 500/month | $49/mo |
 | Enterprise Premium | Unlimited daily | 1,000/month | $99/mo |
@@ -582,14 +579,6 @@ Exceeding limits returns `402 Payment Required` with details on remaining credit
 }
 ```
 
-**Free Trial Exhausted:**
-```json
-{
-  "error": "Free trial already used",
-  "message": "You have already used your free Fast API trial. Please subscribe to Solo Premium to continue.",
-  "requiresSubscription": true
-}
-```
 
 **Invalid Input:**
 ```json
@@ -815,14 +804,6 @@ Poll every 5-10 seconds for best UX.
 }
 ```
 
-**Free Trial Used:**
-```json
-{
-  "error": "Free trial already used",
-  "message": "You have already used your free Fast API trial. Please subscribe to Solo Premium to continue.",
-  "requiresSubscription": true
-}
-```
 
 **Invalid Input:**
 ```json
@@ -841,47 +822,6 @@ Poll every 5-10 seconds for best UX.
 }
 ```
 
-## Free Trial
-
-Solo users get **one free Fast Spec trial** before requiring a subscription.
-
-### How It Works
-
-1. **First Request:** Free (no subscription needed)
-2. **Completion:** Email sent congratulating you + showcasing results
-3. **Subsequent Requests:** Require Solo Premium subscription
-
-### Check Trial Status
-
-```bash
-curl https://api.pre.dev/api/fast-api-trial-status \
-  -H "x-api-key: YOUR_API_KEY"
-```
-
-**Response:**
-```json
-{
-  "hasUsedTrial": false,
-  "usedAt": null
-}
-```
-
-or
-
-```json
-{
-  "hasUsedTrial": true,
-  "usedAt": "2025-10-01T14:30:00Z"
-}
-```
-
-### Trial Completion Email
-
-After your free spec completes, you'll receive an email with:
-- Link to your generated specification
-- Highlights of what was included
-- Upgrade options for unlimited access
-- Examples of what you can build next
 
 ## Code Examples
 
@@ -1415,19 +1355,6 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 
 ---
 
-### **api-reference/trial-status.mdx**
-
-```markdown
-# GET /api/fast-api-trial-status
-
-Check if the authenticated user has used their free Fast Spec trial.
-
-## Overview
-
-Solo users get one free Fast Spec generation before requiring a subscription. Use this endpoint to check trial eligibility.
-
-[Full documentation]
-```
 
 ---
 
@@ -2283,7 +2210,6 @@ Potential technical challenges and mitigation strategies.
 
 ## Subscription Tiers
 
-### Trial (Free)
 - **1 total credit** (daily and monthly)
 - One free Fast Spec to try
 - No credit card required
@@ -2442,9 +2368,6 @@ Comprehensive markdown files that include:
 
 ## Pricing & Access
 
-### Is there a free trial?
-
-Yes! New solo users get 1 free Fast Spec.
 
 ### What's included in Solo Premium?
 

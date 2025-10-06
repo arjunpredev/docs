@@ -289,47 +289,6 @@ Fast Spec follows a **two-level hierarchy** optimized for rapid development:
 - ✅ Complexity estimates (XS, S, M, L, XL)
 - ❌ No granular implementation subtasks
 
-## Free Trial
-
-Solo users get **one free Fast Spec trial** before requiring a subscription.
-
-### How It Works
-
-1. **First Request:** Free (no subscription needed)
-2. **Completion:** Email sent congratulating you + showcasing results
-3. **Subsequent Requests:** Require Solo Premium subscription
-
-### Check Trial Status
-
-```bash
-curl https://api.pre.dev/api/fast-api-trial-status \
-  -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4"
-```
-
-**Response:**
-```json
-{
-  "hasUsedTrial": false,
-  "usedAt": null
-}
-```
-
-or
-
-```json
-{
-  "hasUsedTrial": true,
-  "usedAt": "2025-10-01T14:30:00Z"
-}
-```
-
-### Trial Completion Email
-
-After your free spec completes, you'll receive an email with:
-- Link to your generated specification
-- Highlights of what was included
-- Upgrade options for unlimited access
-- Examples of what you can build next
 
 ## Code Examples
 
