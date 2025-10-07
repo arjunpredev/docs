@@ -73,9 +73,9 @@ x-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
 
-### Understanding `currentContext` (isNewBuild behavior)
+### Understanding `currentContext`
 
-**Omit `currentContext` (New Project - isNewBuild: true):**
+**Omit `currentContext` (New Project):**
 ```json
 {
   "input": "Build a task management SaaS"
@@ -90,7 +90,7 @@ x-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 - CI/CD pipelines
 - Monitoring and logging
 
-**Provide `currentContext` (Feature Addition - isNewBuild: false):**
+**Provide `currentContext` (Feature Addition):**
 ```json
 {
   "input": "Add real-time notifications and activity feed",
@@ -102,15 +102,6 @@ x-api-key: ek_prod_d98dc3b4-de9e-4f33-86ac-e784169684c4
 - Integration points with current codebase
 - Migration considerations
 - No redundant setup/deployment (already exists)
-
-**Response includes `isNewBuild` flag:**
-```json
-{
-  "output": "https://pre.dev/s/abc123",
-  "isNewBuild": true,  // or false if currentContext provided
-  "fileUrl": "https://pre.dev/s/abc123"
-}
-```
 
 ### Example: New Project
 
@@ -188,58 +179,75 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 
 ### Success Response (Sync Mode)
 
-**When `outputFormat: "url"` (default):**
 ```json
 {
-  "output": "https://pre.dev/s/abc123",
+  "endpoint": "fast_spec",
+  "input": "Build a SaaS project management tool with team collaboration...",
+  "status": "completed",
+  "success": true,
+  "output": "https://api.pre.dev/s/a6hFJRV6",
   "outputFormat": "url",
-  "isNewBuild": true,
-  "fileUrl": "https://pre.dev/s/abc123"
+  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "executionTime": 38500,
+  "predevUrl": "https://pre.dev/projects/abc123",
+  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
+  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `output` | string | Primary output - the hosted spec URL |
-| `outputFormat` | string | Confirms format used (`"url"` or `"markdown"`) |
-| `isNewBuild` | boolean | `true` = new project, `false` = feature addition |
-| `fileUrl` | string | Always the hosted URL (even if outputFormat is markdown) |
+| `endpoint` | string | Endpoint used: `"fast_spec"` or `"deep_spec"` |
+| `input` | string | Original input text provided |
+| `status` | string | Completion status: `"completed"` when successful |
+| `success` | boolean | Whether the request succeeded |
+| `output` | any | Primary output - the hosted spec URL or markdown content |
+| `outputFormat` | string | Format used: `"url"` or `"markdown"` |
+| `outputFileUrl` | string | URL where the spec file is hosted (downloadable markdown) |
+| `executionTime` | number | Processing time in milliseconds |
+| `predevUrl` | string | Pre.dev project URL where you can view and edit the spec |
+| `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
+| `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec |
+| `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
+| `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
 
 **When `outputFormat: "markdown"`:**
 ```json
 {
-  "markdown": "# Project Specification\n\n## Executive Summary...",
+  "endpoint": "fast_spec",
+  "input": "Build a SaaS project management tool...",
+  "status": "completed",
+  "success": true,
+  "output": "# Project Specification\n\n## Executive Summary...",
   "outputFormat": "markdown",
-  "isNewBuild": false,
-  "fileUrl": "https://pre.dev/s/abc123"
+  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "executionTime": 38500,
+  "predevUrl": "https://pre.dev/projects/abc123",
+  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
+  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
 }
 ```
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `markdown` | string | Full markdown content (can be very large) |
-| `outputFormat` | string | Confirms `"markdown"` |
-| `isNewBuild` | boolean | Context flag |
-| `fileUrl` | string | URL where markdown is also hosted (backup access) |
 
 ### Success Response (Async Mode)
 
 **Immediate response when `async: true`:**
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "pending",
-  "message": "Request queued for processing. Use /api/spec-status/:requestId to check status."
+  "specId": "507f1f77bcf86cd799439011",
+  "status": "pending"
 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `requestId` | string | MongoDB ObjectId to poll for status |
-| `status` | string | `"pending"` initially |
-| `message` | string | Instructions for polling |
+| `specId` | string | Unique ID to poll for status (use with `/api/spec-status/:specId`) |
+| `status` | string | Initial status: `"pending"` |
 
-**Poll `/api/spec-status/:requestId` to check progress.**
+**Poll `/api/spec-status/:specId` to check progress.**
 
 ### Async Status Flow
 
@@ -316,11 +324,11 @@ RESPONSE=$(curl -X POST https://api.pre.dev/fast-spec \
     "async": true
   }')
 
-REQUEST_ID=$(echo $RESPONSE | jq -r '.requestId')
+SPEC_ID=$(echo $RESPONSE | jq -r '.specId')
 
 # Step 2: Poll for status
 while true; do
-  STATUS=$(curl https://api.pre.dev/api/spec-status/$REQUEST_ID \
+  STATUS=$(curl https://api.pre.dev/api/spec-status/$SPEC_ID \
     -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4")
 
   STATE=$(echo $STATUS | jq -r '.status')
@@ -383,22 +391,22 @@ class ArchitectAPI:
         response.raise_for_status()
         return response.json()
 
-    def check_status(self, request_id: str) -> Dict[str, Any]:
+    def check_status(self, spec_id: str) -> Dict[str, Any]:
         """Check async processing status."""
         headers = {"x-api-key": self.api_key}
 
         response = requests.get(
-            f"{self.base_url}/spec-status/{request_id}",
+            f"{self.base_url}/spec-status/{spec_id}",
             headers=headers
         )
 
         response.raise_for_status()
         return response.json()
 
-    def wait_for_completion(self, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
+    def wait_for_completion(self, spec_id: str, poll_interval: int = 10) -> Dict[str, Any]:
         """Wait for async processing to complete."""
         while True:
-            status = self.check_status(request_id)
+            status = self.check_status(spec_id)
 
             if status["status"] == "completed":
                 return status
@@ -425,7 +433,7 @@ response = api.generate_spec(
     async_mode=True
 )
 
-result = api.wait_for_completion(response["requestId"])
+result = api.wait_for_completion(response["specId"])
 print(f"Spec ready: {result['output']}")
 ```
 
@@ -475,11 +483,11 @@ class ArchitectAPI {
     return response.json();
   }
 
-  async checkStatus(requestId) {
+  async checkStatus(specId) {
     const headers = { 'x-api-key': this.apiKey };
 
     const response = await fetch(
-      `${this.baseUrl}/spec-status/${requestId}`,
+      `${this.baseUrl}/spec-status/${specId}`,
       { headers }
     );
 
@@ -490,9 +498,9 @@ class ArchitectAPI {
     return response.json();
   }
 
-  async waitForCompletion(requestId, pollInterval = 10000) {
+  async waitForCompletion(specId, pollInterval = 10000) {
     while (true) {
-      const status = await this.checkStatus(requestId);
+      const status = await this.checkStatus(specId);
 
       if (status.status === 'completed') {
         return status;
@@ -518,7 +526,6 @@ class ArchitectAPI {
     });
 
     console.log('Spec URL:', result.output);
-    console.log('Is new build:', result.isNewBuild);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -583,10 +590,10 @@ class ArchitectAPI {
       async: true
     });
 
-    console.log('Request ID:', response.requestId);
+    console.log('Spec ID:', response.specId);
 
     // Wait for completion
-    const result = await api.waitForCompletion(response.requestId);
+    const result = await api.waitForCompletion(response.specId);
     console.log('Spec ready:', result.output);
   } catch (error) {
     console.error('Error:', error.message);
@@ -617,25 +624,34 @@ interface SpecResponse {
   output?: string;
   markdown?: string;
   outputFormat: 'url' | 'markdown';
-  isNewBuild: boolean;
   fileUrl: string;
 }
 
 interface AsyncResponse {
-  requestId: string;
-  status: 'pending';
-  message: string;
+  specId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
 }
 
 interface StatusResponse {
-  requestId: string;
+  _id?: string;
+  created?: string;
+  endpoint: 'fast_spec' | 'deep_spec';
+  input: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress?: string;
-  output?: string;
-  outputFormat?: string;
-  fileUrl?: string;
+  success: boolean;
+  uploadedFileShortUrl?: string;
+  uploadedFileName?: string;
+  output?: any;
+  outputFormat: 'markdown' | 'url';
+  outputFileUrl?: string;
+  executionTime?: number;
+  predevUrl?: string;
+  lovableUrl?: string;
+  cursorUrl?: string;
+  v0Url?: string;
+  boltUrl?: string;
   errorMessage?: string;
-  executionTimeMs?: number;
+  progress?: string;
 }
 
 class ArchitectAPI {
@@ -664,8 +680,8 @@ class ArchitectAPI {
     return response.json();
   }
 
-  async checkStatus(requestId: string): Promise<StatusResponse> {
-    const response = await fetch(`${this.baseUrl}/spec-status/${requestId}`, {
+  async checkStatus(specId: string): Promise<StatusResponse> {
+    const response = await fetch(`${this.baseUrl}/spec-status/${specId}`, {
       headers: { 'x-api-key': this.apiKey }
     });
 
@@ -676,9 +692,9 @@ class ArchitectAPI {
     return response.json();
   }
 
-  async waitForCompletion(requestId: string, pollInterval: number = 10000): Promise<StatusResponse> {
+  async waitForCompletion(specId: string, pollInterval: number = 10000): Promise<StatusResponse> {
     while (true) {
-      const status = await this.checkStatus(requestId);
+      const status = await this.checkStatus(specId);
 
       if (status.status === 'completed') {
         return status;

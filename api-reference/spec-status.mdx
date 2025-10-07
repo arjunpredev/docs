@@ -1,10 +1,10 @@
 ---
 title: "Get Spec Status"
-api: "GET https://api.pre.dev/api/spec-status/:requestId"
+api: "GET https://api.pre.dev/api/spec-status/:specId"
 description: "Monitor the progress of asynchronous specification processing requests."
 ---
 
-# GET /api/spec-status/:requestId
+# GET /api/spec-status/:specId
 
 Check the status of an asynchronous specification processing request.
 
@@ -15,14 +15,14 @@ When you make an async request (`"async": true`), use this endpoint to poll for 
 ## Endpoint
 
 ```
-GET https://api.pre.dev/api/spec-status/:requestId
+GET https://api.pre.dev/api/spec-status/:specId
 ```
 
 ## Parameters
 
 | Parameter | Location | Required | Description |
 |-----------|----------|----------|-------------|
-| `requestId` | Path | ✅ | Request ID returned from async spec processing |
+| `specId` | Path | ✅ | Spec ID returned from async spec processing |
 
 ## Example Request
 
@@ -31,17 +31,24 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
+<Note>
+The `specId` in the URL is the value returned as `specId` from the async spec generation request.
+</Note>
+
 ## Response
 
 ### Pending
 
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "pending",
-  "progress": "Initializing...",
+  "_id": "507f1f77bcf86cd799439011",
+  "created": "2025-10-03T10:00:00Z",
   "endpoint": "fast_spec",
-  "timestamp": "2025-10-03T10:00:00Z"
+  "input": "Build a SaaS project management tool...",
+  "status": "pending",
+  "success": false,
+  "outputFormat": "url",
+  "progress": "Initializing..."
 }
 ```
 
@@ -49,11 +56,14 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "processing",
-  "progress": "Generating specification...",
+  "_id": "507f1f77bcf86cd799439011",
+  "created": "2025-10-03T10:00:00Z",
   "endpoint": "fast_spec",
-  "timestamp": "2025-10-03T10:00:00Z"
+  "input": "Build a SaaS project management tool...",
+  "status": "processing",
+  "success": false,
+  "outputFormat": "url",
+  "progress": "Generating specification..."
 }
 ```
 
@@ -61,16 +71,22 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "completed",
-  "progress": "Completed successfully",
+  "_id": "507f1f77bcf86cd799439011",
+  "created": "2025-10-03T10:00:00Z",
   "endpoint": "fast_spec",
-  "timestamp": "2025-10-03T10:00:00Z",
-  "completedAt": "2025-10-03T10:03:45Z",
-  "output": "https://pre.dev/s/abc123",
+  "input": "Build a SaaS project management tool...",
+  "status": "completed",
+  "success": true,
+  "output": "https://api.pre.dev/s/a6hFJRV6",
   "outputFormat": "url",
-  "fileUrl": "https://pre.dev/s/abc123",
-  "executionTimeMs": 225000
+  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "executionTime": 38500,
+  "predevUrl": "https://pre.dev/projects/abc123",
+  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
+  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "progress": "Completed successfully"
 }
 ```
 
@@ -78,14 +94,16 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "failed",
-  "progress": "Failed to generate specification",
+  "_id": "507f1f77bcf86cd799439011",
+  "created": "2025-10-03T10:00:00Z",
   "endpoint": "fast_spec",
-  "timestamp": "2025-10-03T10:00:00Z",
-  "completedAt": "2025-10-03T10:02:15Z",
+  "input": "Build a SaaS project management tool...",
+  "status": "failed",
+  "success": false,
+  "outputFormat": "url",
   "errorMessage": "Invalid input format",
-  "executionTimeMs": 135000
+  "executionTime": 5000,
+  "progress": "Failed to generate specification"
 }
 ```
 
@@ -93,17 +111,25 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `requestId` | string | The original request ID |
+| `_id` | string | MongoDB ObjectId of the spec request |
+| `created` | string | ISO timestamp when the request was created |
+| `endpoint` | string | Which endpoint was used: `"fast_spec"` or `"deep_spec"` |
+| `input` | string | Original input text provided |
 | `status` | string | Current status: `"pending"`, `"processing"`, `"completed"`, or `"failed"` |
+| `success` | boolean | Whether the request succeeded |
+| `uploadedFileShortUrl` | string | Short URL for uploaded file (if file was uploaded) |
+| `uploadedFileName` | string | Name of uploaded file (if file was uploaded) |
+| `output` | any | Generated spec URL or markdown content (only when completed) |
+| `outputFormat` | string | Format used: `"url"` or `"markdown"` |
+| `outputFileUrl` | string | URL where the spec file is hosted - downloadable markdown (only when completed) |
+| `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
+| `predevUrl` | string | Pre.dev project URL where you can view and edit the spec (only when completed) |
+| `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec (only when completed) |
+| `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec (only when completed) |
+| `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec (only when completed) |
+| `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec (only when completed) |
+| `errorMessage` | string | Error description (only when failed) |
 | `progress` | string | Human-readable progress description |
-| `endpoint` | string | Which endpoint was used (`"fast_spec"` or `"deep_spec"`) |
-| `timestamp` | string | ISO timestamp of current status |
-| `completedAt` | string | ISO timestamp when request finished (only present when completed or failed) |
-| `output` | string | Generated spec URL (only present when completed) |
-| `outputFormat` | string | Format used for processing (only present when completed) |
-| `fileUrl` | string | Always the hosted URL (only present when completed) |
-| `errorMessage` | string | Error description (only present when failed) |
-| `executionTimeMs` | number | Total execution time in milliseconds (only present when completed or failed) |
 
 ## Polling Best Practices
 
@@ -118,11 +144,11 @@ curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
 ```bash
 #!/bin/bash
 
-REQUEST_ID="507f1f77bcf86cd799439011"
+SPEC_ID="507f1f77bcf86cd799439011"
 API_KEY="YOUR_API_KEY"
 
 while true; do
-  RESPONSE=$(curl -s https://api.pre.dev/api/spec-status/$REQUEST_ID \
+  RESPONSE=$(curl -s https://api.pre.dev/api/spec-status/$SPEC_ID \
     -H "x-api-key: $API_KEY")
 
   STATUS=$(echo $RESPONSE | jq -r '.status')
@@ -157,11 +183,11 @@ import requests
 import time
 from typing import Dict, Any
 
-def poll_spec_status(api_key: str, request_id: str, poll_interval: int = 10) -> Dict[str, Any]:
+def poll_spec_status(api_key: str, spec_id: str, poll_interval: int = 10) -> Dict[str, Any]:
     """Poll for spec processing completion."""
     while True:
         response = requests.get(
-            f'https://api.pre.dev/api/spec-status/{request_id}',
+            f'https://api.pre.dev/api/spec-status/{spec_id}',
             headers={'x-api-key': api_key}
         )
         response.raise_for_status()
@@ -188,10 +214,10 @@ print(f"Spec URL: {result['output']}")
 ### JavaScript Polling Example
 
 ```javascript
-async function pollSpecStatus(apiKey, requestId, pollInterval = 10000) {
+async function pollSpecStatus(apiKey, specId, pollInterval = 10000) {
   while (true) {
     const response = await fetch(
-      `https://api.pre.dev/api/spec-status/${requestId}`,
+      `https://api.pre.dev/api/spec-status/${specId}`,
       {
         headers: { 'x-api-key': apiKey }
       }
@@ -239,14 +265,14 @@ try {
 
 ### Common Issues
 
-**Request ID Not Found:**
+**Spec ID Not Found:**
 ```json
 {
   "error": "Request not found",
   "message": "No request found with ID: 507f1f77bcf86cd799439011"
 }
 ```
-*Cause:* Invalid request ID or request expired
+*Cause:* Invalid spec ID or request expired
 
 **Unauthorized:**
 ```json

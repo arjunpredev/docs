@@ -180,23 +180,56 @@ formData.append('async', 'true');
 
 ### Success Response (Sync Mode)
 
-**When `outputFormat: "url"` (default):**
 ```json
 {
-  "output": "https://pre.dev/s/abc123",
+  "endpoint": "deep_spec",
+  "input": "Build an enterprise healthcare management platform...",
+  "status": "completed",
+  "success": true,
+  "output": "https://api.pre.dev/s/a6hFJRV6",
   "outputFormat": "url",
-  "isNewBuild": true,
-  "fileUrl": "https://pre.dev/s/abc123"
+  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "executionTime": 185000,
+  "predevUrl": "https://pre.dev/projects/abc123",
+  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
+  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
 }
 ```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `endpoint` | string | Endpoint used: `"deep_spec"` |
+| `input` | string | Original input text provided |
+| `status` | string | Completion status: `"completed"` when successful |
+| `success` | boolean | Whether the request succeeded |
+| `output` | any | Primary output - the hosted spec URL or markdown content |
+| `outputFormat` | string | Format used: `"url"` or `"markdown"` |
+| `outputFileUrl` | string | URL where the spec file is hosted (downloadable markdown) |
+| `executionTime` | number | Processing time in milliseconds |
+| `predevUrl` | string | Pre.dev project URL where you can view and edit the spec |
+| `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
+| `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec |
+| `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
+| `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
 
 **When `outputFormat: "markdown"`:**
 ```json
 {
-  "markdown": "# Enterprise Healthcare Platform Specification\n\n## Executive Summary...",
+  "endpoint": "deep_spec",
+  "input": "Build an enterprise healthcare management platform...",
+  "status": "completed",
+  "success": true,
+  "output": "# Enterprise Healthcare Platform Specification\n\n## Executive Summary...",
   "outputFormat": "markdown",
-  "isNewBuild": false,
-  "fileUrl": "https://pre.dev/s/abc123"
+  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "executionTime": 185000,
+  "predevUrl": "https://pre.dev/projects/abc123",
+  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
+  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
 }
 ```
 
@@ -205,11 +238,15 @@ formData.append('async', 'true');
 **Immediate response when `async: true`:**
 ```json
 {
-  "requestId": "507f1f77bcf86cd799439011",
-  "status": "pending",
-  "message": "Request queued for processing. Use /api/spec-status/:requestId to check status."
+  "specId": "507f1f77bcf86cd799439011",
+  "status": "pending"
 }
 ```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `specId` | string | Unique ID to poll for status (use with `/api/spec-status/:specId`) |
+| `status` | string | Initial status: `"pending"` |
 
 ## Output Structure: Milestones → Stories → Subtasks
 
