@@ -1,15 +1,15 @@
 ---
-title: "pre.dev Architect API"
-description: "Generate structured project specifications for AI coding agents"
+title: "Quickstart"
+description: "pre.dev allows you to generate structured project specifications for AI coding agents"
 ---
 
 <Note>
-  **Research Preview** - The Architect API is currently in research preview. Features and pricing may change as we continue to improve the platform.
+  **Research Preview** - The pre.dev Architect API is currently in research preview. Features and pricing may change as we continue to improve the platform.
 </Note>
 
-## Overview
+## Welcome to the pre.dev Architect API
 
-The Architect API transforms simple natural language descriptions of software projects into structured specifications optimized for AI coding agents. 
+The pre.dev Architect API transforms simple natural language descriptions of software projects into structured specifications optimized for AI coding agents. 
 
 **Input:** Plain English descriptions like "Build a chat app" or "Add authentication to my API"
 
@@ -21,7 +21,21 @@ The Architect API transforms simple natural language descriptions of software pr
 - **Structured Output:** Hierarchical spec format (Milestones → Stories → Subtasks)
 - **Task Tracking:** Built-in progress management with markdown checkboxes
 - **Complexity Estimation:** Complexity scores per milestone and subtask
-- **Web Sync:** Automatic project creation on pre.dev with unique URL
+- **Web Sync:** Automatic project creation on pre.dev, along with links to open up the project in Cursor, Lovable, Bolt, or v0.
+
+## How to Use It
+
+The pre.dev Architect API can be integrated in two ways:
+
+- **API Documentation Generation:** Generate comprehensive API specs and documentation from natural language descriptions
+- **SDK Generation:** Create Python or Node.js SDKs with proper type definitions, documentation, and client libraries
+
+
+## API Key
+
+<Card title="Get API Key" icon="key" href="https://pre.dev/projects/playground">
+  Sign up at pre.dev to receive your API key
+</Card>
 
 ## Quick Start
 
@@ -35,9 +49,24 @@ curl -X POST https://api.pre.dev/fast-spec \
   }'
 ```
 
-<Card title="Get API Key" icon="key" href="/quickstart">
-  Sign up at pre.dev to receive your API key
-</Card>
+## Installation
+
+<CodeGroup>
+```python Python
+# pip install predev-api
+
+from predev_api import PredevAPI
+client = PredevAPI(api_key="YOUR_API_KEY")
+```
+
+```javascript Node
+// npm install predev-api
+
+import { PredevAPI } from 'predev-api';
+const client = new PredevAPI({ apiKey: "YOUR_API_KEY" });
+```
+</CodeGroup>
+
 
 ## Specification Levels
 

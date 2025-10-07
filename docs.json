@@ -14,10 +14,10 @@
 	"navigation": {
 		"tabs": [
 			{
-				"tab": "Getting Started",
+				"tab": "Documentation",
 				"groups": [
 					{
-						"group": "Overview",
+						"group": "Get Started",
 						"pages": ["index", "why-architect-api", "quickstart"]
 					}
 				]
