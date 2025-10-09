@@ -126,7 +126,7 @@ Integrate spec generation into your development workflow programmatically.
 ```bash
 # generate-spec.sh
 #!/bin/bash
-curl -X POST https://api.pre.dev/api/fast-spec \
+curl -X POST https://api.pre.dev/fast-spec \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d "{\"input\": \"$1\", \"outputFormat\": \"markdown\"}" \
@@ -151,7 +151,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Generate Spec
         run: |
-          curl -X POST https://api.pre.dev/api/fast-spec \
+          curl -X POST https://api.pre.dev/fast-spec \
             -H "x-api-key: ${{ secrets.ARCHITECT_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{\"input\": \"Implement $(cat features/${{ github.event.pull_request.number }}.md)\", \"outputFormat\": \"markdown\"}" \

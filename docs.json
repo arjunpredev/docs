@@ -11,6 +11,19 @@
 		"dark": "#333333"
 	},
 	"favicon": "https://pre.dev/favicon.ico",
+	"api": {
+		"baseUrl": "https://api.pre.dev",
+		"auth": {
+			"method": "key",
+			"name": "x-api-key",
+			"inputPrefix": ""
+		},
+		"playground": {
+			"mode": "show"
+		},
+		"maintainOrder": true
+	},
+	"openapi": ["api-reference/openapi.json"],
 	"navigation": {
 		"tabs": [
 			{

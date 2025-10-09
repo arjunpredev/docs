@@ -1,6 +1,7 @@
 ---
 title: "Get Spec Status"
-api: "GET https://api.pre.dev/api/spec-status/:specId"
+api: "GET https://api.pre.dev/spec-status/{specId}"
+openapi: "GET /api/spec-status/{specId}"
 description: "Monitor the progress of asynchronous specification processing requests."
 ---
 
@@ -15,7 +16,7 @@ When you make an async request (`"async": true`), use this endpoint to poll for 
 ## Endpoint
 
 ```
-GET https://api.pre.dev/api/spec-status/:specId
+GET https://api.pre.dev/spec-status/:specId
 ```
 
 ## Parameters
@@ -27,7 +28,7 @@ GET https://api.pre.dev/api/spec-status/:specId
 ## Example Request
 
 ```bash
-curl https://api.pre.dev/api/spec-status/507f1f77bcf86cd799439011 \
+curl https://api.pre.dev/spec-status/507f1f77bcf86cd799439011 \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -148,7 +149,7 @@ SPEC_ID="507f1f77bcf86cd799439011"
 API_KEY="YOUR_API_KEY"
 
 while true; do
-  RESPONSE=$(curl -s https://api.pre.dev/api/spec-status/$SPEC_ID \
+  RESPONSE=$(curl -s https://api.pre.dev/spec-status/$SPEC_ID \
     -H "x-api-key: $API_KEY")
 
   STATUS=$(echo $RESPONSE | jq -r '.status')
@@ -187,7 +188,7 @@ def poll_spec_status(api_key: str, spec_id: str, poll_interval: int = 10) -> Dic
     """Poll for spec processing completion."""
     while True:
         response = requests.get(
-            f'https://api.pre.dev/api/spec-status/{spec_id}',
+            f'https://api.pre.dev/spec-status/{spec_id}',
             headers={'x-api-key': api_key}
         )
         response.raise_for_status()
@@ -217,7 +218,7 @@ print(f"Spec URL: {result['output']}")
 async function pollSpecStatus(apiKey, specId, pollInterval = 10000) {
   while (true) {
     const response = await fetch(
-      `https://api.pre.dev/api/spec-status/${specId}`,
+      `https://api.pre.dev/spec-status/${specId}`,
       {
         headers: { 'x-api-key': apiKey }
       }
