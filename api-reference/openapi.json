@@ -25,8 +25,8 @@
 			"apiKeyAuth": []
 		}
 	],
-	"paths": {
-		"/api/fast-spec": {
+  "paths": {
+    "/fast-spec": {
 			"post": {
 				"summary": "Generate Fast Spec",
 				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: 10 credits. Processing time: ~30-40 seconds.",
@@ -152,7 +152,7 @@
 				}
 			}
 		},
-		"/api/deep-spec": {
+    "/deep-spec": {
 			"post": {
 				"summary": "Generate Deep Spec",
 				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: 50 credits. Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
@@ -292,7 +292,7 @@
 				}
 			}
 		},
-		"/api/spec-status/{specId}": {
+    "/spec-status/{specId}": {
 			"get": {
 				"summary": "Get Spec Status",
 				"description": "Check the status of an asynchronous specification processing request. Use this endpoint to poll for completion when you make an async request (async: true).",
