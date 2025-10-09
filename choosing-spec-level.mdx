@@ -1,16 +1,7 @@
-# Choosing Spec Level
-
-## Quick Decision Matrix
-
-| Your Project | Recommended | Why |
-|--------------|-------------|-----|
-| MVP or prototype | **Fast Spec** | Milestones + Stories sufficient |
-| Personal project | **Fast Spec** | No need for granular subtasks |
-| Small team (<5) | **Fast Spec** | Stories provide enough detail |
-| Enterprise application | **Deep Spec** | Need subtasks for team coordination |
-| Complex system | **Deep Spec** | Detailed acceptance criteria required |
-| Mission-critical | **Deep Spec** | Subtask-level planning critical |
-| Large team (5+) | **Deep Spec** | Subtasks enable better task distribution |
+---
+title: "Choosing Spec Level"
+description: "Choosing the right spec level for your project"
+---
 
 ## Fast Spec: When to Use
 
@@ -66,56 +57,20 @@
 
 ## Feature Comparison
 
-| Feature | Fast Spec | Deep Spec |
-|---------|-----------|-----------|
-| Processing Time | 30-40 seconds | 2-3 minutes |
-| Cost | 10 credits | 50 credits |
-| Structure | Milestones > Stories | Milestones > Stories > Subtasks |
-| Milestones | ✅ | ✅ |
-| User Stories | ✅ | ✅ |
-| Basic Acceptance Criteria | ✅ | ✅ |
-| Detailed Acceptance Criteria | ❌ | ✅ |
-| Granular Subtasks | ❌ | ✅ |
-| Architecture Depth | Good | Comprehensive |
-| Risk Analysis | Basic | Detailed |
-| Effort Estimates | High-level | Granular |
-| Team Coordination | Limited | Excellent |
-
-## Can I Upgrade?
-
-Yes! You can easily upgrade from Fast to Deep Spec.
-
-### How to Upgrade
-
-1. **Use your existing spec as context:**
-```json
-{
-  "input": "Generate a deep spec for this project with full implementation details",
-  "currentContext": "[paste your existing Fast Spec content]"
-}
-```
-
-2. **The API automatically handles the upgrade:**
-   - Respects your existing architecture decisions
-   - Adds detailed acceptance criteria to existing stories
-   - Generates granular subtasks for implementation
-   - Maintains consistency with your current spec
-
-3. **Result:** A comprehensive Deep Spec that builds upon your Fast Spec foundation
-
-### When to Upgrade
-
-**Upgrade when you realize you need:**
-- More detailed implementation guidance
-- Better team coordination
-- Granular task breakdown for delegation
-- Comprehensive acceptance criteria
-- Detailed risk analysis
-
-**Don't upgrade if:**
-- You're happy with the current level of detail
-- The project scope remains small
-- You prefer to figure out implementation details as you go
+| Feature                  | Fast Spec   | Deep Spec     |
+|--------------------------|-------------|---------------|
+| Processing Time          | 30-40 seconds | 2-3 minutes  |
+| Cost                     | 10 credits    | 50 credits   |
+| Structure                | Milestones > Stories | Milestones > Stories > Subtasks |
+| Milestones               | ✅           | ✅            |
+| User Stories             | ✅           | ✅            |
+| Basic Acceptance Criteria| ✅           | ✅            |
+| Detailed Acceptance Criteria | ❌       | ✅            |
+| Granular Subtasks        | ❌           | ✅            |
+| Architecture Depth       | Good         | Comprehensive |
+| Risk Analysis            | Basic        | Detailed      |
+| Effort Estimates         | High-level   | Granular      |
+| Team Coordination        | Limited      | Excellent     |
 
 ## Cost-Benefit Analysis
 
