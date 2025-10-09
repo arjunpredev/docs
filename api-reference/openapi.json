@@ -1,217 +1,666 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
+	"openapi": "3.1.0",
+	"info": {
+		"title": "pre.dev Architect API",
+		"description": "Generate comprehensive software specifications for coding agents. The Architect API helps you create detailed project specifications that AI coding agents can understand and implement.",
+		"version": "1.0.0",
+		"contact": {
+			"name": "pre.dev Support",
+			"url": "https://pre.dev",
+			"email": "support@pre.dev"
+		},
+		"license": {
+			"name": "Proprietary",
+			"url": "https://pre.dev/terms"
+		}
+	},
+	"servers": [
+		{
+			"url": "https://api.pre.dev",
+			"description": "Production API Server"
+		}
+	],
+	"security": [
+		{
+			"apiKeyAuth": []
+		}
+	],
+	"paths": {
+		"/api/fast-spec": {
+			"post": {
+				"summary": "Generate Fast Spec",
+				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: 10 credits. Processing time: ~30-40 seconds.",
+				"operationId": "generateFastSpec",
+				"tags": ["Spec Generation"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SpecRequest"
+							},
+							"examples": {
+								"newProject": {
+									"summary": "New Project",
+									"value": {
+										"input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging",
+										"outputFormat": "url"
+									}
+								},
+								"featureAddition": {
+									"summary": "Feature Addition",
+									"value": {
+										"input": "Add a calendar view and Gantt chart visualization",
+										"currentContext": "Existing task management system with list and board views, user auth, and basic team features",
+										"outputFormat": "url"
+									}
+								},
+								"asyncRequest": {
+									"summary": "Async Request",
+									"value": {
+										"input": "Build a comprehensive e-commerce platform with inventory management",
+										"outputFormat": "url",
+										"async": true
+									}
+								}
+							}
+						},
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/FileUploadRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Specification generated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"oneOf": [
+										{
+											"$ref": "#/components/schemas/SpecResponse"
+										},
+										{
+											"$ref": "#/components/schemas/AsyncResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Unauthorized",
+									"message": "Invalid or missing x-api-key header"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment Required - Insufficient credits",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InsufficientCreditsError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too Many Requests - Rate limit exceeded",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/deep-spec": {
+			"post": {
+				"summary": "Generate Deep Spec",
+				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: 50 credits. Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
+				"operationId": "generateDeepSpec",
+				"tags": ["Spec Generation"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SpecRequest"
+							},
+							"examples": {
+								"enterpriseProject": {
+									"summary": "Enterprise Healthcare Platform",
+									"value": {
+										"input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system",
+										"outputFormat": "url"
+									}
+								},
+								"complexFeature": {
+									"summary": "Complex Feature Addition",
+									"value": {
+										"input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
+										"currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices",
+										"outputFormat": "url"
+									}
+								},
+								"asyncProcessing": {
+									"summary": "Async Processing",
+									"value": {
+										"input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
+										"outputFormat": "url",
+										"async": true
+									}
+								}
+							}
+						},
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/FileUploadRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Specification generated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"oneOf": [
+										{
+											"$ref": "#/components/schemas/SpecResponse"
+										},
+										{
+											"$ref": "#/components/schemas/AsyncResponse"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid input parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Unauthorized",
+									"message": "Invalid or missing x-api-key header"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment Required - Insufficient credits",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InsufficientCreditsError"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Subscription required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Subscription required",
+									"message": "Deep Spec requires Solo Premium or Enterprise subscription"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too Many Requests - Rate limit exceeded",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/spec-status/{specId}": {
+			"get": {
+				"summary": "Get Spec Status",
+				"description": "Check the status of an asynchronous specification processing request. Use this endpoint to poll for completion when you make an async request (async: true).",
+				"operationId": "getSpecStatus",
+				"tags": ["Status"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "specId",
+						"in": "path",
+						"required": true,
+						"description": "The unique ID returned from an async spec generation request",
+						"schema": {
+							"type": "string",
+							"example": "507f1f77bcf86cd799439011"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Status retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StatusResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Unauthorized",
+									"message": "Invalid or missing x-api-key header"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found - Spec ID not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Request not found",
+									"message": "No request found with ID: 507f1f77bcf86cd799439011"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"apiKeyAuth": {
+				"type": "apiKey",
+				"in": "header",
+				"name": "x-api-key",
+				"description": "API key for authentication. Get your API key from https://pre.dev/projects/playground (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise)",
+				"x-default": "YOUR_API_KEY"
+			}
+		},
+		"schemas": {
+			"SpecRequest": {
+				"type": "object",
+				"required": ["input"],
+				"properties": {
+					"input": {
+						"type": "string",
+						"description": "Description of what you want to build or the feature you want to add",
+						"example": "Build a SaaS project management tool with team collaboration and real-time updates"
+					},
+					"outputFormat": {
+						"type": "string",
+						"enum": ["url", "markdown"],
+						"default": "url",
+						"description": "Output format: 'url' returns a hosted URL (default), 'markdown' returns raw markdown content"
+					},
+					"currentContext": {
+						"type": "string",
+						"description": "CRITICAL: Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance",
+						"example": "Existing Next.js app with Supabase, has auth, task CRUD, team features"
+					},
+					"docURLs": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uri"
+						},
+						"description": "Optional array of documentation URLs that Architect will reference when generating specifications",
+						"example": ["https://docs.pre.dev", "https://docs.stripe.com"]
+					},
+					"async": {
+						"type": "boolean",
+						"default": false,
+						"description": "If true, returns immediately with requestId for status polling. If false (default), waits for completion"
+					}
+				}
+			},
+			"FileUploadRequest": {
+				"type": "object",
+				"properties": {
+					"file": {
+						"type": "string",
+						"format": "binary",
+						"description": "Optional file to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with input text"
+					},
+					"input": {
+						"type": "string",
+						"description": "Optional additional text description when using file upload. Can be empty string if using only file"
+					},
+					"outputFormat": {
+						"type": "string",
+						"enum": ["url", "markdown"],
+						"default": "url"
+					},
+					"docURLs": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "JSON stringified array of documentation URLs"
+					},
+					"async": {
+						"type": "boolean",
+						"default": false
+					}
+				}
+			},
+			"SpecResponse": {
+				"type": "object",
+				"properties": {
+					"endpoint": {
+						"type": "string",
+						"enum": ["fast_spec", "deep_spec"],
+						"description": "Which endpoint was used"
+					},
+					"input": {
+						"type": "string",
+						"description": "Original input text provided"
+					},
+					"status": {
+						"type": "string",
+						"enum": ["completed"],
+						"description": "Completion status"
+					},
+					"success": {
+						"type": "boolean",
+						"description": "Whether the request succeeded"
+					},
+					"output": {
+						"description": "Primary output - the hosted spec URL or markdown content",
+						"oneOf": [
+							{
+								"type": "string",
+								"format": "uri"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"outputFormat": {
+						"type": "string",
+						"enum": ["url", "markdown"],
+						"description": "Format used"
+					},
+					"outputFileUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL where the spec file is hosted (downloadable markdown)"
+					},
+					"executionTime": {
+						"type": "integer",
+						"description": "Processing time in milliseconds"
+					},
+					"predevUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Pre.dev project URL where you can view and edit the spec"
+					},
+					"lovableUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Lovable.dev with auto-submit prompt to implement the spec"
+					},
+					"cursorUrl": {
+						"type": "string",
+						"description": "Deep link to Cursor with prompt to download and implement the spec"
+					},
+					"v0Url": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Vercel v0 with prompt to implement the spec"
+					},
+					"boltUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Bolt.new with prompt to implement the spec"
+					}
+				}
+			},
+			"AsyncResponse": {
+				"type": "object",
+				"required": ["specId", "status"],
+				"properties": {
+					"specId": {
+						"type": "string",
+						"description": "Unique ID to poll for status (use with /api/spec-status/:specId)",
+						"example": "507f1f77bcf86cd799439011"
+					},
+					"status": {
+						"type": "string",
+						"enum": ["pending"],
+						"description": "Initial status"
+					}
+				}
+			},
+			"StatusResponse": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "MongoDB ObjectId of the spec request"
+					},
+					"created": {
+						"type": "string",
+						"format": "date-time",
+						"description": "ISO timestamp when the request was created"
+					},
+					"endpoint": {
+						"type": "string",
+						"enum": ["fast_spec", "deep_spec"],
+						"description": "Which endpoint was used"
+					},
+					"input": {
+						"type": "string",
+						"description": "Original input text provided"
+					},
+					"status": {
+						"type": "string",
+						"enum": ["pending", "processing", "completed", "failed"],
+						"description": "Current status"
+					},
+					"success": {
+						"type": "boolean",
+						"description": "Whether the request succeeded"
+					},
+					"uploadedFileShortUrl": {
+						"type": "string",
+						"description": "Short URL for uploaded file (if file was uploaded)"
+					},
+					"uploadedFileName": {
+						"type": "string",
+						"description": "Name of uploaded file (if file was uploaded)"
+					},
+					"output": {
+						"description": "Generated spec URL or markdown content (only when completed)"
+					},
+					"outputFormat": {
+						"type": "string",
+						"enum": ["url", "markdown"],
+						"description": "Format used"
+					},
+					"outputFileUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL where the spec file is hosted (only when completed)"
+					},
+					"executionTime": {
+						"type": "integer",
+						"description": "Processing time in milliseconds (only when completed or failed)"
+					},
+					"predevUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Pre.dev project URL (only when completed)"
+					},
+					"lovableUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Lovable.dev (only when completed)"
+					},
+					"cursorUrl": {
+						"type": "string",
+						"description": "Deep link to Cursor (only when completed)"
+					},
+					"v0Url": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Vercel v0 (only when completed)"
+					},
+					"boltUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Deep link to Bolt.new (only when completed)"
+					},
+					"errorMessage": {
+						"type": "string",
+						"description": "Error description (only when failed)"
+					},
+					"progress": {
+						"type": "string",
+						"description": "Human-readable progress description"
+					}
+				}
+			},
+			"Error": {
+				"type": "object",
+				"required": ["error", "message"],
+				"properties": {
+					"error": {
+						"type": "string",
+						"description": "Error type or code"
+					},
+					"message": {
+						"type": "string",
+						"description": "Human-readable error message"
+					}
+				}
+			},
+			"InsufficientCreditsError": {
+				"type": "object",
+				"required": ["error", "message", "creditsRequired", "creditsAvailable"],
+				"properties": {
+					"error": {
+						"type": "string",
+						"example": "Insufficient credits available"
+					},
+					"message": {
+						"type": "string",
+						"example": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits."
+					},
+					"creditsRequired": {
+						"type": "integer",
+						"description": "Number of credits required for the operation",
+						"example": 10
+					},
+					"creditsAvailable": {
+						"type": "integer",
+						"description": "Number of credits currently available",
+						"example": 5
+					}
+				}
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "Spec Generation",
+			"description": "Generate comprehensive software specifications for AI coding agents"
+		},
+		{
+			"name": "Status",
+			"description": "Check status of asynchronous specification processing"
+		}
+	]
 }

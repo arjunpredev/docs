@@ -1,6 +1,6 @@
 ---
 title: "Generate Fast Spec"
-api: "POST https://api.pre.dev/fast-spec"
+api: "POST https://api.pre.dev/api/fast-spec"
 description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in 30-40 seconds."
 ---
 
@@ -18,7 +18,7 @@ Generate a quick, comprehensive project specification.
 ## Endpoint
 
 ```
-POST https://api.pre.dev/fast-spec
+POST https://api.pre.dev/api/fast-spec
 ```
 
 ## Headers
@@ -304,7 +304,7 @@ Fast Spec follows a **two-level hierarchy** optimized for rapid development:
 
 **Synchronous Request:**
 ```bash
-curl -X POST https://api.pre.dev/fast-spec \
+curl -X POST https://api.pre.dev/api/fast-spec \
   -H "Content-Type: application/json" \
   -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
   -d '{
@@ -316,7 +316,7 @@ curl -X POST https://api.pre.dev/fast-spec \
 **Asynchronous Request with Polling:**
 ```bash
 # Step 1: Start async processing
-RESPONSE=$(curl -X POST https://api.pre.dev/fast-spec \
+RESPONSE=$(curl -X POST https://api.pre.dev/api/fast-spec \
   -H "Content-Type: application/json" \
   -H "x-api-key: d98dc3b4-de9e-4f33-86ac-e784169684c4" \
   -d '{
