@@ -15,52 +15,6 @@ description: "Complete guide to Architect API authentication, endpoints, rate li
 https://api.pre.dev
 ```
 
-## Authentication
-
-The Architect API supports two authentication methods:
-
-### Solo Authentication
-
-Use `x-api-key` header with your user ID
-
-```bash
-x-api-key: YOUR_USER_ID
-```
-
-**Where to get your API key:**
-
-1. Log in to [pre.dev](https://pre.dev)
-2. Go to **Settings** → **API Keys**
-3. Copy your **User ID** (this is your API key)
-
-**Format:** Your user ID is a string like `user_2abc123def456`
-
-### Enterprise Authentication
-
-Use `x-api-key` header with your organization's API key
-
-```bash
-x-api-key: YOUR_ORG_API_KEY
-```
-
-**Where to get enterprise API key:**
-
-1. Log in to [pre.dev](https://pre.dev)
-2. Go to **Organization Settings** → **API Keys**
-3. Generate or copy enterprise API key
-4. **Note:** Requires active enterprise subscription
-
-**Format:** Enterprise keys are 32+ character strings like `ek_prod_abc123...`
-
-### Authentication Differences
-
-| Feature | Solo | Enterprise |
-|---------|------|------------|
-| API Key Location | User settings | Organization settings |
-| Cost Tracking | Per user | Per organization |
-| Access Control | Individual | All org members |
-| Subscription | Individual plan | Org-wide plan |
-
 ## Endpoints Overview
 
 | Endpoint | Method | Purpose | Auth Required |

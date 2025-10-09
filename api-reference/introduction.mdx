@@ -33,26 +33,6 @@ description: 'pre.dev Architect API - Generate comprehensive software specificat
 </CardGroup>
 
 
-## Authentication
-
-The Architect API uses API key authentication with two methods:
-
-### Solo Authentication
-
-Use the `x-api-key` header with your user ID from [pre.dev](https://pre.dev) settings.
-
-```bash
-x-api-key: YOUR_USER_ID
-```
-
-### Enterprise Authentication
-
-Use the `x-api-key` header with your organization's API key.
-
-```bash
-x-api-key: YOUR_ORG_API_KEY
-```
-
 <Info>
   Get your API key from the [pre.dev dashboard](https://pre.dev).
 </Info>
@@ -73,17 +53,9 @@ curl -X POST /api/fast-spec \
 
 <CardGroup cols={2}>
   <Card 
-    title="API Overview" 
-    icon="book"
-    href="/api-reference/overview"
-  >
-    Learn about authentication, rate limits, and error handling
-  </Card>
-  
-  <Card 
     title="Quickstart Guide" 
     icon="rocket"
-    href="/quickstart"
+    href="/api-reference/fast-spec"
   >
     Get started with your first API call in minutes
   </Card>
