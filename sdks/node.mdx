@@ -1,0 +1,224 @@
+---
+title: "Node SDK"
+description: "TypeScript/Node.js client for the Pre.dev Architect API - Generate comprehensive software specifications"
+icon: "node-js"
+---
+
+A TypeScript/Node.js client library for the Pre.dev Architect API. Generate comprehensive software specifications using AI-powered analysis.
+
+## Installation
+
+Install the Pre.dev Node SDK using npm:
+
+```bash
+npm install predev-api
+```
+
+## Quick Start
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+// Initialize the client with your API key
+const client = new PredevAPI({ apiKey: 'your_api_key_here' });
+
+// Generate a fast specification
+const result = await client.fastSpec({
+  input: 'Build a task management app with team collaboration',
+  outputFormat: 'url'
+});
+
+console.log(result);
+```
+
+## Authentication
+
+Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground).
+
+```typescript
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+```
+
+## API Methods
+
+### Fast Spec Generation
+
+Generate comprehensive specifications quickly, ideal for MVPs and prototypes:
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.fastSpec({
+  input: 'Build a task management app with team collaboration features',
+  outputFormat: 'url' // or 'json'
+});
+
+console.log(result);
+```
+
+#### Parameters
+
+- `input` **(required)**: `string` - Description of what you want to build
+- `outputFormat` **(optional)**: `"url" | "markdown"` - Output format
+  - `"url"` (default): Returns hosted URL to view the spec
+  - `"markdown"`: Returns raw markdown content in response
+- `currentContext` **(optional)**: `string` - Existing project/codebase context
+  - **When omitted**: Generates full new project spec with setup, deployment, docs
+  - **When provided**: Generates feature addition spec for existing project
+- `docURLs` **(optional)**: `string[]` - Array of documentation URLs for reference
+
+
+### Deep Spec Generation
+
+Generate ultra-detailed specifications for complex systems with enterprise-grade depth:
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.deepSpec({
+  input: 'Build an enterprise resource planning system with inventory, finance, and HR modules',
+  outputFormat: 'url' // or 'json'
+});
+
+console.log(result);
+```
+
+#### Parameters
+
+Same as `fastSpec`
+
+#### Returns
+
+Promise with same structure as `fastSpec()`
+
+### Check Specification Status
+
+For async requests, check the status of your specification generation:
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const status = await client.getSpecStatus('your_spec_id');
+console.log(status);
+```
+
+## TypeScript Support
+
+This package is written in TypeScript and includes full type definitions:
+
+```typescript
+import { PredevAPI, PredevAPIConfig, SpecResponse } from 'predev-api';
+
+const config: PredevAPIConfig = {
+  apiKey: 'your_api_key',
+  enterprise: false
+};
+
+const client = new PredevAPI(config);
+```
+
+## Examples
+
+### Generate Fast Spec
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.fastSpec({
+  input: 'Build a SaaS project management tool with team collaboration',
+  outputFormat: 'url'
+});
+
+console.log(`Specification URL: ${result.fileUrl}`);
+```
+
+### Generate Deep Spec with Context
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.deepSpec({
+  input: 'Add advanced analytics dashboard',
+  currentContext: 'Existing e-commerce platform with user auth and product catalog',
+  outputFormat: 'markdown'
+});
+
+console.log(result.markdown);
+```
+
+### With Documentation URLs
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.fastSpec({
+  input: 'Build a customer support ticketing system',
+  docURLs: ['https://docs.pre.dev', 'https://docs.stripe.com'],
+  outputFormat: 'markdown'
+});
+```
+
+### Async Workflow
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+async function generateSpec() {
+  // Start async generation
+  const asyncResult = await client.fastSpec({
+    input: 'Build a social media platform',
+    outputFormat: 'url'
+  });
+
+  console.log(`Job ID: ${asyncResult._id}`);
+
+  // Poll for completion
+  let status;
+  while (true) {
+    status = await client.getSpecStatus(asyncResult._id!);
+    console.log(`Status: ${status.status}`);
+    
+    if (status.status === 'completed' || status.status === 'failed') {
+      break;
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+
+  if (status.status === 'completed') {
+    console.log(`Specification URL: ${status.outputFileUrl}`);
+  }
+}
+
+generateSpec();
+```
+
+## Documentation
+
+For more information:
+
+- [API Documentation](https://docs.pre.dev/)
+- [Pre.dev Website](https://pre.dev/)
+- [NPM Package](https://www.npmjs.com/package/predev-api)
+
+## Support
+
+For issues or questions:
+
+- [GitHub Repository](https://github.com/predev/predev-api-node)
+- [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
+

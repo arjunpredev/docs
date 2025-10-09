@@ -1,7 +1,7 @@
 {
 	"$schema": "https://mintlify.com/docs.json",
 	"theme": "mint",
-	"name": "Architect API Documentation",
+	"name": "pre.dev Architect API",
 	"appearance": {
 		"default": "dark"
 	},
@@ -14,11 +14,20 @@
 	"navigation": {
 		"tabs": [
 			{
-				"tab": "Getting Started",
+				"tab": "Documentation",
 				"groups": [
 					{
-						"group": "Overview",
+						"group": "Get Started",
 						"pages": ["index", "why-architect-api", "quickstart"]
+					}
+				]
+			},
+			{
+				"tab": "SDKs",
+				"groups": [
+					{
+						"group": "Official SDKs",
+						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
 					}
 				]
 			},
@@ -36,19 +45,6 @@
 					{
 						"group": "Status Endpoints",
 						"pages": ["api-reference/spec-status"]
-					}
-				]
-			},
-			{
-				"tab": "MCP Integration",
-				"groups": [
-					{
-						"group": "Integration Guide",
-						"pages": [
-							"mcp-integration/overview",
-							"mcp-integration/setup",
-							"mcp-integration/usage"
-						]
 					}
 				]
 			},

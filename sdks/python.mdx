@@ -1,0 +1,262 @@
+---
+title: "Python SDK"
+description: "Python client for the Pre.dev Architect API - Generate comprehensive software specifications"
+icon: "python"
+---
+
+A Python client library for the Pre.dev Architect API. Generate comprehensive software specifications using AI-powered analysis.
+
+## Installation
+
+Install the Pre.dev Python SDK using pip:
+
+```bash
+pip install predev-api
+```
+
+## Quick Start
+
+```python
+from predev_api import PredevAPI
+
+# Initialize the predev client with your API key
+predev = PredevAPI(api_key="your_api_key_here")
+
+# Generate a fast specification
+result = predev.fast_spec(
+    input_text="Build a task management app with team collaboration",
+    output_format="url"
+)
+
+print(result)
+```
+
+## Authentication
+
+Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground).
+
+```python
+predev = PredevAPI(api_key="your_api_key")
+```
+
+## API Methods
+
+### Fast Spec Generation
+
+Generate a fast specification (30-40 seconds, 10 credits).
+
+```python
+result = predev.fast_spec(
+    input_text="Build a SaaS project management tool with real-time collaboration",
+    output_format="url",
+    current_context=None,  # Optional: existing project context
+    doc_urls=None  # Optional: documentation URLs to reference
+)
+```
+
+#### Parameters
+
+- `input_text` **(required)**: `str` - Description of what you want to build
+- `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
+- `current_context` **(optional)**: `str` - Existing project context
+- `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
+
+#### Returns
+
+`SpecResponse` object with complete specification data
+
+#### Example - New Project
+
+```python
+result = predev.fast_spec(
+    input_text="Build a healthcare platform with HIPAA compliance",
+    output_format="url"
+)
+```
+
+#### Example - Feature Addition
+
+```python
+result = predev.fast_spec(
+    input_text="Add calendar view and Gantt chart visualization",
+    current_context="Existing task management system with list/board views",
+    output_format="url"
+)
+```
+
+### Deep Spec Generation
+
+Generate a deep specification (2-3 minutes, 50 credits).
+
+```python
+result = predev.deep_spec(
+    input_text="Build a healthcare platform with HIPAA compliance",
+    output_format="url",
+    current_context=None,  # Optional: existing project context
+    doc_urls=None  # Optional: documentation URLs
+)
+```
+
+#### Parameters
+
+Same as `fast_spec`
+
+#### Returns
+
+`SpecResponse` object with comprehensive specification data
+
+### Async Spec Generation
+
+Generate specifications asynchronously (returns immediately).
+
+```python
+# Fast spec async
+result = predev.fast_spec_async(
+    input_text="Build a comprehensive e-commerce platform",
+    output_format="url"
+)
+# Returns: AsyncResponse(specId="spec_123", status="pending")
+
+# Deep spec async
+result = predev.deep_spec_async(
+    input_text="Build a fintech platform with regulatory compliance",
+    output_format="url"
+)
+# Returns: AsyncResponse(specId="spec_456", status="pending")
+```
+
+### Check Specification Status
+
+Check the status of an async specification generation request.
+
+```python
+status = predev.get_spec_status("spec_123")
+# Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
+```
+
+## Response Types
+
+### AsyncResponse
+
+```python
+@dataclass
+class AsyncResponse:
+    specId: str  # Unique ID for polling (e.g., "spec_abc123")
+    status: Literal['pending', 'processing', 'completed', 'failed']
+```
+
+### SpecResponse
+
+```python
+@dataclass
+class SpecResponse:
+    # Basic info
+    _id: Optional[str] = None
+    created: Optional[str] = None
+    endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None
+    input: Optional[str] = None
+    status: Optional[Literal['pending', 'processing', 'completed', 'failed']] = None
+    success: Optional[bool] = None
+
+    # Output data (when completed)
+    uploadedFileShortUrl: Optional[str] = None
+    uploadedFileName: Optional[str] = None
+    output: Optional[Any] = None
+    outputFormat: Optional[Literal['markdown', 'url']] = None
+    outputFileUrl: Optional[str] = None
+    executionTime: Optional[int] = None
+
+    # Integration URLs (when completed)
+    predevUrl: Optional[str] = None
+    lovableUrl: Optional[str] = None
+    cursorUrl: Optional[str] = None
+    v0Url: Optional[str] = None
+    boltUrl: Optional[str] = None
+
+    # Error handling
+    errorMessage: Optional[str] = None
+    progress: Optional[str] = None
+```
+
+## Examples
+
+### Generate Fast Spec
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+result = predev.fast_spec(
+    input_text="Build a task management app with team collaboration",
+    output_format="url"
+)
+
+print(f"Specification URL: {result.outputFileUrl}")
+```
+
+### Generate Deep Spec with Context
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+result = predev.deep_spec(
+    input_text="Add advanced analytics dashboard",
+    current_context="Existing e-commerce platform with user auth and product catalog",
+    output_format="markdown"
+)
+
+print(result.output)
+```
+
+### Async Workflow
+
+```python
+from predev_api import PredevAPI
+import time
+
+predev = PredevAPI(api_key="your_api_key")
+
+# Start async generation
+async_result = predev.fast_spec_async(
+    input_text="Build a social media platform",
+    output_format="url"
+)
+
+print(f"Job ID: {async_result.specId}")
+
+# Poll for completion
+while True:
+    status = predev.get_spec_status(async_result.specId)
+    print(f"Status: {status.status}")
+    
+    if status.status in ["completed", "failed"]:
+        break
+    
+    time.sleep(5)
+
+if status.status == "completed":
+    print(f"Specification URL: {status.outputFileUrl}")
+```
+
+## Requirements
+
+- Python >=3.8
+
+## Documentation
+
+For more information:
+
+- [API Documentation](https://docs.pre.dev/)
+- [Pre.dev Website](https://pre.dev/)
+- [PyPI Package](https://pypi.org/project/predev-api/)
+
+## Support
+
+For issues or questions:
+
+- [GitHub Repository](https://github.com/predev/predev-api-python)
+- [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
+

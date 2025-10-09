@@ -23,6 +23,15 @@
 				]
 			},
 			{
+				"tab": "SDKs",
+				"groups": [
+					{
+						"group": "Official SDKs",
+						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
+					}
+				]
+			},
+			{
 				"tab": "API Reference",
 				"groups": [
 					{
@@ -36,20 +45,6 @@
 					{
 						"group": "Status Endpoints",
 						"pages": ["api-reference/spec-status"]
-					}
-				]
-			},
-			{
-				"tab": "Guides",
-				"groups": [
-					{
-						"group": "Best Practices",
-						"pages": [
-							"guides/use-cases",
-							"guides/integration-patterns",
-							"guides/best-practices",
-							"guides/choosing-spec-level"
-						]
 					}
 				]
 			}
