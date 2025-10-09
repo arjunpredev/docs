@@ -37,36 +37,21 @@ The pre.dev Architect API can be integrated in two ways:
   Sign up at pre.dev to receive your API key
 </Card>
 
-## Quick Start
-
-```bash
-curl -X POST https://api.pre.dev/fast-spec \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_API_KEY" \
-  -d '{
-    "input": "Build a REST API for task management with user authentication",
-    "outputFormat": "url"
-  }'
-```
-
 ## Installation
 
 <CodeGroup>
-```python Python
-# pip install predev-api
+```bash cURL
+# No installation required - use curl directly
+```
 
-from predev_api import PredevAPI
-client = PredevAPI(api_key="YOUR_API_KEY")
+```python Python
+pip install predev-api
 ```
 
 ```javascript Node
-// npm install predev-api
-
-import { PredevAPI } from 'predev-api';
-const client = new PredevAPI({ apiKey: "YOUR_API_KEY" });
+npm install predev-api
 ```
 </CodeGroup>
-
 
 ## Specification Levels
 
@@ -76,6 +61,48 @@ const client = new PredevAPI({ apiKey: "YOUR_API_KEY" });
 | `deep-spec` | Production features, complex systems | 50 credits | ~2-3 minutes | Granular breakdown |
 
 See [Choosing Spec Level](/guides/choosing-spec-level) for detailed comparison.
+
+## Generating a Fast Spec
+
+Here's how to generate a specification using the `fast-spec` endpoint:
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.pre.dev/fast-spec \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -d '{
+    "input": "Build a REST API for task management with user authentication",
+    "outputFormat": "url"
+  }'
+```
+
+```python Python
+from predev_api import PredevAPI
+
+client = PredevAPI(api_key="YOUR_API_KEY")
+
+response = client.fast_spec(
+    input="Build a REST API for task management with user authentication",
+    output_format="url"
+)
+
+print(response)
+```
+
+```javascript Node
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: "YOUR_API_KEY" });
+
+const response = await client.fastSpec({
+  input: "Build a REST API for task management with user authentication",
+  outputFormat: "url"
+});
+
+console.log(response);
+```
+</CodeGroup>
 
 ## Response Format
 
@@ -94,28 +121,3 @@ Specs are returned as structured markdown with:
 - [✓] Complete
 - [\] Skipped
 ```
-
-## Web Dashboard
-
-Each API request creates a synced project at `pre.dev/projects/{id}` with:
-
-- Web-based spec editor for iteration
-- Team collaboration and progress tracking
-- Version history
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Make your first API request
-  </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/overview">
-    Complete endpoint documentation
-  </Card>
-  <Card title="Integration Patterns" icon="diagram-project" href="/guides/integration-patterns">
-    Agent integration examples
-  </Card>
-  <Card title="View Example Output" icon="file-lines" href="/examples/sample-output">
-    See what specs look like
-  </Card>
-</CardGroup>
