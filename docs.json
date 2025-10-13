@@ -24,74 +24,52 @@
 		"maintainOrder": true
 	},
 	"openapi": ["api-reference/openapi.json"],
-	"navigation": {
-		"tabs": [
-			{
-				"tab": "Documentation",
-				"groups": [
-					{
-						"group": "Get Started",
-						"pages": ["index", "why-architect-api", "choosing-spec-level"]
-					}
-				]
-			},
-			{
-				"tab": "SDKs",
-				"groups": [
-					{
-						"group": "Official SDKs",
-						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
-					}
-				]
-			},
-			{
-				"tab": "API Reference",
-				"groups": [
-					{
-						"group": "Using the API",
-						"pages": ["api-reference/introduction"]
-					},
-					{
-						"group": "Spec Endpoints",
-						"pages": ["api-reference/fast-spec", "api-reference/deep-spec"]
-					},
-					{
-						"group": "Status Endpoints",
-						"pages": ["api-reference/spec-status"]
-					}
-				]
-			}
-		],
-		"global": {
-			"anchors": [
-				{
-					"anchor": "Create a Project",
-					"href": "https://pre.dev",
-					"icon": "plus"
-				},
-				{
-					"anchor": "Find Developers",
-					"href": "https://pre.dev/directory",
-					"icon": "user"
-				},
-				{
-					"anchor": "API Playground",
-					"href": "https://pre.dev/projects/playground",
-					"icon": "code"
-				},
-				{
-					"anchor": "Blog",
-					"href": "https://pre.dev/blog",
-					"icon": "newspaper"
-				},
-				{
-					"anchor": "Community",
-					"href": "https://discord.com/invite/ejVTRJ6WXS",
-					"icon": "discord"
-				}
+	"navigation": [
+		{
+			"group": "Get Started",
+			"pages": ["index", "why-architect-api", "choosing-spec-level"]
+		},
+		{
+			"group": "SDKs",
+			"pages": ["sdks/overview", "sdks/python", "sdks/node"]
+		},
+		{
+			"group": "API Reference",
+			"pages": [
+				"api-reference/introduction",
+				"api-reference/fast-spec",
+				"api-reference/deep-spec",
+				"api-reference/spec-status"
 			]
 		}
-	},
+	],
+	"anchors": [
+		{
+			"name": "Create a Project",
+			"url": "https://pre.dev",
+			"icon": "plus"
+		},
+		{
+			"name": "Find Developers",
+			"url": "https://pre.dev/directory",
+			"icon": "user"
+		},
+		{
+			"name": "API Playground",
+			"url": "https://pre.dev/projects/playground",
+			"icon": "code"
+		},
+		{
+			"name": "Blog",
+			"url": "https://pre.dev/blog",
+			"icon": "newspaper"
+		},
+		{
+			"name": "Community",
+			"url": "https://discord.com/invite/ejVTRJ6WXS",
+			"icon": "discord"
+		}
+	],
 	"logo": {
 		"light": "https://pre.dev/predev_logo_name_white.png",
 		"dark": "https://pre.dev/predev_logo_name.png"

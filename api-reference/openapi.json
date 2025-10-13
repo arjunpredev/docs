@@ -485,7 +485,7 @@
 					"predevUrl": {
 						"type": "string",
 						"format": "uri",
-						"description": "Pre.dev project URL where you can view and edit the spec"
+						"description": "pre.dev project URL where you can view and edit the spec"
 					},
 					"lovableUrl": {
 						"type": "string",
@@ -582,7 +582,7 @@
 					"predevUrl": {
 						"type": "string",
 						"format": "uri",
-						"description": "Pre.dev project URL (only when completed)"
+						"description": "pre.dev project URL (only when completed)"
 					},
 					"lovableUrl": {
 						"type": "string",
