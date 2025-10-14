@@ -1,31 +1,43 @@
 ---
 title: "MCP Server"
-description: "Integrate pre.dev MCP Server into your coding environment for AI-powered specification generation"
+description: "Generate AI-powered project specifications directly in Cursor"
 ---
 
-# pre.dev MCP Server Documentation
+<Note>
+  The pre.dev MCP Server brings AI-powered specification generation directly into your coding environment. Generate comprehensive specs without leaving your IDE.
+</Note>
 
 ## What is pre.dev MCP?
 
-pre.dev MCP (Model Context Protocol) Server is a powerful tool that integrates pre.dev's AI-powered specification generation directly into your coding environment. With MCP, you can generate comprehensive project specifications, technical documentation, and architectural plans directly from Cursor or other MCP-compatible tools.
+The pre.dev MCP (Model Context Protocol) Server integrates seamlessly with Cursor and other MCP-compatible tools, allowing you to:
+
+- **Generate project specifications** directly in your IDE
+- **Create technical documentation** from natural language descriptions
+- **Build architectural plans** for complex systems
+- **Access pre.dev's AI** without switching contexts
 
 ## Quick Start
 
-<Card title="Get API Key" icon="key" href="https://pre.dev/projects/playground">
-  Sign up at pre.dev to receive your API key
-</Card>
-
-### Add to Cursor / Other MCP-compatible tools
-
-#### Option A: One-Click Installation
-1. Visit [pre.dev/projects/playground](https://pre.dev/projects/playground)
-2. Click the "Add to Cursor" button
-3. Follow the prompts to install the MCP server
-
-#### Option B: Manual Installation
-1. Open Cursor → Settings → Cursor Settings → Tools & MCP
-2. Click "New MCP Server"
-3. Add this configuration:
+<Steps>
+  <Step title="Get Your API Key">
+    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/playground">
+      Visit the playground to get your API key
+    </Card>
+    
+  </Step>
+  
+  <Step title="Install the MCP Server">
+    <Tabs>
+      <Tab title="One-Click Install">
+        1. Visit [pre.dev/projects/playground](https://pre.dev/projects/playground)
+        2. Click the **"Add to Cursor"** button
+        3. Follow the prompts to complete installation
+      </Tab>
+      
+      <Tab title="Manual Install">
+        1. Open Cursor → Settings → Cursor Settings → **Tools & MCP**
+        2. Click **"New MCP Server"**
+        3. Add this configuration:
 
 ```json
 {
@@ -40,110 +52,154 @@ pre.dev MCP (Model Context Protocol) Server is a powerful tool that integrates p
 }
 ```
 
-4. Replace `YOUR_API_KEY` with your actual API key
-5. Save and restart Cursor
-
-### Test the Integration
-
-In Cursor, try asking:
-> "Use pre.dev to generate a spec for a task management app"
+        4. Replace `YOUR_API_KEY` with your actual API key
+        5. Save and restart Cursor
+      </Tab>
+    </Tabs>
+  </Step>
+  
+  <Step title="Test the Integration">
+    Open Cursor and try this command:
+    
+    ```
+    Use pre.dev to generate a spec for a task management app
+    ```
+    
+    <Check>If successful, you'll receive a comprehensive project specification!</Check>
+  </Step>
+</Steps>
 
 ## Available Tools
 
-### fast_spec
-**Cost:** 10 credits | **Speed:** ~30-60 seconds
-
-Generate a quick project specification from an executive summary. Perfect for rapid prototyping and MVP planning.
-
-**Usage:**
-```
-Use pre.dev fast_spec to generate a spec for: [your project description]
-```
-
-**Example:**
-```
-Use pre.dev fast_spec to generate a spec for: A social media app with real-time messaging, photo sharing, and user profiles
-```
-
-### deep_spec
-**Cost:** 50 credits | **Speed:** ~2-5 minutes
-
-Generate a comprehensive, detailed project specification. Ideal for enterprise projects, complex systems, and detailed planning.
-
-**Usage:**
-```
-Use pre.dev deep_spec to generate a detailed spec for: [your project description]
-```
-
-**Example:**
-```
-Use pre.dev deep_spec to generate a detailed spec for: An enterprise CRM with AI-powered lead scoring, automated workflows, and advanced analytics
-```
+<CardGroup cols={2}>
+  <Card title="fast_spec" icon="bolt">
+    **Cost:** 10 credits | **Speed:** ~30-60 seconds
+    
+    Quick project specifications perfect for rapid prototyping and MVP planning.
+    
+    ```
+    Use pre.dev fast_spec to generate a spec for: 
+    A social media app with real-time messaging, 
+    photo sharing, and user profiles
+    ```
+  </Card>
+  
+  <Card title="deep_spec" icon="microscope">
+    **Cost:** 50 credits | **Speed:** ~2-5 minutes
+    
+    Comprehensive, detailed specifications ideal for enterprise projects and complex systems.
+    
+    ```
+    Use pre.dev deep_spec to generate a detailed spec for: 
+    An enterprise CRM with AI-powered lead scoring, 
+    automated workflows, and advanced analytics
+    ```
+  </Card>
+  
+</CardGroup>
 
 ## Advanced Features
 
-### Documentation References
-
-Include external documentation for more accurate specs:
-
-```
-Use pre.dev deep_spec to generate a spec for a React app, referencing: https://react.dev/docs, https://tailwindcss.com/docs
-```
+<AccordionGroup>
+  <Accordion title="Context Integration" icon="link">
+    Build on existing work by referencing previous specs or projects:
+    
+    ```
+    Use pre.dev deep_spec to add payment processing 
+    to this existing project: [existing_context_id]
+    ```
+    
+    The MCP will automatically:
+    - Fetch your existing context
+    - Validate permissions
+    - Generate new specs that build on your previous work
+  </Accordion>
+  
+  <Accordion title="Documentation References" icon="book">
+    Include external documentation for more accurate specs:
+    
+    ```
+    Use pre.dev deep_spec to generate a spec for a React app, 
+    referencing: https://react.dev/docs, https://tailwindcss.com/docs
+    ```
+  </Accordion>
+  
+</AccordionGroup>
 
 ## Cost Management
 
-### Check Your Usage
-Visit [pre.dev/projects/playground](https://pre.dev/projects/playground) to see:
-- Remaining daily generations
-- Usage history
-- Upgrade options
+<Info>
+  **Check Your Usage:** Visit [pre.dev/projects/playground](https://pre.dev/projects/playground) to view remaining credits, usage history, and upgrade options.
+</Info>
 
-### Insufficient Credits?
-If you run out of credits, you'll see:
-```
-❌ Insufficient Credits Available
-Fast Spec requires 10 credits.
-You have 3 remaining.
-Visit https://pre.dev/projects/playground to purchase more credits.
-```
+<Warning>
+  **Out of Credits?** 
+  
+  If you run out of credits, you'll see this message:
+  ```
+  ❌ Insufficient Credits Available
+  Fast Spec requires 10 credits.
+  You have 3 remaining.
+  ```
+  
+  Visit the playground to upgrade your plan or purchase additional credits.
+</Warning>
 
 ## Common Use Cases
 
-### 1. Rapid Prototyping
-```
-Use pre.dev fast_spec to generate a spec for: MVP of a food delivery app
-```
+<Tabs>
+  <Tab title="Rapid Prototyping">
+    Perfect for MVPs and quick validation:
+    
+    ```
+    Use pre.dev fast_spec to generate a spec for: 
+    MVP of a food delivery app with restaurant listings, 
+    order tracking, and payment integration
+    ```
+  </Tab>
+  
+  <Tab title="Enterprise Planning">
+    Detailed specs for complex systems:
+    
+    ```
+    Use pre.dev deep_spec to generate a detailed spec for: 
+    Enterprise data analytics platform with real-time 
+    dashboards, multi-tenant architecture, and role-based access
+    ```
+  </Tab>
+  
+  <Tab title="Feature Addition">
+    Extend existing projects:
+    
+    ```
+    Use pre.dev deep_spec to add user authentication 
+    and authorization to this existing e-commerce project
+    ```
+  </Tab>
+  
+  <Tab title="Technical Documentation">
+    Generate comprehensive documentation:
+    
+    ```
+    Use pre.dev deep_spec to generate technical documentation for: 
+    Microservices architecture with Docker, Kubernetes, 
+    and service mesh
+    ```
+  </Tab>
+</Tabs>
 
-### 2. Enterprise Planning
-```
-Use pre.dev deep_spec to generate a detailed spec for: Enterprise data analytics platform with real-time dashboards
-```
+## Troubleshooting
 
-### 3. Feature Addition
-```
-Use pre.dev deep_spec to add user authentication to this existing e-commerce project: [context_id]
-```
-
-### 4. Technical Documentation
-```
-Use pre.dev deep_spec to generate technical documentation for: Microservices architecture with Docker and Kubernetes
-```
-
-## Best Practices
-
-### 1. Clear Project Descriptions
-**Good:**
-```
-Generate a spec for: A task management app with drag-and-drop functionality, team collaboration, and deadline tracking
-```
-
-**Avoid:**
-```
-Generate a spec for: app
-```
-
-### 2. Use Appropriate Tool
-- **fast_spec:** MVPs, prototypes, simple projects
-- **deep_spec:** Complex systems, enterprise applications, detailed planning
-
-
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="triangle-exclamation">
+    - Verify your API key is correct
+    - Ensure you're using the right key (solo vs enterprise)
+    - Check your subscription is active
+  </Accordion>
+  
+  <Accordion title="Tool Not Found" icon="magnifying-glass">
+    - Restart Cursor after adding MCP config
+    - Verify the URL: `https://api.pre.dev/mcp`
+    - Check JSON syntax in configuration
+  </Accordion>
+</AccordionGroup>
