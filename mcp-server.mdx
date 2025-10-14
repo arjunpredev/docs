@@ -1,0 +1,149 @@
+---
+title: "MCP Server"
+description: "Integrate pre.dev MCP Server into your coding environment for AI-powered specification generation"
+---
+
+# pre.dev MCP Server Documentation
+
+## What is pre.dev MCP?
+
+pre.dev MCP (Model Context Protocol) Server is a powerful tool that integrates pre.dev's AI-powered specification generation directly into your coding environment. With MCP, you can generate comprehensive project specifications, technical documentation, and architectural plans directly from Cursor or other MCP-compatible tools.
+
+## Quick Start
+
+<Card title="Get API Key" icon="key" href="https://pre.dev/projects/playground">
+  Sign up at pre.dev to receive your API key
+</Card>
+
+### Add to Cursor / Other MCP-compatible tools
+
+#### Option A: One-Click Installation
+1. Visit [pre.dev/projects/playground](https://pre.dev/projects/playground)
+2. Click the "Add to Cursor" button
+3. Follow the prompts to install the MCP server
+
+#### Option B: Manual Installation
+1. Open Cursor → Settings → Cursor Settings → Tools & MCP
+2. Click "New MCP Server"
+3. Add this configuration:
+
+```json
+{
+  "mcpServers": {
+    "predev": {
+      "url": "https://api.pre.dev/mcp",
+      "headers": {
+        "x-api-key": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+4. Replace `YOUR_API_KEY` with your actual API key
+5. Save and restart Cursor
+
+### Test the Integration
+
+In Cursor, try asking:
+> "Use pre.dev to generate a spec for a task management app"
+
+## Available Tools
+
+### fast_spec
+**Cost:** 10 credits | **Speed:** ~30-60 seconds
+
+Generate a quick project specification from an executive summary. Perfect for rapid prototyping and MVP planning.
+
+**Usage:**
+```
+Use pre.dev fast_spec to generate a spec for: [your project description]
+```
+
+**Example:**
+```
+Use pre.dev fast_spec to generate a spec for: A social media app with real-time messaging, photo sharing, and user profiles
+```
+
+### deep_spec
+**Cost:** 50 credits | **Speed:** ~2-5 minutes
+
+Generate a comprehensive, detailed project specification. Ideal for enterprise projects, complex systems, and detailed planning.
+
+**Usage:**
+```
+Use pre.dev deep_spec to generate a detailed spec for: [your project description]
+```
+
+**Example:**
+```
+Use pre.dev deep_spec to generate a detailed spec for: An enterprise CRM with AI-powered lead scoring, automated workflows, and advanced analytics
+```
+
+## Advanced Features
+
+### Documentation References
+
+Include external documentation for more accurate specs:
+
+```
+Use pre.dev deep_spec to generate a spec for a React app, referencing: https://react.dev/docs, https://tailwindcss.com/docs
+```
+
+## Cost Management
+
+### Check Your Usage
+Visit [pre.dev/projects/playground](https://pre.dev/projects/playground) to see:
+- Remaining daily generations
+- Usage history
+- Upgrade options
+
+### Insufficient Credits?
+If you run out of credits, you'll see:
+```
+❌ Insufficient Credits Available
+Fast Spec requires 10 credits.
+You have 3 remaining.
+Visit https://pre.dev/projects/playground to purchase more credits.
+```
+
+## Common Use Cases
+
+### 1. Rapid Prototyping
+```
+Use pre.dev fast_spec to generate a spec for: MVP of a food delivery app
+```
+
+### 2. Enterprise Planning
+```
+Use pre.dev deep_spec to generate a detailed spec for: Enterprise data analytics platform with real-time dashboards
+```
+
+### 3. Feature Addition
+```
+Use pre.dev deep_spec to add user authentication to this existing e-commerce project: [context_id]
+```
+
+### 4. Technical Documentation
+```
+Use pre.dev deep_spec to generate technical documentation for: Microservices architecture with Docker and Kubernetes
+```
+
+## Best Practices
+
+### 1. Clear Project Descriptions
+**Good:**
+```
+Generate a spec for: A task management app with drag-and-drop functionality, team collaboration, and deadline tracking
+```
+
+**Avoid:**
+```
+Generate a spec for: app
+```
+
+### 2. Use Appropriate Tool
+- **fast_spec:** MVPs, prototypes, simple projects
+- **deep_spec:** Complex systems, enterprise applications, detailed planning
+
+
