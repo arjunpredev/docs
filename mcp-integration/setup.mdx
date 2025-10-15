@@ -17,6 +17,9 @@ Find your MCP configuration file based on your agent:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
+**Claude Code (CLI):**
+- Use the `claude mcp add-json` command (see configuration examples below)
+
 **Cursor:**
 - Access via Cursor settings → MCP → Edit Configuration
 
@@ -25,25 +28,15 @@ Find your MCP configuration file based on your agent:
 
 ### 2. Add Architect API Server
 
-Add the following server configuration to your MCP config:
+Choose the appropriate configuration method for your agent (see Configuration Examples below):
 
-```json
-{
-  "mcpServers": {
-    "predev-architect": {
-      "command": "npx",
-      "args": ["-y", "@predev/architect-mcp-server"],
-      "env": {
-        "PREDEV_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
+- **Claude Code**: Use the `claude mcp add-json` command
+- **Claude Desktop / Cursor / Windsurf**: Add HTTP server configuration to your MCP config
 
 ### 3. Restart Your Agent
 
 - **Claude Desktop:** Quit and restart the application
+- **Claude Code:** No restart needed - configuration is applied immediately
 - **Cursor:** Reload the window (Cmd/Ctrl + Shift + P → "Developer: Reload Window")
 - **Other agents:** Follow their restart procedure
 
@@ -64,28 +57,38 @@ If working correctly, your agent should respond that it's generating a specifica
 ```json
 {
   "mcpServers": {
-    "predev-architect": {
-      "command": "npx",
-      "args": ["-y", "@predev/architect-mcp-server"],
-      "env": {
-        "PREDEV_API_KEY": "your-user-id-here"
+    "predev": {
+      "url": "https://api.pre.dev/mcp",
+      "headers": {
+        "x-api-key": "your-api-key-here"
       }
     }
   }
 }
 ```
 
+### Claude Code (CLI)
+
+Run this single command in your terminal:
+
+```bash
+claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"x-api-key":"YOUR_API_KEY"}}'
+```
+
+Replace `YOUR_API_KEY` with your actual API key. This command automatically configures Claude Code's MCP settings.
+
 ### Cursor
 
-In Cursor settings, add to MCP servers:
+In Cursor settings → Tools & MCP, add:
 
 ```json
 {
-  "predev-architect": {
-    "command": "npx",
-    "args": ["-y", "@predev/architect-mcp-server"],
-    "env": {
-      "PREDEV_API_KEY": "your-user-id-here"
+  "mcpServers": {
+    "predev": {
+      "url": "https://api.pre.dev/mcp",
+      "headers": {
+        "x-api-key": "your-api-key-here"
+      }
     }
   }
 }
@@ -98,11 +101,10 @@ Add to your Windsurf MCP configuration:
 ```json
 {
   "servers": {
-    "predev-architect": {
-      "command": "npx",
-      "args": ["-y", "@predev/architect-mcp-server"],
-      "env": {
-        "PREDEV_API_KEY": "your-user-id-here"
+    "predev": {
+      "url": "https://api.pre.dev/mcp",
+      "headers": {
+        "x-api-key": "your-api-key-here"
       }
     }
   }
@@ -111,29 +113,24 @@ Add to your Windsurf MCP configuration:
 
 ## Troubleshooting
 
-### "Command not found" errors
-
-**Problem:** `npx` is not available in your PATH.
-
-**Solution:** Install Node.js and npm, or use the full path to npx.
-
 ### "MCP server failed to start"
 
-**Problem:** Configuration syntax error or missing dependencies.
+**Problem:** Configuration syntax error or invalid API key.
 
 **Solution:**
 1. Validate your JSON syntax
-2. Ensure `@predev/architect-mcp-server` is accessible
-3. Check that your API key is valid
+2. Verify your API key is correct
+3. Ensure the URL is exactly `https://api.pre.dev/mcp`
+4. Check that the `x-api-key` header is properly set
 
 ### "Authentication failed"
 
 **Problem:** Invalid or missing API key.
 
 **Solution:**
-1. Verify your API key in pre.dev settings
-2. Ensure the `PREDEV_API_KEY` environment variable is set correctly
-3. Check that you're using the correct key format (user ID for solo, org key for enterprise)
+1. Verify your API key in pre.dev playground
+2. Ensure you're using the correct API key format
+3. Check that your subscription is active
 
 ### Agent doesn't respond to spec requests
 
@@ -143,15 +140,7 @@ Add to your Windsurf MCP configuration:
 1. Restart your agent completely
 2. Check agent logs for MCP errors
 3. Verify the server is listed in your agent's MCP status
-
-### "Module not found" errors
-
-**Problem:** npm package installation issues.
-
-**Solution:**
-1. Clear npm cache: `npm cache clean --force`
-2. Try installing globally: `npm install -g @predev/architect-mcp-server`
-3. Update npm: `npm install -g npm@latest`
+4. Confirm the server URL is accessible
 
 ### Connection timeouts
 
@@ -161,13 +150,7 @@ Add to your Windsurf MCP configuration:
 1. Check your internet connection
 2. Verify api.pre.dev is accessible
 3. Wait a few minutes and retry (may be temporary server load)
-
-### Need enterprise setup?
-
-**For enterprise users:**
-1. Use `PREDEV_ENTERPRISE_API_KEY` instead of `PREDEV_API_KEY`
-2. Get your enterprise key from organization settings
-3. Ensure your account has enterprise permissions
+4. Check if your firewall is blocking the connection
 
 ## Next Steps
 

@@ -42,13 +42,13 @@ The pre.dev MCP Server equips your AI coding agent with:
   
   <Step title="Install the MCP Server">
     <Tabs>
-      <Tab title="One-Click Install">
+      <Tab title="Cursor - One-Click">
         1. Visit [pre.dev/projects/playground](https://pre.dev/projects/playground)
         2. Click the **"Add to Cursor"** button
         3. Follow the prompts to complete installation
       </Tab>
       
-      <Tab title="Manual Install">
+      <Tab title="Cursor - Manual">
         1. Open Cursor → Settings → Cursor Settings → **Tools & MCP**
         2. Click **"New MCP Server"**
         3. Add this configuration:
@@ -69,11 +69,23 @@ The pre.dev MCP Server equips your AI coding agent with:
         4. Replace `YOUR_API_KEY` with your actual API key
         5. Save and restart Cursor
       </Tab>
+      
+      <Tab title="Claude Code">
+        Run this command in your terminal:
+
+```bash
+claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"x-api-key":"YOUR_API_KEY"}}'
+```
+
+        Replace `YOUR_API_KEY` with your actual API key from the playground.
+        
+        <Info>The command automatically configures Claude Code's MCP settings.</Info>
+      </Tab>
     </Tabs>
   </Step>
   
   <Step title="Test the Integration">
-    Open Cursor and try this command:
+    Open your AI coding agent and try this command:
     
     ```
     Use pre.dev to generate a spec for a task management app

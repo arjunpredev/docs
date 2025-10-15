@@ -31,7 +31,9 @@ Once configured, spec processing is just a natural part of your conversation.
 ### Universal Compatibility
 Works with any MCP-enabled agent:
 - Claude Desktop
+- Claude Code (CLI)
 - Cursor
+- Windsurf
 - [Other supported agents]
 
 ## MCP vs Direct API
@@ -59,11 +61,17 @@ Get spec URLs and continue your development conversation without interruption.
 
 ## Supported Agents
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
   <Card title="Claude Desktop" icon="bot">
     **Configuration:** Add to Claude's MCP settings
 
     **Usage:** Natural language spec processing in any conversation
+  </Card>
+
+  <Card title="Claude Code (CLI)" icon="terminal">
+    **Configuration:** Single command setup with `claude mcp add-json`
+
+    **Usage:** Generate specs directly from the command line
   </Card>
 
   <Card title="Cursor" icon="cursor">
