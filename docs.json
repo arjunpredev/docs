@@ -99,6 +99,11 @@
 					"icon": "code"
 				},
 				{
+					"anchor": "Get Your API key",
+					"href": "https://pre.dev/projects/playground",
+					"icon": "key"
+				},
+				{
 					"anchor": "Blog",
 					"href": "https://pre.dev/blog",
 					"icon": "newspaper"
