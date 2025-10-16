@@ -54,15 +54,19 @@
 				"groups": [
 					{
 						"group": "Using the API",
-						"pages": ["api-reference/introduction"]
+						"pages": ["api-reference/introduction", "api-reference/overview"]
 					},
 					{
-						"group": "Spec Endpoints",
+						"group": "Spec Generation",
 						"pages": ["api-reference/fast-spec", "api-reference/deep-spec"]
 					},
 					{
-						"group": "Status Endpoints",
-						"pages": ["api-reference/spec-status"]
+						"group": "Spec Management",
+						"pages": [
+							"api-reference/list-specs",
+							"api-reference/find-specs",
+							"api-reference/spec-status"
+						]
 					}
 				]
 			},

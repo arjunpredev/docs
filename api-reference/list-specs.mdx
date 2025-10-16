@@ -1,0 +1,621 @@
+---
+title: "List Specs"
+api: "GET https://api.pre.dev/list-specs"
+openapi: "GET /list-specs"
+description: "List all specs with pagination and filtering. Perfect for displaying user spec history, recent specs, or filtered views."
+---
+
+# GET /list-specs
+
+List all specifications with support for pagination and filtering by status or endpoint type.
+
+## Overview
+
+- **Cost:** Free (no credits required)
+- **Use Cases:** Display spec history, build dashboards, monitor spec status
+- **Response Time:** Instant
+- **Returns:** Paginated array of specs with metadata
+
+## Endpoint
+
+```
+GET https://api.pre.dev/list-specs
+```
+
+## Headers
+
+```
+x-api-key: YOUR_API_KEY
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `limit` | integer | ❌ | 20 | Results per page (1-100) |
+| `skip` | integer | ❌ | 0 | Number of records to skip for pagination |
+| `endpoint` | string | ❌ | - | Filter by endpoint: `fast_spec` or `deep_spec` |
+| `status` | string | ❌ | - | Filter by status: `pending`, `processing`, `completed`, or `failed` |
+
+### Parameter Details
+
+**limit**
+- Minimum: 1
+- Maximum: 100
+- Default: 20
+- Controls how many specs are returned per request
+
+**skip**
+- Minimum: 0
+- Used for pagination (e.g., skip=20 for page 2 with limit=20)
+
+**endpoint**
+- `fast_spec` - Only show Fast Spec generations
+- `deep_spec` - Only show Deep Spec generations
+
+**status**
+- `pending` - Queued but not started
+- `processing` - Currently generating
+- `completed` - Successfully finished
+- `failed` - Generation failed
+
+## Response
+
+### Success Response
+
+```json
+{
+  "specs": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "created": "2024-01-15T14:30:00.000Z",
+      "endpoint": "fast_spec",
+      "input": "Build a SaaS project management tool with team collaboration",
+      "status": "completed",
+      "success": true,
+      "outputFormat": "url",
+      "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+      "executionTime": 38500,
+      "predevUrl": "https://pre.dev/projects/abc123",
+      "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=...",
+      "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=...",
+      "v0Url": "https://v0.dev/chat?q=...",
+      "boltUrl": "https://bolt.new?prompt=..."
+    },
+    {
+      "_id": "507f1f77bcf86cd799439012",
+      "created": "2024-01-15T12:15:00.000Z",
+      "endpoint": "deep_spec",
+      "input": "Build an enterprise healthcare platform with HIPAA compliance",
+      "status": "processing",
+      "success": false,
+      "outputFormat": "markdown",
+      "progress": "Generating architecture recommendations..."
+    }
+  ],
+  "total": 42,
+  "hasMore": true
+}
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `specs` | array | Array of spec objects (see Spec Object below) |
+| `total` | integer | Total number of specs matching the filters |
+| `hasMore` | boolean | Whether more pages are available |
+
+### Spec Object Fields
+
+| Field | Type | Always Present | Description |
+|-------|------|----------------|-------------|
+| `_id` | string | ✅ | Unique spec identifier |
+| `created` | string | ✅ | ISO 8601 timestamp of creation |
+| `endpoint` | string | ✅ | `"fast_spec"` or `"deep_spec"` |
+| `input` | string | ✅ | Original input text |
+| `status` | string | ✅ | Current status |
+| `success` | boolean | ✅ | Whether generation succeeded |
+| `outputFormat` | string | ✅ | `"url"` or `"markdown"` |
+| `uploadedFileShortUrl` | string | ❌ | URL if file was uploaded |
+| `uploadedFileName` | string | ❌ | Name of uploaded file |
+| `output` | any | ❌ | Result (URL or markdown, when completed) |
+| `outputFileUrl` | string | ❌ | Downloadable spec URL (when completed) |
+| `executionTime` | number | ❌ | Processing time in ms (when completed) |
+| `predevUrl` | string | ❌ | pre.dev project URL (when completed) |
+| `lovableUrl` | string | ❌ | Lovable.dev deep link (when completed) |
+| `cursorUrl` | string | ❌ | Cursor deep link (when completed) |
+| `v0Url` | string | ❌ | Vercel v0 deep link (when completed) |
+| `boltUrl` | string | ❌ | Bolt.new deep link (when completed) |
+| `errorMessage` | string | ❌ | Error details (when failed) |
+| `progress` | string | ❌ | Status message (when processing) |
+
+## Code Examples
+
+### cURL Examples
+
+**Get first 20 specs:**
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs"
+```
+
+**Get completed specs only:**
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?status=completed"
+```
+
+**Paginate through results:**
+```bash
+# Page 1 (specs 0-19)
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?limit=20&skip=0"
+
+# Page 2 (specs 20-39)
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?limit=20&skip=20"
+
+# Page 3 (specs 40-59)
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?limit=20&skip=40"
+```
+
+**Get all deep specs:**
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?endpoint=deep_spec"
+```
+
+**Get failed specs for debugging:**
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?status=failed&limit=100"
+```
+
+**Combine filters:**
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.pre.dev/list-specs?endpoint=fast_spec&status=completed&limit=50"
+```
+
+### JavaScript/Node.js
+
+```javascript
+async function listSpecs(options = {}) {
+  const {
+    limit = 20,
+    skip = 0,
+    endpoint = null,
+    status = null
+  } = options;
+
+  const params = new URLSearchParams({
+    limit: limit.toString(),
+    skip: skip.toString()
+  });
+
+  if (endpoint) params.append('endpoint', endpoint);
+  if (status) params.append('status', status);
+
+  const response = await fetch(
+    `https://api.pre.dev/list-specs?${params}`,
+    {
+      headers: { 'x-api-key': 'YOUR_API_KEY' }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// Usage examples
+
+// Get recent specs
+const recent = await listSpecs({ limit: 5 });
+console.log(`Showing ${recent.specs.length} of ${recent.total} specs`);
+
+// Get completed specs only
+const completed = await listSpecs({ status: 'completed' });
+
+// Paginate through all specs
+async function getAllSpecs() {
+  let allSpecs = [];
+  let skip = 0;
+  const limit = 50;
+
+  while (true) {
+    const response = await listSpecs({ skip, limit });
+    allSpecs.push(...response.specs);
+    
+    if (!response.hasMore) break;
+    skip += limit;
+  }
+
+  return allSpecs;
+}
+
+// Build pagination UI
+async function loadPage(pageNumber, pageSize = 20) {
+  const skip = pageNumber * pageSize;
+  const data = await listSpecs({ skip, limit: pageSize });
+  
+  return {
+    specs: data.specs,
+    currentPage: pageNumber,
+    totalPages: Math.ceil(data.total / pageSize),
+    hasNext: data.hasMore
+  };
+}
+```
+
+### TypeScript
+
+```typescript
+interface ListSpecsOptions {
+  limit?: number;
+  skip?: number;
+  endpoint?: 'fast_spec' | 'deep_spec';
+  status?: 'pending' | 'processing' | 'completed' | 'failed';
+}
+
+interface SpecObject {
+  _id: string;
+  created: string;
+  endpoint: 'fast_spec' | 'deep_spec';
+  input: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  success: boolean;
+  outputFormat: 'url' | 'markdown';
+  uploadedFileShortUrl?: string;
+  uploadedFileName?: string;
+  output?: any;
+  outputFileUrl?: string;
+  executionTime?: number;
+  predevUrl?: string;
+  lovableUrl?: string;
+  cursorUrl?: string;
+  v0Url?: string;
+  boltUrl?: string;
+  errorMessage?: string;
+  progress?: string;
+}
+
+interface ListSpecsResponse {
+  specs: SpecObject[];
+  total: number;
+  hasMore: boolean;
+}
+
+class SpecClient {
+  constructor(private apiKey: string) {}
+
+  async listSpecs(options: ListSpecsOptions = {}): Promise<ListSpecsResponse> {
+    const {
+      limit = 20,
+      skip = 0,
+      endpoint,
+      status
+    } = options;
+
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      skip: skip.toString()
+    });
+
+    if (endpoint) params.append('endpoint', endpoint);
+    if (status) params.append('status', status);
+
+    const response = await fetch(
+      `https://api.pre.dev/list-specs?${params}`,
+      {
+        headers: { 'x-api-key': this.apiKey }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async *paginateSpecs(
+    options: ListSpecsOptions = {}
+  ): AsyncGenerator<SpecObject[], void, unknown> {
+    let skip = 0;
+    const limit = options.limit || 20;
+
+    while (true) {
+      const response = await this.listSpecs({ ...options, skip, limit });
+      yield response.specs;
+      
+      if (!response.hasMore) break;
+      skip += limit;
+    }
+  }
+}
+
+// Usage
+const client = new SpecClient('YOUR_API_KEY');
+
+// Simple list
+const response = await client.listSpecs({ status: 'completed' });
+console.log(`Found ${response.total} completed specs`);
+
+// Pagination generator
+for await (const specsPage of client.paginateSpecs({ limit: 50 })) {
+  console.log(`Processing ${specsPage.length} specs...`);
+  specsPage.forEach(spec => {
+    console.log(`- ${spec.input.substring(0, 50)}...`);
+  });
+}
+```
+
+### Python
+
+```python
+import requests
+from typing import Optional, List, Dict, Any, Generator
+
+class SpecClient:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = 'https://api.pre.dev'
+    
+    def list_specs(
+        self,
+        limit: int = 20,
+        skip: int = 0,
+        endpoint: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        List specs with optional filtering and pagination.
+        
+        Args:
+            limit: Number of results per page (1-100)
+            skip: Number of records to skip
+            endpoint: Filter by 'fast_spec' or 'deep_spec'
+            status: Filter by 'pending', 'processing', 'completed', or 'failed'
+        
+        Returns:
+            Dictionary with 'specs' array, 'total' count, and 'hasMore' flag
+        """
+        params = {'limit': limit, 'skip': skip}
+        if endpoint:
+            params['endpoint'] = endpoint
+        if status:
+            params['status'] = status
+        
+        response = requests.get(
+            f'{self.base_url}/list-specs',
+            params=params,
+            headers={'x-api-key': self.api_key}
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def get_all_specs(
+        self,
+        endpoint: Optional[str] = None,
+        status: Optional[str] = None,
+        batch_size: int = 50
+    ) -> List[Dict[str, Any]]:
+        """Fetch all specs matching the filters."""
+        all_specs = []
+        skip = 0
+        
+        while True:
+            response = self.list_specs(
+                limit=batch_size,
+                skip=skip,
+                endpoint=endpoint,
+                status=status
+            )
+            all_specs.extend(response['specs'])
+            
+            if not response['hasMore']:
+                break
+            
+            skip += batch_size
+        
+        return all_specs
+    
+    def paginate_specs(
+        self,
+        endpoint: Optional[str] = None,
+        status: Optional[str] = None,
+        batch_size: int = 50
+    ) -> Generator[List[Dict[str, Any]], None, None]:
+        """Generator that yields batches of specs."""
+        skip = 0
+        
+        while True:
+            response = self.list_specs(
+                limit=batch_size,
+                skip=skip,
+                endpoint=endpoint,
+                status=status
+            )
+            
+            if not response['specs']:
+                break
+            
+            yield response['specs']
+            
+            if not response['hasMore']:
+                break
+            
+            skip += batch_size
+
+# Usage examples
+client = SpecClient('YOUR_API_KEY')
+
+# Get recent specs
+recent = client.list_specs(limit=5)
+print(f"Showing {len(recent['specs'])} of {recent['total']} specs")
+
+# Get all completed specs
+completed_specs = client.get_all_specs(status='completed')
+print(f"Found {len(completed_specs)} completed specs")
+
+# Process specs in batches
+for batch in client.paginate_specs(status='completed', batch_size=25):
+    print(f"Processing batch of {len(batch)} specs")
+    for spec in batch:
+        print(f"  - {spec['input'][:50]}...")
+
+# Filter by endpoint and status
+fast_completed = client.list_specs(
+    endpoint='fast_spec',
+    status='completed',
+    limit=100
+)
+
+# Build pagination for UI
+def get_page(page_number: int, page_size: int = 20):
+    skip = page_number * page_size
+    response = client.list_specs(skip=skip, limit=page_size)
+    
+    return {
+        'specs': response['specs'],
+        'current_page': page_number,
+        'total_pages': (response['total'] + page_size - 1) // page_size,
+        'has_next': response['hasMore']
+    }
+
+# Display page 3
+page_data = get_page(2, page_size=20)
+print(f"Page {page_data['current_page'] + 1} of {page_data['total_pages']}")
+```
+
+## Common Use Cases
+
+### 1. Display Recent Specs Dashboard
+
+```javascript
+async function getRecentSpecsForDashboard() {
+  const response = await fetch(
+    'https://api.pre.dev/list-specs?limit=10',
+    { headers: { 'x-api-key': 'YOUR_API_KEY' } }
+  );
+  const data = await response.json();
+  
+  return data.specs.map(spec => ({
+    id: spec._id,
+    title: spec.input.substring(0, 80) + '...',
+    type: spec.endpoint === 'fast_spec' ? 'Fast' : 'Deep',
+    status: spec.status,
+    createdAt: new Date(spec.created),
+    url: spec.outputFileUrl
+  }));
+}
+```
+
+### 2. Monitor Failed Specs
+
+```python
+def check_failed_specs(client):
+    """Check for failed specs in the last 24 hours."""
+    failed = client.list_specs(status='failed', limit=100)
+    
+    recent_failures = []
+    for spec in failed['specs']:
+        created = datetime.fromisoformat(spec['created'].replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) - created < timedelta(hours=24):
+            recent_failures.append({
+                'id': spec['_id'],
+                'input': spec['input'],
+                'error': spec.get('errorMessage', 'Unknown error'),
+                'created': created
+            })
+    
+    return recent_failures
+```
+
+### 3. Export Completed Specs
+
+```javascript
+async function exportCompletedSpecs() {
+  const allCompleted = [];
+  let skip = 0;
+  const limit = 50;
+
+  while (true) {
+    const response = await fetch(
+      `https://api.pre.dev/list-specs?status=completed&skip=${skip}&limit=${limit}`,
+      { headers: { 'x-api-key': 'YOUR_API_KEY' } }
+    );
+    const data = await response.json();
+    
+    allCompleted.push(...data.specs);
+    
+    if (!data.hasMore) break;
+    skip += limit;
+  }
+
+  return allCompleted;
+}
+```
+
+### 4. Build Pagination Component
+
+```typescript
+interface PaginationState {
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  items: SpecObject[];
+}
+
+async function loadPage(
+  pageNumber: number,
+  pageSize: number,
+  filters?: ListSpecsOptions
+): Promise<PaginationState> {
+  const client = new SpecClient('YOUR_API_KEY');
+  const response = await client.listSpecs({
+    ...filters,
+    skip: pageNumber * pageSize,
+    limit: pageSize
+  });
+
+  return {
+    currentPage: pageNumber,
+    pageSize,
+    totalItems: response.total,
+    items: response.specs
+  };
+}
+```
+
+## Best Practices
+
+### Pagination
+- Use reasonable page sizes (20-50 specs)
+- Cache results when appropriate
+- Show loading states while fetching
+
+### Filtering
+- Combine filters to reduce result sets
+- Use `status=completed` for user-facing spec lists
+- Use `status=failed` for debugging/monitoring
+
+### Performance
+- Don't fetch all specs at once if you have many
+- Use pagination for large datasets
+- Consider implementing infinite scroll with `skip` parameter
+
+### Error Handling
+- Always check response status codes
+- Handle empty result sets gracefully
+- Show appropriate messages when no specs match filters
+
+<Card title="Next: Find Specs (Search)" icon="arrow-right" href="/api-reference/find-specs">
+  Search specs using regex patterns for advanced filtering.
+</Card>
+

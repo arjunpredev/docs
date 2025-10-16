@@ -356,6 +356,278 @@
 					}
 				}
 			}
+		},
+		"/list-specs": {
+			"get": {
+				"summary": "List Specs",
+				"description": "List all specifications with pagination and filtering. Perfect for displaying user spec history, recent specs, or filtered views. This endpoint is free and does not consume credits.",
+				"operationId": "listSpecs",
+				"tags": ["Spec Management"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"description": "Number of results per page (1-100)",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100,
+							"default": 20,
+							"example": 20
+						}
+					},
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"description": "Number of records to skip for pagination",
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"example": 0
+						}
+					},
+					{
+						"name": "endpoint",
+						"in": "query",
+						"required": false,
+						"description": "Filter by endpoint type",
+						"schema": {
+							"type": "string",
+							"enum": ["fast_spec", "deep_spec"],
+							"example": "fast_spec"
+						}
+					},
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"description": "Filter by processing status",
+						"schema": {
+							"type": "string",
+							"enum": ["pending", "processing", "completed", "failed"],
+							"example": "completed"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Specs retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ListSpecsResponse"
+								},
+								"examples": {
+									"recentSpecs": {
+										"summary": "Recent Specs",
+										"value": {
+											"specs": [
+												{
+													"_id": "507f1f77bcf86cd799439011",
+													"created": "2024-01-15T14:30:00.000Z",
+													"endpoint": "fast_spec",
+													"input": "Build a SaaS project management tool with team collaboration",
+													"status": "completed",
+													"success": true,
+													"outputFormat": "url",
+													"outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+													"executionTime": 38500
+												}
+											],
+											"total": 42,
+											"hasMore": true
+										}
+									},
+									"filteredSpecs": {
+										"summary": "Completed Fast Specs",
+										"value": {
+											"specs": [
+												{
+													"_id": "507f1f77bcf86cd799439012",
+													"created": "2024-01-15T12:15:00.000Z",
+													"endpoint": "fast_spec",
+													"input": "Add real-time notifications",
+													"status": "completed",
+													"success": true,
+													"outputFormat": "markdown",
+													"executionTime": 35200
+												}
+											],
+											"total": 15,
+											"hasMore": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/find-specs": {
+			"get": {
+				"summary": "Find Specs (Search)",
+				"description": "Search for specifications using regex patterns. Perfect for finding specs by keywords, patterns, or complex search criteria. Case-insensitive search. This endpoint is free and does not consume credits.",
+				"operationId": "findSpecs",
+				"tags": ["Spec Management"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "query",
+						"in": "query",
+						"required": true,
+						"description": "REQUIRED - Regex pattern to search (case-insensitive)",
+						"schema": {
+							"type": "string",
+							"example": "payment"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"description": "Number of results per page (1-100)",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100,
+							"default": 20,
+							"example": 20
+						}
+					},
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"description": "Number of records to skip for pagination",
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"example": 0
+						}
+					},
+					{
+						"name": "endpoint",
+						"in": "query",
+						"required": false,
+						"description": "Filter by endpoint type",
+						"schema": {
+							"type": "string",
+							"enum": ["fast_spec", "deep_spec"],
+							"example": "fast_spec"
+						}
+					},
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"description": "Filter by processing status",
+						"schema": {
+							"type": "string",
+							"enum": ["pending", "processing", "completed", "failed"],
+							"example": "completed"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Search results retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ListSpecsResponse"
+								},
+								"examples": {
+									"keywordSearch": {
+										"summary": "Search for 'payment'",
+										"value": {
+											"specs": [
+												{
+													"_id": "507f1f77bcf86cd799439011",
+													"created": "2024-01-15T14:30:00.000Z",
+													"endpoint": "fast_spec",
+													"input": "Build a payment processing system with Stripe integration",
+													"status": "completed",
+													"success": true,
+													"outputFormat": "url",
+													"outputFileUrl": "https://api.pre.dev/s/a6hFJRV6"
+												}
+											],
+											"total": 8,
+											"hasMore": false
+										}
+									},
+									"patternSearch": {
+										"summary": "Search for specs starting with 'Build'",
+										"value": {
+											"specs": [
+												{
+													"_id": "507f1f77bcf86cd799439012",
+													"created": "2024-01-15T12:00:00.000Z",
+													"endpoint": "fast_spec",
+													"input": "Build a real-time collaborative whiteboard",
+													"status": "completed",
+													"success": true,
+													"outputFormat": "url"
+												}
+											],
+											"total": 23,
+											"hasMore": true
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Missing required query parameter",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Bad Request",
+									"message": "Query parameter is required"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -650,6 +922,29 @@
 						"example": 5
 					}
 				}
+			},
+			"ListSpecsResponse": {
+				"type": "object",
+				"required": ["specs", "total", "hasMore"],
+				"properties": {
+					"specs": {
+						"type": "array",
+						"description": "Array of spec objects matching the filters",
+						"items": {
+							"$ref": "#/components/schemas/StatusResponse"
+						}
+					},
+					"total": {
+						"type": "integer",
+						"description": "Total number of specs matching the filters",
+						"example": 42
+					},
+					"hasMore": {
+						"type": "boolean",
+						"description": "Whether more pages are available",
+						"example": true
+					}
+				}
 			}
 		}
 	},
@@ -661,6 +956,10 @@
 		{
 			"name": "Status",
 			"description": "Check status of asynchronous specification processing"
+		},
+		{
+			"name": "Spec Management",
+			"description": "List and search existing specifications"
 		}
 	]
 }
