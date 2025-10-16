@@ -58,6 +58,51 @@ claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","head
         
         <Info>The command automatically configures Claude Code's MCP settings.</Info>
       </Tab>
+      
+      <Tab title="VS Code">
+        Run this single command in your terminal:
+
+```bash
+code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"x-api-key\":\"YOUR_API_KEY\"}}"
+```
+
+        Replace `YOUR_API_KEY` with your actual API key.
+        
+        **After running the command:**
+        1. Restart VS Code completely (Quit and reopen)
+        2. The MCP server will be automatically configured
+        
+        <Info>
+          For troubleshooting, see the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
+        </Info>
+      </Tab>
+      
+      <Tab title="Windsurf">
+        **Step 1:** Click **MCP** in the Cascade panel to open MCP configuration
+        
+        **Step 2:** Add this to your `mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "predev": {
+      "serverUrl": "https://api.pre.dev/mcp",
+      "headers": {
+        "x-api-key": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+        **Step 3:** Replace `YOUR_API_KEY` with your actual API key
+        
+        **Step 4:** Save and refresh Windsurf
+        
+        <Info>
+          For troubleshooting, see the [Windsurf MCP documentation](https://docs.windsurf.com/windsurf/cascade/mcp).
+        </Info>
+      </Tab>
     </Tabs>
   </Step>
   

@@ -23,6 +23,12 @@ Find your MCP configuration file based on your agent:
 **Cursor:**
 - Access via Cursor settings → MCP → Edit Configuration
 
+**VS Code:**
+- Use the command-line installation method (see below)
+
+**Windsurf:**
+- Click MCP in Cascade panel to access configuration
+
 **Other agents:**
 - Check their documentation for MCP configuration location
 
@@ -30,7 +36,7 @@ Find your MCP configuration file based on your agent:
 
 Choose the appropriate configuration method for your agent (see Configuration Examples below):
 
-- **Claude Code**: Use the `claude mcp add-json` command
+- **Claude Code / VS Code**: Use the command-line installation method
 - **Claude Desktop / Cursor / Windsurf**: Add HTTP server configuration to your MCP config
 
 ### 3. Restart Your Agent
@@ -38,6 +44,8 @@ Choose the appropriate configuration method for your agent (see Configuration Ex
 - **Claude Desktop:** Quit and restart the application
 - **Claude Code:** No restart needed - configuration is applied immediately
 - **Cursor:** Reload the window (Cmd/Ctrl + Shift + P → "Developer: Reload Window")
+- **VS Code:** Restart VS Code completely (Quit and reopen)
+- **Windsurf:** Refresh Windsurf after saving the configuration
 - **Other agents:** Follow their restart procedure
 
 ### 4. Verify Installation
@@ -94,15 +102,25 @@ In Cursor settings → Tools & MCP, add:
 }
 ```
 
+### VS Code
+
+Run this command in your terminal:
+
+```bash
+code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"x-api-key\":\"YOUR_API_KEY\"}}"
+```
+
+Replace `YOUR_API_KEY` with your actual API key and restart VS Code.
+
 ### Windsurf
 
-Add to your Windsurf MCP configuration:
+Click **MCP** in the Cascade panel and add to `mcp_config.json`:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "predev": {
-      "url": "https://api.pre.dev/mcp",
+      "serverUrl": "https://api.pre.dev/mcp",
       "headers": {
         "x-api-key": "your-api-key-here"
       }
@@ -110,6 +128,8 @@ Add to your Windsurf MCP configuration:
   }
 }
 ```
+
+Refresh Windsurf after saving.
 
 ## Troubleshooting
 
