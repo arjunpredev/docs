@@ -32,7 +32,7 @@
 					{
 						"group": "Get Started",
 						"pages": [
-							"index",
+							"quickstart",
 							"mcp-server",
 							"why-architect-api",
 							"choosing-spec-level"
