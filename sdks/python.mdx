@@ -6,6 +6,16 @@ icon: "python"
 
 A Python client library for the pre.dev Architect API. Generate comprehensive software specifications using AI-powered analysis.
 
+## Features
+
+- 🚀 **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
+- 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
+- ⚡ **Async Spec**: Non-blocking async methods for long-running requests
+- 📊 **Status Tracking**: Check the status of async specification generation requests
+- 🔎 **List & Search**: Discover, filter, and search through your specification history
+- ✨ **Type Hints**: Full type annotations for better IDE support
+- 🛡️ **Error Handling**: Custom exceptions for different error scenarios
+
 ## Installation
 
 Install the pre.dev Python SDK using pip:
@@ -33,7 +43,7 @@ print(result)
 
 ## Authentication
 
-Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground).
+The pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground) under **Settings → API Keys**:
 
 ```python
 predev = PredevAPI(api_key="your_api_key")
@@ -41,7 +51,9 @@ predev = PredevAPI(api_key="your_api_key")
 
 ## API Methods
 
-### Fast Spec Generation
+### Synchronous Methods
+
+#### Fast Spec Generation
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -54,37 +66,25 @@ result = predev.fast_spec(
 )
 ```
 
-#### Parameters
+**Parameters:**
 
 - `input_text` **(required)**: `str` - Description of what you want to build
 - `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `current_context` **(optional)**: `str` - Existing project context
 - `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
 
-#### Returns
+**Returns:** `SpecResponse` object with complete specification data
 
-`SpecResponse` object with complete specification data
-
-#### Example - New Project
+**Example:**
 
 ```python
 result = predev.fast_spec(
-    input_text="Build a healthcare platform with HIPAA compliance",
+    input_text="Build a SaaS project management tool with real-time collaboration",
     output_format="url"
 )
 ```
 
-#### Example - Feature Addition
-
-```python
-result = predev.fast_spec(
-    input_text="Add calendar view and Gantt chart visualization",
-    current_context="Existing task management system with list/board views",
-    output_format="url"
-)
-```
-
-### Deep Spec Generation
+#### Deep Spec Generation
 
 Generate a deep specification (2-3 minutes, 50 credits).
 
@@ -97,27 +97,42 @@ result = predev.deep_spec(
 )
 ```
 
-#### Parameters
+**Parameters:** Same as `fast_spec`
 
-Same as `fast_spec`
+**Returns:** `SpecResponse` object with comprehensive specification data
 
-#### Returns
-
-`SpecResponse` object with comprehensive specification data
-
-### Async Spec Generation
-
-Generate specifications asynchronously (returns immediately).
+**Example:**
 
 ```python
-# Fast spec async
+result = predev.deep_spec(
+    input_text="Build a healthcare platform with HIPAA compliance",
+    output_format="url"
+)
+```
+
+### Asynchronous Methods
+
+#### Fast Spec Async
+
+Generate a fast specification asynchronously (returns immediately).
+
+```python
 result = predev.fast_spec_async(
     input_text="Build a comprehensive e-commerce platform",
     output_format="url"
 )
 # Returns: AsyncResponse(specId="spec_123", status="pending")
+```
 
-# Deep spec async
+**Parameters:** Same as `fast_spec`
+
+**Returns:** `AsyncResponse` object with `specId` for polling
+
+#### Deep Spec Async
+
+Generate a deep specification asynchronously (returns immediately).
+
+```python
 result = predev.deep_spec_async(
     input_text="Build a fintech platform with regulatory compliance",
     output_format="url"
@@ -125,7 +140,13 @@ result = predev.deep_spec_async(
 # Returns: AsyncResponse(specId="spec_456", status="pending")
 ```
 
-### Check Specification Status
+**Parameters:** Same as `fast_spec`
+
+**Returns:** `AsyncResponse` object with `specId` for polling
+
+### Status Checking
+
+#### Get Spec Status
 
 Check the status of an async specification generation request.
 
@@ -134,6 +155,91 @@ status = predev.get_spec_status("spec_123")
 # Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
 ```
 
+**Parameters:**
+
+- `spec_id` **(required)**: `str` - The specification ID from async methods
+
+**Returns:** `SpecResponse` object with current status and data (when completed)
+
+**Example:**
+
+```python
+status = predev.get_spec_status("spec_123")
+# Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
+```
+
+### Listing and Searching Specs
+
+#### List Specifications
+
+List all specs with optional filtering and pagination.
+
+```python
+# Get first 20 specs
+result = predev.list_specs()
+
+# Get completed specs only
+completed = predev.list_specs(status='completed')
+
+# Paginate: get specs 20-40
+page2 = predev.list_specs(skip=20, limit=20)
+
+# Filter by endpoint type
+fast_specs = predev.list_specs(endpoint='fast_spec')
+```
+
+**Parameters:**
+
+- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
+- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
+- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with specs array and pagination metadata
+
+#### Search Specifications
+
+Search for specs using regex patterns (case-insensitive).
+
+```python
+# Search for "payment" specs
+payment_specs = predev.find_specs(query='payment')
+
+# Search for specs starting with "Build"
+build_specs = predev.find_specs(query='^Build')
+
+# Search: only completed specs mentioning "auth"
+auth_specs = predev.find_specs(
+    query='auth',
+    status='completed'
+)
+
+# Complex regex: find SaaS or SASS projects
+saas_specs = predev.find_specs(query='saas|sass')
+```
+
+**Parameters:**
+
+- `query` **(required)**: `str` - Regex pattern (case-insensitive)
+- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
+- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
+- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with matching specs and pagination metadata
+
+**Regex Pattern Examples:**
+
+| Pattern | Matches |
+|---------|---------|
+| `payment` | "payment", "Payment", "make payment" |
+| `^Build` | Specs starting with "Build" |
+| `platform$` | Specs ending with "platform" |
+| `(API\|REST)` | Either "API" or "REST" |
+| `auth.*system` | "auth" then anything then "system" |
+| `\\d{3,}` | 3+ digits (budgets, quantities) |
+| `saas\|sass` | SaaS or SASS |
+
 ## Response Types
 
 ### AsyncResponse
@@ -141,7 +247,7 @@ status = predev.get_spec_status("spec_123")
 ```python
 @dataclass
 class AsyncResponse:
-    specId: str  # Unique ID for polling (e.g., "spec_abc123")
+    specId: str                                    # Unique ID for polling (e.g., "spec_abc123")
     status: Literal['pending', 'processing', 'completed', 'failed']
 ```
 
@@ -151,31 +257,41 @@ class AsyncResponse:
 @dataclass
 class SpecResponse:
     # Basic info
-    _id: Optional[str] = None
-    created: Optional[str] = None
+    _id: Optional[str] = None                      # Internal ID
+    created: Optional[str] = None                  # ISO timestamp
     endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None
-    input: Optional[str] = None
+    input: Optional[str] = None                    # Original input text
     status: Optional[Literal['pending', 'processing', 'completed', 'failed']] = None
     success: Optional[bool] = None
 
     # Output data (when completed)
-    uploadedFileShortUrl: Optional[str] = None
-    uploadedFileName: Optional[str] = None
-    output: Optional[Any] = None
+    uploadedFileShortUrl: Optional[str] = None    # URL to input file
+    uploadedFileName: Optional[str] = None        # Name of input file
+    output: Optional[Any] = None                  # Raw content or URL
     outputFormat: Optional[Literal['markdown', 'url']] = None
-    outputFileUrl: Optional[str] = None
-    executionTime: Optional[int] = None
+    outputFileUrl: Optional[str] = None           # Full URL to hosted spec
+    executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)
-    predevUrl: Optional[str] = None
-    lovableUrl: Optional[str] = None
-    cursorUrl: Optional[str] = None
-    v0Url: Optional[str] = None
-    boltUrl: Optional[str] = None
+    predevUrl: Optional[str] = None               # Link to pre.dev project
+    lovableUrl: Optional[str] = None              # Link to generate with Lovable
+    cursorUrl: Optional[str] = None               # Link to generate with Cursor
+    v0Url: Optional[str] = None                   # Link to generate with v0
+    boltUrl: Optional[str] = None                 # Link to generate with Bolt
 
     # Error handling
-    errorMessage: Optional[str] = None
-    progress: Optional[str] = None
+    errorMessage: Optional[str] = None            # Error details if failed
+    progress: Optional[str] = None                # Progress information
+```
+
+### ListSpecsResponse
+
+```python
+@dataclass
+class ListSpecsResponse:
+    specs: List[SpecResponse]  # Array of spec objects
+    total: int                 # Total count of matching specs
+    hasMore: bool              # Whether more results are available
 ```
 
 ## Examples
@@ -239,6 +355,78 @@ while True:
 
 if status.status == "completed":
     print(f"Specification URL: {status.outputFileUrl}")
+```
+
+### List and Filter Specs
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+# Get all recent specs
+recent_specs = predev.list_specs(limit=10)
+print(f"Total specs: {recent_specs.total}")
+print(f"Has more: {recent_specs.hasMore}")
+
+for spec in recent_specs.specs:
+    print(f"{spec.input} - {spec.status}")
+
+# Get only completed fast specs
+completed_fast = predev.list_specs(
+    endpoint='fast_spec',
+    status='completed',
+    limit=50
+)
+
+# Pagination example
+page1 = predev.list_specs(skip=0, limit=20)
+page2 = predev.list_specs(skip=20, limit=20)
+```
+
+### Search Specs with Regex
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+# Find all payment-related specs
+payment_specs = predev.find_specs(query='payment')
+print(f"Found {payment_specs.total} payment specs")
+
+# Find specs starting with "Build"
+build_specs = predev.find_specs(query='^Build')
+
+# Find completed authentication specs
+auth_specs = predev.find_specs(
+    query='auth',
+    status='completed',
+    endpoint='deep_spec'
+)
+
+# Complex search: SaaS or SASS projects
+saas_specs = predev.find_specs(query='saas|sass')
+for spec in saas_specs.specs:
+    print(f"Found: {spec.input}")
+```
+
+## Error Handling
+
+The SDK includes custom exceptions for different error scenarios:
+
+```python
+from predev_api import PredevAPI, PredevAPIError
+
+try:
+    predev = PredevAPI(api_key="your_api_key")
+    result = predev.fast_spec(
+        input_text="Build a task management app"
+    )
+except PredevAPIError as e:
+    print(f"API Error: {e}")
+except Exception as e:
+    print(f"Unexpected error: {e}")
 ```
 
 ## Documentation
