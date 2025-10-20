@@ -134,7 +134,7 @@ jobs:
       - name: Generate Spec
         run: |
           curl -X POST https://api.pre.dev/fast-spec \
-            -H "x-api-key: ${{ secrets.ARCHITECT_API_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.ARCHITECT_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{\"input\": \"${{ github.event.issue.body }}\", \"outputFormat\": \"markdown\"}" \
             > feature-spec.md

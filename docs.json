@@ -14,9 +14,8 @@
 	"api": {
 		"baseUrl": "https://api.pre.dev",
 		"auth": {
-			"method": "key",
-			"name": "x-api-key",
-			"inputPrefix": ""
+			"method": "bearer",
+			"name": "Authorization"
 		},
 		"playground": {
 			"mode": "show"

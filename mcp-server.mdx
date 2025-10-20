@@ -18,7 +18,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
   <Step title="Install the MCP Server">
     <Tabs>
       <Tab title="Cursor - One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsieC1hcGkta2V5IjoiPFlPVVJfQVBJX0tFWT4ifX0%3D)
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
         
         Click the button above to automatically install the pre.dev MCP server in Cursor. You'll be prompted to enter your API key during installation.
       </Tab>
@@ -33,7 +33,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
             "predev": {
               "url": "https://api.pre.dev/mcp",
               "headers": {
-                "x-api-key": "YOUR_API_KEY"
+                "Authorization": "Bearer YOUR_API_KEY"
               }
             }
           }
@@ -47,7 +47,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
         Run this command in your terminal:
 
         ```bash
-        claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"x-api-key":"YOUR_API_KEY"}}'
+        claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
         ```
 
         Replace `YOUR_API_KEY` with your actual API key from the playground.
@@ -60,7 +60,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
         Run this single command in your terminal:
 
         ```bash
-        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"x-api-key\":\"YOUR_API_KEY\"}}"
+        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}"
         ```
 
         Replace `YOUR_API_KEY` with your actual API key.
@@ -85,7 +85,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
             "predev": {
               "serverUrl": "https://api.pre.dev/mcp",
               "headers": {
-                "x-api-key": "YOUR_API_KEY"
+                "Authorization": "Bearer YOUR_API_KEY"
               }
             }
           }

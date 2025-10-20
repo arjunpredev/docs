@@ -26,7 +26,7 @@ GET https://api.pre.dev/find-specs
 ## Headers
 
 ```
-x-api-key: YOUR_API_KEY
+Authorization: Bearer YOUR_API_KEY
 ```
 
 ## Query Parameters
@@ -117,34 +117,34 @@ Identical to the [list-specs endpoint](/api-reference/list-specs#response-fields
 
 **Simple keyword search:**
 ```bash
-curl -H "x-api-key: YOUR_API_KEY" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://api.pre.dev/find-specs?query=payment"
 ```
 
 **Search with URL encoding:**
 ```bash
 # Search for specs starting with "Build"
-curl -H "x-api-key: YOUR_API_KEY" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://api.pre.dev/find-specs?query=%5EBuild"
 ```
 
 **Search completed specs only:**
 ```bash
-curl -H "x-api-key: YOUR_API_KEY" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://api.pre.dev/find-specs?query=dashboard&status=completed"
 ```
 
 **Search with OR condition:**
 ```bash
 # Find specs containing "API" OR "REST"
-curl -H "x-api-key: YOUR_API_KEY" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://api.pre.dev/find-specs?query=(API%7CREST)"
 ```
 
 **Complex pattern with pagination:**
 ```bash
 # Find e-commerce specs (handles hyphen variations)
-curl -H "x-api-key: YOUR_API_KEY" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://api.pre.dev/find-specs?query=e-?commerce&limit=50&skip=0"
 ```
 
@@ -171,7 +171,7 @@ async function findSpecs(query, options = {}) {
   const response = await fetch(
     `https://api.pre.dev/find-specs?${params}`,
     {
-      headers: { 'x-api-key': 'YOUR_API_KEY' }
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
     }
   );
 
@@ -267,7 +267,7 @@ class SpecSearchClient {
     const response = await fetch(
       `https://api.pre.dev/find-specs?${params}`,
       {
-        headers: { 'x-api-key': this.apiKey }
+        headers: { 'Authorization': `Bearer ${this.apiKey}` }
       }
     );
 
@@ -388,7 +388,7 @@ class SpecSearchClient:
         response = requests.get(
             f'{self.base_url}/find-specs',
             params=params,
-            headers={'x-api-key': self.api_key}
+            headers={'Authorization': f'Bearer {self.api_key}'}
         )
         response.raise_for_status()
         return response.json()
