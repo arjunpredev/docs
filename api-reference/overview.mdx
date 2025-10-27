@@ -25,6 +25,40 @@ https://api.pre.dev
 | `/list-specs` | GET | List all specs with pagination & filters | ✅ |
 | `/find-specs` | GET | Search specs using regex patterns | ✅ |
 
+## Documentation Scraping
+
+Both `/fast-spec` and `/deep-spec` endpoints now support automatic documentation scraping and archival:
+
+- **What it does:** Scrapes external documentation URLs in parallel with spec generation
+- **How to use:** Provide `docURLs` array parameter with documentation URLs
+- **What you get:** Downloadable ZIP archives organized by platform
+- **Response field:** `zippedDocsUrls` array with download links for each platform
+- **Benefits:** AI agents and developers have complete context during implementation
+
+**Example:**
+```json
+{
+  "input": "Build payment system with Stripe",
+  "docURLs": ["https://stripe.com/docs/api"],
+  "outputFormat": "url"
+}
+```
+
+**Response includes:**
+```json
+{
+  "output": "https://api.pre.dev/s/abc123",
+  "zippedDocsUrls": [
+    {
+      "platform": "stripe.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
+    }
+  ]
+}
+```
+
+See [Fast Spec](/api-reference/fast-spec) and [Deep Spec](/api-reference/deep-spec) documentation for complete details.
+
 ## Request Modes
 
 ### Synchronous (Default)

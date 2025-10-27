@@ -667,7 +667,7 @@
 							"type": "string",
 							"format": "uri"
 						},
-						"description": "Optional array of documentation URLs that Architect will reference when generating specifications",
+						"description": "Optional array of documentation URLs that Architect will reference when generating specifications. Each URL is automatically scraped and packaged into downloadable ZIP archives organized by platform",
 						"example": ["https://docs.pre.dev", "https://docs.stripe.com"]
 					},
 					"async": {
@@ -777,6 +777,13 @@
 						"type": "string",
 						"format": "uri",
 						"description": "Deep link to Bolt.new with prompt to implement the spec"
+					},
+					"zippedDocsUrls": {
+						"type": "array",
+						"description": "Array of scraped documentation archives. Empty array if no docURLs provided or scraping fails. Each object contains platform identifier and download links",
+						"items": {
+							"$ref": "#/components/schemas/ZippedDocsUrl"
+						}
 					}
 				}
 			},
@@ -875,6 +882,13 @@
 						"format": "uri",
 						"description": "Deep link to Bolt.new (only when completed)"
 					},
+					"zippedDocsUrls": {
+						"type": "array",
+						"description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
+						"items": {
+							"$ref": "#/components/schemas/ZippedDocsUrl"
+						}
+					},
 					"errorMessage": {
 						"type": "string",
 						"description": "Error description (only when failed)"
@@ -943,6 +957,27 @@
 						"type": "boolean",
 						"description": "Whether more pages are available",
 						"example": true
+					}
+				}
+			},
+			"ZippedDocsUrl": {
+				"type": "object",
+				"required": ["platform", "masterZipShortUrl"],
+				"properties": {
+					"platform": {
+						"type": "string",
+						"description": "Hostname extracted from the documentation URL (e.g., 'stripe.com', 'docs.github.com')",
+						"example": "stripe.com"
+					},
+					"masterZipShortUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Short URL to download the zipped documentation archive for this platform"
+					},
+					"masterMarkdownShortUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "Optional short URL to consolidated markdown file for this platform"
 					}
 				}
 			}

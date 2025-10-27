@@ -180,7 +180,17 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
   "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "zippedDocsUrls": [
+    {
+      "platform": "stripe.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
+    },
+    {
+      "platform": "docs.github.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/abc456"
+    }
+  ]
 }
 ```
 
@@ -199,6 +209,7 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec |
 | `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
 | `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
+| `zippedDocsUrls` | array | **New:** Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
 
 **When `outputFormat: "markdown"`:**
 ```json
@@ -215,7 +226,13 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
   "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step"
+  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "zippedDocsUrls": [
+    {
+      "platform": "stripe.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
+    }
+  ]
 }
 ```
 
@@ -619,6 +636,12 @@ interface AsyncResponse {
   status: 'pending' | 'processing' | 'completed' | 'failed';
 }
 
+interface ZippedDocsUrl {
+  platform: string;
+  masterZipShortUrl: string;
+  masterMarkdownShortUrl?: string;
+}
+
 interface StatusResponse {
   _id?: string;
   created?: string;
@@ -637,6 +660,7 @@ interface StatusResponse {
   cursorUrl?: string;
   v0Url?: string;
   boltUrl?: string;
+  zippedDocsUrls?: ZippedDocsUrl[];
   errorMessage?: string;
   progress?: string;
 }
@@ -721,6 +745,112 @@ As your agent implements features, actively manage progress:
 3. **Mark skipped:** Change `[ ]` to `[⊘]` if skipping (with reason)
 
 **Pro Tip:** Don't let your agent skip tasks without questioning why. This keeps implementation comprehensive and on-track.
+
+## Documentation Scraping & Archives
+
+### Overview
+
+When you provide `docURLs` in your request, Architect automatically scrapes the documentation in parallel with spec generation and packages it into downloadable ZIP archives. This feature helps AI agents and developers have context about external APIs, design systems, or frameworks referenced in the spec.
+
+### How It Works
+
+1. **Parallel Processing:** Documentation scraping runs simultaneously with spec generation (not sequentially), so it doesn't slow down your request
+2. **Automatic Deduplication:** URLs are automatically deduplicated by hostname (e.g., multiple `stripe.com` URLs result in one archive)
+3. **Graceful Degradation:** If documentation scraping fails, spec generation still completes successfully
+4. **Organized Archives:** Each platform gets its own ZIP with hierarchical folder structure based on the documentation site
+
+### Response Field: `zippedDocsUrls`
+
+```typescript
+interface ZippedDocsUrl {
+  platform: string;              // Hostname extracted from doc URL (e.g., "stripe.com", "docs.github.com")
+  masterZipShortUrl: string;     // Short URL to download the ZIP archive
+  masterMarkdownShortUrl?: string; // Optional: consolidated markdown file
+}
+```
+
+### Example Request with Documentation URLs
+
+```json
+{
+  "input": "Build a payment processing system with Stripe integration",
+  "docURLs": [
+    "https://stripe.com/docs/api",
+    "https://stripe.com/docs/payments",
+    "https://docs.github.com/en/rest"
+  ],
+  "outputFormat": "url"
+}
+```
+
+### Example Response with Documentation Archives
+
+```json
+{
+  "endpoint": "fast_spec",
+  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "zippedDocsUrls": [
+    {
+      "platform": "stripe.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
+    },
+    {
+      "platform": "docs.github.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/abc456"
+    }
+  ]
+}
+```
+
+**Note:** The two `stripe.com` URLs were automatically deduplicated into a single archive.
+
+### ZIP Archive Structure
+
+Each ZIP archive contains:
+- Individual markdown files (one per scraped page)
+- Hierarchical folder structure mirroring the documentation site
+- Organized by documentation site structure
+
+### Supported Domain Formats
+
+The system handles various domain formats:
+- `.com`, `.io`, `.org`, `.net`
+- `.cloud`, `.dev`, `.ai`
+- Country-specific TLDs (`.co.uk`, `.com.au`, etc.)
+- Newer TLDs (`.tech`, `.app`, etc.)
+
+### Best Practices for Documentation URLs
+
+**Do:**
+- ✅ Provide specific documentation pages relevant to your spec
+- ✅ Include API documentation for integrations you're building
+- ✅ Reference design system docs for UI consistency
+- ✅ Use official documentation sources
+
+**Don't:**
+- ❌ Provide the same domain multiple times (automatic deduplication will handle it)
+- ❌ Include general marketing pages
+- ❌ Link to non-documentation content
+
+### Viewing Documentation Archives
+
+**Enterprise users** can view and download documentation archives from the API Usage Logs browser:
+
+1. Navigate to [https://pre.dev/enterprise/dashboard?page=api](https://pre.dev/enterprise/dashboard?page=api)
+2. Click on any API call to open the details modal
+3. View the "Documentation Archives" section
+4. Click download links to get the ZIP files
+
+### Error Handling
+
+If documentation scraping fails:
+- `zippedDocsUrls` will be an empty array `[]`
+- Spec generation continues normally
+- No error is thrown (graceful degradation)
+
+If `docURLs` is not provided or is an empty array:
+- `zippedDocsUrls` will be an empty array `[]`
+- Spec generation proceeds normally
 
 ## Best Practices
 

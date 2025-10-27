@@ -40,6 +40,94 @@ You can naturally request specs with phrases like:
 
 The MCP server automatically handles the `currentContext` parameter to ensure new specs respect your existing architecture.
 
+### Using Documentation URLs
+
+**User:** "Generate a spec for a payment processing system with Stripe integration. Use the Stripe API documentation for reference."
+
+The MCP server will automatically scrape and archive the Stripe documentation, making it available alongside your spec for AI agents and developers to reference during implementation.
+
+## Documentation Scraping via MCP
+
+### Overview
+
+When working with MCP, you can ask your AI agent to reference external documentation during spec generation. The MCP server automatically handles documentation scraping and archival, providing comprehensive context for implementation.
+
+### How to Use
+
+Simply mention documentation in your natural language request:
+
+**User:** "Generate a spec for a healthcare platform with HL7 FHIR integration. Reference the FHIR documentation at docs.hl7.org."
+
+**User:** "Create a payment system spec using Stripe. Include the Stripe API docs for reference."
+
+**User:** "Build an authentication system with OAuth. Use the official OAuth 2.0 documentation."
+
+### What You Get
+
+When you reference documentation URLs:
+
+1. **Comprehensive Specs:** AI uses the documentation to generate accurate integration specifications
+2. **Documentation Archives:** Receive downloadable ZIP files containing the scraped documentation
+3. **Team Context:** Share documentation archives with your development team
+4. **Offline Reference:** Download and reference documentation without internet connectivity
+
+### Viewing Documentation Archives
+
+**For Enterprise MCP Users:**
+
+After spec generation, documentation archives are available in your API Usage Logs:
+
+1. Navigate to your enterprise dashboard
+2. Open API Usage Logs browser
+3. Click on the spec generation request
+4. View and download documentation archives
+
+Each archive is organized by platform (e.g., `stripe.com`, `docs.github.com`) with hierarchical folder structure matching the original documentation site.
+
+### Example Conversations
+
+**Simple Integration:**
+
+**User:** "Generate a spec for email notifications using SendGrid. Reference SendGrid's API documentation."
+
+**Agent:** *Generates spec with SendGrid integration details and provides documentation archive*
+
+**Complex System:**
+
+**User:** "Create a comprehensive healthcare platform spec with HL7 FHIR integration, HIPAA compliance, and Stripe payments. Reference all relevant documentation."
+
+**Agent:** *Generates deep spec and provides separate documentation archives for HL7, HIPAA guidance, and Stripe*
+
+**Multiple Services:**
+
+**User:** "Build a SaaS platform with Auth0 authentication, Stripe subscriptions, and AWS S3 storage. Include documentation for all three services."
+
+**Agent:** *Generates spec and provides three separate documentation archives, one per platform*
+
+### Best Practices for Documentation References
+
+**Do:**
+- ✅ Mention specific documentation URLs when you know them
+- ✅ Reference official API documentation for integrations
+- ✅ Include compliance and regulatory documentation for enterprise projects
+- ✅ Ask for architecture and security documentation
+- ✅ Request design system docs for UI consistency
+
+**Don't:**
+- ❌ Reference multiple URLs from the same domain (automatic deduplication handles this)
+- ❌ Include marketing or sales pages
+- ❌ Link to blog posts instead of official documentation
+- ❌ Reference deprecated or outdated documentation
+
+### Automatic Features
+
+The MCP server automatically:
+
+1. **Deduplicates URLs:** Multiple URLs from the same domain → single comprehensive archive
+2. **Handles Failures Gracefully:** Spec generation completes even if documentation scraping fails
+3. **Organizes by Platform:** Each documentation source gets its own well-structured archive
+4. **Runs in Parallel:** Documentation scraping doesn't slow down spec generation
+
 ## Best Practices
 
 ### Natural Language Descriptions
@@ -55,6 +143,12 @@ Write descriptions as you would explain to a senior developer:
 If you're adding to an existing project, mention what already exists:
 
 ✅ "Add real-time notifications to my existing chat app that has user auth, message history, and group chats"
+
+### Reference Documentation When Needed
+
+For projects with external integrations, mention the documentation:
+
+✅ "Build a payment system with Stripe integration. Use the Stripe API documentation for accurate implementation details."
 
 ### Iterate on Specs
 

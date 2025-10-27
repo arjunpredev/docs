@@ -183,13 +183,36 @@ The pre.dev MCP Server equips your AI coding agent with:
     - Validate permissions
     - Generate new specs that build on your previous work
   </Accordion>
-  <Accordion title="Documentation References" icon="book">
-    Include external documentation for more accurate specs:
+  <Accordion title="Documentation Scraping & Archives" icon="book">
+    **New Feature:** Automatically scrape and archive external documentation alongside spec generation.
+
+    Simply reference documentation URLs in your request:
 
     ```
-    Use pre.dev deep_spec to generate a spec for a React app, 
-    referencing: https://react.dev/docs, https://tailwindcss.com/docs
+    Use pre.dev deep_spec to generate a spec for a payment system 
+    with Stripe integration. Reference https://stripe.com/docs/api
     ```
+
+    **What you get:**
+
+    - ✅ **Accurate Specs:** AI uses the documentation to generate precise integration specifications
+    - ✅ **Documentation Archives:** Downloadable ZIP files containing all scraped documentation
+    - ✅ **Organized by Platform:** Each documentation source gets its own well-structured archive
+    - ✅ **Automatic Deduplication:** Multiple URLs from the same domain → single comprehensive archive
+    - ✅ **Parallel Processing:** Documentation scraping runs simultaneously with spec generation (no slowdown)
+    - ✅ **Graceful Fallback:** Spec generation completes even if documentation scraping fails
+
+    **Enterprise users** can view and download documentation archives from the API Usage Logs in their dashboard.
+
+    **Example with multiple docs:**
+
+    ```
+    Use pre.dev deep_spec to generate a healthcare platform spec 
+    with HL7 FHIR integration and HIPAA compliance. 
+    Reference https://docs.hl7.org and https://www.hhs.gov/hipaa
+    ```
+
+    You'll receive separate archives for HL7 and HIPAA documentation alongside your spec.
   </Accordion>
 </AccordionGroup>
 
