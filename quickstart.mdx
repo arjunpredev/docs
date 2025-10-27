@@ -21,7 +21,8 @@ The pre.dev Architect API transforms simple natural language descriptions of sof
 - **Structured Output:** Hierarchical spec format (Milestones → Stories → Subtasks)
 - **Task Tracking:** Built-in progress management with markdown checkboxes
 - **Complexity Estimation:** Complexity scores per milestone and subtask
-- **Web Sync:** Automatic project creation on pre.dev, along with links to open up the project in Cursor, Lovable, Bolt, or v0.
+- **Web Sync:** Automatic project creation on pre.dev, along with links to open up the project in Cursor, Lovable, Bolt, or v0
+- **Documentation Scraping:** Automatically scrape and archive external documentation (APIs, frameworks, compliance guides) alongside your spec for complete implementation context
 
 ## How to Use It
 
@@ -121,3 +122,40 @@ Specs are returned as structured markdown with:
 - [✓] Complete
 - [\] Skipped
 ```
+
+## Documentation Scraping & Archives
+
+When generating specs, you can optionally provide documentation URLs for external APIs, frameworks, or compliance guides. The Architect API will automatically:
+
+1. **Scrape and archive** the documentation in parallel with spec generation
+2. **Organize by platform** - Each documentation source gets its own ZIP archive
+3. **Provide download links** - Downloadable ZIP files for your development team
+
+### Example: Generating a Spec with Documentation
+
+```bash
+curl -X POST https://api.pre.dev/fast-spec \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "input": "Build a payment system with Stripe integration",
+    "docURLs": ["https://stripe.com/docs/api", "https://stripe.com/docs/payments"],
+    "outputFormat": "url"
+  }'
+```
+
+### Response Includes Documentation Archives
+
+```json
+{
+  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "zippedDocsUrls": [
+    {
+      "platform": "stripe.com",
+      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
+    }
+  ]
+}
+```
+
+**Learn more:** See [Documentation Scraping Guide](/guides/documentation-scraping) for advanced usage and best practices.

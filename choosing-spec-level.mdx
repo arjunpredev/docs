@@ -71,6 +71,7 @@ description: "Choosing the right spec level for your project"
 | Risk Analysis            | Basic        | Detailed      |
 | Effort Estimates         | High-level   | Granular      |
 | Team Coordination        | Limited      | Excellent     |
+| Documentation Scraping   | ✅           | ✅            |
 
 ## Cost-Benefit Analysis
 
@@ -124,6 +125,24 @@ description: "Choosing the right spec level for your project"
   - Complex domain (healthcare, finance, etc.)
 
 - **Otherwise, use Fast Spec**
+
+## Documentation Scraping with Both Levels
+
+Both Fast Spec and Deep Spec support documentation scraping:
+
+- **Option:** Provide documentation URLs for any external APIs, frameworks, or services
+- **Automatic:** Documentation is scraped in parallel (no additional time)
+- **Archived:** Each platform gets its own organized ZIP file
+- **Benefit:** Complete context for your development team
+
+**Example Use Cases:**
+- Stripe API documentation for payment processing
+- React/Vue/Angular documentation for frontend architecture
+- AWS/GCP/Azure documentation for infrastructure
+- HIPAA/GDPR compliance documentation for regulated industries
+- Third-party service APIs for integrations
+
+See [Documentation Scraping Guide](/guides/documentation-scraping) for details.
 
 ## Examples
 

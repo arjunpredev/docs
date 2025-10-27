@@ -447,9 +447,8 @@ When you provide `docURLs` in your request, Architect automatically scrapes the 
 ### How It Works
 
 1. **Parallel Processing:** Documentation scraping runs simultaneously with spec generation, so it doesn't extend the already longer Deep Spec generation time
-2. **Automatic Deduplication:** URLs are deduplicated by hostname (e.g., multiple `docs.hl7.org` URLs result in one comprehensive archive)
-3. **Graceful Degradation:** If documentation scraping fails, spec generation still completes
-4. **Enterprise-Grade Archives:** Each platform gets a well-organized ZIP with hierarchical structure
+2. **Graceful Degradation:** If documentation scraping fails, spec generation still completes
+3. **Enterprise-Grade Archives:** Each platform gets a well-organized ZIP with hierarchical structure
 
 ### Response Field: `zippedDocsUrls`
 
@@ -498,8 +497,6 @@ interface ZippedDocsUrl {
   ]
 }
 ```
-
-**Note:** The two `docs.hl7.org` URLs were deduplicated into a single comprehensive archive.
 
 ### Enterprise Use Cases
 

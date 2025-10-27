@@ -755,9 +755,8 @@ When you provide `docURLs` in your request, Architect automatically scrapes the 
 ### How It Works
 
 1. **Parallel Processing:** Documentation scraping runs simultaneously with spec generation (not sequentially), so it doesn't slow down your request
-2. **Automatic Deduplication:** URLs are automatically deduplicated by hostname (e.g., multiple `stripe.com` URLs result in one archive)
-3. **Graceful Degradation:** If documentation scraping fails, spec generation still completes successfully
-4. **Organized Archives:** Each platform gets its own ZIP with hierarchical folder structure based on the documentation site
+2. **Graceful Degradation:** If documentation scraping fails, spec generation still completes successfully
+3. **Organized Archives:** Each platform gets its own ZIP with hierarchical folder structure based on the documentation site
 
 ### Response Field: `zippedDocsUrls`
 
@@ -802,8 +801,6 @@ interface ZippedDocsUrl {
 }
 ```
 
-**Note:** The two `stripe.com` URLs were automatically deduplicated into a single archive.
-
 ### ZIP Archive Structure
 
 Each ZIP archive contains:
@@ -828,8 +825,9 @@ The system handles various domain formats:
 - ✅ Use official documentation sources
 
 **Don't:**
-- ❌ Provide the same domain multiple times (automatic deduplication will handle it)
 - ❌ Include general marketing pages
+- ❌ Link to blog posts instead of official documentation
+- ❌ Reference deprecated or outdated documentation
 - ❌ Link to non-documentation content
 
 ### Viewing Documentation Archives

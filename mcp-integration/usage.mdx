@@ -114,7 +114,6 @@ Each archive is organized by platform (e.g., `stripe.com`, `docs.github.com`) wi
 - ✅ Request design system docs for UI consistency
 
 **Don't:**
-- ❌ Reference multiple URLs from the same domain (automatic deduplication handles this)
 - ❌ Include marketing or sales pages
 - ❌ Link to blog posts instead of official documentation
 - ❌ Reference deprecated or outdated documentation
@@ -123,10 +122,9 @@ Each archive is organized by platform (e.g., `stripe.com`, `docs.github.com`) wi
 
 The MCP server automatically:
 
-1. **Deduplicates URLs:** Multiple URLs from the same domain → single comprehensive archive
-2. **Handles Failures Gracefully:** Spec generation completes even if documentation scraping fails
-3. **Organizes by Platform:** Each documentation source gets its own well-structured archive
-4. **Runs in Parallel:** Documentation scraping doesn't slow down spec generation
+1. **Handles Failures Gracefully:** Spec generation completes even if documentation scraping fails
+2. **Organizes by Platform:** Each documentation source gets its own well-structured archive
+3. **Runs in Parallel:** Documentation scraping doesn't slow down spec generation
 
 ## Best Practices
 

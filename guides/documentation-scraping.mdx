@@ -20,23 +20,6 @@ Documentation scraping runs **in parallel** with spec generation, not sequential
 - ✅ Deep Spec: Still ~2-3 minutes
 - ✅ Both processes complete simultaneously
 
-### Automatic Deduplication
-
-The system automatically deduplicates URLs by hostname:
-
-**Input:**
-```json
-{
-  "docURLs": [
-    "https://stripe.com/docs/api",
-    "https://stripe.com/docs/payments",
-    "https://stripe.com/docs/webhooks"
-  ]
-}
-```
-
-**Result:** Single comprehensive `stripe.com` archive containing all three sections.
-
 ### Graceful Degradation
 
 If documentation scraping fails:
