@@ -39,7 +39,6 @@ curl -X POST https://api.pre.dev/fast-spec \
   -d '{
     "input": "Build a payment processing system with subscription management",
     "docURLs": ["https://stripe.com/docs/api"],
-    "outputFormat": "url"
   }'
 ```
 
@@ -56,7 +55,6 @@ curl -X POST https://api.pre.dev/deep-spec \
       "https://www.hhs.gov/hipaa/for-professionals/security/guidance",
       "https://stripe.com/docs/api"
     ],
-    "outputFormat": "url",
     "async": true
   }'
 ```
@@ -217,7 +215,6 @@ The system handles various TLDs and domain formats:
     "https://www.twilio.com/docs/video",
     "https://stripe.com/docs/api"
   ],
-  "outputFormat": "url",
   "async": true
 }
 ```
@@ -239,7 +236,6 @@ The system handles various TLDs and domain formats:
     "https://www.shippo.com/docs/reference",
     "https://docs.sentry.io"
   ],
-  "outputFormat": "url"
 }
 ```
 
@@ -253,8 +249,7 @@ The system handles various TLDs and domain formats:
     "https://docs.aws.amazon.com/s3",
     "https://docs.stripe.com/billing",
     "https://www.chartjs.org/docs"
-  ],
-  "outputFormat": "url"
+  ]
 }
 ```
 
@@ -269,7 +264,6 @@ The system handles various TLDs and domain formats:
     "https://prometheus.io/docs",
     "https://grafana.com/docs"
   ],
-  "outputFormat": "url",
   "async": true
 }
 ```
@@ -348,7 +342,6 @@ result.zippedDocsUrls.forEach(archive => {
       -d '{
         "input": "${{ github.event.issue.body }}",
         "docURLs": ["https://stripe.com/docs/api"],
-        "outputFormat": "url"
       }' > spec-response.json
 
 - name: Download Documentation Archives

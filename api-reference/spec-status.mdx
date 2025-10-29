@@ -48,7 +48,6 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "pending",
   "success": false,
-  "outputFormat": "url",
   "progress": "Initializing..."
 }
 ```
@@ -63,7 +62,6 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "processing",
   "success": false,
-  "outputFormat": "url",
   "progress": "Generating specification..."
 }
 ```
@@ -79,7 +77,6 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "status": "completed",
   "success": true,
   "output": "https://api.pre.dev/s/a6hFJRV6",
-  "outputFormat": "url",
   "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
@@ -101,7 +98,6 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "failed",
   "success": false,
-  "outputFormat": "url",
   "errorMessage": "Invalid input format",
   "executionTime": 5000,
   "progress": "Failed to generate specification"
@@ -121,7 +117,6 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `uploadedFileShortUrl` | string | Short URL for uploaded file (if file was uploaded) |
 | `uploadedFileName` | string | Name of uploaded file (if file was uploaded) |
 | `output` | any | Generated spec URL or markdown content (only when completed) |
-| `outputFormat` | string | Format used: `"url"` or `"markdown"` |
 | `outputFileUrl` | string | URL where the spec file is hosted - downloadable markdown (only when completed) |
 | `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec (only when completed) |

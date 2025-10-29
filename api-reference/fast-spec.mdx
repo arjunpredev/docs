@@ -45,7 +45,6 @@ Authorization: Bearer YOUR_API_KEY
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `input` | string | ✅ | Description of what you want to build |
-| `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
@@ -56,7 +55,6 @@ Authorization: Bearer YOUR_API_KEY
 |-----------|------|----------|-------------|
 | `file` | File | ❌ | **Optional:** File to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with `input` text |
 | `input` | string | ❌ | **Optional:** Additional text description when using file upload. Can be empty string if using only file |
-| `outputFormat` | string | ❌ | `"url"` (default) - returns hosted URL, or `"markdown"` - returns raw markdown in response |
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
 | `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
 
@@ -95,7 +93,6 @@ Authorization: Bearer YOUR_API_KEY
 ```json
 {
   "input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging. Include user authentication and role-based permissions.",
-  "outputFormat": "url"
 }
 ```
 
@@ -105,7 +102,6 @@ Authorization: Bearer YOUR_API_KEY
 {
   "input": "Add a calendar view and Gantt chart visualization to the existing project management tool",
   "currentContext": "We have a task management system with list and board views, user auth, and basic team features",
-  "outputFormat": "url"
 }
 ```
 
@@ -114,7 +110,6 @@ Authorization: Bearer YOUR_API_KEY
 ```json
 {
   "input": "Build a comprehensive e-commerce platform with inventory management",
-  "outputFormat": "url",
   "async": true
 }
 ```
@@ -124,7 +119,6 @@ Authorization: Bearer YOUR_API_KEY
 ```json
 {
   "input": "Build a customer support ticketing system with priority levels and file attachments",
-  "outputFormat": "url",
   "docURLs": [
     "https://docs.pre.dev",
     "https://docs.stripe.com"
@@ -139,7 +133,6 @@ Authorization: Bearer YOUR_API_KEY
 const formData = new FormData();
 formData.append('file', fileInput.files[0]); // fileInput is your HTML file input
 formData.append('input', '');
-formData.append('outputFormat', 'url');
 formData.append('docURLs', JSON.stringify(["https://docs.pre.dev"]));
 
 const response = await fetch('http://localhost:3001/fast-spec', {
@@ -158,7 +151,6 @@ const response = await fetch('http://localhost:3001/fast-spec', {
 const formData = new FormData();
 formData.append('file', requirementsFile); // PDF or text file with requirements
 formData.append('input', 'Please focus on the authentication and user management features from the uploaded requirements document');
-formData.append('outputFormat', 'markdown');
 formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 ```
 
@@ -173,7 +165,6 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "status": "completed",
   "success": true,
   "output": "https://api.pre.dev/s/a6hFJRV6",
-  "outputFormat": "url",
   "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
@@ -201,7 +192,6 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `status` | string | Completion status: `"completed"` when successful |
 | `success` | boolean | Whether the request succeeded |
 | `output` | any | Primary output - the hosted spec URL or markdown content |
-| `outputFormat` | string | Format used: `"url"` or `"markdown"` |
 | `outputFileUrl` | string | URL where the spec file is hosted (downloadable markdown) |
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
@@ -210,31 +200,6 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
 | `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
 | `zippedDocsUrls` | array | **New:** Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
-
-**When `outputFormat: "markdown"`:**
-```json
-{
-  "endpoint": "fast_spec",
-  "input": "Build a SaaS project management tool...",
-  "status": "completed",
-  "success": true,
-  "output": "# Project Specification\n\n## Executive Summary...",
-  "outputFormat": "markdown",
-  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "executionTime": 38500,
-  "predevUrl": "https://pre.dev/projects/abc123",
-  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
-  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "zippedDocsUrls": [
-    {
-      "platform": "stripe.com",
-      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
-    }
-  ]
-}
-```
 
 ### Success Response (Async Mode)
 
@@ -312,8 +277,7 @@ curl -X POST https://api.pre.dev/fast-spec \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -d '{
-    "input": "Build a real-time collaborative whiteboard with drawing tools, shapes, text, and team presence indicators",
-    "outputFormat": "url"
+    "input": "Build a real-time collaborative whiteboard with drawing tools, shapes, text, and team presence indicators"
   }'
 ```
 
@@ -379,7 +343,6 @@ class ArchitectAPI:
 
         payload = {
             "input": input_text,
-            "outputFormat": output_format,
             "async": async_mode
         }
 
@@ -455,7 +418,6 @@ class ArchitectAPI {
   async generateSpec({
     input,
     currentContext = null,
-    outputFormat = 'url',
     async = false
   }) {
     const headers = {
@@ -465,7 +427,6 @@ class ArchitectAPI {
 
     const payload = {
       input,
-      outputFormat,
       async
     };
 
@@ -563,7 +524,6 @@ class ArchitectAPI {
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
     formData.append('input', 'Analyze the uploaded requirements document');
-    formData.append('outputFormat', 'url');
     formData.append('docURLs', JSON.stringify(['https://docs.pre.dev']));
 
     const response = await fetch(`${api.baseUrl}/fast-spec`, {
@@ -611,7 +571,6 @@ class ArchitectAPI {
 interface SpecRequest {
   input: string;
   currentContext?: string;
-  outputFormat?: 'url' | 'markdown';
   docURLs?: string[];
   async?: boolean;
 }
@@ -619,7 +578,6 @@ interface SpecRequest {
 interface FileUploadRequest {
   file?: File;
   input?: string;
-  outputFormat?: 'url' | 'markdown';
   docURLs?: string[];
   async?: boolean;
 }
@@ -627,7 +585,6 @@ interface FileUploadRequest {
 interface SpecResponse {
   output?: string;
   markdown?: string;
-  outputFormat: 'url' | 'markdown';
   fileUrl: string;
 }
 
@@ -652,7 +609,6 @@ interface StatusResponse {
   uploadedFileShortUrl?: string;
   uploadedFileName?: string;
   output?: any;
-  outputFormat: 'markdown' | 'url';
   outputFileUrl?: string;
   executionTime?: number;
   predevUrl?: string;
@@ -777,8 +733,7 @@ interface ZippedDocsUrl {
     "https://stripe.com/docs/api",
     "https://stripe.com/docs/payments",
     "https://docs.github.com/en/rest"
-  ],
-  "outputFormat": "url"
+  ]
 }
 ```
 

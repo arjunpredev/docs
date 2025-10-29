@@ -74,7 +74,6 @@ curl -X POST https://api.pre.dev/fast-spec \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -d '{
     "input": "Build a REST API for task management with user authentication",
-    "outputFormat": "url"
   }'
 ```
 
@@ -98,7 +97,6 @@ const client = new PredevAPI({ apiKey: "YOUR_API_KEY" });
 
 const response = await client.fastSpec({
   input: "Build a REST API for task management with user authentication",
-  outputFormat: "url"
 });
 
 console.log(response);
@@ -140,7 +138,6 @@ curl -X POST https://api.pre.dev/fast-spec \
   -d '{
     "input": "Build a payment system with Stripe integration",
     "docURLs": ["https://stripe.com/docs/api", "https://stripe.com/docs/payments"],
-    "outputFormat": "url"
   }'
 ```
 
