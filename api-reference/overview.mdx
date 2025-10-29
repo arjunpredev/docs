@@ -40,7 +40,6 @@ Both `/fast-spec` and `/deep-spec` endpoints now support automatic documentation
 {
   "input": "Build payment system with Stripe",
   "docURLs": ["https://stripe.com/docs/api"],
-  "outputFormat": "url"
 }
 ```
 
@@ -78,28 +77,6 @@ Request returns immediately with request ID, poll for status
 ```json
 {
   "async": true
-}
-```
-
-## Output Formats
-
-### URL Format (Default)
-
-Returns a hosted URL to the specification file
-
-```json
-{
-  "outputFormat": "url"
-}
-```
-
-### Markdown Format
-
-Returns the raw markdown content in the response
-
-```json
-{
-  "outputFormat": "markdown"
 }
 ```
 
@@ -202,8 +179,7 @@ Exceeding limits returns `429 Too Many Requests`.
       -H "Authorization: Bearer YOUR_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "input": "Build a SaaS project management tool",
-        "outputFormat": "url"
+        "input": "Build a SaaS project management tool"
       }'
     ```
   </Card>
@@ -214,8 +190,7 @@ Exceeding limits returns `429 Too Many Requests`.
       -H "Authorization: Bearer YOUR_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "input": "Build an enterprise healthcare platform",
-        "outputFormat": "url"
+        "input": "Build an enterprise healthcare platform"
       }'
     ```
   </Card>

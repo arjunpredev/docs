@@ -57,7 +57,7 @@ https://lovable.dev/projects/create?template=https://pre.dev/s/abc123
 ```
 
 **Process:**
-1. Generate spec with `outputFormat: "url"`
+1. Generate spec
 2. Use the Lovable deep link from your spec page
 3. Spec loads as complete project context
 4. Lovable interprets the markdown structure
@@ -129,7 +129,7 @@ Integrate spec generation into your development workflow programmatically.
 curl -X POST https://api.pre.dev/fast-spec \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"input\": \"$1\", \"outputFormat\": \"markdown\"}" \
+  -d "{\"input\": \"$1\"}" \
   > docs/spec.md
 
 echo "Spec generated: docs/spec.md"
@@ -154,7 +154,7 @@ jobs:
           curl -X POST https://api.pre.dev/fast-spec \
             -H "Authorization: Bearer ${{ secrets.ARCHITECT_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d "{\"input\": \"Implement $(cat features/${{ github.event.pull_request.number }}.md)\", \"outputFormat\": \"markdown\"}" \
+            -d "{\"input\": \"Implement $(cat features/${{ github.event.pull_request.number }}.md)\"}" \
             > spec.md
       - name: Comment on PR
         uses: actions/github-script@v6
@@ -182,8 +182,7 @@ export async function generateSpecForSelection() {
 
   const result = await api.generateSpec({
     input: `Add feature: ${selectedText}`,
-    currentContext: getCurrentProjectContext(),
-    outputFormat: 'markdown'
+    currentContext: getCurrentProjectContext()
   });
 
   // Open spec in new tab

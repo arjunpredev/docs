@@ -115,7 +115,6 @@ Authorization: Bearer YOUR_API_KEY
 | `input` | string | ✅ | Original input text |
 | `status` | string | ✅ | Current status |
 | `success` | boolean | ✅ | Whether generation succeeded |
-| `outputFormat` | string | ✅ | `"url"` or `"markdown"` |
 | `uploadedFileShortUrl` | string | ❌ | URL if file was uploaded |
 | `uploadedFileName` | string | ❌ | Name of uploaded file |
 | `output` | any | ❌ | Result (URL or markdown, when completed) |
@@ -269,7 +268,6 @@ interface SpecObject {
   input: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   success: boolean;
-  outputFormat: 'url' | 'markdown';
   uploadedFileShortUrl?: string;
   uploadedFileName?: string;
   output?: any;

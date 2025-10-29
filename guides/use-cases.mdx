@@ -20,8 +20,7 @@ You have an idea for a SaaS application but aren't sure about all the features n
 **Input:**
 ```json
 {
-  "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles.",
-  "outputFormat": "url"
+  "input": "Build a SaaS project management tool with kanban boards, sprint planning, time tracking, team collaboration, and integrations with Slack and GitHub. Include user authentication with teams and roles."
 }
 ```
 
@@ -58,7 +57,6 @@ You have a working application and want to add new features without breaking exi
 {
   "input": "Add real-time customer support chat with agent assignment, chat history, and file sharing",
   "currentContext": "Existing e-commerce platform with React frontend, Node.js API, PostgreSQL database, user authentication via JWT, product catalog, shopping cart, and order management",
-  "outputFormat": "url"
 }
 ```
 
@@ -136,7 +134,7 @@ jobs:
           curl -X POST https://api.pre.dev/fast-spec \
             -H "Authorization: Bearer ${{ secrets.ARCHITECT_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d "{\"input\": \"${{ github.event.issue.body }}\", \"outputFormat\": \"markdown\"}" \
+            -d "{\"input\": \"${{ github.event.issue.body }}\"}" \
             > feature-spec.md
 ```
 

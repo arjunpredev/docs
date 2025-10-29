@@ -48,23 +48,20 @@
 								"newProject": {
 									"summary": "New Project",
 									"value": {
-										"input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging",
-										"outputFormat": "url"
+										"input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging"
 									}
 								},
 								"featureAddition": {
 									"summary": "Feature Addition",
 									"value": {
 										"input": "Add a calendar view and Gantt chart visualization",
-										"currentContext": "Existing task management system with list and board views, user auth, and basic team features",
-										"outputFormat": "url"
+										"currentContext": "Existing task management system with list and board views, user auth, and basic team features"
 									}
 								},
 								"asyncRequest": {
 									"summary": "Async Request",
 									"value": {
 										"input": "Build a comprehensive e-commerce platform with inventory management",
-										"outputFormat": "url",
 										"async": true
 									}
 								}
@@ -174,23 +171,20 @@
 								"enterpriseProject": {
 									"summary": "Enterprise Healthcare Platform",
 									"value": {
-										"input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system",
-										"outputFormat": "url"
+										"input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system"
 									}
 								},
 								"complexFeature": {
 									"summary": "Complex Feature Addition",
 									"value": {
 										"input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
-										"currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices",
-										"outputFormat": "url"
+										"currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices"
 									}
 								},
 								"asyncProcessing": {
 									"summary": "Async Processing",
 									"value": {
 										"input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
-										"outputFormat": "url",
 										"async": true
 									}
 								}
@@ -437,7 +431,6 @@
 													"input": "Build a SaaS project management tool with team collaboration",
 													"status": "completed",
 													"success": true,
-													"outputFormat": "url",
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
 													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
 													"executionTime": 38500
@@ -458,7 +451,6 @@
 													"input": "Add real-time notifications",
 													"status": "completed",
 													"success": true,
-													"outputFormat": "markdown",
 													"executionTime": 35200
 												}
 											],
@@ -573,7 +565,6 @@
 													"input": "Build a payment processing system with Stripe integration",
 													"status": "completed",
 													"success": true,
-													"outputFormat": "url",
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
 													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
@@ -593,7 +584,6 @@
 													"input": "Build a real-time collaborative whiteboard",
 													"status": "completed",
 													"success": true,
-													"outputFormat": "url",
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
 													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
@@ -654,12 +644,6 @@
 						"description": "Description of what you want to build or the feature you want to add",
 						"example": "Build a SaaS project management tool with team collaboration and real-time updates"
 					},
-					"outputFormat": {
-						"type": "string",
-						"enum": ["url", "markdown"],
-						"default": "url",
-						"description": "Output format: 'url' returns a hosted URL (default), 'markdown' returns raw markdown content"
-					},
 					"currentContext": {
 						"type": "string",
 						"description": "CRITICAL: Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance",
@@ -692,11 +676,6 @@
 					"input": {
 						"type": "string",
 						"description": "Optional additional text description when using file upload. Can be empty string if using only file"
-					},
-					"outputFormat": {
-						"type": "string",
-						"enum": ["url", "markdown"],
-						"default": "url"
 					},
 					"docURLs": {
 						"type": "array",
@@ -731,23 +710,6 @@
 					"success": {
 						"type": "boolean",
 						"description": "Whether the request succeeded"
-					},
-					"output": {
-						"description": "Primary output - the hosted spec URL or markdown content",
-						"oneOf": [
-							{
-								"type": "string",
-								"format": "uri"
-							},
-							{
-								"type": "string"
-							}
-						]
-					},
-					"outputFormat": {
-						"type": "string",
-						"enum": ["url", "markdown"],
-						"description": "Format used"
 					},
 					"humanSpecUrl": {
 						"type": "string",
@@ -849,14 +811,6 @@
 					"uploadedFileName": {
 						"type": "string",
 						"description": "Name of uploaded file (if file was uploaded)"
-					},
-					"output": {
-						"description": "Generated spec URL or markdown content (only when completed)"
-					},
-					"outputFormat": {
-						"type": "string",
-						"enum": ["url", "markdown"],
-						"description": "Format used"
 					},
 					"humanSpecUrl": {
 						"type": "string",
