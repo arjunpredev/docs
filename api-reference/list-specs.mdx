@@ -73,8 +73,8 @@ Authorization: Bearer YOUR_API_KEY
       "input": "Build a SaaS project management tool with team collaboration",
       "status": "completed",
       "success": true,
-      "outputFormat": "url",
-      "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+      "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+      "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
       "executionTime": 38500,
       "predevUrl": "https://pre.dev/projects/abc123",
       "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=...",
@@ -89,7 +89,6 @@ Authorization: Bearer YOUR_API_KEY
       "input": "Build an enterprise healthcare platform with HIPAA compliance",
       "status": "processing",
       "success": false,
-      "outputFormat": "markdown",
       "progress": "Generating architecture recommendations..."
     }
   ],
@@ -120,7 +119,8 @@ Authorization: Bearer YOUR_API_KEY
 | `uploadedFileShortUrl` | string | ❌ | URL if file was uploaded |
 | `uploadedFileName` | string | ❌ | Name of uploaded file |
 | `output` | any | ❌ | Result (URL or markdown, when completed) |
-| `outputFileUrl` | string | ❌ | Downloadable spec URL (when completed) |
+| `humanSpecUrl` | string | ❌ | Human-readable spec URL (when completed) |
+| `codingAgentUrl` | string | ❌ | Coding agent spec URL (when completed) |
 | `executionTime` | number | ❌ | Processing time in ms (when completed) |
 | `predevUrl` | string | ❌ | pre.dev project URL (when completed) |
 | `lovableUrl` | string | ❌ | Lovable.dev deep link (when completed) |
@@ -273,7 +273,8 @@ interface SpecObject {
   uploadedFileShortUrl?: string;
   uploadedFileName?: string;
   output?: any;
-  outputFileUrl?: string;
+  humanSpecUrl?: string;
+  codingAgentUrl?: string;
   executionTime?: number;
   predevUrl?: string;
   lovableUrl?: string;
@@ -511,7 +512,7 @@ async function getRecentSpecsForDashboard() {
     type: spec.endpoint === 'fast_spec' ? 'Fast' : 'Deep',
     status: spec.status,
     createdAt: new Date(spec.created),
-    url: spec.outputFileUrl
+    url: spec.humanSpecUrl
   }));
 }
 ```

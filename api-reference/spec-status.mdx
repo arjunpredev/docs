@@ -77,7 +77,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "status": "completed",
   "success": true,
   "output": "https://api.pre.dev/s/a6hFJRV6",
-  "outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -117,7 +118,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `uploadedFileShortUrl` | string | Short URL for uploaded file (if file was uploaded) |
 | `uploadedFileName` | string | Name of uploaded file (if file was uploaded) |
 | `output` | any | Generated spec URL or markdown content (only when completed) |
-| `outputFileUrl` | string | URL where the spec file is hosted - downloadable markdown (only when completed) |
+| `humanSpecUrl` | string | URL where the human-readable spec is hosted - downloadable markdown (only when completed) |
+| `codingAgentUrl` | string | URL where the coding agent spec format is hosted - downloadable markdown (only when completed) |
 | `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec (only when completed) |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec (only when completed) |

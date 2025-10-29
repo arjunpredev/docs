@@ -34,7 +34,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key_here' });
 
 // Generate a fast specification
 const result = await predev.fastSpec({
-  input: 'Build a task management app with team collaboration',
+  input: 'Build a SaaS project management tool with team collaboration',
   outputFormat: 'url'
 });
 
@@ -235,7 +235,8 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   // Output data (when completed)
   output?: any;                    // Raw content or URL
   outputFormat: "markdown" | "url";
-  outputFileUrl?: string;          // Full URL to hosted spec
+  humanSpecUrl?: string;           // URL to human-readable spec
+  codingAgentUrl?: string;         // URL to coding agent spec format
   executionTime?: number;          // Processing time in milliseconds
 
   // Integration URLs (when completed)
@@ -275,7 +276,7 @@ const result = await predev.fastSpec({
   outputFormat: 'url'
 });
 
-console.log(`Specification URL: ${result.outputFileUrl}`);
+console.log(`Specification URL: ${result.humanSpecUrl}`);
 ```
 
 ### Generate Deep Spec with Context
@@ -338,14 +339,12 @@ async function generateSpec() {
   }
 
   if (status.status === 'completed') {
-    console.log(`Specification URL: ${status.outputFileUrl}`);
+    console.log(`Specification URL: ${status.codingAgentUrl}`);
   }
 }
 
 generateSpec();
-```
-
-### List and Filter Specs
+```### List and Filter Specs
 
 ```typescript
 import { PredevAPI } from 'predev-api';
@@ -395,4 +394,7 @@ For issues, questions, or contributions:
 
 - [GitHub Repository](https://github.com/predotdev/predev-api)
 - [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
+
+
+
 

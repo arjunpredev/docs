@@ -269,7 +269,8 @@ class SpecResponse:
     uploadedFileName: Optional[str] = None        # Name of input file
     output: Optional[Any] = None                  # Raw content or URL
     outputFormat: Optional[Literal['markdown', 'url']] = None
-    outputFileUrl: Optional[str] = None           # Full URL to hosted spec
+    humanSpecUrl: Optional[str] = None            # URL to human-readable spec
+    codingAgentUrl: Optional[str] = None          # URL to coding agent spec format
     executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)
@@ -308,7 +309,7 @@ result = predev.fast_spec(
     output_format="url"
 )
 
-print(f"Specification URL: {result.outputFileUrl}")
+print(f"Specification URL: {result.humanSpecUrl}")
 ```
 
 ### Generate Deep Spec with Context
@@ -354,7 +355,7 @@ while True:
     time.sleep(5)
 
 if status.status == "completed":
-    print(f"Specification URL: {status.outputFileUrl}")
+    print(f"Specification URL: {status.codingAgentUrl}")
 ```
 
 ### List and Filter Specs

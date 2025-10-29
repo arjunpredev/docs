@@ -438,7 +438,8 @@
 													"status": "completed",
 													"success": true,
 													"outputFormat": "url",
-													"outputFileUrl": "https://api.pre.dev/s/a6hFJRV6",
+													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
 													"executionTime": 38500
 												}
 											],
@@ -573,7 +574,8 @@
 													"status": "completed",
 													"success": true,
 													"outputFormat": "url",
-													"outputFileUrl": "https://api.pre.dev/s/a6hFJRV6"
+													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
 											],
 											"total": 8,
@@ -591,7 +593,9 @@
 													"input": "Build a real-time collaborative whiteboard",
 													"status": "completed",
 													"success": true,
-													"outputFormat": "url"
+													"outputFormat": "url",
+													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
 											],
 											"total": 23,
@@ -745,10 +749,15 @@
 						"enum": ["url", "markdown"],
 						"description": "Format used"
 					},
-					"outputFileUrl": {
+					"humanSpecUrl": {
 						"type": "string",
 						"format": "uri",
-						"description": "URL where the spec file is hosted (downloadable markdown)"
+						"description": "URL where the human-readable spec is hosted (downloadable markdown)"
+					},
+					"codingAgentUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL where the coding agent spec format is hosted (downloadable markdown)"
 					},
 					"executionTime": {
 						"type": "integer",
@@ -849,10 +858,15 @@
 						"enum": ["url", "markdown"],
 						"description": "Format used"
 					},
-					"outputFileUrl": {
+					"humanSpecUrl": {
 						"type": "string",
 						"format": "uri",
-						"description": "URL where the spec file is hosted (only when completed)"
+						"description": "URL where the human-readable spec is hosted (only when completed)"
+					},
+					"codingAgentUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL where the coding agent spec format is hosted (only when completed)"
 					},
 					"executionTime": {
 						"type": "integer",
