@@ -165,9 +165,8 @@ formData.append('async', 'true');
   "input": "Build an enterprise healthcare management platform...",
   "status": "completed",
   "success": true,
-  "output": "https://api.pre.dev/s/a6hFJRV6",
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 185000,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -193,9 +192,8 @@ formData.append('async', 'true');
 | `input` | string | Original input text provided |
 | `status` | string | Completion status: `"completed"` when successful |
 | `success` | boolean | Whether the request succeeded |
-| `output` | any | Primary output - the hosted spec URL or markdown content |
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted (downloadable markdown) |
-| `codingAgentUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
+| `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
@@ -443,7 +441,7 @@ interface ZippedDocsUrl {
 ```json
 {
   "endpoint": "deep_spec",
-  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "zippedDocsUrls": [
     {
       "platform": "docs.hl7.org",

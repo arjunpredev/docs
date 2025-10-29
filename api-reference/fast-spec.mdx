@@ -164,9 +164,8 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "input": "Build a SaaS project management tool with team collaboration...",
   "status": "completed",
   "success": true,
-  "output": "https://api.pre.dev/s/a6hFJRV6",
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -192,9 +191,8 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `input` | string | Original input text provided |
 | `status` | string | Completion status: `"completed"` when successful |
 | `success` | boolean | Whether the request succeeded |
-| `output` | any | Primary output - the hosted spec URL or markdown content |
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted (downloadable markdown) |
-| `codingAgentUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
+| `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
@@ -305,7 +303,7 @@ while true; do
 
   if [ "$STATE" = "completed" ]; then
     echo "Spec ready!"
-    echo $STATUS | jq -r '.output'
+    echo $STATUS | jq -r '.codingAgentSpecUrl'
     break
   elif [ "$STATE" = "failed" ]; then
     echo "Processing failed"
@@ -391,7 +389,7 @@ api = ArchitectAPI(api_key="YOUR_API_KEY")
 result = api.generate_spec(
     input_text="Build a fitness tracking app with workout logging, progress charts, and social features",
 )
-print(f"Spec URL: {result['output']}")
+print(f"Spec URL: {result['codingAgentSpecUrl']}")
 
 # Asynchronous (poll for result)
 response = api.generate_spec(
@@ -401,7 +399,7 @@ response = api.generate_spec(
 )
 
 result = api.wait_for_completion(response["specId"])
-print(f"Spec ready: {result['output']}")
+print(f"Spec ready: {result['codingAgentSpecUrl']}")
 ```
 
 ### JavaScript/Node.js - Complete Implementation
@@ -490,7 +488,7 @@ class ArchitectAPI {
       input: 'Build an e-learning platform with video courses, quizzes, certificates, and student progress tracking'
     });
 
-    console.log('Spec URL:', result.output);
+    console.log('Spec URL:', result.codingAgentSpecUrl);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -509,7 +507,7 @@ class ArchitectAPI {
       ]
     });
 
-    console.log('Spec URL:', result.output);
+    console.log('Spec URL:', result.codingAgentSpecUrl);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -536,7 +534,7 @@ class ArchitectAPI {
     });
 
     const result = await response.json();
-    console.log('Spec URL:', result.output);
+    console.log('Spec URL:', result.codingAgentSpecUrl);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -558,7 +556,7 @@ class ArchitectAPI {
 
     // Wait for completion
     const result = await api.waitForCompletion(response.specId);
-    console.log('Spec ready:', result.output);
+    console.log('Spec ready:', result.codingAgentSpecUrl);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -583,7 +581,7 @@ interface FileUploadRequest {
 }
 
 interface SpecResponse {
-  output?: string;
+  codingAgentSpecUrl?: string;
   markdown?: string;
   fileUrl: string;
 }
@@ -608,9 +606,8 @@ interface StatusResponse {
   success: boolean;
   uploadedFileShortUrl?: string;
   uploadedFileName?: string;
-  output?: any;
   humanSpecUrl?: string;
-  codingAgentUrl?: string;
+  codingAgentSpecUrl?: string;
   executionTime?: number;
   predevUrl?: string;
   lovableUrl?: string;
@@ -743,7 +740,7 @@ interface ZippedDocsUrl {
 ```json
 {
   "endpoint": "fast_spec",
-  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "zippedDocsUrls": [
     {
       "platform": "stripe.com",

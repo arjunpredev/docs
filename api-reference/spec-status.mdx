@@ -76,9 +76,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "completed",
   "success": true,
-  "output": "https://api.pre.dev/s/a6hFJRV6",
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -117,9 +116,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `success` | boolean | Whether the request succeeded |
 | `uploadedFileShortUrl` | string | Short URL for uploaded file (if file was uploaded) |
 | `uploadedFileName` | string | Name of uploaded file (if file was uploaded) |
-| `output` | any | Generated spec URL or markdown content (only when completed) |
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted - downloadable markdown (only when completed) |
-| `codingAgentUrl` | string | URL where the coding agent spec format is hosted - downloadable markdown (only when completed) |
+| `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted - downloadable markdown (only when completed) |
 | `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec (only when completed) |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec (only when completed) |
@@ -154,7 +152,7 @@ while true; do
   case $STATUS in
     "completed")
       echo "✅ Spec processing completed!"
-      echo $RESPONSE | jq -r '.output'
+      echo $RESPONSE | jq -r '.codingAgentSpecUrl'
       break
       ;;
     "failed")
@@ -206,7 +204,7 @@ def poll_spec_status(api_key: str, spec_id: str, poll_interval: int = 10) -> Dic
 
 # Usage
 result = poll_spec_status("YOUR_API_KEY", "507f1f77bcf86cd799439011")
-print(f"Spec URL: {result['output']}")
+print(f"Spec URL: {result['codingAgentSpecUrl']}")
 ```
 
 ### JavaScript Polling Example
@@ -244,7 +242,7 @@ async function pollSpecStatus(apiKey, specId, pollInterval = 10000) {
 // Usage
 try {
   const result = await pollSpecStatus('YOUR_API_KEY', '507f1f77bcf86cd799439011');
-  console.log(`Spec URL: ${result.output}`);
+  console.log(`Spec URL: ${result.codingAgentSpecUrl}`);
 } catch (error) {
   console.error('Error:', error.message);
 }

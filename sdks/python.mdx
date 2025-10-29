@@ -259,10 +259,8 @@ class SpecResponse:
     # Output data (when completed)
     uploadedFileShortUrl: Optional[str] = None    # URL to input file
     uploadedFileName: Optional[str] = None        # Name of input file
-    output: Optional[Any] = None                  # Raw content or URL
-    outputFormat: Optional[Literal['markdown', 'url']] = None
     humanSpecUrl: Optional[str] = None            # URL to human-readable spec
-    codingAgentUrl: Optional[str] = None          # URL to coding agent spec format
+    codingAgentSpecUrl: Optional[str] = None          # URL to coding agent spec format
     executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)
@@ -315,7 +313,7 @@ result = predev.deep_spec(
     current_context="Existing e-commerce platform with user auth and product catalog"
 )
 
-print(result.output)
+print(result.codingAgentSpecUrl)
 ```
 
 ### Async Workflow
@@ -344,7 +342,7 @@ while True:
     time.sleep(5)
 
 if status.status == "completed":
-    print(f"Specification URL: {status.codingAgentUrl}")
+    print(f"Specification URL: {status.codingAgentSpecUrl}")
 ```
 
 ### List and Filter Specs

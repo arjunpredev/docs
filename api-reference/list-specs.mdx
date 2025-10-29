@@ -74,7 +74,7 @@ Authorization: Bearer YOUR_API_KEY
       "status": "completed",
       "success": true,
       "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-      "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+      "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
       "executionTime": 38500,
       "predevUrl": "https://pre.dev/projects/abc123",
       "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=...",
@@ -117,9 +117,8 @@ Authorization: Bearer YOUR_API_KEY
 | `success` | boolean | ✅ | Whether generation succeeded |
 | `uploadedFileShortUrl` | string | ❌ | URL if file was uploaded |
 | `uploadedFileName` | string | ❌ | Name of uploaded file |
-| `output` | any | ❌ | Result (URL or markdown, when completed) |
 | `humanSpecUrl` | string | ❌ | Human-readable spec URL (when completed) |
-| `codingAgentUrl` | string | ❌ | Coding agent spec URL (when completed) |
+| `codingAgentSpecUrl` | string | ❌ | Coding agent spec URL (when completed) |
 | `executionTime` | number | ❌ | Processing time in ms (when completed) |
 | `predevUrl` | string | ❌ | pre.dev project URL (when completed) |
 | `lovableUrl` | string | ❌ | Lovable.dev deep link (when completed) |
@@ -270,9 +269,8 @@ interface SpecObject {
   success: boolean;
   uploadedFileShortUrl?: string;
   uploadedFileName?: string;
-  output?: any;
   humanSpecUrl?: string;
-  codingAgentUrl?: string;
+  codingAgentSpecUrl?: string;
   executionTime?: number;
   predevUrl?: string;
   lovableUrl?: string;

@@ -34,8 +34,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key_here' });
 
 // Generate a fast specification
 const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with team collaboration',
-  outputFormat: 'url'
+  input: 'Build a SaaS project management tool with team collaboration'
 });
 
 console.log(result);
@@ -59,14 +58,12 @@ Generate a fast specification (30-40 seconds, 10 credits).
 
 ```typescript
 const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with real-time collaboration',
-  outputFormat: 'url'
+  input: 'Build a SaaS project management tool with real-time collaboration'
 });
 ```
 
 **Parameters:**
 - `options.input` **(required)**: `string` - Description of what you want to build
-- `options.outputFormat` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `options.currentContext` **(optional)**: `string` - Existing project context
 - `options.docURLs` **(optional)**: `string[]` - Documentation URLs to reference
 
@@ -78,8 +75,7 @@ Generate a deep specification (2-3 minutes, 50 credits).
 
 ```typescript
 const result = await predev.deepSpec({
-  input: 'Build a healthcare platform with HIPAA compliance',
-  outputFormat: 'url'
+  input: 'Build a healthcare platform with HIPAA compliance'
 });
 ```
 
@@ -95,8 +91,7 @@ Generate a fast specification asynchronously (returns immediately).
 
 ```typescript
 const result = await predev.fastSpecAsync({
-  input: 'Build a comprehensive e-commerce platform',
-  outputFormat: 'url'
+  input: 'Build a comprehensive e-commerce platform'
 });
 // Returns: { specId: "spec_123", status: "pending" }
 ```
@@ -111,8 +106,7 @@ Generate a deep specification asynchronously (returns immediately).
 
 ```typescript
 const result = await predev.deepSpecAsync({
-  input: 'Build a fintech platform with regulatory compliance',
-  outputFormat: 'url'
+  input: 'Build a fintech platform with regulatory compliance'
 });
 // Returns: { specId: "spec_456", status: "pending" }
 ```
@@ -233,10 +227,8 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   uploadedFileName?: string;       // Name of input file
 
   // Output data (when completed)
-  output?: any;                    // Raw content or URL
-  outputFormat: "markdown" | "url";
   humanSpecUrl?: string;           // URL to human-readable spec
-  codingAgentUrl?: string;         // URL to coding agent spec format
+  codingAgentSpecUrl?: string;         // URL to coding agent spec format
   executionTime?: number;          // Processing time in milliseconds
 
   // Integration URLs (when completed)
@@ -273,7 +265,6 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 const result = await predev.fastSpec({
   input: 'Build a SaaS project management tool with team collaboration',
-  outputFormat: 'url'
 });
 
 console.log(`Specification URL: ${result.humanSpecUrl}`);
@@ -287,10 +278,9 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 const result = await predev.deepSpec({
   input: 'Add advanced analytics dashboard',
   currentContext: 'Existing e-commerce platform with user auth and product catalog',
-  outputFormat: 'markdown'
 });
 
-console.log(result.output);
+console.log(result.codingAgentSpecUrl);
 ```
 ### With Documentation URLs
 
@@ -302,7 +292,6 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 const result = await predev.fastSpec({
   input: 'Build a customer support ticketing system',
   docURLs: ['https://docs.pre.dev', 'https://docs.stripe.com'],
-  outputFormat: 'markdown'
 });
 ```
 
@@ -317,7 +306,6 @@ async function generateSpec() {
   // Start async generation
   const asyncResult = await predev.fastSpecAsync({
     input: 'Build a social media platform',
-    outputFormat: 'url'
   });
 
   console.log(`Spec ID: ${asyncResult.specId}`);
@@ -336,7 +324,7 @@ async function generateSpec() {
   }
 
   if (status.status === 'completed') {
-    console.log(`Specification URL: ${status.codingAgentUrl}`);
+    console.log(`Specification URL: ${status.codingAgentSpecUrl}`);
   }
 }
 

@@ -432,7 +432,7 @@
 													"status": "completed",
 													"success": true,
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
 													"executionTime": 38500
 												}
 											],
@@ -566,7 +566,7 @@
 													"status": "completed",
 													"success": true,
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
+													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
 											],
 											"total": 8,
@@ -585,7 +585,7 @@
 													"status": "completed",
 													"success": true,
 													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7"
+													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
 												}
 											],
 											"total": 23,
@@ -716,7 +716,7 @@
 						"format": "uri",
 						"description": "URL where the human-readable spec is hosted (downloadable markdown)"
 					},
-					"codingAgentUrl": {
+					"codingAgentSpecUrl": {
 						"type": "string",
 						"format": "uri",
 						"description": "URL where the coding agent spec format is hosted (downloadable markdown)"
@@ -817,7 +817,7 @@
 						"format": "uri",
 						"description": "URL where the human-readable spec is hosted (only when completed)"
 					},
-					"codingAgentUrl": {
+					"codingAgentSpecUrl": {
 						"type": "string",
 						"format": "uri",
 						"description": "URL where the coding agent spec format is hosted (only when completed)"

@@ -90,9 +90,8 @@ interface ZippedDocsUrl {
   "input": "Build enterprise healthcare platform...",
   "status": "completed",
   "success": true,
-  "output": "https://api.pre.dev/s/a6hFJRV6",
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "codingAgentUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 185000,
   "predevUrl": "https://pre.dev/projects/abc123",
   "zippedDocsUrls": [
@@ -359,7 +358,7 @@ If some documentation URLs fail to scrape:
 
 ```json
 {
-  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "zippedDocsUrls": [
     {
       "platform": "stripe.com",
@@ -377,7 +376,7 @@ If all documentation scraping fails:
 
 ```json
 {
-  "output": "https://api.pre.dev/s/a6hFJRV6",
+  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "zippedDocsUrls": []
 }
 ```
