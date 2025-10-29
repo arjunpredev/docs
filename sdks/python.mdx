@@ -34,8 +34,7 @@ predev = PredevAPI(api_key="your_api_key_here")
 
 # Generate a fast specification
 result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration",
-    output_format="url"
+    input_text="Build a task management app with team collaboration"
 )
 
 print(result)
@@ -60,7 +59,6 @@ Generate a fast specification (30-40 seconds, 10 credits).
 ```python
 result = predev.fast_spec(
     input_text="Build a SaaS project management tool with real-time collaboration",
-    output_format="url",
     current_context=None,  # Optional: existing project context
     doc_urls=None  # Optional: documentation URLs to reference
 )
@@ -69,7 +67,6 @@ result = predev.fast_spec(
 **Parameters:**
 
 - `input_text` **(required)**: `str` - Description of what you want to build
-- `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `current_context` **(optional)**: `str` - Existing project context
 - `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
 
@@ -79,8 +76,7 @@ result = predev.fast_spec(
 
 ```python
 result = predev.fast_spec(
-    input_text="Build a SaaS project management tool with real-time collaboration",
-    output_format="url"
+    input_text="Build a SaaS project management tool with real-time collaboration"
 )
 ```
 
@@ -91,7 +87,6 @@ Generate a deep specification (2-3 minutes, 50 credits).
 ```python
 result = predev.deep_spec(
     input_text="Build a healthcare platform with HIPAA compliance",
-    output_format="url",
     current_context=None,  # Optional: existing project context
     doc_urls=None  # Optional: documentation URLs
 )
@@ -105,8 +100,7 @@ result = predev.deep_spec(
 
 ```python
 result = predev.deep_spec(
-    input_text="Build a healthcare platform with HIPAA compliance",
-    output_format="url"
+    input_text="Build a healthcare platform with HIPAA compliance"
 )
 ```
 
@@ -118,8 +112,7 @@ Generate a fast specification asynchronously (returns immediately).
 
 ```python
 result = predev.fast_spec_async(
-    input_text="Build a comprehensive e-commerce platform",
-    output_format="url"
+    input_text="Build a comprehensive e-commerce platform"
 )
 # Returns: AsyncResponse(specId="spec_123", status="pending")
 ```
@@ -134,8 +127,7 @@ Generate a deep specification asynchronously (returns immediately).
 
 ```python
 result = predev.deep_spec_async(
-    input_text="Build a fintech platform with regulatory compliance",
-    output_format="url"
+    input_text="Build a fintech platform with regulatory compliance"
 )
 # Returns: AsyncResponse(specId="spec_456", status="pending")
 ```
@@ -305,8 +297,7 @@ from predev_api import PredevAPI
 predev = PredevAPI(api_key="your_api_key")
 
 result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration",
-    output_format="url"
+    input_text="Build a task management app with team collaboration"
 )
 
 print(f"Specification URL: {result.humanSpecUrl}")
@@ -321,8 +312,7 @@ predev = PredevAPI(api_key="your_api_key")
 
 result = predev.deep_spec(
     input_text="Add advanced analytics dashboard",
-    current_context="Existing e-commerce platform with user auth and product catalog",
-    output_format="markdown"
+    current_context="Existing e-commerce platform with user auth and product catalog"
 )
 
 print(result.output)
@@ -338,8 +328,7 @@ predev = PredevAPI(api_key="your_api_key")
 
 # Start async generation
 async_result = predev.fast_spec_async(
-    input_text="Build a social media platform",
-    output_format="url"
+    input_text="Build a social media platform"
 )
 
 print(f"Job ID: {async_result.specId}")

@@ -334,7 +334,6 @@ class ArchitectAPI:
         self,
         input_text: str,
         current_context: str = None,
-        output_format: str = "url",
         async_mode: bool = False
     ) -> Dict[str, Any]:
         """Generate a fast spec."""
@@ -391,7 +390,6 @@ api = ArchitectAPI(api_key="YOUR_API_KEY")
 # Synchronous (wait for result)
 result = api.generate_spec(
     input_text="Build a fitness tracking app with workout logging, progress charts, and social features",
-    output_format="url"
 )
 print(f"Spec URL: {result['output']}")
 
