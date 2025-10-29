@@ -260,6 +260,7 @@ class SpecResponse:
     uploadedFileShortUrl: Optional[str] = None    # URL to input file
     uploadedFileName: Optional[str] = None        # Name of input file
     humanSpecUrl: Optional[str] = None            # URL to human-readable spec
+    totalHumanHours: Optional[float] = None       # Estimated hours for human implementation
     codingAgentSpecUrl: Optional[str] = None          # URL to coding agent spec format
     executionTime: Optional[int] = None           # Processing time in milliseconds
 

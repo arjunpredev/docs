@@ -716,6 +716,10 @@
 						"format": "uri",
 						"description": "URL where the human-readable spec is hosted (downloadable markdown)"
 					},
+					"totalHumanHours": {
+						"type": "number",
+						"description": "Estimated total hours for a human to implement the spec"
+					},
 					"codingAgentSpecUrl": {
 						"type": "string",
 						"format": "uri",
@@ -816,6 +820,10 @@
 						"type": "string",
 						"format": "uri",
 						"description": "URL where the human-readable spec is hosted (only when completed)"
+					},
+					"totalHumanHours": {
+						"type": "number",
+						"description": "Estimated total hours for a human to implement the spec (only when completed)"
 					},
 					"codingAgentSpecUrl": {
 						"type": "string",

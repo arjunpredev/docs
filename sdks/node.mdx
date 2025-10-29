@@ -228,6 +228,7 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 
   // Output data (when completed)
   humanSpecUrl?: string;           // URL to human-readable spec
+  totalHumanHours?: number;        // Estimated hours for human implementation
   codingAgentSpecUrl?: string;         // URL to coding agent spec format
   executionTime?: number;          // Processing time in milliseconds
 

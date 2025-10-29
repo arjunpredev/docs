@@ -74,6 +74,7 @@ Authorization: Bearer YOUR_API_KEY
       "status": "completed",
       "success": true,
       "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+      "totalHumanHours": 120,
       "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
       "executionTime": 38500,
       "predevUrl": "https://pre.dev/projects/abc123",
@@ -118,6 +119,7 @@ Authorization: Bearer YOUR_API_KEY
 | `uploadedFileShortUrl` | string | ❌ | URL if file was uploaded |
 | `uploadedFileName` | string | ❌ | Name of uploaded file |
 | `humanSpecUrl` | string | ❌ | Human-readable spec URL (when completed) |
+| `totalHumanHours` | number | ❌ | Estimated total hours for a human to implement the spec (when completed) |
 | `codingAgentSpecUrl` | string | ❌ | Coding agent spec URL (when completed) |
 | `executionTime` | number | ❌ | Processing time in ms (when completed) |
 | `predevUrl` | string | ❌ | pre.dev project URL (when completed) |

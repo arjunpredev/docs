@@ -77,6 +77,7 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "status": "completed",
   "success": true,
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+  "totalHumanHours": 120,
   "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
@@ -117,6 +118,7 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `uploadedFileShortUrl` | string | Short URL for uploaded file (if file was uploaded) |
 | `uploadedFileName` | string | Name of uploaded file (if file was uploaded) |
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted - downloadable markdown (only when completed) |
+| `totalHumanHours` | number | Estimated total hours for a human to implement the spec (only when completed) |
 | `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted - downloadable markdown (only when completed) |
 | `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec (only when completed) |
