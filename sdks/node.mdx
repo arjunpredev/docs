@@ -181,6 +181,7 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 ```
 
 **Parameters:**
+
 - `params.query` **(required)**: `string` - Regex pattern (case-insensitive)
 - `params.limit` **(optional)**: `number` - Results per page (1-100, default: 20)
 - `params.skip` **(optional)**: `number` - Offset for pagination (default: 0)
@@ -191,15 +192,78 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 
 **Regex Pattern Examples:**
 
-| Pattern | Matches |
-|---------|---------|
-| `payment` | "payment", "Payment", "make payment" |
-| `^Build` | Specs starting with "Build" |
-| `platform$` | Specs ending with "platform" |
-| `(API\|REST)` | Either "API" or "REST" |
-| `auth.*system` | "auth" then anything then "system" |
-| `\\d{3,}` | 3+ digits (budgets, quantities) |
-| `saas\|sass` | SaaS or SASS |
+|| Pattern | Matches |
+||---------|---------|
+|| `payment` | "payment", "Payment", "make payment" |
+|| `^Build` | Specs starting with "Build" |
+|| `platform$` | Specs ending with "platform" |
+|| `(API\|REST)` | Either "API" or "REST" |
+|| `auth.*system` | "auth" then anything then "system" |
+|| `\\d{3,}` | 3+ digits (budgets, quantities) |
+|| `saas\|sass` | SaaS or SASS |
+
+## File Upload Support
+
+All `fastSpec`, `deepSpec`, `fastSpecAsync`, and `deepSpecAsync` methods support optional file uploads. This allows you to provide architecture documents, requirements files, design mockups, RFPs (Request for Proposals), or other context files to improve specification generation.
+
+### Browser/Web Environment
+
+```typescript
+// Using File input from HTML form
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+
+const result = await predev.fastSpec({
+  input: 'Generate specs based on this design document',
+  file: file // Pass the File object directly
+});
+```
+
+### Node.js Environment
+
+```typescript
+import fs from 'fs';
+
+// Method 1: Using file path (simplest)
+const result = await predev.fastSpec({
+  input: 'Build based on these requirements',
+  file: {
+    data: fs.readFileSync('requirements.pdf'),
+    name: 'requirements.pdf'
+  }
+});
+
+// Method 2: Using file object
+const fileContent = fs.readFileSync('architecture.doc');
+const result = await predev.deepSpec({
+  input: 'Create comprehensive specs',
+  file: {
+    data: fileContent,
+    name: 'architecture.doc'
+  }
+});
+```
+
+### Supported File Types
+
+- PDF documents (`*.pdf`)
+- Word documents (`*.doc`, `*.docx`)
+- Text files (`*.txt`)
+- Images (`*.jpg`, `*.png`, `*.jpeg`)
+
+### Response with File Upload
+
+When you upload a file, the response includes:
+
+```typescript
+{
+  uploadedFileName?: string;      // Name of the uploaded file
+  uploadedFileShortUrl?: string;  // URL to access the file
+  codingAgentSpecUrl?: string;    // Spec optimized for AI systems
+  humanSpecUrl?: string;          // Spec optimized for humans
+  // ... other fields
+}
+```
 
 ## Response Types
 
