@@ -64,7 +64,8 @@
 						"pages": [
 							"api-reference/list-specs",
 							"api-reference/find-specs",
-							"api-reference/spec-status"
+							"api-reference/spec-status",
+							"api-reference/credits-balance"
 						]
 					}
 				]

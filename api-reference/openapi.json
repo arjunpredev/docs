@@ -622,6 +622,77 @@
 					}
 				}
 			}
+		},
+		"/credits-balance": {
+			"get": {
+				"summary": "Get Credits Balance",
+				"description": "Get the remaining prototype credits balance for the authenticated API key holder. This endpoint is free and does not consume credits.",
+				"operationId": "getCreditsBalance",
+				"tags": ["Account"],
+				"security": [
+					{
+						"apiKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Credits balance retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreditsBalanceResponse"
+								},
+								"example": {
+									"success": true,
+									"creditsRemaining": 450
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Unable to determine user or organization from API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Missing context",
+									"message": "Unable to determine user or organization from API key"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid or missing API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Unauthorized",
+									"message": "Invalid or missing Authorization header"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"example": {
+									"error": "Failed to retrieve credits balance",
+									"message": "Internal server error"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -956,6 +1027,20 @@
 						"description": "Optional short URL to consolidated markdown file for this platform"
 					}
 				}
+			},
+			"CreditsBalanceResponse": {
+				"type": "object",
+				"required": ["success", "creditsRemaining"],
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"description": "Whether the request was successful"
+					},
+					"creditsRemaining": {
+						"type": "integer",
+						"description": "The number of remaining credits available for the user"
+					}
+				}
 			}
 		}
 	},
@@ -971,6 +1056,10 @@
 		{
 			"name": "Spec Management",
 			"description": "List and search existing specifications"
+		},
+		{
+			"name": "Account",
+			"description": "Manage user account and credits"
 		}
 	]
 }

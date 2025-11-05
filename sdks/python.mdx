@@ -13,6 +13,7 @@ A Python client library for the pre.dev Architect API. Generate comprehensive so
 - ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
 - 🔎 **List & Search**: Discover, filter, and search through your specification history
+- 💳 **Credits Management**: Check your remaining prototype credits balance
 - ✨ **Type Hints**: Full type annotations for better IDE support
 - 🛡️ **Error Handling**: Custom exceptions for different error scenarios
 
@@ -158,6 +159,31 @@ status = predev.get_spec_status("spec_123")
 ```python
 status = predev.get_spec_status("spec_123")
 # Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
+```
+
+### Credits Management
+
+#### Get Credits Balance
+
+Get the remaining prototype credits balance for your API key.
+
+```python
+balance = predev.get_credits_balance()
+# Returns: CreditsBalanceResponse(success=True, creditsRemaining=450)
+```
+
+**Parameters:** None
+
+**Returns:** `CreditsBalanceResponse` object with credits remaining
+
+**Example:**
+
+```python
+balance = predev.get_credits_balance()
+if balance.creditsRemaining < 50:
+    print(f"Low credits: {balance.creditsRemaining} remaining")
+else:
+    print(f"Credits available: {balance.creditsRemaining}")
 ```
 
 ### Listing and Searching Specs
@@ -347,91 +373,20 @@ class ListSpecsResponse:
     hasMore: bool              # Whether more results are available
 ```
 
+### CreditsBalanceResponse
+
+```python
+@dataclass
+class CreditsBalanceResponse:
+    success: bool
+    creditsRemaining: int
+```
+
 ## Examples
 
 ### Generate Fast Spec
 
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration"
-)
-
-print(f"Specification URL: {result.humanSpecUrl}")
 ```
-
-### Generate Deep Spec with Context
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-result = predev.deep_spec(
-    input_text="Add advanced analytics dashboard",
-    current_context="Existing e-commerce platform with user auth and product catalog"
-)
-
-print(result.codingAgentSpecUrl)
-```
-
-### Async Workflow
-
-```python
-from predev_api import PredevAPI
-import time
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Start async generation
-async_result = predev.fast_spec_async(
-    input_text="Build a social media platform"
-)
-
-print(f"Job ID: {async_result.specId}")
-
-# Poll for completion
-while True:
-    status = predev.get_spec_status(async_result.specId)
-    print(f"Status: {status.status}")
-    
-    if status.status in ["completed", "failed"]:
-        break
-    
-    time.sleep(5)
-
-if status.status == "completed":
-    print(f"Specification URL: {status.codingAgentSpecUrl}")
-```
-
-### List and Filter Specs
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Get all recent specs
-recent_specs = predev.list_specs(limit=10)
-print(f"Total specs: {recent_specs.total}")
-print(f"Has more: {recent_specs.hasMore}")
-
-for spec in recent_specs.specs:
-    print(f"{spec.input} - {spec.status}")
-
-# Get only completed fast specs
-completed_fast = predev.list_specs(
-    endpoint='fast_spec',
-    status='completed',
-    limit=50
-)
-
-# Pagination example
-page1 = predev.list_specs(skip=0, limit=20)
-page2 = predev.list_specs(skip=20, limit=20)
 ```
 
 ### Search Specs with Regex
@@ -461,37 +416,24 @@ for spec in saas_specs.specs:
     print(f"Found: {spec.input}")
 ```
 
-## Error Handling
-
-The SDK includes custom exceptions for different error scenarios:
+### Check Credits Balance
 
 ```python
-from predev_api import PredevAPI, PredevAPIError
+from predev_api import PredevAPI
 
-try:
-    predev = PredevAPI(api_key="your_api_key")
-    result = predev.fast_spec(
-        input_text="Build a task management app"
+predev = PredevAPI(api_key="your_api_key")
+
+# Get current credit balance
+balance = predev.get_credits_balance()
+print(f"Credits remaining: {balance.creditsRemaining}")
+
+# Check before making expensive request
+if balance.creditsRemaining >= 50:
+    result = predev.deep_spec(
+        input_text="Build an enterprise platform"
     )
-except PredevAPIError as e:
-    print(f"API Error: {e}")
-except Exception as e:
-    print(f"Unexpected error: {e}")
+else:
+    print(f"Insufficient credits. Need 50, have {balance.creditsRemaining}")
 ```
 
-## Documentation
-
-For more information:
-
-- [API Documentation](https://docs.pre.dev/)
-- [pre.dev Website](https://pre.dev/)
-- [PyPI Package](https://pypi.org/project/predev-api/)
-
-## Support
-
-For issues or questions:
-
-- [GitHub Repository](https://github.com/predev/predev-api-python)
-- [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
-
-
+## Error Handling

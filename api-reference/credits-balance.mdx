@@ -1,0 +1,331 @@
+---
+title: "Get Credits Balance"
+api: "GET https://api.pre.dev/credits-balance"
+openapi: "GET /credits-balance"
+description: "Check the remaining prototype credits balance for your API key."
+---
+
+# GET /credits-balance
+
+Get the remaining prototype credits balance for the authenticated API key holder.
+
+## Overview
+
+- **Use Cases:** Monitor credit usage, check balance before making requests
+- **Processing Time:** Instant
+- **Response:** JSON object with creditsRemaining count
+
+## Endpoint
+
+```
+GET https://api.pre.dev/credits-balance
+```
+
+## Headers
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Parameters
+
+No request body required. Authentication is via the `Authorization` header.
+
+## Example Request
+
+```bash
+curl https://api.pre.dev/credits-balance \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Response
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "creditsRemaining": 450
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Whether the request succeeded |
+| `creditsRemaining` | number | Number of prototype credits remaining for this API key |
+
+### Error Response - Missing Context
+
+```json
+{
+  "error": "Missing context",
+  "message": "Unable to determine user or organization from API key"
+}
+```
+
+### Error Response - Server Error
+
+```json
+{
+  "error": "Failed to retrieve credits balance",
+  "message": "Internal server error details"
+}
+```
+
+## Credit Types and Priority
+
+Credits are consumed in this priority order:
+
+1. **Prototype Credits** - Used first if available
+2. **Daily Allocation** - Based on subscription tier
+3. **Rollover Credits** - Unused daily credits (if applicable)
+
+This endpoint returns only the **prototype credits** balance.
+
+## Credit Costs
+
+| Endpoint | Cost | When Charged |
+|----------|------|--------------|
+| Fast Spec | 10 credits | Immediately when request starts |
+| Deep Spec | 50 credits | Immediately when request starts |
+
+## Code Examples
+
+### cURL
+
+```bash
+curl https://api.pre.dev/credits-balance \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Python
+
+```python
+import requests
+
+def get_credits_balance(api_key: str) -> dict:
+    """Get the current credits balance for the API key."""
+    url = "https://api.pre.dev/credits-balance"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=60)
+        response.raise_for_status()
+        data = response.json()
+        return {
+            "success": data["success"],
+            "creditsRemaining": data["creditsRemaining"]
+        }
+    except requests.RequestException as e:
+        raise Exception(f"Request failed: {str(e)}") from e
+
+# Usage
+api_key = "YOUR_API_KEY"
+balance = get_credits_balance(api_key)
+print(f"Credits remaining: {balance['creditsRemaining']}")
+```
+
+### JavaScript/Node.js
+
+```javascript
+async function getCreditsBalance(apiKey) {
+  const url = 'https://api.pre.dev/credits-balance';
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to get credits balance');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Request failed: ${error.message}`);
+  }
+}
+
+// Usage
+try {
+  const balance = await getCreditsBalance('YOUR_API_KEY');
+  console.log(`Credits remaining: ${balance.creditsRemaining}`);
+} catch (error) {
+  console.error('Error:', error.message);
+}
+```
+
+### TypeScript
+
+```typescript
+interface CreditsBalanceResponse {
+  success: boolean;
+  creditsRemaining: number;
+}
+
+async function getCreditsBalance(apiKey: string): Promise<CreditsBalanceResponse> {
+  const url = 'https://api.pre.dev/credits-balance';
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to get credits balance');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Request failed: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+// Usage
+try {
+  const balance = await getCreditsBalance('YOUR_API_KEY');
+  console.log(`Credits remaining: ${balance.creditsRemaining}`);
+  
+  if (balance.creditsRemaining < 20) {
+    console.warn('⚠️ Low credits! Consider purchasing more.');
+  }
+} catch (error) {
+  console.error('Error:', error);
+}
+```
+
+## Use Cases
+
+### Before Making Expensive Requests
+
+Check your balance before initiating a Deep Spec request (50 credits):
+
+```typescript
+const balance = await getCreditsBalance(apiKey);
+
+if (balance.creditsRemaining >= 50) {
+  // Safe to make Deep Spec request
+  const spec = await generateDeepSpec({
+    input: "Build an enterprise platform"
+  });
+} else {
+  console.log(`Insufficient credits. Need 50, have ${balance.creditsRemaining}`);
+}
+```
+
+### Monitor Credit Usage
+
+Track credit consumption over time:
+
+```typescript
+async function checkAndNotify(apiKey: string) {
+  const balance = await getCreditsBalance(apiKey);
+  
+  if (balance.creditsRemaining < 50) {
+    // Send low balance notification
+    await sendAlert(`Only ${balance.creditsRemaining} credits remaining`);
+  }
+}
+```
+
+## Dashboard Access
+
+### Solo Users
+
+View your credits balance via the dashboard:
+- **URL:** [https://pre.dev/project/playground](https://pre.dev/project/playground)
+- Shows prototype credits and daily allocation
+- Option to purchase additional credits
+
+### Enterprise Users
+
+Access credits and billing information:
+- **URL:** [https://pre.dev/enterprise/dashboard?page=api](https://pre.dev/enterprise/dashboard?page=api)
+- View organization-wide credit usage
+- Manage team API keys and quotas
+
+## Error Handling
+
+### Authentication Failures
+
+```bash
+# Invalid API key
+curl https://api.pre.dev/credits-balance \
+  -H "Authorization: Bearer invalid_key"
+```
+
+Response:
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid API key"
+}
+```
+
+### Network Issues
+
+Implement retry logic with exponential backoff:
+
+```typescript
+async function getCreditsBalanceWithRetry(
+  apiKey: string,
+  maxRetries: number = 3
+): Promise<CreditsBalanceResponse> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await getCreditsBalance(apiKey);
+    } catch (error) {
+      if (attempt === maxRetries - 1) throw error;
+      
+      const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw new Error('Max retries exceeded');
+}
+```
+
+## Best Practices
+
+### Regular Monitoring
+
+- Check balance before making expensive spec requests
+- Implement alerts when credits fall below a threshold
+- Monitor credit usage patterns to plan purchases
+
+### Integration Patterns
+
+- Cache balance checks (don't call on every request)
+- Update cache every 5-10 minutes
+- Use for decision logic in your application
+
+### Error Handling
+
+- Always handle network failures gracefully
+- Implement retry logic for transient errors
+- Provide meaningful error messages to users
+
+## HTTP Status Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| 200 | Success | Process the response |
+| 400 | Bad Request | Check request parameters |
+| 401 | Unauthorized | Verify API key is valid and active |
+| 500 | Server Error | Contact support |
+
+<Card title="Next: API Reference Overview" icon="arrow-left" href="/api-reference/overview">
+  View all available API endpoints.
+</Card>

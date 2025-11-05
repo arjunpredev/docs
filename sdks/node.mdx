@@ -12,6 +12,7 @@ A TypeScript/Node.js client library for the pre.dev Architect API. Generate comp
 - 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
 - ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
+- 💳 **Credits Management**: Check your remaining prototype credits balance
 - ✨ **Full TypeScript Support**: Complete type definitions for better IDE support
 - 🛡️ **Error Handling**: Custom exceptions for different error scenarios
 - 🌐 **Modern ES Modules**: Uses ES6+ import/export syntax
@@ -130,6 +131,32 @@ const status = await predev.getSpecStatus('spec_123');
 - `specId` **(required)**: `string` - The specification ID from async methods
 
 **Returns:** `Promise<SpecResponse>` object with current status and data (when completed)
+
+### Credits Management
+
+#### getCreditsBalance()
+
+Get the remaining prototype credits balance for your API key.
+
+```typescript
+const balance = await predev.getCreditsBalance();
+// Returns: { success: true, creditsRemaining: 450 }
+```
+
+**Parameters:** None
+
+**Returns:** `Promise<CreditsBalanceResponse>` object with credits remaining
+
+**Example:**
+
+```typescript
+const balance = await predev.getCreditsBalance();
+if (balance.creditsRemaining < 50) {
+  console.log(`Low credits: ${balance.creditsRemaining} remaining`);
+} else {
+  console.log(`Credits available: ${balance.creditsRemaining}`);
+}
+```
 
 ### Listing and Searching Specs
 
@@ -319,6 +346,15 @@ When you upload a file, the response includes:
 }
 ```
 
+### CreditsBalanceResponse
+
+```typescript
+{
+  success: boolean;
+  creditsRemaining: number;
+}
+```
+
 ## Examples
 
 ### Generate Fast Spec
@@ -429,6 +465,29 @@ const paymentSpecs = await predev.findSpecs({
 
 console.log(`Found ${paymentSpecs.total} payment-related specs`);
 ```
+
+### Check Credits Balance
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
+
+// Get current credit balance
+const balance = await predev.getCreditsBalance();
+console.log(`Credits remaining: ${balance.creditsRemaining}`);
+
+// Check before making expensive request
+if (balance.creditsRemaining >= 50) {
+  const result = await predev.deepSpec({
+    input: 'Build an enterprise platform'
+  });
+  console.log(`Spec ready: ${result.codingAgentSpecUrl}`);
+} else {
+  console.log(`Insufficient credits. Need 50, have ${balance.creditsRemaining}`);
+}
+```
+
 ## Documentation
 
 For more information about the Pre.dev Architect API, visit:
