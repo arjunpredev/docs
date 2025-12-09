@@ -79,6 +79,27 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "totalHumanHours": 120,
   "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecJson": {
+    "title": "Task Management App",
+    "executiveSummary": "A modern task management application...",
+    "coreFunctionalities": [{ "name": "Task CRUD", "description": "Create, read, update, delete tasks", "priority": "High" }],
+    "techStack": [{ "name": "React", "category": "Frontend" }],
+    "techStackGrouped": { "Frontend": ["React", "TailwindCSS"] },
+    "milestones": [{ "milestoneNumber": 1, "description": "Core Task Management", "stories": [] }]
+  },
+  "codingAgentSpecMarkdown": "# Task Management App\n\n## Executive Summary\n...",
+  "humanSpecJson": {
+    "title": "Task Management App",
+    "executiveSummary": "A modern task management application...",
+    "coreFunctionalities": [{ "name": "Task CRUD", "description": "Create, read, update, delete tasks", "priority": "High" }],
+    "personas": [{ "title": "Project Manager", "description": "Manages team tasks" }],
+    "techStack": [{ "name": "React", "category": "Frontend" }],
+    "techStackGrouped": { "Frontend": ["React", "TailwindCSS"] },
+    "milestones": [{ "milestoneNumber": 1, "description": "Core Task Management", "hours": 40, "stories": [] }],
+    "totalHours": 120,
+    "roles": [{ "name": "Full Stack Developer", "shortHand": "FSD" }]
+  },
+  "humanSpecMarkdown": "# Task Management App\n\n## Executive Summary\n...",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -120,6 +141,10 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted - downloadable markdown (only when completed) |
 | `totalHumanHours` | number | Estimated total hours for a human to implement the spec (only when completed) |
 | `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted - downloadable markdown (only when completed) |
+| `codingAgentSpecJson` | object | Structured JSON spec optimized for AI coding assistants (only when completed) |
+| `codingAgentSpecMarkdown` | string | Markdown spec optimized for AI coding assistants (only when completed) |
+| `humanSpecJson` | object | Full structured JSON spec with hours, personas, and roles (only when completed) |
+| `humanSpecMarkdown` | string | Full markdown spec with all details for human review (only when completed) |
 | `executionTime` | number | Processing time in milliseconds (only when completed or failed) |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec (only when completed) |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec (only when completed) |

@@ -796,6 +796,22 @@
 						"format": "uri",
 						"description": "URL where the coding agent spec format is hosted (downloadable markdown)"
 					},
+					"codingAgentSpecJson": {
+						"$ref": "#/components/schemas/CodingAgentSpecJson",
+						"description": "Structured JSON spec optimized for AI coding assistants (excludes hours, personas, roles)"
+					},
+					"codingAgentSpecMarkdown": {
+						"type": "string",
+						"description": "Markdown spec optimized for AI coding assistants"
+					},
+					"humanSpecJson": {
+						"$ref": "#/components/schemas/HumanSpecJson",
+						"description": "Full structured JSON spec with hours, personas, and roles for human review"
+					},
+					"humanSpecMarkdown": {
+						"type": "string",
+						"description": "Full markdown spec with all details for human review"
+					},
 					"executionTime": {
 						"type": "integer",
 						"description": "Processing time in milliseconds"
@@ -900,6 +916,22 @@
 						"type": "string",
 						"format": "uri",
 						"description": "URL where the coding agent spec format is hosted (only when completed)"
+					},
+					"codingAgentSpecJson": {
+						"$ref": "#/components/schemas/CodingAgentSpecJson",
+						"description": "Structured JSON spec optimized for AI coding assistants (only when completed)"
+					},
+					"codingAgentSpecMarkdown": {
+						"type": "string",
+						"description": "Markdown spec optimized for AI coding assistants (only when completed)"
+					},
+					"humanSpecJson": {
+						"$ref": "#/components/schemas/HumanSpecJson",
+						"description": "Full structured JSON spec with hours, personas, and roles (only when completed)"
+					},
+					"humanSpecMarkdown": {
+						"type": "string",
+						"description": "Full markdown spec with all details for human review (only when completed)"
 					},
 					"executionTime": {
 						"type": "integer",
@@ -1025,6 +1057,328 @@
 						"type": "string",
 						"format": "uri",
 						"description": "Optional short URL to consolidated markdown file for this platform"
+					}
+				}
+			},
+			"SpecCoreFunctionality": {
+				"type": "object",
+				"required": ["name", "description"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the core functionality"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the functionality"
+					},
+					"priority": {
+						"type": "string",
+						"enum": ["High", "Medium", "Low"],
+						"description": "Priority level of the functionality"
+					}
+				}
+			},
+			"SpecTechStackItem": {
+				"type": "object",
+				"required": ["name", "category"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the technology"
+					},
+					"category": {
+						"type": "string",
+						"description": "Category of the technology (e.g., Frontend, Backend, Database)"
+					}
+				}
+			},
+			"SpecPersona": {
+				"type": "object",
+				"required": ["title", "description"],
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "Title of the persona"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the persona"
+					},
+					"primaryGoals": {
+						"type": "array",
+						"items": { "type": "string" },
+						"description": "Primary goals of the persona"
+					},
+					"painPoints": {
+						"type": "array",
+						"items": { "type": "string" },
+						"description": "Pain points of the persona"
+					},
+					"keyTasks": {
+						"type": "array",
+						"items": { "type": "string" },
+						"description": "Key tasks of the persona"
+					}
+				}
+			},
+			"SpecRole": {
+				"type": "object",
+				"required": ["name", "shortHand"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Full name of the role (e.g., Full Stack Developer)"
+					},
+					"shortHand": {
+						"type": "string",
+						"description": "Short abbreviation for the role (e.g., FSD)"
+					}
+				}
+			},
+			"CodingAgentSubTask": {
+				"type": "object",
+				"required": ["description", "complexity"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Subtask identifier"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the subtask"
+					},
+					"complexity": {
+						"type": "string",
+						"enum": ["S", "M", "L", "XL"],
+						"description": "Complexity estimate"
+					}
+				}
+			},
+			"CodingAgentStory": {
+				"type": "object",
+				"required": ["title", "subTasks"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Story identifier (e.g., US-001)"
+					},
+					"title": {
+						"type": "string",
+						"description": "Title of the user story"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the user story"
+					},
+					"acceptanceCriteria": {
+						"type": "array",
+						"items": { "type": "string" },
+						"description": "List of acceptance criteria"
+					},
+					"complexity": {
+						"type": "string",
+						"description": "Complexity estimate for the story"
+					},
+					"subTasks": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/CodingAgentSubTask" },
+						"description": "List of subtasks for this story"
+					}
+				}
+			},
+			"CodingAgentMilestone": {
+				"type": "object",
+				"required": ["milestoneNumber", "description", "stories"],
+				"properties": {
+					"milestoneNumber": {
+						"type": "integer",
+						"description": "Milestone number"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the milestone"
+					},
+					"stories": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/CodingAgentStory" },
+						"description": "List of user stories in this milestone"
+					}
+				}
+			},
+			"CodingAgentSpecJson": {
+				"type": "object",
+				"required": ["executiveSummary", "coreFunctionalities", "techStack", "milestones"],
+				"description": "Simplified structured JSON for AI coding tools (excludes hours, personas, roles)",
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "Title of the specification"
+					},
+					"executiveSummary": {
+						"type": "string",
+						"description": "Executive summary of the project"
+					},
+					"coreFunctionalities": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecCoreFunctionality" },
+						"description": "List of core functionalities"
+					},
+					"techStack": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecTechStackItem" },
+						"description": "Technology stack items"
+					},
+					"techStackGrouped": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "array",
+							"items": { "type": "string" }
+						},
+						"description": "Technology stack grouped by category"
+					},
+					"milestones": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/CodingAgentMilestone" },
+						"description": "List of milestones"
+					}
+				}
+			},
+			"HumanSpecSubTask": {
+				"type": "object",
+				"required": ["description", "hours", "complexity"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Subtask identifier"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the subtask"
+					},
+					"hours": {
+						"type": "number",
+						"description": "Estimated hours for this subtask"
+					},
+					"complexity": {
+						"type": "string",
+						"description": "Complexity estimate"
+					},
+					"roles": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecRole" },
+						"description": "Roles assigned to this subtask"
+					}
+				}
+			},
+			"HumanSpecStory": {
+				"type": "object",
+				"required": ["title", "hours", "subTasks"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Story identifier (e.g., US-001)"
+					},
+					"title": {
+						"type": "string",
+						"description": "Title of the user story"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the user story"
+					},
+					"acceptanceCriteria": {
+						"type": "array",
+						"items": { "type": "string" },
+						"description": "List of acceptance criteria"
+					},
+					"hours": {
+						"type": "number",
+						"description": "Estimated hours for this story"
+					},
+					"complexity": {
+						"type": "string",
+						"description": "Complexity estimate for the story"
+					},
+					"subTasks": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HumanSpecSubTask" },
+						"description": "List of subtasks for this story"
+					}
+				}
+			},
+			"HumanSpecMilestone": {
+				"type": "object",
+				"required": ["milestoneNumber", "description", "hours", "stories"],
+				"properties": {
+					"milestoneNumber": {
+						"type": "integer",
+						"description": "Milestone number"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the milestone"
+					},
+					"hours": {
+						"type": "number",
+						"description": "Estimated hours for this milestone"
+					},
+					"stories": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HumanSpecStory" },
+						"description": "List of user stories in this milestone"
+					}
+				}
+			},
+			"HumanSpecJson": {
+				"type": "object",
+				"required": ["executiveSummary", "coreFunctionalities", "personas", "techStack", "milestones", "totalHours", "roles"],
+				"description": "Full structured JSON with hours, personas, and roles for human review",
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "Title of the specification"
+					},
+					"executiveSummary": {
+						"type": "string",
+						"description": "Executive summary of the project"
+					},
+					"coreFunctionalities": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecCoreFunctionality" },
+						"description": "List of core functionalities"
+					},
+					"personas": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecPersona" },
+						"description": "User personas"
+					},
+					"techStack": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecTechStackItem" },
+						"description": "Technology stack items"
+					},
+					"techStackGrouped": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "array",
+							"items": { "type": "string" }
+						},
+						"description": "Technology stack grouped by category"
+					},
+					"milestones": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HumanSpecMilestone" },
+						"description": "List of milestones with hours"
+					},
+					"totalHours": {
+						"type": "number",
+						"description": "Total estimated hours for the project"
+					},
+					"roles": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecRole" },
+						"description": "Roles required for the project"
 					}
 				}
 			},

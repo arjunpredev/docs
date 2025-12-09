@@ -28,7 +28,7 @@ https://api.pre.dev
 
 ## Documentation Scraping
 
-Both `/fast-spec` and `/deep-spec` endpoints now support automatic documentation scraping and archival:
+Both `/fast-spec` and `/deep-spec` endpoints support automatic documentation scraping and archival:
 
 - **What it does:** Scrapes external documentation URLs in parallel with spec generation
 - **How to use:** Provide `docURLs` array parameter with documentation URLs
@@ -58,6 +58,14 @@ Both `/fast-spec` and `/deep-spec` endpoints now support automatic documentation
 ```
 
 See [Fast Spec](/api-reference/fast-spec) and [Deep Spec](/api-reference/deep-spec) documentation for complete details.
+
+## Direct SOW Outputs
+
+`/fast-spec` and `/deep-spec` return the Scope of Work inline and as URL endpoints:
+
+- **codingAgentSpecJson** / **codingAgentSpecMarkdown**: simplified outputs for AI coding tools (no hours/personas/roles)
+- **humanSpecJson** / **humanSpecMarkdown**: full outputs with hours, personas, and roles for stakeholder review
+- URL fields `codingAgentSpecUrl` and `humanSpecUrl` continue to deliver downloadable specs
 
 ## Request Modes
 

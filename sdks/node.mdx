@@ -306,7 +306,7 @@ When you upload a file, the response includes:
 ### SpecResponse
 
 ```typescript
-{
+interface SpecResponse {
   // Basic info
   _id?: string;                    // Internal ID
   created?: string;                // ISO timestamp
@@ -319,8 +319,12 @@ When you upload a file, the response includes:
 
   // Output data (when completed)
   humanSpecUrl?: string;           // URL to human-readable spec
+  humanSpecMarkdown?: string;      // Full markdown SOW for humans/clients
+  humanSpecJson?: HumanSpecJson;   // Full structured SOW JSON (hours/personas/roles)
   totalHumanHours?: number;        // Estimated hours for human implementation
   codingAgentSpecUrl?: string;         // URL to coding agent spec format
+  codingAgentSpecMarkdown?: string;    // Direct markdown SOW for AI tools
+  codingAgentSpecJson?: CodingAgentSpecJson; // Direct structured SOW JSON for AI tools
   executionTime?: number;          // Processing time in milliseconds
 
   // Integration URLs (when completed)
@@ -333,6 +337,97 @@ When you upload a file, the response includes:
   // Error handling
   errorMessage?: string;           // Error details if failed
   progress?: string;               // Progress information
+}
+
+interface CodingAgentSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: CodingAgentMilestone[];
+}
+
+interface CodingAgentMilestone {
+  milestoneNumber: number;
+  description: string;
+  stories: CodingAgentStory[];
+}
+
+interface CodingAgentStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  complexity?: string;
+  subTasks: CodingAgentSubTask[];
+}
+
+interface CodingAgentSubTask {
+  id?: string;
+  description: string;
+  complexity: string; // "S" | "M" | "L" | "XL"
+}
+
+interface HumanSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  personas: SpecPersona[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: HumanSpecMilestone[];
+  totalHours: number;
+  roles: SpecRole[];
+}
+
+interface HumanSpecMilestone {
+  milestoneNumber: number;
+  description: string;
+  hours: number;
+  stories: HumanSpecStory[];
+}
+
+interface HumanSpecStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  hours: number;
+  complexity?: string;
+  subTasks: HumanSpecSubTask[];
+}
+
+interface HumanSpecSubTask {
+  id?: string;
+  description: string;
+  hours: number;
+  complexity: string;
+  roles?: SpecRole[];
+}
+
+interface SpecPersona {
+  title: string;
+  description: string;
+  primaryGoals?: string[];
+  painPoints?: string[];
+  keyTasks?: string[];
+}
+
+interface SpecRole {
+  name: string;
+  shortHand: string;
+}
+
+interface SpecCoreFunctionality {
+  name: string;
+  description: string;
+  priority?: string; // "High" | "Medium" | "Low"
+}
+
+interface SpecTechStackItem {
+  name: string;
+  category: string;
 }
 ```
 

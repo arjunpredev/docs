@@ -166,6 +166,57 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "success": true,
   "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
   "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
+  "codingAgentSpecJson": {
+    "executiveSummary": "A modern task management platform...",
+    "coreFunctionalities": [
+      { "name": "Task CRUD", "description": "Create, read, update, delete tasks", "priority": "High" }
+    ],
+    "techStack": [
+      { "name": "React", "category": "Frontend" },
+      { "name": "Node.js", "category": "Backend" }
+    ],
+    "techStackGrouped": { "Frontend": ["React", "TailwindCSS"], "Backend": ["Node.js", "Express"] },
+    "milestones": [
+      {
+        "milestoneNumber": 1,
+        "description": "Core Task Management",
+        "stories": [
+          {
+            "id": "US-001",
+            "title": "User can create a task",
+            "acceptanceCriteria": ["Task form validates input", "Task saved to database"],
+            "complexity": "M",
+            "subTasks": [{ "id": "ST-001", "description": "Design task form UI", "complexity": "S" }]
+          }
+        ]
+      }
+    ]
+  },
+  "codingAgentSpecMarkdown": "# Task Management App\\n\\n## Executive Summary\\n...",
+  "humanSpecJson": {
+    "executiveSummary": "A modern task management platform...",
+    "personas": [{ "title": "Team Lead", "description": "Manages work allocation" }],
+    "techStack": [{ "name": "PostgreSQL", "category": "Database" }],
+    "techStackGrouped": { "Database": ["PostgreSQL"] },
+    "roles": [{ "name": "Full Stack Developer", "shortHand": "FSD" }],
+    "totalHours": 120,
+    "milestones": [
+      {
+        "milestoneNumber": 1,
+        "description": "Core Task Management",
+        "hours": 40,
+        "stories": [
+          {
+            "id": "US-001",
+            "title": "User can create a task",
+            "hours": 8,
+            "subTasks": [{ "description": "Implement task creation API", "hours": 3, "complexity": "M" }]
+          }
+        ]
+      }
+    ]
+  },
+  "humanSpecMarkdown": "# Task Management App\\n\\n## Executive Summary\\n...",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -192,8 +243,12 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `status` | string | Completion status: `"completed"` when successful |
 | `success` | boolean | Whether the request succeeded |
 | `humanSpecUrl` | string | URL where the human-readable spec is hosted (downloadable markdown) |
+| `humanSpecMarkdown` | string | Full markdown SOW content (human review) |
+| `humanSpecJson` | object | Full structured SOW JSON with hours, personas, roles |
 | `totalHumanHours` | number | Estimated total hours for a human to implement the spec |
 | `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
+| `codingAgentSpecMarkdown` | string | Simplified markdown SOW for AI coding tools |
+| `codingAgentSpecJson` | object | Simplified structured SOW JSON for AI coding tools |
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
 | `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
@@ -266,6 +321,113 @@ Fast Spec follows a **two-level hierarchy** optimized for rapid development:
 - ✅ User stories with acceptance criteria
 - ✅ Complexity estimates (XS, S, M, L, XL)
 - ❌ No granular implementation subtasks
+
+## Direct SOW Formats
+
+Fast Spec returns the Scope of Work directly in both JSON and Markdown, and also provides URL endpoints. The JSON is typed and split for coding agents vs. human reviewers:
+
+**Coding Agent JSON (concise, no hours/personas/roles):**
+```typescript
+interface CodingAgentSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: CodingAgentMilestone[];
+}
+
+interface CodingAgentMilestone {
+  milestoneNumber: number;
+  description: string;
+  stories: CodingAgentStory[];
+}
+
+interface CodingAgentStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  complexity?: string;
+  subTasks: CodingAgentSubTask[];
+}
+
+interface CodingAgentSubTask {
+  id?: string;
+  description: string;
+  complexity: string; // "S" | "M" | "L" | "XL"
+}
+```
+
+**Human JSON (full detail with hours/personas/roles):**
+```typescript
+interface HumanSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  personas: SpecPersona[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: HumanSpecMilestone[];
+  totalHours: number;
+  roles: SpecRole[];
+}
+
+interface HumanSpecMilestone {
+  milestoneNumber: number;
+  description: string;
+  hours: number;
+  stories: HumanSpecStory[];
+}
+
+interface HumanSpecStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  hours: number;
+  complexity?: string;
+  subTasks: HumanSpecSubTask[];
+}
+
+interface HumanSpecSubTask {
+  id?: string;
+  description: string;
+  hours: number;
+  complexity: string;
+  roles?: SpecRole[];
+}
+
+interface SpecPersona {
+  title: string;
+  description: string;
+  primaryGoals?: string[];
+  painPoints?: string[];
+  keyTasks?: string[];
+}
+
+interface SpecRole {
+  name: string;
+  shortHand: string;
+}
+
+interface SpecCoreFunctionality {
+  name: string;
+  description: string;
+  priority?: string; // "High" | "Medium" | "Low"
+}
+
+interface SpecTechStackItem {
+  name: string;
+  category: string;
+}
+```
+
+**Recommended usage**
+- Feed AI tools: `codingAgentSpecJson` or `codingAgentSpecMarkdown`
+- Human-readable UI/PDF: `humanSpecMarkdown`
+- Planning dashboards: `humanSpecJson.totalHours`, `humanSpecJson.roles`
+- Download links: `codingAgentSpecUrl` and `humanSpecUrl`
 
 
 ## Code Examples
