@@ -217,6 +217,7 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
     ]
   },
   "humanSpecMarkdown": "# Task Management App\\n\\n## Executive Summary\\n...",
+  "architectureInfographicUrl": "https://api.pre.dev/s/a6hFJRV8",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
   "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
@@ -246,6 +247,7 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `humanSpecMarkdown` | string | Full markdown SOW content (human review) |
 | `humanSpecJson` | object | Full structured SOW JSON with hours, personas, roles |
 | `totalHumanHours` | number | Estimated total hours for a human to implement the spec |
+| `architectureInfographicUrl` | string | URL to a visual architecture infographic/diagram for the specification |
 | `codingAgentSpecUrl` | string | URL where the coding agent spec format is hosted (downloadable markdown) |
 | `codingAgentSpecMarkdown` | string | Simplified markdown SOW for AI coding tools |
 | `codingAgentSpecJson` | object | Simplified structured SOW JSON for AI coding tools |
@@ -771,6 +773,7 @@ interface StatusResponse {
   uploadedFileName?: string;
   humanSpecUrl?: string;
   totalHumanHours?: number;
+  architectureInfographicUrl?: string;
   codingAgentSpecUrl?: string;
   executionTime?: number;
   predevUrl?: string;

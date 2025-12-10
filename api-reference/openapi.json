@@ -791,6 +791,11 @@
 						"type": "number",
 						"description": "Estimated total hours for a human to implement the spec"
 					},
+					"architectureInfographicUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL to a visual architecture infographic/diagram for the specification"
+					},
 					"codingAgentSpecUrl": {
 						"type": "string",
 						"format": "uri",
@@ -911,6 +916,11 @@
 					"totalHumanHours": {
 						"type": "number",
 						"description": "Estimated total hours for a human to implement the spec (only when completed)"
+					},
+					"architectureInfographicUrl": {
+						"type": "string",
+						"format": "uri",
+						"description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
 					},
 					"codingAgentSpecUrl": {
 						"type": "string",
@@ -1208,7 +1218,12 @@
 			},
 			"CodingAgentSpecJson": {
 				"type": "object",
-				"required": ["executiveSummary", "coreFunctionalities", "techStack", "milestones"],
+				"required": [
+					"executiveSummary",
+					"coreFunctionalities",
+					"techStack",
+					"milestones"
+				],
 				"description": "Simplified structured JSON for AI coding tools (excludes hours, personas, roles)",
 				"properties": {
 					"title": {
@@ -1332,7 +1347,15 @@
 			},
 			"HumanSpecJson": {
 				"type": "object",
-				"required": ["executiveSummary", "coreFunctionalities", "personas", "techStack", "milestones", "totalHours", "roles"],
+				"required": [
+					"executiveSummary",
+					"coreFunctionalities",
+					"personas",
+					"techStack",
+					"milestones",
+					"totalHours",
+					"roles"
+				],
 				"description": "Full structured JSON with hours, personas, and roles for human review",
 				"properties": {
 					"title": {
