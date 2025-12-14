@@ -364,7 +364,8 @@ class SpecResponse:
 
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
-    progress: Optional[str] = None                # Progress information
+    progress: Optional[int] = None                # Overall progress percentage (0-100)
+    progressMessage: Optional[str] = None         # Detailed progress message (e.g., "Generating User Stories...")
 
 
 @dataclass

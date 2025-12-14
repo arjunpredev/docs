@@ -48,7 +48,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "pending",
   "success": false,
-  "progress": "Initializing..."
+  "progress": 0,
+  "progressMessage": "Initializing..."
 }
 ```
 
@@ -62,7 +63,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "input": "Build a SaaS project management tool...",
   "status": "processing",
   "success": false,
-  "progress": "Generating specification..."
+  "progress": 45,
+  "progressMessage": "Generating User Stories..."
 }
 ```
 
@@ -107,7 +109,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
   "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "progress": "Completed successfully"
+  "progress": 100,
+  "progressMessage": "Completed successfully"
 }
 ```
 
@@ -123,7 +126,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "success": false,
   "errorMessage": "Invalid input format",
   "executionTime": 5000,
-  "progress": "Failed to generate specification"
+  "progress": 0,
+  "progressMessage": "Failed to generate specification"
 }
 ```
 
@@ -154,7 +158,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec (only when completed) |
 | `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec (only when completed) |
 | `errorMessage` | string | Error description (only when failed) |
-| `progress` | string | Human-readable progress description |
+| `progress` | number | Overall progress percentage (0-100) |
+| `progressMessage` | string | Detailed progress message (e.g., "Generating User Stories...") |
 
 ## Polling Best Practices
 
@@ -190,7 +195,7 @@ while true; do
       break
       ;;
     "pending"|"processing")
-      echo "$(date): $STATUS - $(echo $RESPONSE | jq -r '.progress')"
+      echo "$(date): $STATUS - $(echo $RESPONSE | jq -r '.progress')% - $(echo $RESPONSE | jq -r '.progressMessage')"
       sleep 10
       ;;
     *)
@@ -227,7 +232,7 @@ def poll_spec_status(api_key: str, spec_id: str, poll_interval: int = 10) -> Dic
             print(f"❌ Spec processing failed: {data.get('errorMessage')}")
             raise Exception(f"Processing failed: {data.get('errorMessage')}")
         else:
-            print(f"⏳ {status}: {data.get('progress', 'Processing...')}")
+            print(f"⏳ {status}: {data.get('progress', 0)}% - {data.get('progressMessage', 'Processing...')}")
 
         time.sleep(poll_interval)
 
@@ -262,7 +267,7 @@ async function pollSpecStatus(apiKey, specId, pollInterval = 10000) {
       console.error(`❌ Spec processing failed: ${data.errorMessage}`);
       throw new Error(`Processing failed: ${data.errorMessage}`);
     } else {
-      console.log(`⏳ ${status}: ${data.progress || 'Processing...'}`);
+      console.log(`⏳ ${status}: ${data.progress || 0}% - ${data.progressMessage || 'Processing...'}`);
       await new Promise(resolve => setTimeout(resolve, pollInterval));
     }
   }

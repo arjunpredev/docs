@@ -336,7 +336,8 @@ interface SpecResponse {
 
   // Error handling
   errorMessage?: string;           // Error details if failed
-  progress?: string;               // Progress information
+  progress?: number;               // Overall progress percentage (0-100)
+  progressMessage?: string;        // Detailed progress message (e.g., "Generating User Stories...")
 }
 
 interface CodingAgentSpecJson {
