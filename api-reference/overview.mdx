@@ -93,8 +93,8 @@ Request returns immediately with request ID, poll for status
 
 | Endpoint | Cost | What You Pay For |
 |----------|------|------------------|
-| Fast Spec | 10 credits | Deducted immediately when request starts |
-| Deep Spec | 50 credits | Deducted immediately when request starts |
+| Fast Spec | ~3-8 credits | Charged per-inference based on actual token usage |
+| Deep Spec | ~15-40 credits | Charged per-inference based on actual token usage |
 
 ### What is a "Credit"?
 
@@ -105,7 +105,7 @@ A credit = one AI model inference call. Specs require multiple LLM calls for:
 - Story generation
 - Risk assessment
 
-**Cost is per spec request, not per feature.** Generate as many features in one spec as needed.
+**Credits are charged based on actual usage during generation.** Cost varies with the complexity of your spec request.
 
 ### Credit Sources (Priority Order)
 
@@ -155,10 +155,9 @@ Exceeding limits returns `429 Too Many Requests`.
 **Insufficient Credits:**
 ```json
 {
-  "error": "Insufficient credits available",
-  "message": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits.",
-  "creditsRequired": 10,
-  "creditsAvailable": 5
+  "error": "Insufficient credits",
+  "message": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan.",
+  "generationsAvailable": 0
 }
 ```
 

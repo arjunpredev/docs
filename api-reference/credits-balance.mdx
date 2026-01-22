@@ -86,8 +86,8 @@ This endpoint returns only the **prototype credits** balance.
 
 | Endpoint | Cost | When Charged |
 |----------|------|--------------|
-| Fast Spec | 10 credits | Immediately when request starts |
-| Deep Spec | 50 credits | Immediately when request starts |
+| Fast Spec | ~3-8 credits | Per-inference during generation |
+| Deep Spec | ~15-40 credits | Per-inference during generation |
 
 ## Code Examples
 
@@ -209,18 +209,18 @@ try {
 
 ### Before Making Expensive Requests
 
-Check your balance before initiating a Deep Spec request (50 credits):
+Check your balance before initiating a spec request:
 
 ```typescript
 const balance = await getCreditsBalance(apiKey);
 
-if (balance.creditsRemaining >= 50) {
-  // Safe to make Deep Spec request
+if (balance.creditsRemaining > 0) {
+  // Safe to make spec request
   const spec = await generateDeepSpec({
     input: "Build an enterprise platform"
   });
 } else {
-  console.log(`Insufficient credits. Need 50, have ${balance.creditsRemaining}`);
+  console.log(`Insufficient credits. Have ${balance.creditsRemaining}`);
 }
 ```
 

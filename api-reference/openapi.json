@@ -29,7 +29,7 @@
 		"/fast-spec": {
 			"post": {
 				"summary": "Generate Fast Spec",
-				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: 10 credits. Processing time: ~30-40 seconds.",
+				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~3-8 credits based on complexity). Processing time: ~30-40 seconds.",
 				"operationId": "generateFastSpec",
 				"tags": ["Spec Generation"],
 				"security": [
@@ -152,7 +152,7 @@
 		"/deep-spec": {
 			"post": {
 				"summary": "Generate Deep Spec",
-				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: 50 credits. Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
+				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~15-40 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
 				"operationId": "generateDeepSpec",
 				"tags": ["Spec Generation"],
 				"security": [
@@ -1004,25 +1004,20 @@
 			},
 			"InsufficientCreditsError": {
 				"type": "object",
-				"required": ["error", "message", "creditsRequired", "creditsAvailable"],
+				"required": ["error", "message", "generationsAvailable"],
 				"properties": {
 					"error": {
 						"type": "string",
-						"example": "Insufficient credits available"
+						"example": "Insufficient credits"
 					},
 					"message": {
 						"type": "string",
-						"example": "Fast Spec requires 10 credits. You have 5 remaining. Visit your dashboard to purchase more credits."
+						"example": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan."
 					},
-					"creditsRequired": {
-						"type": "integer",
-						"description": "Number of credits required for the operation",
-						"example": 10
-					},
-					"creditsAvailable": {
+					"generationsAvailable": {
 						"type": "integer",
 						"description": "Number of credits currently available",
-						"example": 5
+						"example": 0
 					}
 				}
 			},
