@@ -1,0 +1,77 @@
+---
+title: "Progress Tracking"
+description: "Monitor your project's build progress in real-time."
+---
+
+pre.dev provides real-time visibility into your project's build progress. Track what's been completed, what's in progress, and what's remaining — all from the roadmap view.
+
+## The Roadmap View
+
+Your project dashboard shows a Gantt-style roadmap with:
+
+- **Milestones** as top-level rows
+- **Tasks** nested within each milestone
+- **Progress bars** showing completion percentage
+- **Status indicators** for each task
+
+```
+Milestone 1: Core Foundation          ████████████████████ 100%
+├── Setup project structure            [✓] Complete
+├── Database schema and models         [✓] Complete
+├── Authentication system              [✓] Complete
+└── Base API endpoints                 [✓] Complete
+
+Milestone 2: User Features            ████████░░░░░░░░░░░░ 40%
+├── User profiles                      [✓] Complete
+├── Settings page                      [→] In Progress
+├── Notification system                [ ] To Do
+└── Search functionality               [ ] To Do
+
+Milestone 3: Admin & Analytics         ░░░░░░░░░░░░░░░░░░░░ 0%
+└── ...
+```
+
+## Task Statuses
+
+| Status | Symbol | Meaning |
+|--------|--------|---------|
+| To Do | `[ ]` | Not yet started |
+| In Progress | `[→]` | Currently being built by an agent |
+| Complete | `[✓]` | Finished and verified |
+| Skipped | `[⊘]` | Intentionally skipped (with reason) |
+
+## Real-Time Updates
+
+When agents are building (especially in Autopilot mode), the roadmap updates live:
+
+- Tasks move from "To Do" to "In Progress" when an agent picks them up
+- Tasks move to "Complete" once acceptance verification passes and the PR is opened
+- Progress percentages update immediately
+- You can see which agent is working on which task
+
+## Completion Metrics
+
+The roadmap view shows:
+
+- **Overall progress** — Percentage of all tasks completed
+- **Per-milestone progress** — How far along each phase is
+- **Estimated remaining** — Based on complexity scores of remaining tasks
+- **Hours logged** — Estimated effort per milestone
+
+## Skipping Tasks
+
+If a task is no longer relevant, you can skip it:
+
+- Mark it as `[⊘] Skipped` with a reason
+- It won't count against your completion percentage
+- Agents won't attempt to build it
+- The skip reason is preserved for future reference
+
+## Using Progress for Decision-Making
+
+The roadmap helps you decide:
+
+- **When to switch modes** — If early PRs look good, switch to Autopilot
+- **Where to focus review** — Prioritize reviewing complex milestone PRs
+- **What to adjust** — If a milestone is taking too long, simplify the spec
+- **When to ship** — Once key milestones are complete, you might ship early and iterate

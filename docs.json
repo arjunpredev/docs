@@ -1,7 +1,7 @@
 {
 	"$schema": "https://mintlify.com/docs.json",
 	"theme": "mint",
-	"name": "pre.dev Architect API",
+	"name": "pre.dev",
 	"appearance": {
 		"default": "dark"
 	},
@@ -26,47 +26,73 @@
 	"navigation": {
 		"tabs": [
 			{
-				"tab": "Documentation",
+				"tab": "Platform",
 				"groups": [
 					{
-						"group": "Get Started",
+						"group": "Getting Started",
 						"pages": [
+							"what-is-predev",
 							"quickstart",
-							"mcp-server",
-							"why-architect-api",
-							"choosing-spec-level"
+							"how-it-works"
+						]
+					},
+					{
+						"group": "Projects",
+						"pages": [
+							"projects/creating-a-project",
+							"projects/importing-repos"
+						]
+					},
+					{
+						"group": "Specifications",
+						"pages": [
+							"specifications/understanding-specs",
+							"specifications/fast-vs-deep"
+						]
+					},
+					{
+						"group": "Building",
+						"pages": [
+							"building/build-modes",
+							"building/acceptance-criteria",
+							"building/pull-requests",
+							"building/progress-tracking"
+						]
+					},
+					{
+						"group": "Knowledge Base",
+						"pages": [
+							"knowledge-base/overview"
 						]
 					}
 				]
 			},
 			{
-				"tab": "SDKs",
+				"tab": "API & MCP",
 				"groups": [
 					{
-						"group": "Official SDKs",
-						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
-					}
-				]
-			},
-			{
-				"tab": "API Reference",
-				"groups": [
-					{
-						"group": "Using the API",
-						"pages": ["api-reference/introduction", "api-reference/overview"]
-					},
-					{
-						"group": "Spec Generation",
-						"pages": ["api-reference/fast-spec", "api-reference/deep-spec"]
-					},
-					{
-						"group": "Spec Management",
+						"group": "Overview",
 						"pages": [
+							"api-mcp/overview",
+							"mcp-server"
+						]
+					},
+					{
+						"group": "API Reference",
+						"pages": [
+							"api-reference/introduction",
+							"api-reference/overview",
+							"api-reference/fast-spec",
+							"api-reference/deep-spec",
 							"api-reference/list-specs",
 							"api-reference/find-specs",
 							"api-reference/spec-status",
 							"api-reference/credits-balance"
 						]
+					},
+					{
+						"group": "SDKs",
+						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
 					}
 				]
 			},
@@ -93,19 +119,14 @@
 					"icon": "plus"
 				},
 				{
-					"anchor": "Find Developers",
-					"href": "https://pre.dev/directory",
-					"icon": "user"
+					"anchor": "Dashboard",
+					"href": "https://pre.dev/projects",
+					"icon": "grid-2"
 				},
 				{
 					"anchor": "API Playground",
 					"href": "https://pre.dev/projects/playground",
 					"icon": "code"
-				},
-				{
-					"anchor": "Get Your API key",
-					"href": "https://pre.dev/projects/playground",
-					"icon": "key"
 				},
 				{
 					"anchor": "Blog",
@@ -133,8 +154,8 @@
 		],
 		"primary": {
 			"type": "button",
-			"label": "Get API Key",
-			"href": "https://pre.dev/projects/playground"
+			"label": "Start Building",
+			"href": "https://pre.dev"
 		},
 		"logoHeight": "60px"
 	},

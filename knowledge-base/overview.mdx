@@ -1,0 +1,86 @@
+---
+title: "Knowledge Base"
+description: "Connect your API keys and documentation so agents build with real integrations."
+---
+
+The Knowledge Base is where you store API keys, credentials, and documentation references that build agents use during implementation. Instead of generating placeholder code, agents use your real API keys to build working integrations.
+
+## Why It Matters
+
+Without the Knowledge Base, agents would:
+- Generate placeholder API calls (`YOUR_API_KEY_HERE`)
+- Guess at API response formats
+- Miss integration-specific edge cases
+- Produce code you'd need to manually update with real credentials
+
+With the Knowledge Base, agents:
+- Use your actual API keys in environment configuration
+- Reference real documentation for accurate implementation
+- Build working integrations from the start
+- Handle authentication and error cases correctly
+
+## Adding API Keys
+
+From your project dashboard, navigate to the Knowledge Base section and add your keys:
+
+### Supported Integrations
+
+pre.dev recommends integrations based on your project type:
+
+| Category | Services |
+|----------|----------|
+| **AI Text** | OpenAI, Anthropic, Mistral, Groq |
+| **AI Image** | DALL-E, Stability AI, Midjourney API |
+| **AI Video** | Runway, Luma |
+| **AI Audio** | ElevenLabs, AssemblyAI |
+| **Search** | Exa, Tavily, You.com |
+| **Web Scraping** | Firecrawl, Browserbase |
+| **Payments** | Stripe, PayPal |
+| **Email** | Resend, SendGrid, Mailgun |
+| **Auth** | Clerk, Auth0, Supabase Auth |
+| **Database** | Supabase, PlanetScale, Neon |
+| **Storage** | AWS S3, Cloudflare R2, Uploadthing |
+| **Analytics** | PostHog, Mixpanel, Amplitude |
+
+You can add any API key — these are just the recommended ones that agents know how to use out of the box.
+
+## How Agents Use Keys
+
+When a build agent encounters a task that requires an external service:
+
+1. It checks the Knowledge Base for relevant API keys
+2. If found, it uses the key in environment configuration (`.env` files, secrets)
+3. It references the service's documentation for correct implementation
+4. The resulting code works with your actual accounts
+
+Keys are stored securely and only accessible to build agents working on your project.
+
+## Documentation References
+
+In addition to API keys, you can add documentation URLs to the Knowledge Base:
+
+- **Framework docs** — React, Next.js, Django, Rails, etc.
+- **API docs** — Stripe API, Twilio, SendGrid, etc.
+- **Compliance docs** — HIPAA, GDPR, PCI-DSS guides
+- **Internal docs** — Your team's style guides or architecture decisions
+
+pre.dev scrapes and archives these docs so agents have complete context during builds. See [Documentation Scraping](/guides/documentation-scraping) for details.
+
+## Security
+
+<Note>
+  API keys are encrypted at rest and only accessible to build agents in sandboxed environments. Keys never appear in generated code — they go in `.env` files.
+</Note>
+
+- Keys are project-scoped — they don't leak across projects
+- You can revoke or rotate keys at any time
+- Sandbox isolation means zero risk to your accounts
+
+## Best Practices
+
+<Tip>
+  **Add keys before building** so agents can build working integrations from the start. Use test/development keys — never add production credentials.
+</Tip>
+
+- **Add docs for uncommon services** — If you're using a niche API, add its docs so agents get it right
+- **Review .env files in PRs** — Verify keys are referenced correctly, not hardcoded

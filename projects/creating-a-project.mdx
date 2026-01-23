@@ -1,0 +1,89 @@
+---
+title: "Creating a Project"
+description: "Three ways to start a project on pre.dev."
+---
+
+pre.dev supports three project creation modes, each suited to different starting points.
+
+<Tabs>
+  <Tab title="Full-Stack Template">
+    Start with a curated, pre-configured template. Templates include a recommended tech stack, folder structure, and boilerplate — the architecture agent builds on top of this foundation.
+
+    **When to use:**
+    - You know what stack you want (e.g., React + Node + PostgreSQL)
+    - You want a proven starting structure
+    - You're building a common app type (SaaS, e-commerce, dashboard)
+  </Tab>
+  <Tab title="Adaptive">
+    Describe your idea in plain English and let pre.dev choose the best architecture. The architecture agent analyzes your requirements and selects the optimal stack, patterns, and structure.
+
+    **When to use:**
+    - You're not sure what tech stack fits best
+    - You want pre.dev to make architectural decisions for you
+    - You're exploring a new domain or idea
+
+    **Example input:**
+    ```
+    A collaborative whiteboard app with real-time drawing,
+    sticky notes, video chat, and export to PDF.
+    The app should support teams of up to 50 people.
+    ```
+
+    The agent might choose: React + Canvas API, WebSocket server, WebRTC for video, Puppeteer for PDF export.
+  </Tab>
+  <Tab title="Import">
+    Connect an existing GitHub repository and continue building on it. pre.dev reverse-engineers the existing codebase — understanding the tech stack, patterns, and architecture — then generates specs for new features that integrate seamlessly.
+
+    **When to use:**
+    - You have an existing project you want to extend
+    - You're adding features to a codebase you didn't build
+    - You want AI agents to work within your established patterns
+
+    See [Importing Repos](/projects/importing-repos) for detailed instructions.
+  </Tab>
+</Tabs>
+
+## Writing a Good Project Description
+
+The quality of your specification depends on how well you describe your project. Here are tips:
+
+**Include:**
+- What the app does (core functionality)
+- Who uses it (target users)
+- Key features you want
+- Any technical constraints (specific APIs, compliance needs, platform targets)
+- Scale expectations (number of users, data volume)
+
+**Example — vague (less optimal):**
+```
+Build me a chat app
+```
+
+**Example — detailed (much better):**
+```
+Build a team messaging app similar to Slack with:
+- Real-time channels and direct messages
+- File sharing with drag-and-drop upload (up to 50MB)
+- Message search across all channels
+- Threaded replies
+- @mentions with notifications
+- Integration with GitHub for commit notifications
+Target: small teams of 5-20 people.
+Stack preference: React frontend, Node.js backend, PostgreSQL.
+```
+
+## After Creation
+
+Once your project is created and the specification is generated:
+
+<CardGroup cols={3}>
+  <Card title="Edit the Spec" icon="pen" href="/specifications/understanding-specs">
+    Add, remove, or modify milestones and stories
+  </Card>
+  <Card title="Add API Keys" icon="key" href="/knowledge-base/overview">
+    Connect keys for external services agents will need
+  </Card>
+  <Card title="Start Building" icon="play" href="/building/build-modes">
+    Choose a build mode and let agents work
+  </Card>
+</CardGroup>

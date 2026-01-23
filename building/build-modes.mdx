@@ -1,0 +1,107 @@
+---
+title: "Build Modes"
+description: "Control how autonomous agents work through your project."
+---
+
+Once your specification is ready, you choose how agents execute the work. pre.dev offers three build modes that give you different levels of control.
+
+<Tabs>
+  <Tab title="Build Next Task">
+    Agents build **one task at a time**, then wait for your review before proceeding.
+
+    <Steps>
+      <Step title="Task Assigned">
+        The next task in the spec is assigned to a build agent
+      </Step>
+      <Step title="Agent Builds">
+        The agent implements the task in a secure sandbox
+      </Step>
+      <Step title="Verification">
+        Acceptance criteria are verified (types, lint, tests, browser)
+      </Step>
+      <Step title="PR Opened">
+        A pull request is opened for your review
+      </Step>
+      <Step title="You Review">
+        Review, request changes, or approve — then click "Build Next Task" to continue
+      </Step>
+    </Steps>
+
+    <Tip>
+      **Best for:** Learning how pre.dev works, sensitive codebases, and teaching the agent your preferences by reviewing early tasks.
+    </Tip>
+  </Tab>
+  <Tab title="Build on Autopilot">
+    Agents work through the **entire roadmap autonomously**. All tasks execute in sequence (or parallel where dependencies allow), and PRs are opened for each.
+
+    <Steps>
+      <Step title="Click Build All">
+        Agents pick up tasks following the milestone order
+      </Step>
+      <Step title="Parallel Execution">
+        Independent tasks within the same milestone run in parallel
+      </Step>
+      <Step title="Continuous Verification">
+        Each task goes through acceptance verification automatically
+      </Step>
+      <Step title="PRs Accumulate">
+        Review and merge at your pace — the roadmap shows real-time progress
+      </Step>
+    </Steps>
+
+    <Tip>
+      **Best for:** Projects where you trust the spec and want maximum speed, overnight builds, or well-defined projects with clear requirements.
+    </Tip>
+  </Tab>
+  <Tab title="Chat">
+    An interactive mode where you **converse with the build agent** directly. Ask questions, give instructions, or guide implementation manually.
+
+    <Steps>
+      <Step title="Open Chat">
+        Open the Chat interface for your project
+      </Step>
+      <Step title="Instruct the Agent">
+        Ask anything — about the spec, the codebase, or give specific build instructions
+      </Step>
+      <Step title="Agent Implements">
+        The agent implements your request with full project context
+      </Step>
+      <Step title="PR Created">
+        Changes appear as PRs just like the other modes
+      </Step>
+    </Steps>
+
+    <Tip>
+      **Best for:** One-off changes, debugging, asking the agent to explain code, or quick fixes that don't need a full spec.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Choosing a Mode
+
+| Scenario | Recommended Mode |
+|----------|-----------------|
+| First time using pre.dev | Build Next Task |
+| Small MVP you want fast | Build on Autopilot |
+| Complex production app | Build Next Task (at least for Milestone 1) |
+| Quick feature addition | Chat |
+| Overnight build | Build on Autopilot |
+| Exploratory / learning | Chat |
+
+## Mixing Modes
+
+You can switch between modes at any time:
+
+- Start with **Build Next Task** to validate the first few PRs
+- Switch to **Build on Autopilot** once you're confident the agent understands the patterns
+- Drop into **Chat** anytime to make a quick adjustment or ask a question
+
+## What Happens During a Build
+
+Regardless of mode, each task goes through the same pipeline:
+
+```
+Task picked up → Agent codes in sandbox → Acceptance verification → PR opened
+```
+
+If acceptance verification fails (types don't compile, tests fail, linting errors), the agent automatically iterates until the checks pass. You never see broken code in a PR.

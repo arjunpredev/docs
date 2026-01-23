@@ -1,0 +1,84 @@
+---
+title: "Fast vs Deep Specs"
+description: "Choose the right specification level for your project."
+---
+
+pre.dev offers two specification levels. The right choice depends on your project's complexity, timeline, and how much guidance you want build agents to have.
+
+## Fast Spec (Plan)
+
+**Structure:** Milestones → User Stories
+
+A high-level spec that gives agents the big picture without granular subtask breakdowns. Agents figure out implementation details autonomously.
+
+**Best for:**
+- MVPs and prototypes
+- Personal/side projects
+- Rapid iteration workflows
+- Solo developers
+- Projects where speed matters more than detailed planning
+
+**What you get:**
+- High-level milestones with complexity estimates
+- User stories for each feature
+- Basic acceptance criteria
+- Technical architecture overview
+
+**Cost:** ~3-8 credits | **Speed:** ~30-60 seconds
+
+## Deep Spec
+
+**Structure:** Milestones → User Stories → Granular Subtasks
+
+A comprehensive spec with implementation-level detail. Every task is broken down into specific, actionable subtasks with their own acceptance criteria.
+
+**Best for:**
+- Production applications
+- Complex architectures
+- Team coordination
+- Mission-critical systems
+- When you want maximum control over what agents build
+
+**What you get:**
+- Detailed milestones with phased delivery
+- User stories with comprehensive acceptance criteria
+- Granular implementation subtasks
+- Task-level complexity estimates
+- Detailed technical architecture with schema designs
+
+**Cost:** ~15-40 credits | **Speed:** ~2-5 minutes
+
+## Comparison
+
+| Feature | Fast Spec | Deep Spec |
+|---------|-----------|-----------|
+| Milestones | Yes | Yes |
+| User Stories | Yes | Yes |
+| Acceptance Criteria | Basic | Comprehensive |
+| Granular Subtasks | No | Yes |
+| Architecture Depth | Good | Comprehensive |
+| Effort Estimates | High-level | Per-subtask |
+| Documentation Scraping | Yes | Yes |
+
+## Decision Framework
+
+**Use Fast Spec if:**
+- You're validating an idea quickly
+- The project is straightforward (CRUD apps, simple tools)
+- You trust agents to make implementation decisions
+- You want to iterate on the spec after seeing initial output
+
+**Use Deep Spec if:**
+- You're building something you'll ship to real users
+- The project has complex business logic
+- You want precise control over each implementation step
+- You're working in a regulated domain (healthcare, finance)
+- Multiple people need to understand the build plan
+
+## Combining Both
+
+<Tip>
+  A common pattern is to start with a **Fast Spec** to validate the overall direction, then generate a **Deep Spec** once you're confident in the approach. The Deep Spec can reference the Fast Spec as context.
+</Tip>
+
+You can also generate a Fast Spec and selectively request deep breakdowns for only the complex milestones — keeping simple features at the story level while getting granular subtasks for the tricky parts.

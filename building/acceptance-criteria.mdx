@@ -1,0 +1,102 @@
+---
+title: "Acceptance Verification"
+description: "How pre.dev ensures every task ships working code."
+---
+
+pre.dev's key differentiator: agents **cannot mark a task as complete** until it passes automated verification. No more "looks good but is broken."
+
+## What Gets Verified
+
+Every completed task goes through a verification pipeline before a PR is opened:
+
+<AccordionGroup>
+  <Accordion title="Type Checking" icon="code">
+    For TypeScript/typed projects, the full compilation must pass:
+    - No type errors
+    - No missing imports
+    - Proper interface compliance
+    - Strict mode checks (when configured)
+  </Accordion>
+  <Accordion title="Linting" icon="broom">
+    Code must pass the project's linting rules:
+    - ESLint, Prettier, or your configured linter
+    - Consistent formatting
+    - No unused variables or imports
+    - Style guide compliance
+  </Accordion>
+  <Accordion title="Unit Tests" icon="flask-vial">
+    If the task includes test requirements:
+    - All new tests must pass
+    - Existing tests must not break
+    - Coverage thresholds met (if configured)
+  </Accordion>
+  <Accordion title="Visual Browser Verification" icon="browser">
+    For frontend/UI tasks, pre.dev runs visual checks:
+    - Components render without errors
+    - Layout matches expectations
+    - Interactive elements function correctly
+    - No console errors in the browser
+    - CTA elements redirect properly
+  </Accordion>
+</AccordionGroup>
+
+## How It Works
+
+<Steps>
+  <Step title="Agent Writes Code">
+    The build agent implements the task based on the specification
+  </Step>
+  <Step title="Type Check">
+    Compilation must pass — if it fails, the agent fixes and retries
+  </Step>
+  <Step title="Lint Check">
+    Code style rules must pass — if they fail, the agent fixes and retries
+  </Step>
+  <Step title="Tests">
+    All tests must pass — if they fail, the agent fixes and retries
+  </Step>
+  <Step title="Browser Verification">
+    UI must render correctly — if it fails, the agent fixes and retries
+  </Step>
+  <Step title="PR Opened">
+    All checks passed — a pull request is created with verified, working code
+  </Step>
+</Steps>
+
+<Note>
+  The agent iterates automatically until all checks pass. You only see the final, verified result.
+</Note>
+
+## Why This Matters
+
+Without acceptance verification, AI-generated code often has:
+- Type errors that surface only at build time
+- Missing imports that break at runtime
+- UI components that render incorrectly
+- Tests that were never actually run
+- Formatting inconsistencies
+
+pre.dev eliminates these by making verification a **gate** — not an afterthought.
+
+## Verification in the PR
+
+Each PR shows the verification status:
+
+| Criterion | Status |
+|-----------|--------|
+| TypeScript compilation passes with no errors | PASSED |
+| All unit tests succeed | PASSED |
+| ESLint rules pass with no warnings | PASSED |
+| Component renders correctly in browser | PASSED |
+| API response under 200ms | PASSED |
+
+## Custom Verification
+
+The verification pipeline adapts to your project:
+
+- **Python projects** — mypy/pyright type checking, pytest, flake8/ruff
+- **Go projects** — go vet, go test, golint
+- **Rust projects** — cargo check, cargo test, clippy
+- **Frontend projects** — TypeScript, ESLint, Vitest/Jest, Playwright
+
+Verification rules are detected from your project configuration (tsconfig, eslint config, pytest.ini, etc.) — you don't need to configure anything manually.

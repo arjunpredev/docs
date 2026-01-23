@@ -1,0 +1,98 @@
+---
+title: "How It Works"
+description: "The architecture behind pre.dev's autonomous coding agents."
+---
+
+pre.dev combines an AI architecture agent with autonomous build agents running in secure sandboxes. Here's what happens under the hood when you create a project.
+
+## Phase 1: Architecture
+
+When you describe your idea, the **architecture agent** takes over:
+
+<Steps>
+  <Step title="Research">
+    Understands the domain, identifies edge cases, considers scalability
+  </Step>
+  <Step title="Stack Selection">
+    Chooses framework, database, auth, and hosting based on your requirements
+  </Step>
+  <Step title="System Design">
+    Produces component hierarchy, database schema, API contracts, and data flows
+  </Step>
+  <Step title="Specification">
+    Outputs structured milestones, user stories, and subtasks with complexity estimates
+  </Step>
+</Steps>
+
+The output is a living document that serves as the blueprint for the entire build.
+
+## Phase 2: Building
+
+Once you approve the spec (or hit **Build on Autopilot**), the **build agents** execute:
+
+1. **Task isolation** — Each subtask is assigned to a focused agent with only the relevant context
+2. **Code generation** — The agent writes implementation code, tests, and configuration
+3. **Acceptance verification** — Automated checks validate the work:
+   - TypeScript/type compilation passes
+   - Linting rules pass
+   - Unit tests succeed
+   - Visual browser verification (for UI tasks)
+4. **PR creation** — A feature branch is created and a pull request opened
+
+Agents cannot mark a task as complete until acceptance criteria pass. If verification fails, the agent iterates until it's resolved.
+
+<Note>
+  Agents self-correct. If type checks fail or tests break, the agent automatically fixes the issues before opening a PR. You only see verified, working code.
+</Note>
+
+## Phase 3: Review & Ship
+
+You stay in control:
+
+- **Review PRs** — Every task produces a reviewable pull request
+- **Merge on your terms** — The AI never pushes to main
+- **Track progress** — The roadmap view shows real-time status across all milestones
+
+## The Sandbox Environment
+
+Build agents run in **isolated, secure containers**:
+
+- Sandboxed execution environment — zero risk to production
+- Full development toolchain available (Node.js, Python, system tools)
+- Access to your Knowledge Base API keys for real integrations
+- Long-running — agents can work for hours on complex tasks without timing out
+
+## Parallel Execution
+
+When you click **Build All**, pre.dev doesn't build sequentially. Tasks within the same milestone that have no dependencies run in parallel, maximizing throughput.
+
+```
+Milestone 1
+├── Task 1.1 ──→ Agent A (building...)
+├── Task 1.2 ──→ Agent B (building...)  ← parallel
+└── Task 1.3 ──→ (waiting on 1.1)       ← sequential dependency
+
+Milestone 2
+└── (waiting on Milestone 1 completion)
+```
+
+## Context & Knowledge
+
+Agents have access to:
+
+| Source | Description |
+|--------|-------------|
+| **Specification** | The full architectural blueprint for the project |
+| **Codebase** | All code written so far in the repo |
+| **Knowledge Base** | Your stored API keys and documentation |
+| **External Docs** | Scraped documentation from URLs you provide |
+
+This means agents don't hallucinate integration details — they reference real documentation and use real API keys.
+
+## The Result
+
+<Info>
+  Every project follows the same pipeline: **Idea → Architecture Agent → Specification → Build Agents → Verified Code → PRs → You Merge → Deployed App**
+</Info>
+
+No prompt engineering. No babysitting. No "looks good but is broken." Just verified, reviewable code shipping autonomously.
