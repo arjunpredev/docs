@@ -80,15 +80,17 @@ pre.dev eliminates these by making verification a **gate** — not an afterthoug
 
 ## Verification in the PR
 
-Each PR shows the verification status:
+Each PR shows a verification panel with all acceptance criteria results:
 
-| Criterion | Status |
-|-----------|--------|
-| TypeScript compilation passes with no errors | PASSED |
-| All unit tests succeed | PASSED |
-| ESLint rules pass with no warnings | PASSED |
-| Component renders correctly in browser | PASSED |
-| API response under 200ms | PASSED |
+```bash
+# Acceptance Verification
+
+CRITERION                                   STATUS
+------------------------------------------  ------
+Hero renders, CTA redirects to /signup      PASSED
+TypeScript compiles, all unit tests pass    PASSED
+API < 200ms, error handling user-friendly   PASSED
+```
 
 ## Custom Verification
 

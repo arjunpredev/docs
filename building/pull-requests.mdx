@@ -13,6 +13,21 @@ Task assigned → Agent builds in sandbox → Verification passes → Feature br
 
 ### What Each PR Contains
 
+```diff
+ # feat/dtc-913 → predev · 631a912 · PR #1
+ # feat(Setup): Write concise design aesthetic/rules
+ # workspace/package.json (+251)
+
++ "private": true,
+  "name": "mobile",
+  "sideEffects": false,
+  "scripts": {
++   "build": "react-router build",
+    "clean": "node scripts/clean.js",
++   "dev": "react-router dev",
+    "test": "vitest run",
+```
+
 - **Feature branch** — Named descriptively based on the task (e.g., `feat/setup-user-auth`)
 - **Implementation code** — All files created or modified for the task
 - **Tests** — Unit tests covering the new functionality

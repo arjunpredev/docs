@@ -5,6 +5,12 @@ description: "Control how autonomous agents work through your project."
 
 Once your specification is ready, you choose how agents execute the work. pre.dev offers three build modes that give you different levels of control.
 
+```
+  Build Next Task
+> Build On Autopilot
+  Chat
+```
+
 <Tabs>
   <Tab title="Build Next Task">
     Agents build **one task at a time**, then wait for your review before proceeding.
@@ -101,7 +107,10 @@ You can switch between modes at any time:
 Regardless of mode, each task goes through the same pipeline:
 
 ```
-Task picked up → Agent codes in sandbox → Acceptance verification → PR opened
+Task → Agent codes → Verification → PR opened
+                          |
+                     Failed? Auto-fix
+                     (loops until pass)
 ```
 
 If acceptance verification fails (types don't compile, tests fail, linting errors), the agent automatically iterates until the checks pass. You never see broken code in a PR.

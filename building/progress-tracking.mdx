@@ -7,29 +7,31 @@ pre.dev provides real-time visibility into your project's build progress. Track 
 
 ## The Roadmap View
 
-Your project dashboard shows a Gantt-style roadmap with:
+Your project dashboard shows a Gantt-style roadmap with hierarchical task tracking — milestones, stories, and subtasks — with progress bars and timeline bars.
 
-- **Milestones** as top-level rows
-- **Tasks** nested within each milestone
-- **Progress bars** showing completion percentage
-- **Status indicators** for each task
+```bash
+# Project Roadmap
 
+M1: Core Foundation        8h   ████████████ 100%
+  Setup project structure  8h   ████████████ 100%
+
+M2: User Features         26h   ██.......... 20%
+  Hero Section             2h   ............ 0%
+  Download/Signup          4h   ............ 0%
+  Feature Benefits         4h   ............ 0%
+  Signup Form              8h   ............ 0%
+  Password Reset           8h   ............ 0%
+
+M3: Polish & Deploy       32h   ............ 0%
+
+Overall: 14.29%
 ```
-Milestone 1: Core Foundation          ████████████████████ 100%
-├── Setup project structure            [✓] Complete
-├── Database schema and models         [✓] Complete
-├── Authentication system              [✓] Complete
-└── Base API endpoints                 [✓] Complete
 
-Milestone 2: User Features            ████████░░░░░░░░░░░░ 40%
-├── User profiles                      [✓] Complete
-├── Settings page                      [→] In Progress
-├── Notification system                [ ] To Do
-└── Search functionality               [ ] To Do
+The roadmap tracks three levels of detail:
 
-Milestone 3: Admin & Analytics         ░░░░░░░░░░░░░░░░░░░░ 0%
-└── ...
-```
+- **Milestones** (blue) — Top-level phases of delivery
+- **Stories** (amber) — Feature-level requirements within each milestone
+- **Subtasks** (green) — Granular implementation steps
 
 ## Task Statuses
 

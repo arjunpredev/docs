@@ -21,26 +21,43 @@ With the Knowledge Base, agents:
 
 ## Adding API Keys
 
-From your project dashboard, navigate to the Knowledge Base section and add your keys:
+From your project dashboard, navigate to the Knowledge Base section and add your keys. pre.dev recommends integrations based on your project type:
+
+```bash
+# Knowledge Base — AI Search
+
+PROVIDER      ENV VARIABLE       PURPOSE
+----------   ----------------   ----------------
+Exa          EXA_API_KEY        AI-powered search
+Tavily       TAVILY_API_KEY     Search API
+You.com      YOU_API_KEY        Web search
+Firecrawl    FIRECRAWL_KEY      Web scraping
+```
 
 ### Supported Integrations
 
-pre.dev recommends integrations based on your project type:
-
-| Category | Services |
-|----------|----------|
-| **AI Text** | OpenAI, Anthropic, Mistral, Groq |
-| **AI Image** | DALL-E, Stability AI, Midjourney API |
-| **AI Video** | Runway, Luma |
-| **AI Audio** | ElevenLabs, AssemblyAI |
-| **Search** | Exa, Tavily, You.com |
-| **Web Scraping** | Firecrawl, Browserbase |
-| **Payments** | Stripe, PayPal |
-| **Email** | Resend, SendGrid, Mailgun |
-| **Auth** | Clerk, Auth0, Supabase Auth |
-| **Database** | Supabase, PlanetScale, Neon |
-| **Storage** | AWS S3, Cloudflare R2, Uploadthing |
-| **Analytics** | PostHog, Mixpanel, Amplitude |
+<AccordionGroup>
+  <Accordion title="AI Services" icon="sparkles">
+    | Category | Services |
+    |----------|----------|
+    | **AI Text** | OpenAI, Anthropic, Mistral, Groq |
+    | **AI Image** | DALL-E, Stability AI, Midjourney API |
+    | **AI Video** | Runway, Luma |
+    | **AI Audio** | ElevenLabs, AssemblyAI |
+    | **Search** | Exa, Tavily, You.com |
+    | **Web Scraping** | Firecrawl, Browserbase |
+  </Accordion>
+  <Accordion title="Infrastructure & Services" icon="server">
+    | Category | Services |
+    |----------|----------|
+    | **Payments** | Stripe, PayPal |
+    | **Email** | Resend, SendGrid, Mailgun |
+    | **Auth** | Clerk, Auth0, Supabase Auth |
+    | **Database** | Supabase, PlanetScale, Neon |
+    | **Storage** | AWS S3, Cloudflare R2, Uploadthing |
+    | **Analytics** | PostHog, Mixpanel, Amplitude |
+  </Accordion>
+</AccordionGroup>
 
 You can add any API key — these are just the recommended ones that agents know how to use out of the box.
 
