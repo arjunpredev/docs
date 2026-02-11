@@ -56,11 +56,14 @@
 							"building/build-modes",
 							"building/acceptance-criteria",
 							"building/pull-requests",
-							"building/progress-tracking"
+							"building/progress-tracking",
+							"building/pro-mode",
+							"building/custom-domains",
+							"building/collaboration"
 						]
 					},
 					{
-						"group": "Knowledge Base",
+						"group": "Integrations",
 						"pages": [
 							"knowledge-base/overview"
 						]

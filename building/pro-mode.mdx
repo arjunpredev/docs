@@ -1,0 +1,66 @@
+---
+title: "Pro Mode"
+description: "Enhanced AI generation for higher-quality results."
+---
+
+Pro Mode is an advanced reasoning mode that produces more comprehensive, production-grade outputs from pre.dev's build agents. When enabled, agents use deeper reasoning to generate higher-quality code, better architecture decisions, and more thorough implementations.
+
+## How to Enable
+
+Pro Mode is toggled **per-project** from the project dashboard:
+
+1. Look for the **Pro** toggle button in the project interface
+2. Click to enable — the toggle shows a matrix-style animation when active
+3. All subsequent builds in that project use enhanced reasoning
+
+You can toggle Pro Mode on or off at any time. The setting applies to the current project only.
+
+## Subscription Requirements
+
+Pro Mode is available on the following tiers:
+
+| Tier | Pro Mode Access |
+|------|----------------|
+| **Solo Premium** | Included |
+| **Solo Pro** | Included |
+| **Enterprise Premium** | Included |
+| Free / Starter tiers | Not available |
+
+If you're on a tier without Pro Mode access, clicking the toggle will prompt you to upgrade.
+
+## Credit Implications
+
+Pro Mode uses **more credits per generation** compared to standard mode. The enhanced reasoning requires additional computation, which is reflected in credit consumption.
+
+<Note>
+  The exact credit multiplier varies by task complexity. Monitor your credit balance in the dashboard to plan usage accordingly.
+</Note>
+
+## When to Use Pro Mode
+
+<CardGroup cols={2}>
+  <Card title="Use Pro Mode for" icon="check">
+    - Complex, multi-service architectures
+    - Production-grade code with proper error handling
+    - Projects requiring deep integration logic
+    - Final builds you plan to ship
+    - Applications with complex business logic
+  </Card>
+  <Card title="Standard mode is fine for" icon="minus">
+    - Prototyping and early exploration
+    - Simple CRUD applications
+    - Quick feature validation
+    - Learning and experimentation
+    - Early iterations before finalizing
+  </Card>
+</CardGroup>
+
+## Tips
+
+<Tip>
+  A common workflow is to use **standard mode** for initial prototyping and iteration, then switch to **Pro Mode** for your final production build. This balances credit usage with output quality.
+</Tip>
+
+- Pro Mode works with all build types (spec generation and coding agents)
+- You can switch modes between builds without losing any project state
+- The setting persists until you change it — it won't reset between sessions

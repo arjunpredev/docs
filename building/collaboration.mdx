@@ -1,0 +1,70 @@
+---
+title: "Collaboration"
+description: "Invite team members and control project access."
+---
+
+pre.dev projects support role-based collaboration, letting you invite team members with different permission levels and control who can view or modify your work.
+
+## Inviting Collaborators
+
+1. Open your project dashboard
+2. Go to the **Share** menu
+3. Enter the collaborator's email address
+4. Select a role (**Admin** or **Viewer**)
+5. Click invite
+
+The collaborator receives an email invitation with a link to access the project.
+
+## Roles
+
+pre.dev uses three permission levels:
+
+| Role | Permissions |
+|------|------------|
+| **Owner** | Full control — edit project, manage all collaborators, invite admins, change privacy settings, delete project |
+| **Admin** | Edit project, invite and manage Viewer collaborators |
+| **Viewer** | Read-only access to project specs, builds, and code |
+
+### Permission Rules
+
+- Only the **Owner** can invite or assign the Admin role
+- **Admins** can invite Viewers and remove Viewers
+- **Admins** cannot manage other Admins or the Owner
+- **Viewers** cannot invite or manage anyone
+
+<Note>
+  The project creator is always the Owner. Ownership cannot be transferred or reassigned through the collaborator management interface.
+</Note>
+
+## Managing Collaborators
+
+From the Share menu, you can:
+
+- **Change roles** — Click the role dropdown next to a collaborator to change their permission level (subject to the permission rules above)
+- **Remove collaborators** — Click the remove button to revoke access immediately
+
+## Project Privacy
+
+Projects can be set to **public** or **private**:
+
+- **Public** — Anyone with the link can view the deployed app preview
+- **Private** — Only the owner and invited collaborators can access the project
+
+To change privacy settings:
+1. Open the project dashboard
+2. Toggle the privacy setting in the Share menu
+
+<Warning>
+  Making a project private automatically rescinds any enterprise organization invitations associated with that project.
+</Warning>
+
+## Enterprise Collaboration
+
+Enterprise organization members can be invited to projects as a group:
+
+- An Owner or Admin invites the enterprise organization to a project
+- All members of that organization gain access
+- Enterprise invitations are tracked separately from individual collaborator invitations
+- If the project is made private, enterprise invitations are automatically revoked
+
+Enterprise collaboration is available on Enterprise tier plans. See your organization settings for details.

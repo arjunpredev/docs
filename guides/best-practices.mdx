@@ -372,3 +372,27 @@ Your job shifts from:
 - ~~Code reviews~~ → Context quality control
 
 Let the agent handle the code. You handle the context boundaries and quality control.
+
+---
+
+## Integrations Best Practices
+
+### Add Keys Before Building
+
+Add your API keys **before starting a build**. This way, agents use real integrations from the start instead of generating placeholder code you'll need to replace later.
+
+---
+
+## Pro Mode Usage
+
+### Match Mode to Project Phase
+
+- Use **standard mode** for prototyping, early exploration, and quick iterations
+- Switch to **Pro Mode** for final production builds and complex architectures
+- You can toggle between modes at any time without losing project state
+
+### When Pro Mode Shines
+
+Pro Mode is most valuable for projects with complex business logic, multi-service integrations, or production-grade requirements. For simple CRUD apps or learning projects, standard mode works well.
+
+See [Pro Mode](/building/pro-mode) for full details on tiers and usage.
