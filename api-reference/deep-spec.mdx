@@ -11,7 +11,7 @@ Generate an ultra-detailed, comprehensive project specification.
 
 ## Overview
 
-- **Cost:** Variable (typically ~15-40 credits based on complexity)
+- **Cost:** Variable (typically ~10-50 credits based on complexity)
 - **Use Cases:** Complex systems, enterprise applications, critical projects
 - **Processing Time:** ~2-3 minutes (sync) or instant return (async)
 - **Output:** Exhaustive analysis, detailed architecture, comprehensive planning
@@ -66,7 +66,7 @@ Authorization: Bearer YOUR_API_KEY
 
 | Feature | Fast Spec | Deep Spec |
 |---------|-----------|-----------|
-| Cost | ~3-8 credits | ~15-40 credits |
+| Cost | ~5-10 credits | ~10-50 credits |
 | Processing Time | 30-40 sec | 2-3 min |
 | Structure | Milestones → Stories | Milestones → Stories → Subtasks |
 | Detail Level | Comprehensive | Ultra-detailed |
@@ -222,6 +222,7 @@ formData.append('async', 'true');
   "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
   "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
+  "creditsUsed": 28,
   "zippedDocsUrls": [
     {
       "platform": "docs.hl7.org",
@@ -255,6 +256,7 @@ formData.append('async', 'true');
 | `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec |
 | `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
 | `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
+| `creditsUsed` | number | Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50 |
 | `zippedDocsUrls` | array | **New:** Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
 
 ### Success Response (Async Mode)
@@ -717,7 +719,7 @@ Documentation archives complement Deep Spec's detailed analysis:
 - **Distribute documentation archives** - Ensure development team has complete context
 
 ### Cost Considerations
-- **Variable pricing** - Credits charged per-inference based on actual token usage (~15-40 credits for Deep Spec vs ~3-8 for Fast Spec)
+- **Variable pricing** - Credits charged per-inference based on actual token usage (~10-50 credits for Deep Spec vs ~5-10 for Fast Spec)
 - **Significant time savings downstream** - Reduces costly rework and scope changes
 - **Better resource allocation** - Clear requirements prevent over/under-engineering
 - **Comprehensive documentation** - Archives save hours of documentation gathering

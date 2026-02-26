@@ -29,7 +29,7 @@
 		"/fast-spec": {
 			"post": {
 				"summary": "Generate Fast Spec",
-				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~3-8 credits based on complexity). Processing time: ~30-40 seconds.",
+				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~30-40 seconds.",
 				"operationId": "generateFastSpec",
 				"tags": ["Spec Generation"],
 				"security": [
@@ -152,7 +152,7 @@
 		"/deep-spec": {
 			"post": {
 				"summary": "Generate Deep Spec",
-				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~15-40 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
+				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
 				"operationId": "generateDeepSpec",
 				"tags": ["Spec Generation"],
 				"security": [
@@ -851,6 +851,10 @@
 						"items": {
 							"$ref": "#/components/schemas/ZippedDocsUrl"
 						}
+					},
+					"creditsUsed": {
+						"type": "number",
+						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
 					}
 				}
 			},
@@ -985,6 +989,10 @@
 					"progress": {
 						"type": "string",
 						"description": "Human-readable progress description"
+					},
+					"creditsUsed": {
+						"type": "number",
+						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
 					}
 				}
 			},
