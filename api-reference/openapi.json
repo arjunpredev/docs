@@ -3,7 +3,7 @@
 	"info": {
 		"title": "pre.dev Architect API",
 		"description": "Generate comprehensive software specifications for coding agents. The Architect API helps you create detailed project specifications that AI coding agents can understand and implement.",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"contact": {
 			"name": "pre.dev Support",
 			"url": "https://pre.dev",
@@ -855,6 +855,19 @@
 					"creditsUsed": {
 						"type": "number",
 						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
+					},
+					"userFlowGraph": {
+						"$ref": "#/components/schemas/SpecGraph",
+						"description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+					},
+					"architectureGraph": {
+						"$ref": "#/components/schemas/SpecGraph",
+						"description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+					},
+					"enrichedTechStack": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecEnrichedTechStackItem" },
+						"description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
 					}
 				}
 			},
@@ -993,6 +1006,19 @@
 					"creditsUsed": {
 						"type": "number",
 						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
+					},
+					"userFlowGraph": {
+						"$ref": "#/components/schemas/SpecGraph",
+						"description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+					},
+					"architectureGraph": {
+						"$ref": "#/components/schemas/SpecGraph",
+						"description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+					},
+					"enrichedTechStack": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecEnrichedTechStackItem" },
+						"description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
 					}
 				}
 			},
@@ -1419,6 +1445,141 @@
 					"creditsRemaining": {
 						"type": "integer",
 						"description": "The number of remaining credits available for the user"
+					}
+				}
+			},
+			"SpecGraphNode": {
+				"type": "object",
+				"required": ["id", "label"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Unique identifier for the node"
+					},
+					"label": {
+						"type": "string",
+						"description": "Display label for the node"
+					},
+					"type": {
+						"type": "string",
+						"description": "Node type (e.g., system, route, table, starting)"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the node"
+					},
+					"level": {
+						"type": "string",
+						"description": "Architecture level (e.g., C1, C2)"
+					},
+					"hours": {
+						"type": "number",
+						"description": "Estimated hours for this node"
+					}
+				}
+			},
+			"SpecGraphEdge": {
+				"type": "object",
+				"required": ["source", "target"],
+				"properties": {
+					"source": {
+						"type": "string",
+						"description": "Source node ID"
+					},
+					"target": {
+						"type": "string",
+						"description": "Target node ID"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description of the relationship"
+					},
+					"edgeType": {
+						"type": "string",
+						"description": "Type of edge relationship"
+					}
+				}
+			},
+			"SpecGraph": {
+				"type": "object",
+				"required": ["nodes", "edges"],
+				"properties": {
+					"nodes": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecGraphNode" },
+						"description": "Array of graph nodes"
+					},
+					"edges": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SpecGraphEdge" },
+						"description": "Array of graph edges"
+					}
+				}
+			},
+			"SpecEnrichedTechStackItem": {
+				"type": "object",
+				"required": ["name", "useFor", "reason", "description"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the technology (e.g., React, PostgreSQL)"
+					},
+					"useFor": {
+						"type": "string",
+						"description": "Category label (e.g., Frontend, Backend, Database)"
+					},
+					"reason": {
+						"type": "string",
+						"description": "Why this technology was chosen for this specific project"
+					},
+					"description": {
+						"type": "string",
+						"description": "Technical description of what the technology does"
+					},
+					"link": {
+						"type": "string",
+						"format": "uri",
+						"description": "Official website or documentation URL"
+					},
+					"helpfulLinks": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"url": {
+									"type": "string",
+									"format": "uri",
+									"description": "URL to helpful resource"
+								},
+								"description": {
+									"type": "string",
+									"description": "Description of the resource"
+								}
+							}
+						},
+						"description": "Array of helpful documentation and tutorial links"
+					},
+					"alternatives": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string",
+									"description": "Name of the alternative technology"
+								},
+								"link": {
+									"type": "string",
+									"format": "uri",
+									"description": "URL of the alternative technology"
+								},
+								"description": {
+									"type": "string",
+									"description": "Description of the alternative"
+								}
+							}
+						},
+						"description": "Array of alternative technologies that could be used instead"
 					}
 				}
 			}

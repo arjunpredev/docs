@@ -112,7 +112,39 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "creditsUsed": 7,
   "progress": 100,
-  "progressMessage": "Completed successfully"
+  "progressMessage": "Completed successfully",
+  "userFlowGraph": {
+    "nodes": [
+      { "id": "authentication", "label": "Authentication", "type": "flow" },
+      { "id": "dashboard", "label": "Dashboard", "type": "flow" },
+      { "id": "task_management", "label": "Task Management", "type": "flow" }
+    ],
+    "edges": [
+      { "source": "authentication", "target": "dashboard" },
+      { "source": "dashboard", "target": "task_management" }
+    ]
+  },
+  "architectureGraph": {
+    "nodes": [
+      { "id": "system_web_app", "label": "Web Application", "type": "system", "level": "C1" },
+      { "id": "system_api", "label": "API Server", "type": "system", "level": "C2" },
+      { "id": "system_database", "label": "Database", "type": "system", "level": "C2" }
+    ],
+    "edges": [
+      { "source": "system_web_app", "target": "system_api", "edgeType": "uses" },
+      { "source": "system_api", "target": "system_database", "edgeType": "reads_writes" }
+    ]
+  },
+  "enrichedTechStack": [
+    {
+      "name": "React",
+      "useFor": "Frontend",
+      "reason": "Component-based architecture ideal for building interactive task management UIs with real-time updates",
+      "description": "A JavaScript library for building user interfaces with a virtual DOM for efficient rendering",
+      "link": "https://react.dev",
+      "alternatives": [{ "name": "Vue.js", "link": "https://vuejs.org", "description": "Progressive JavaScript framework" }]
+    }
+  ]
 }
 ```
 
@@ -163,6 +195,9 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `creditsUsed` | number | Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50 |
 | `progress` | number | Overall progress percentage (0-100) |
 | `progressMessage` | string | Detailed progress message (e.g., "Generating User Stories...") |
+| `userFlowGraph` | object | User flow graph with `nodes` (id, label, type, description) and `edges` (source, target, edgeType). Represents user stories and navigation flows (only when completed) |
+| `architectureGraph` | object | System architecture graph with `nodes` (id, label, type, level, description) and `edges` (source, target, edgeType). Shows C1/C2 level system components (only when completed) |
+| `enrichedTechStack` | array | Enriched tech stack items with `name`, `useFor`, `reason`, `description`, `link`, `helpfulLinks`, and `alternatives` for each technology (only when completed) |
 
 ## Polling Best Practices
 
