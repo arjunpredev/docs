@@ -115,9 +115,9 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   "progressMessage": "Completed successfully",
   "userFlowGraph": {
     "nodes": [
-      { "id": "authentication", "label": "Authentication", "type": "flow" },
-      { "id": "dashboard", "label": "Dashboard", "type": "flow" },
-      { "id": "task_management", "label": "Task Management", "type": "flow" }
+      { "id": "authentication", "label": "Authentication", "type": "flow", "level": 1 },
+      { "id": "dashboard", "label": "Dashboard", "type": "flow", "level": 2 },
+      { "id": "task_management", "label": "Task Management", "type": "flow", "level": 3 }
     ],
     "edges": [
       { "source": "authentication", "target": "dashboard" },
@@ -126,13 +126,13 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
   },
   "architectureGraph": {
     "nodes": [
-      { "id": "system_web_app", "label": "Web Application", "type": "system", "level": "C1" },
-      { "id": "system_api", "label": "API Server", "type": "system", "level": "C2" },
-      { "id": "system_database", "label": "Database", "type": "system", "level": "C2" }
+      { "id": "web_main_app", "label": "React Web Application", "type": "frontend" },
+      { "id": "api_main_service", "label": "Node.js API Service", "type": "api-services" },
+      { "id": "db_primary", "label": "PostgreSQL Database", "type": "databases" }
     ],
     "edges": [
-      { "source": "system_web_app", "target": "system_api", "edgeType": "uses" },
-      { "source": "system_api", "target": "system_database", "edgeType": "reads_writes" }
+      { "source": "web_main_app", "target": "api_main_service", "edgeType": "uses" },
+      { "source": "api_main_service", "target": "db_primary", "edgeType": "reads_writes" }
     ]
   },
   "enrichedTechStack": [
@@ -195,8 +195,8 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `creditsUsed` | number | Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50 |
 | `progress` | number | Overall progress percentage (0-100) |
 | `progressMessage` | string | Detailed progress message (e.g., "Generating User Stories...") |
-| `userFlowGraph` | object | User flow graph with `nodes` (id, label, type, description) and `edges` (source, target, edgeType). Represents user stories and navigation flows (only when completed) |
-| `architectureGraph` | object | System architecture graph with `nodes` (id, label, type, level, description) and `edges` (source, target, edgeType). Shows C1/C2 level system components (only when completed) |
+| `userFlowGraph` | object | User flow graph with `nodes` (id, label, type, description, level) and `edges` (source, target, edgeType). Nodes include a numeric `level` (1, 2, 3...) indicating graph depth for layered rendering (only when completed) |
+| `architectureGraph` | object | System architecture graph with `nodes` (id, label, type, description) and `edges` (source, target, edgeType). Node `type` is one of: `"frontend"`, `"api-services"`, `"databases"`, `"external-services"` (only when completed) |
 | `enrichedTechStack` | array | Enriched tech stack items with `name`, `useFor`, `reason`, `description`, `link`, `helpfulLinks`, and `alternatives` for each technology (only when completed) |
 
 ## Polling Best Practices

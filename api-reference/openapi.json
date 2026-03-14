@@ -1462,15 +1462,15 @@
 					},
 					"type": {
 						"type": "string",
-						"description": "Node type (e.g., system, route, table, starting)"
+						"description": "Node type category. For architectureGraph: \"frontend\", \"api-services\", \"databases\", or \"external-services\". For userFlowGraph: \"flow\", \"role\", etc."
 					},
 					"description": {
 						"type": "string",
 						"description": "Description of the node"
 					},
 					"level": {
-						"type": "string",
-						"description": "Architecture level (e.g., C1, C2)"
+						"type": "number",
+						"description": "Graph depth level (1, 2, 3...) for userFlowGraph nodes. Not present on architectureGraph nodes."
 					},
 					"hours": {
 						"type": "number",
