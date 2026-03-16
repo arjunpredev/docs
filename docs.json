@@ -30,18 +30,11 @@
 				"groups": [
 					{
 						"group": "Getting Started",
-						"pages": [
-							"what-is-predev",
-							"quickstart",
-							"how-it-works"
-						]
+						"pages": ["what-is-predev", "quickstart", "how-it-works"]
 					},
 					{
 						"group": "Projects",
-						"pages": [
-							"projects/creating-a-project",
-							"projects/importing-repos"
-						]
+						"pages": ["projects/creating-a-project", "projects/importing-repos"]
 					},
 					{
 						"group": "Specifications",
@@ -64,9 +57,7 @@
 					},
 					{
 						"group": "Integrations",
-						"pages": [
-							"knowledge-base/overview"
-						]
+						"pages": ["integrations/overview"]
 					}
 				]
 			},
@@ -75,10 +66,7 @@
 				"groups": [
 					{
 						"group": "Overview",
-						"pages": [
-							"api-mcp/overview",
-							"mcp-server"
-						]
+						"pages": ["api-mcp/overview", "mcp-server"]
 					},
 					{
 						"group": "API Reference",
