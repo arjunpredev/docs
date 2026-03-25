@@ -78,10 +78,6 @@ Authorization: Bearer YOUR_API_KEY
       "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
       "executionTime": 38500,
       "predevUrl": "https://pre.dev/projects/abc123",
-      "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=...",
-      "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=...",
-      "v0Url": "https://v0.dev/chat?q=...",
-      "boltUrl": "https://bolt.new?prompt=..."
     },
     {
       "_id": "507f1f77bcf86cd799439012",
@@ -123,10 +119,6 @@ Authorization: Bearer YOUR_API_KEY
 | `codingAgentSpecUrl` | string | ❌ | Coding agent spec URL (when completed) |
 | `executionTime` | number | ❌ | Processing time in ms (when completed) |
 | `predevUrl` | string | ❌ | pre.dev project URL (when completed) |
-| `lovableUrl` | string | ❌ | Lovable.dev deep link (when completed) |
-| `cursorUrl` | string | ❌ | Cursor deep link (when completed) |
-| `v0Url` | string | ❌ | Vercel v0 deep link (when completed) |
-| `boltUrl` | string | ❌ | Bolt.new deep link (when completed) |
 | `errorMessage` | string | ❌ | Error details (when failed) |
 | `progress` | string | ❌ | Status message (when processing) |
 
@@ -275,10 +267,6 @@ interface SpecObject {
   codingAgentSpecUrl?: string;
   executionTime?: number;
   predevUrl?: string;
-  lovableUrl?: string;
-  cursorUrl?: string;
-  v0Url?: string;
-  boltUrl?: string;
   errorMessage?: string;
   progress?: string;
 }

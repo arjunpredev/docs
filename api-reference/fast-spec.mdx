@@ -220,10 +220,6 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
   "architectureInfographicUrl": "https://res.cloudinary.com/dfvg7gm6w/image/upload/v1765403270/infographics/arch_infographic_cfac141b_1765403269989_0.jpg",
   "executionTime": 38500,
   "predevUrl": "https://pre.dev/projects/abc123",
-  "lovableUrl": "https://lovable.dev/?autosubmit=true#prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "cursorUrl": "cursor://anysphere.cursor-deeplink/prompt?text=First+download+https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C+then+save+it+to+a+file+called+%22spec.md%22+and+then+parse+it+and+implement+it+step+by+step",
-  "v0Url": "https://v0.dev/chat?q=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
-  "boltUrl": "https://bolt.new?prompt=First%20download%20https%3A%2F%2Fapi.pre.dev%2Fs%2Fa6hFJRV6%2C%20then%20save%20it%20to%20a%20file%20called%20%22spec.md%22%20and%20then%20parse%20it%20and%20implement%20it%20step%20by%20step",
   "creditsUsed": 7,
   "zippedDocsUrls": [
     {
@@ -254,10 +250,6 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `codingAgentSpecJson` | object | Simplified structured SOW JSON for AI coding tools |
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
-| `lovableUrl` | string | Deep link to Lovable.dev with auto-submit prompt to implement the spec |
-| `cursorUrl` | string | Deep link to Cursor with prompt to download and implement the spec |
-| `v0Url` | string | Deep link to Vercel v0 with prompt to implement the spec |
-| `boltUrl` | string | Deep link to Bolt.new with prompt to implement the spec |
 | `creditsUsed` | number | Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50 |
 | `zippedDocsUrls` | array | **New:** Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
 
@@ -779,10 +771,6 @@ interface StatusResponse {
   codingAgentSpecUrl?: string;
   executionTime?: number;
   predevUrl?: string;
-  lovableUrl?: string;
-  cursorUrl?: string;
-  v0Url?: string;
-  boltUrl?: string;
   zippedDocsUrls?: ZippedDocsUrl[];
   errorMessage?: string;
   creditsUsed?: number;     // Total credits consumed (available during processing and on completion)
