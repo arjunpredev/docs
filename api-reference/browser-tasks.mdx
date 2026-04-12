@@ -1,0 +1,388 @@
+---
+title: 'Browser Tasks'
+description: 'Run browser automation tasks — scrape data, fill forms, navigate pages, extract structured data'
+---
+
+Run one or more browser automation tasks from a single API call. Pass a URL, optional instruction, optional form input, and an output schema — the agent navigates, interacts, and returns typed data.
+
+**Built-in behaviors:**
+- Sitemap-aware navigation (fetches `/sitemap.xml` automatically)
+- Per-task retries with exponential backoff (429 / 5xx handled)
+- Full execution timeline with screenshots (plan → actions → validation → done)
+- Three response modes: **sync**, **stream** (SSE), and **async** (poll for progress)
+
+## Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/v1/browser-tasks` | Run one or more tasks |
+| `GET` | `/api/v1/browser-tasks` | List previous batches |
+| `GET` | `/api/v1/browser-tasks/:id` | Get a single batch (works mid-flight) |
+
+## POST /api/v1/browser-tasks
+
+Run one or more browser automation tasks. Always pass an array of tasks (single task = array of 1).
+
+### Request body
+
+```json
+{
+  "tasks": [
+    {
+      "url": "https://example.com",
+      "instruction": "Extract the page heading",
+      "input": { "name": "Alice", "email": "alice@example.com" },
+      "output": {
+        "type": "object",
+        "properties": { "heading": { "type": "string" } }
+      }
+    }
+  ],
+  "concurrency": 5,
+  "stream": false,
+  "async": false
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `tasks` | array | Yes | Array of tasks to run (max 1000 per request) |
+| `tasks[].url` | string | Yes | URL to navigate to |
+| `tasks[].instruction` | string | No | What to do on the page (natural language) |
+| `tasks[].input` | object | No | Form values / input data (key-value pairs) |
+| `tasks[].output` | object | No | JSON Schema describing the expected output shape |
+| `concurrency` | number | No | Parallel browsers per batch (default 5, max 20) |
+| `stream` | boolean | No | If true, returns Server-Sent Events with real-time execution timeline |
+| `async` | boolean | No | If true, returns the batch ID immediately; poll `GET /:id` to track progress |
+
+### Three response modes
+
+#### 1. Sync (default)
+
+Waits for all tasks to complete, returns a `BatchResult`. Good for a handful of fast tasks.
+
+```json
+{
+  "id": "batch_abc123",
+  "total": 1,
+  "completed": 1,
+  "results": [
+    {
+      "url": "https://example.com",
+      "status": "SUCCESS",
+      "data": { "heading": "Example Domain" },
+      "cost": 0.000158,
+      "creditsUsed": 0.1,
+      "durationMs": 10200
+    }
+  ],
+  "totalCost": 0.000158,
+  "totalCreditsUsed": 0.1,
+  "status": "completed"
+}
+```
+
+#### 2. Stream (`stream: true`)
+
+Returns Server-Sent Events with the full execution timeline as each task progresses. Use when you want to show a live UI.
+
+Event types:
+
+| Event | Description |
+|---|---|
+| `task_event` | Real-time event from a task: `navigation`, `screenshot`, `plan`, `action`, `validation` |
+| `task_result` | A single task completed |
+| `done` | Batch finished, data is the full `BatchResult` |
+| `error` | Fatal error |
+
+```bash cURL
+curl -N -X POST https://api.pre.dev/api/v1/browser-tasks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"tasks":[{"url":"https://example.com","output":{"type":"object","properties":{"heading":{"type":"string"}}}}],"stream":true}'
+```
+
+#### 3. Async (`async: true`)
+
+Returns a batch ID immediately. Poll `GET /api/v1/browser-tasks/:id` to track progress. Use for long-running batches or when you want to poll instead of holding a connection.
+
+```json
+// POST response (returned in <100ms)
+{
+  "id": "batch_abc123",
+  "total": 3,
+  "completed": 0,
+  "results": [],
+  "status": "processing"
+}
+```
+
+Then poll `GET /api/v1/browser-tasks/batch_abc123` — `completed` increments as tasks finish, `results` array grows.
+
+## GET /api/v1/browser-tasks
+
+List previous batches (sorted by most recent first).
+
+**Query parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `limit` | number | Results per page (1–100, default 20) |
+| `skip` | number | Offset for pagination (default 0) |
+| `status` | string | Filter by `processing` or `completed` |
+
+**Response:**
+
+```json
+{
+  "batches": [
+    { "id": "batch_abc", "status": "completed", "completed": 3, "total": 3, "totalCreditsUsed": 0.3, ... }
+  ],
+  "total": 42,
+  "hasMore": true
+}
+```
+
+## GET /api/v1/browser-tasks/:id
+
+Get a specific batch by ID. **Works for both in-progress and completed batches** — poll this while running an `async: true` batch to watch progress.
+
+**Query parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `includeEvents` | boolean | Include full execution timeline with screenshots (can be large) |
+
+**Response (in-progress batch):**
+
+```json
+{
+  "id": "batch_abc123",
+  "total": 3,
+  "completed": 2,
+  "status": "processing",
+  "results": [
+    { "url": "https://example.com", "status": "SUCCESS", "data": {...}, ... },
+    { "url": "https://news.ycombinator.com", "status": "SUCCESS", "data": {...}, ... }
+  ],
+  "totalCost": 0.00232
+}
+```
+
+**Response (completed batch with `includeEvents=true`):**
+
+```json
+{
+  "id": "batch_abc123",
+  "status": "completed",
+  "results": [
+    {
+      "url": "https://example.com",
+      "status": "SUCCESS",
+      "data": { "heading": "Example Domain" },
+      "cost": 0.00017,
+      "creditsUsed": 0.1,
+      "durationMs": 9300,
+      "events": [
+        { "type": "navigation", "timestamp": 1776..., "data": { "url": "https://example.com", "title": "Example Domain" } },
+        { "type": "screenshot", "timestamp": 1776..., "data": { "base64": "...", "mimeType": "image/jpeg" } },
+        { "type": "plan",       "timestamp": 1776..., "data": { "done": true, "actions": [], "notes": "...", "model": "qwen/qwen3.5-9b" } },
+        { "type": "validation", "timestamp": 1776..., "data": { "ok": true } },
+        { "type": "done",       "timestamp": 1776..., "data": { "status": "SUCCESS", "data": {...} } }
+      ]
+    }
+  ]
+}
+```
+
+## Task shapes
+
+The `tasks` array supports four shapes depending on which fields you set:
+
+| Shape | Fields set | Example |
+|---|---|---|
+| **Scrape** | `url` + `output` | Extract structured data from a page |
+| **Act** | `url` + `instruction` | Click buttons, navigate, search |
+| **Form fill** | `url` + `instruction` + `input` | Fill and submit a form |
+| **Act + extract** | `url` + `instruction` + `output` | Navigate then extract data |
+
+## Pricing
+
+- **Minimum: 0.1 credits per task** ($0.01)
+- Complex tasks (multi-step, many LLM calls) cost more based on actual LLM + sandbox compute
+- 1 credit = $0.10
+- 10x margin on underlying cost
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+# Simple scrape
+curl -X POST https://api.pre.dev/api/v1/browser-tasks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [{
+      "url": "https://news.ycombinator.com",
+      "instruction": "Extract the top 5 stories",
+      "output": {
+        "type": "object",
+        "properties": {
+          "stories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "points": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    }]
+  }'
+```
+
+```typescript Node.js
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'YOUR_API_KEY' });
+
+// Sync mode
+const result = await client.browserTasks([
+  {
+    url: 'https://news.ycombinator.com',
+    instruction: 'Extract the top 5 stories',
+    output: {
+      type: 'object',
+      properties: {
+        stories: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: { title: { type: 'string' }, points: { type: 'number' } },
+          },
+        },
+      },
+    },
+  },
+]);
+console.log(result.results[0].data.stories);
+
+// Stream mode
+for await (const msg of client.browserTasks([...], { stream: true })) {
+  if (msg.event === 'task_event') console.log(`[${msg.data.type}]`, msg.data.data);
+  if (msg.event === 'done') console.log('Credits used:', msg.data.totalCreditsUsed);
+}
+
+// Async mode: returns ID immediately, poll for progress
+const { id } = await client.browserTasks([...], { async: true });
+while (true) {
+  const state = await client.getBrowserTasks(id);
+  console.log(`${state.completed}/${state.total}`);
+  if (state.status === 'completed') break;
+  await new Promise(r => setTimeout(r, 1000));
+}
+```
+
+```python Python
+from predev_api import PredevAPI
+
+client = PredevAPI(api_key="YOUR_API_KEY")
+
+# Sync mode
+result = client.browser_tasks([
+    {
+        "url": "https://news.ycombinator.com",
+        "instruction": "Extract the top 5 stories",
+        "output": {
+            "type": "object",
+            "properties": {
+                "stories": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "points": {"type": "number"}
+                        }
+                    }
+                }
+            }
+        }
+    }
+])
+for story in result["results"][0]["data"]["stories"]:
+    print(f"{story['title']} ({story['points']} pts)")
+
+# Stream mode
+for msg in client.browser_tasks([...], stream=True):
+    if msg["event"] == "task_event":
+        print(f"[{msg['data']['type']}]", msg["data"].get("data"))
+    elif msg["event"] == "done":
+        print("Credits:", msg["data"]["totalCreditsUsed"])
+
+# Async mode: returns ID immediately, poll for progress
+r = client.browser_tasks([...], run_async=True)
+batch_id = r["id"]
+while True:
+    state = client.get_browser_tasks(batch_id)
+    print(f"{state['completed']}/{state['total']}")
+    if state["status"] == "completed":
+        break
+    time.sleep(1)
+```
+
+</CodeGroup>
+
+## Batch example (100 URLs in parallel)
+
+```typescript
+const urls = ['https://a.com', 'https://b.com', /* ... 100 URLs ... */];
+
+const result = await client.browserTasks(
+  urls.map(url => ({
+    url,
+    output: { type: 'object', properties: { title: { type: 'string' } } }
+  })),
+  { concurrency: 20 }  // 20 browsers in parallel
+);
+
+console.log(`${result.completed}/${result.total} completed`);
+console.log(`Total cost: ${result.totalCreditsUsed} credits`);
+```
+
+## Error codes
+
+| Status | Meaning |
+|---|---|
+| 400 | Bad request (missing tasks array, invalid URL, >1000 tasks) |
+| 401 | Invalid API key |
+| 402 | Insufficient credits |
+| 500 | Internal error |
+
+## Task statuses
+
+| Status | Meaning |
+|---|---|
+| `SUCCESS` | Task completed, data extracted |
+| `BLOCKED` | Page blocked automation (bot detection) |
+| `TIMEOUT` | Task exceeded time limit |
+| `LOOP` | Agent detected it was stuck in a loop |
+| `ERROR` | Unexpected error |
+| `NO_TARGET` | Could not find target elements |
+| `CAPTCHA_FAILED` | CAPTCHA solve failed |
+
+## Verifying what the agent did
+
+Every task persists a full execution timeline — navigation, screenshots, LLM plans, actions, validations. Retrieve with `includeEvents=true` to audit or replay:
+
+```typescript
+const details = await client.getBrowserTasks(batchId, { includeEvents: true });
+for (const ev of details.results[0].events) {
+  if (ev.type === 'screenshot') fs.writeFileSync(`iter${ev.iteration}.jpg`, Buffer.from(ev.data.base64, 'base64'));
+  if (ev.type === 'plan') console.log(`LLM plan: ${ev.data.notes}`);
+}
+```
