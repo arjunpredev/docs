@@ -169,6 +169,10 @@ Get a specific batch by ID. **Works for both in-progress and completed batches**
 }
 ```
 
+<Note>
+Screenshots are uploaded to a CDN during execution. Retrieved events contain a permanent `data.url` you can use directly in an `<img>` tag — **not** base64. The SSE stream (`POST` with `stream:true`) keeps sending base64 inline so live UIs render instantly without waiting on the upload.
+</Note>
+
 **Response (completed batch with `includeEvents=true`):**
 
 ```json
@@ -185,7 +189,7 @@ Get a specific batch by ID. **Works for both in-progress and completed batches**
       "durationMs": 9300,
       "events": [
         { "type": "navigation", "timestamp": 1776..., "data": { "url": "https://example.com", "title": "Example Domain" } },
-        { "type": "screenshot", "timestamp": 1776..., "data": { "base64": "...", "mimeType": "image/jpeg" } },
+        { "type": "screenshot", "timestamp": 1776..., "iteration": 1, "data": { "url": "https://predev-images.s3.us-west-2.amazonaws.com/browser-tasks/<batch>/task-0/iter-1.jpg", "mimeType": "image/jpeg" } },
         { "type": "plan",       "timestamp": 1776..., "data": { "done": true, "actions": [], "notes": "...", "model": "qwen/qwen3.5-9b" } },
         { "type": "validation", "timestamp": 1776..., "data": { "ok": true } },
         { "type": "done",       "timestamp": 1776..., "data": { "status": "SUCCESS", "data": {...} } }
