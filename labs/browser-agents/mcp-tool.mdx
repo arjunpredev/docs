@@ -1,0 +1,141 @@
+---
+title: "MCP Tool"
+description: "Use Browser Agents from any MCP-speaking agent — Claude Code, Cursor, or your own."
+agent_hint: "Install the pre.dev MCP server; the browser_agent tool appears in the agent's toolset."
+---
+
+Browser Agents exposes itself as a first-class MCP tool so your agent
+can drive web browsers with a single tool call — no orchestration code.
+
+## Install
+
+Pick your client:
+
+### Claude Code
+
+Add to `~/.claude.json` (or `.mcp.json` in your project):
+
+```json
+{
+  "mcpServers": {
+    "pre.dev": {
+      "command": "npx",
+      "args": ["-y", "@predotdev/mcp-server"],
+      "env": { "PREDEV_API_KEY": "your-key-here" }
+    }
+  }
+}
+```
+
+Restart Claude Code. The `browser_agent` tool now shows up in the tool list.
+
+### Cursor
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "pre.dev": {
+      "command": "npx",
+      "args": ["-y", "@predotdev/mcp-server"],
+      "env": { "PREDEV_API_KEY": "your-key-here" }
+    }
+  }
+}
+```
+
+### Any other MCP client
+
+```bash
+PREDEV_API_KEY=... npx -y @predotdev/mcp-server
+```
+
+Speak JSON-RPC over stdio.
+
+## Tools exposed
+
+### `browser_agent`
+
+Run one or more browser tasks synchronously (or async with `async: true`).
+Streams live per-step events as MCP notifications so your agent sees
+`navigation` → `plan` → `action` → `screenshot` → `done` in real time.
+
+**Arguments:**
+```ts
+{
+  tasks: Array<{
+    url: string;
+    instruction?: string;
+    input?: Record<string, string>;
+    output?: object;
+  }>;
+  concurrency?: number;   // 1-20
+  async?: boolean;        // return batchId immediately
+}
+```
+
+**Returns:** structured text summary + the full JSON batch result.
+
+### `browser_agent_list`
+
+List the caller's recent batches.
+
+### `browser_agent_get`
+
+Fetch a single batch by id, optionally with the full event timeline.
+
+## Legacy tool names
+
+`browser_task`, `browser_task_list`, `browser_task_get` are still
+registered as aliases — old integrations continue to work.
+
+## Example agent prompt
+
+> Use the `browser_agent` tool to go to https://news.ycombinator.com,
+> extract the top 5 story titles and their point counts, and return a
+> JSON object.
+
+The tool call the agent will make:
+
+```json
+{
+  "name": "browser_agent",
+  "arguments": {
+    "tasks": [{
+      "url": "https://news.ycombinator.com",
+      "instruction": "Extract the top 5 story titles and their point counts.",
+      "output": {
+        "type": "object",
+        "properties": {
+          "stories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "points": { "type": "number" }
+              },
+              "required": ["title", "points"]
+            }
+          }
+        },
+        "required": ["stories"]
+      }
+    }]
+  }
+}
+```
+
+## Streaming events (for the agent developer)
+
+Each step of the task emits an MCP `notifications/message` frame. The
+`taskIndex` field ties each event to a task in the batch. Event types
+and their data shapes are identical to the REST SSE stream — see
+[REST API → Task event types](/labs/browser-agents/rest-api#task-event-types).
+
+## Auth
+
+`PREDEV_API_KEY` in the MCP server's env is all you need. The key is
+your solo SuperTokens userId or your enterprise org API key — same as
+REST.

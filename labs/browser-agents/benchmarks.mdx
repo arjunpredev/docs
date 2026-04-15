@@ -1,0 +1,72 @@
+---
+title: "Benchmarks"
+description: "How Browser Agents compares, and how to reproduce it yourself."
+---
+
+## Latest numbers
+
+Run on 2026-04-15 against 101 tasks covering scraping, pagination,
+login, search, form-fill, CAPTCHA, and multi-step flows.
+
+| Provider | Pass rate | Quality (LLM judge, 0-100) | Wins out of 50 judged | Wall time | Raw cost / pass |
+|---|---|---|---|---|---|
+| **pre.dev Browser Agents** | **99/101** | **78.6** | **34/50** | 146s | **$0.011** |
+| Browser Use Cloud | 99/101 | 75.6 | 31/50 | similar | ~$0.126 |
+| Firecrawl Interact | ~70/101 | 62.5 | 28/50 | slow (per-min billed) | ~$0.04 |
+| Firecrawl Scrape (baseline) | ~65/101 | 63.2 | 27/50 | fast | ~$0.01 |
+| Claude Code + Chrome MCP | _manual_ | _manual_ | _manual_ | interactive | per-session |
+
+Headline reads:
+- **+4 pts of judged quality vs Browser Use Cloud, ~11× cheaper per pass.**
+- **+16 pts vs Firecrawl's agent mode, 3-4× cheaper per pass.**
+- Browser Agents wins **34/50 anonymized side-by-side judgements**;
+  nobody else breaks 32.
+
+## Methodology
+
+1. **Task set** — 101 hand-curated tasks (`tasks.json`) targeting
+   broad coverage: static scrapes, multi-page flows, logins, form
+   fills, CAPTCHA, dynamic JS, iframes, search-then-extract.
+2. **Each adapter** hits the same tasks with the same inputs.
+3. **Per-task schema validation** — the adapter returns structured
+   JSON matching the task's `output` schema.
+4. **LLM judge** (`scripts/llm-judge.ts`) — scores each answer 0-100
+   against a ground-truth excerpt fetched fresh from the task URL.
+   Anonymized (providers labeled A/B/C/D per task) to avoid bias.
+5. **Wall time + raw cost** captured per task.
+
+## Reproduce it
+
+Everything's in the public benchmark repo:
+
+```bash
+git clone https://github.com/predotdev/browser-agents-benchmark
+cd browser-agents-benchmark
+bun install
+cp .env.example .env   # fill in API keys for providers you want to test
+bun run bench
+```
+
+Per-provider env vars:
+- `PREDEV_API_KEY` (solo userId or enterprise org key)
+- `BROWSER_USE_API_KEY`
+- `FIRECRAWL_API_KEY`
+- `GOOGLE_GEMINI_API_KEY` (for the judge)
+
+The benchmark writes `results/{timestamp}/` with per-task JSON files
+and runs the judge against it. Takes ~3-5 min at `--concurrency 50`.
+
+## Claude Code + Chrome MCP
+
+The Claude Code + Chrome MCP column isn't automated — Claude Code is an
+interactive IDE tool, not an API. Run it yourself by following the
+instructions in `CLAUDE_CODE_CHROME_BENCHMARK.md` in the benchmark repo.
+The prompt is self-contained: install Chrome MCP, iterate tasks, time
+each one, write results in the same format as the automated adapters,
+run the judge.
+
+## Raw data
+
+Every run's raw per-task JSON + judge file is pushed to the public
+repo so you can audit any specific result. See
+[browser-agents-benchmark](https://github.com/predotdev/browser-agents-benchmark).

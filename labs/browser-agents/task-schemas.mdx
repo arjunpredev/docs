@@ -1,0 +1,200 @@
+---
+title: "Task + Schema Patterns"
+description: "Every common task shape as a copy-paste example."
+agent_hint: "Pick the pattern that matches your use case, swap the fields."
+---
+
+## Simple extraction (most common)
+
+> Get the page title.
+
+```json
+{
+  "url": "https://example.com",
+  "instruction": "Extract the page heading.",
+  "output": {
+    "type": "object",
+    "properties": { "heading": { "type": "string" } },
+    "required": ["heading"]
+  }
+}
+```
+
+## Array extraction with count
+
+> Get the top 5 stories.
+
+```json
+{
+  "url": "https://news.ycombinator.com",
+  "instruction": "Extract the top 5 story titles and points.",
+  "output": {
+    "type": "object",
+    "properties": {
+      "stories": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "points": { "type": "number" }
+          },
+          "required": ["title", "points"]
+        }
+      }
+    },
+    "required": ["stories"]
+  }
+}
+```
+
+The planner enforces counts extracted from the instruction (`top 5`, `3
+methods`, `first ten`). Over-extraction is truncated; under-extraction
+triggers a retry with the stronger fallback model.
+
+## Navigation + extraction
+
+> Click into a category, then extract.
+
+```json
+{
+  "url": "https://books.toscrape.com",
+  "instruction": "Click the Science sidebar link, then extract the first 3 book titles and prices on that page.",
+  "output": {
+    "type": "object",
+    "properties": {
+      "books": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "price": { "type": "string" }
+          },
+          "required": ["title", "price"]
+        }
+      }
+    },
+    "required": ["books"]
+  }
+}
+```
+
+The planner verifies the URL actually changed before extracting.
+
+## Form fill + submit
+
+> Submit a contact form.
+
+```json
+{
+  "url": "https://example.com/contact",
+  "instruction": "Fill the form and click submit.",
+  "input": {
+    "name": "Alice Nguyen",
+    "email": "alice@example.com",
+    "company": "Example Co",
+    "message": "Hi, interested in a demo."
+  },
+  "output": {
+    "type": "object",
+    "properties": { "submitted": { "type": "boolean" } },
+    "required": ["submitted"]
+  }
+}
+```
+
+Field names in `input` are matched against visible form labels + `name`
+attributes. Missing fields are left blank rather than filled with
+fabricated data.
+
+## Login + scrape
+
+> Log in, then extract from the post-login page.
+
+```json
+{
+  "url": "https://quotes.toscrape.com/login",
+  "instruction": "Log in with the given credentials, then go to the homepage and extract the first 3 quote texts.",
+  "input": { "username": "user", "password": "user" },
+  "output": {
+    "type": "object",
+    "properties": {
+      "quotes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": { "text": { "type": "string" } }
+        }
+      }
+    }
+  }
+}
+```
+
+**Coming soon:** `profile` + `saveProfile` fields so you can persist
+the logged-in session and skip the login step on subsequent tasks.
+See the session-profiles plan for status.
+
+## Search, click first result, extract
+
+> Search Wikipedia, extract from the result page.
+
+```json
+{
+  "url": "https://en.wikipedia.org/wiki/Main_Page",
+  "instruction": "Search for \"Rust (programming language)\", click the top result, extract the year it was designed.",
+  "output": {
+    "type": "object",
+    "properties": { "designedYear": { "type": "number" } },
+    "required": ["designedYear"]
+  }
+}
+```
+
+## Action-only (no data extraction)
+
+> Just submit a form; no response data needed.
+
+```json
+{
+  "url": "https://example.com/form",
+  "instruction": "Fill the form using the input and click submit.",
+  "input": { "name": "Alice", "email": "alice@example.com" }
+}
+```
+
+Leave `output` unset; you get back `status: SUCCESS` and no `data`.
+
+## CAPTCHA handling
+
+CAPTCHAs are auto-solved when visible — reCAPTCHA v2 and Cloudflare
+Turnstile are supported via CapSolver. If a solve fails, the task
+returns `status: CAPTCHA_FAILED` and your code can retry on a fresh
+sandbox.
+
+## Task-level timeout
+
+```json
+{
+  "url": "...",
+  "instruction": "...",
+  "timeoutMs": 120000
+}
+```
+
+Default is 240_000 (4 min). Long multi-step flows should raise this;
+simple extractions can leave it at default.
+
+## Success condition
+
+For flows where the planner can't tell when "done" from the schema
+alone:
+
+```json
+{
+  "successCondition": "The page shows a 'thank you' confirmation message."
+}
+```
+
+The planner uses this to know when to stop acting and finalize.

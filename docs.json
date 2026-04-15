@@ -26,6 +26,27 @@
 	"navigation": {
 		"tabs": [
 			{
+				"tab": "Labs",
+				"groups": [
+					{
+						"group": "Overview",
+						"pages": ["labs/overview"]
+					},
+					{
+						"group": "Browser Agents",
+						"pages": [
+							"labs/browser-agents/overview",
+							"labs/browser-agents/quickstart",
+							"labs/browser-agents/rest-api",
+							"labs/browser-agents/mcp-tool",
+							"labs/browser-agents/task-schemas",
+							"labs/browser-agents/benchmarks",
+							"labs/browser-agents/pricing"
+						]
+					}
+				]
+			},
+			{
 				"tab": "Platform",
 				"groups": [
 					{
