@@ -46,16 +46,18 @@ wall time on a warm sandbox.
 
 | | Browser Agents | Browser Use Cloud | Firecrawl Interact | Claude Code + Chrome |
 |---|---|---|---|---|
-| Pass rate on 101 tasks | **99** | 99 | ~70 | interactive only |
-| Quality (LLM judge, 0-100) | **78.6** | 75.1 | 62.5 | [varies] |
-| $ / passing task | **~$0.011** | ~$0.126 | ~$0.04 | per-session |
-| Concurrency | **1,200** | limited | limited | 1 at a time |
+| Pass rate on 101 tasks | **100/101** | 88/101 | 84/101 | interactive only |
+| Quality (LLM judge, 0-100) | **79.9** | 72.2 | 71.0 | [varies] |
+| Wins (out of 101 judged) | **70** | 60 | 66 | self-reported |
+| $ / passing task | **$0.010** | $0.126 | $0.0092 | per-session |
+| Concurrency | **1,200** | limited | 50/account | 1 at a time |
 | Packaging | REST + MCP + SDK | REST | REST | IDE tool |
 | Agent-friendly | ✓ | ✓ | ✓ | requires setup |
 
-Full methodology and raw results: see the
-[Benchmarks page](/labs/browser-agents/benchmarks) or the public
-[browser-agents-benchmark repo](https://github.com/predotdev/browser-agents-benchmark).
+> Numbers from run `2026-04-15T15-40-08` — all 101 tasks, uniform LLM
+> judge scoring anonymized answers against freshly-fetched ground-truth
+> page text. Fully reproducible from the public
+> [browser-agents-benchmark repo](https://github.com/predotdev/browser-agents-benchmark).
 
 ## Next
 

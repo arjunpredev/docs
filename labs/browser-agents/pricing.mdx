@@ -43,12 +43,20 @@ Billed: $0.01 (floor). Effective margin: ~9×.
 
 ## Comparison
 
-| Provider | Model | Typical $/task |
+Measured $/passing-task on the full 101-task benchmark
+(`2026-04-15T15-40-08`):
+
+| Provider | Billing model | $ / passing task |
 |---|---|---|
-| **Browser Agents** | per-task, $0.01 floor | **$0.011** |
-| Browser Use Cloud | per-request | ~$0.126 |
-| Firecrawl Interact | 7 credits/min (~$0.007/min) | ~$0.03 for 20s, ~$0.12 for 4min |
-| Firecrawl Scrape (no actions) | 1 credit/scrape | $0.005-0.02 |
+| **Browser Agents** | per-task, $0.01 floor | **$0.010** |
+| Browser Use Cloud | per-request | $0.126 |
+| Firecrawl Interact | 7 credits/min + 1 credit/scrape | $0.0092 |
+| Firecrawl Scrape (no actions) | 1 credit/scrape | $0.0057 |
+
+Browser Use Cloud is **12.6× more expensive per passing task** than
+Browser Agents. Firecrawl Interact is slightly cheaper per-task but
+its pass rate is 16 tasks lower and it hits per-account concurrency
+caps at real load.
 
 ## Volume
 

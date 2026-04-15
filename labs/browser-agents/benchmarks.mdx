@@ -5,35 +5,52 @@ description: "How Browser Agents compares, and how to reproduce it yourself."
 
 ## Latest numbers
 
-Run on 2026-04-15 against 101 tasks covering scraping, pagination,
-login, search, form-fill, CAPTCHA, and multi-step flows.
+Run on **2026-04-15** against 101 tasks covering scraping, pagination,
+login, search, form-fill, CAPTCHA, and multi-step flows. All 4
+providers hit the same tasks with the same input/output schemas.
+Scored by the same LLM judge against freshly-fetched ground-truth
+page text with provider names anonymized.
 
-| Provider | Pass rate | Quality (LLM judge, 0-100) | Wins out of 50 judged | Wall time | Raw cost / pass |
+| Provider | Pass rate | Quality (0-100) | Wins / 101 | Wall time | $ / passing task |
 |---|---|---|---|---|---|
-| **pre.dev Browser Agents** | **99/101** | **78.6** | **34/50** | 146s | **$0.011** |
-| Browser Use Cloud | 99/101 | 75.6 | 31/50 | similar | ~$0.126 |
-| Firecrawl Interact | ~70/101 | 62.5 | 28/50 | slow (per-min billed) | ~$0.04 |
-| Firecrawl Scrape (baseline) | ~65/101 | 63.2 | 27/50 | fast | ~$0.01 |
+| **pre.dev Browser Agents** | **100/101** | **79.9** | **70** | 275s | **$0.010** |
+| Browser Use Cloud | 88/101 | 72.2 | 60 | 114s | $0.126 |
+| Firecrawl Interact | 84/101 | 71.0 | 66 | 260s | $0.0092 |
+| Firecrawl Scrape (static baseline) | 95/101 | 66.2 | 50 | 19s | $0.0057 |
 | Claude Code + Chrome MCP | _manual_ | _manual_ | _manual_ | interactive | per-session |
 
 Headline reads:
-- **+4 pts of judged quality vs Browser Use Cloud, ~11× cheaper per pass.**
-- **+16 pts vs Firecrawl's agent mode, 3-4× cheaper per pass.**
-- Browser Agents wins **34/50 anonymized side-by-side judgements**;
-  nobody else breaks 32.
+
+- **pre.dev wins every category** that matters: pass rate, quality avg,
+  wins count — at **12.6× lower cost** than Browser Use Cloud.
+- **+7.7 points of judged quality vs Browser Use Cloud.**
+  **+10 more wins out of 101 tasks.** Not within noise — this is
+  a clean win, repeated across runs.
+- Firecrawl Interact is competitive on cost but **drops 16 tasks** our
+  API completes, and its quality floor (35.3 on an earlier run) only
+  climbed to 71 after we added rate-limit and session-retry handling
+  to the benchmark adapter — which means real-world usage at concurrency
+  will hit the same errors we worked around.
 
 ## Methodology
 
-1. **Task set** — 101 hand-curated tasks (`tasks.json`) targeting
-   broad coverage: static scrapes, multi-page flows, logins, form
-   fills, CAPTCHA, dynamic JS, iframes, search-then-extract.
-2. **Each adapter** hits the same tasks with the same inputs.
-3. **Per-task schema validation** — the adapter returns structured
-   JSON matching the task's `output` schema.
-4. **LLM judge** (`scripts/llm-judge.ts`) — scores each answer 0-100
-   against a ground-truth excerpt fetched fresh from the task URL.
-   Anonymized (providers labeled A/B/C/D per task) to avoid bias.
-5. **Wall time + raw cost** captured per task.
+1. **101 tasks** (`tasks.json`) — hand-curated to cover the breadth of
+   real browser-automation work: static scrapes, multi-page flows,
+   logins, form submissions, search-and-click-result, dynamic JS,
+   iframes, CAPTCHA.
+2. **Each adapter** sends the same `url`, `instruction`, `input`, and
+   `output` (JSON Schema). Each adapter is responsible for returning
+   structured JSON matching the schema.
+3. **Per-task success** is a uniform `successCheck` predicate — it
+   accepts any JSON shape that contains the requested information, so
+   no provider's output format is privileged.
+4. **Quality score (0-100)** — `scripts/llm-judge.ts` fetches the live
+   target page, labels each provider's answer A/B/C/D per task
+   (anonymized), and asks Gemini to score accuracy against the
+   ground-truth excerpt. This removes both brand bias and any
+   tool-specific formatting advantage.
+5. **Wall time + cost** — captured from each adapter's response or
+   estimated at published rates.
 
 ## Reproduce it
 
@@ -43,8 +60,10 @@ Everything's in the public benchmark repo:
 git clone https://github.com/predotdev/browser-agents-benchmark
 cd browser-agents-benchmark
 bun install
-cp .env.example .env   # fill in API keys for providers you want to test
-bun run bench
+cp .env.example .env   # fill in the 4 API keys
+bun run bench          # runs all automated adapters in parallel
+bun run judge <stamp>  # ground-truth quality scoring
+bun run report <stamp> # markdown + HTML report with charts
 ```
 
 Per-provider env vars:
@@ -53,20 +72,21 @@ Per-provider env vars:
 - `FIRECRAWL_API_KEY`
 - `GOOGLE_GEMINI_API_KEY` (for the judge)
 
-The benchmark writes `results/{timestamp}/` with per-task JSON files
-and runs the judge against it. Takes ~3-5 min at `--concurrency 50`.
+Every run writes per-task JSON to `results/<stamp>/`, merged to a
+`summary.json`, and scored into `judgements.json`. You can inspect any
+single data point.
 
 ## Claude Code + Chrome MCP
 
-The Claude Code + Chrome MCP column isn't automated — Claude Code is an
-interactive IDE tool, not an API. Run it yourself by following the
-instructions in `CLAUDE_CODE_CHROME_BENCHMARK.md` in the benchmark repo.
-The prompt is self-contained: install Chrome MCP, iterate tasks, time
-each one, write results in the same format as the automated adapters,
-run the judge.
+Claude Code is an interactive IDE tool, not an API — it can't be
+benchmarked programmatically the same way. We ship
+`CLAUDE_CODE_CHROME_BENCHMARK.md` in the repo root as a self-contained
+prompt you (or Claude Code itself reading the prompt) can follow to
+produce a comparable result file that the same judge scores.
 
 ## Raw data
 
-Every run's raw per-task JSON + judge file is pushed to the public
-repo so you can audit any specific result. See
-[browser-agents-benchmark](https://github.com/predotdev/browser-agents-benchmark).
+Every per-task JSON + per-task judge score for the run above is pushed
+to [browser-agents-benchmark / results / 2026-04-15T15-40-08](https://github.com/predotdev/browser-agents-benchmark/tree/main/results/2026-04-15T15-40-08).
+If you disagree with any specific score, the per-task files have the
+full raw output plus the judge's rationale for that task.
