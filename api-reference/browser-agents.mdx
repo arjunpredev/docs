@@ -1,5 +1,5 @@
 ---
-title: 'Browser Tasks'
+title: 'Browser Agents'
 description: 'Run browser automation tasks — navigate, interact, and extract data from any web page.'
 ---
 
@@ -15,11 +15,11 @@ Run one or more browser automation tasks from a single API call. Pass a URL, opt
 
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/api/v1/browser-tasks` | Run one or more tasks |
-| `GET` | `/api/v1/browser-tasks` | List previous batches |
-| `GET` | `/api/v1/browser-tasks/:id` | Get a single batch (works mid-flight) |
+| `POST` | `/api/v1/browser-agents` | Run one or more tasks |
+| `GET` | `/api/v1/browser-agents` | List previous batches |
+| `GET` | `/api/v1/browser-agents/:id` | Get a single batch (works mid-flight) |
 
-## POST /api/v1/browser-tasks
+## POST /api/v1/browser-agents (was /browser-tasks, still works as alias)
 
 Run one or more browser automation tasks. Always pass an array of tasks (single task = array of 1).
 
@@ -96,7 +96,7 @@ Event types:
 | `error` | Fatal error |
 
 ```bash cURL
-curl -N -X POST https://api.pre.dev/api/v1/browser-tasks \
+curl -N -X POST https://api.pre.dev/api/v1/browser-agents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"tasks":[{"url":"https://example.com","output":{"type":"object","properties":{"heading":{"type":"string"}}}}],"stream":true}'
@@ -104,7 +104,7 @@ curl -N -X POST https://api.pre.dev/api/v1/browser-tasks \
 
 #### 3. Async (`async: true`)
 
-Returns a batch ID immediately. Poll `GET /api/v1/browser-tasks/:id` to track progress. Use for long-running batches or when you want to poll instead of holding a connection.
+Returns a batch ID immediately. Poll `GET /api/v1/browser-agents/:id` to track progress. Use for long-running batches or when you want to poll instead of holding a connection.
 
 ```json
 // POST response (returned in <100ms)
@@ -117,9 +117,9 @@ Returns a batch ID immediately. Poll `GET /api/v1/browser-tasks/:id` to track pr
 }
 ```
 
-Then poll `GET /api/v1/browser-tasks/batch_abc123` — `completed` increments as tasks finish, `results` array grows.
+Then poll `GET /api/v1/browser-agents/batch_abc123` — `completed` increments as tasks finish, `results` array grows.
 
-## GET /api/v1/browser-tasks
+## GET /api/v1/browser-agents
 
 List previous batches (sorted by most recent first).
 
@@ -143,7 +143,7 @@ List previous batches (sorted by most recent first).
 }
 ```
 
-## GET /api/v1/browser-tasks/:id
+## GET /api/v1/browser-agents/:id
 
 Get a specific batch by ID. **Works for both in-progress and completed batches** — poll this while running an `async: true` batch to watch progress.
 
@@ -223,7 +223,7 @@ The `tasks` array supports four shapes depending on which fields you set:
 
 ```bash cURL
 # Simple scrape
-curl -X POST https://api.pre.dev/api/v1/browser-tasks \
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -284,7 +284,7 @@ for await (const msg of client.browserTasks([...], { stream: true })) {
 // Async mode: returns ID immediately, poll for progress
 const { id } = await client.browserTasks([...], { async: true });
 while (true) {
-  const state = await client.getBrowserTasks(id);
+  const state = await client.getBrowserAgents(id);
   console.log(`${state.completed}/${state.total}`);
   if (state.status === 'completed') break;
   await new Promise(r => setTimeout(r, 1000));
@@ -297,7 +297,7 @@ from predev_api import PredevAPI
 client = PredevAPI(api_key="YOUR_API_KEY")
 
 # Sync mode
-result = client.browser_tasks([
+result = client.browser_agents([
     {
         "url": "https://news.ycombinator.com",
         "instruction": "Extract the top 5 stories",
@@ -322,17 +322,17 @@ for story in result["results"][0]["data"]["stories"]:
     print(f"{story['title']} ({story['points']} pts)")
 
 # Stream mode
-for msg in client.browser_tasks([...], stream=True):
+for msg in client.browser_agents([...], stream=True):
     if msg["event"] == "task_event":
         print(f"[{msg['data']['type']}]", msg["data"].get("data"))
     elif msg["event"] == "done":
         print("Credits:", msg["data"]["totalCreditsUsed"])
 
 # Async mode: returns ID immediately, poll for progress
-r = client.browser_tasks([...], run_async=True)
+r = client.browser_agents([...], run_async=True)
 batch_id = r["id"]
 while True:
-    state = client.get_browser_tasks(batch_id)
+    state = client.get_browser_agents(batch_id)
     print(f"{state['completed']}/{state['total']}")
     if state["status"] == "completed":
         break
@@ -384,7 +384,7 @@ console.log(`Total cost: ${result.totalCreditsUsed} credits`);
 Every task persists a full execution timeline — navigation, screenshots, LLM plans, actions, validations. Retrieve with `includeEvents=true` to audit or replay:
 
 ```typescript
-const details = await client.getBrowserTasks(batchId, { includeEvents: true });
+const details = await client.getBrowserAgents(batchId, { includeEvents: true });
 for (const ev of details.results[0].events) {
   if (ev.type === 'screenshot') fs.writeFileSync(`iter${ev.iteration}.jpg`, Buffer.from(ev.data.base64, 'base64'));
   if (ev.type === 'plan') console.log(`LLM plan: ${ev.data.notes}`);
