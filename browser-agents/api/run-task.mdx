@@ -26,7 +26,6 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 |---|---|---|
 | `Authorization` | ✅ | `Bearer YOUR_API_KEY` |
 | `Content-Type` | ✅ | `application/json` |
-| `Idempotency-Key` | ❌ | Deduplicates retries for this `(user, key)` pair within 24h. Returns the original run instead of creating a duplicate. |
 
 ## Request Body
 
@@ -36,7 +35,6 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 | `concurrency` | `integer` | ❌ | Parallel workers within this run. `1`–`20`. Default `5`. |
 | `async` | `boolean` | ❌ | If `true`, returns `{ id, status: "processing" }` immediately. Poll [`GET /:id`](/browser-agents/api/task-status). Default `false`. |
 | `stream` | `boolean` | ❌ | If `true`, returns an SSE stream with per-step events + final results. Default `false`. Mutually exclusive with `async`. |
-| `idempotencyKey` | `string` | ❌ | Body-level alternative to the `Idempotency-Key` header. |
 
 ### `Task` object
 
@@ -224,20 +222,6 @@ If a pod is already serving its SSE cap (`5000` concurrent streams), new stream 
 | `402` | Insufficient credits. [Top up](https://pre.dev/billing). |
 | `429` | User's in-flight queue depth exceeded. Retry later or reduce concurrency. |
 | `503` | SSE capacity exceeded on this pod. Retry with `async: true` and poll. |
-
-## Idempotency
-
-Network retries can cause duplicate submissions. Pass an `Idempotency-Key` (header or body) to ensure the same key within 24h returns the original run — you won't be double-charged.
-
-```bash
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
-  -H "Authorization: Bearer $PREDEV_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: import-run-2026-04-15-042" \
-  -d '{ "tasks": [{ "url": "https://example.com", "instruction": "Extract the heading." }] }'
-```
-
-Keys are scoped per API-key owner. Use a key that uniquely identifies the *intent* of the submission (e.g., a DB row id, a job id), not a random UUID regenerated on retry.
 
 ## Code Examples
 
@@ -458,7 +442,6 @@ interface BatchRequest {
   concurrency?: number;
   async?: boolean;
   stream?: boolean;
-  idempotencyKey?: string;
 }
 
 export class BrowserAgents {
@@ -471,10 +454,8 @@ export class BrowserAgents {
     };
   }
 
-  async run(req: BatchRequest, idempotencyKey?: string): Promise<BatchResult> {
-    const headers: Record<string, string> = this.headers();
-    if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
-    const res = await fetch(this.base, { method: "POST", headers, body: JSON.stringify(req) });
+  async run(req: BatchRequest): Promise<BatchResult> {
+    const res = await fetch(this.base, { method: "POST", headers: this.headers(), body: JSON.stringify(req) });
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
     return res.json();
   }

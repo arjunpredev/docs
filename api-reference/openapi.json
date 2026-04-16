@@ -729,18 +729,8 @@
           "Batches"
         ],
         "summary": "Run one or more browser tasks",
-        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 5000 in-flight tasks per user.\n\nIdempotency: pass an `Idempotency-Key` header (or `idempotencyKey` in the body) to deduplicate retries.",
-        "parameters": [
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Deduplicates retries for the same (user, key) pair."
-          }
-        ],
+        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 5000 in-flight tasks per user.",
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -2034,10 +2024,6 @@
             "type": "boolean",
             "default": false,
             "description": "If true, returns an SSE stream with `task_event`, `task_result`, `done`, and `error` frames."
-          },
-          "idempotencyKey": {
-            "type": "string",
-            "description": "Alternative to the `Idempotency-Key` header. Retries with the same key within TTL return the original batch."
           }
         }
       },
