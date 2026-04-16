@@ -1,0 +1,91 @@
+---
+title: "Architect Agent"
+description: "The planning brain for your coding agent. API + MCP."
+---
+
+The **Architect Agent** is pre.dev's core planning engine, exposed as a standalone API and MCP server. Drop it into Cursor, Claude Code, Lovable, Bolt, or your own tooling — and any coding agent suddenly plans complex builds like a senior architect.
+
+<Note>
+  **If the Coding Agent is "pre.dev builds your app," the Architect Agent is "your coding agent plans like pre.dev."**
+</Note>
+
+## Lifecycle
+
+<CardGroup cols={3}>
+  <Card title="1. Describe" icon="pen-to-square">
+    Send one natural-language prompt describing what you want built. Optionally attach context IDs from previous specs, docs URLs, or uploaded files.
+  </Card>
+  <Card title="2. Plan" icon="compass">
+    The Architect returns a structured spec: tech stack, system design, milestones, user stories, acceptance criteria, and (with Deep Spec) granular subtasks.
+  </Card>
+  <Card title="3. Hand off" icon="arrow-right-to-bracket">
+    Feed the spec to your coding agent. It now has the architectural context to build multi-file systems correctly on the first try.
+  </Card>
+</CardGroup>
+
+<Card title="Call your first spec in 5 minutes" icon="play" href="/architect-agent/quickstart">
+  One `curl`, one API key — or install the MCP server into your editor.
+</Card>
+
+## Two ways to call it
+
+<CardGroup cols={2}>
+  <Card title="REST API" icon="code" href="/architect-agent/api/fast-spec">
+    `POST https://api.pre.dev/fast-spec` or `/deep-spec` with a Bearer token. Sync or async. Perfect for CI/CD, custom tooling, or SDK-based workflows.
+  </Card>
+  <Card title="MCP Server" icon="plug" href="/architect-agent/mcp-setup">
+    `https://api.pre.dev/mcp` — one-click install into Cursor, Claude Code, VS Code, or Windsurf. Your agent calls `fast_spec` / `deep_spec` as tools.
+  </Card>
+</CardGroup>
+
+## When to use which
+
+| Use Case | Recommended |
+|----------|-------------|
+| Generate specs inside Cursor / Claude Code / Windsurf | **MCP Server** |
+| One-off spec for a feature you'll build manually | **MCP Server** |
+| Integrate spec generation into CI/CD | **REST API** |
+| Build custom tooling on top of pre.dev | **REST API + SDKs** |
+| Already using pre.dev's web app to build full projects | **[Coding Agent](/coding-agent/overview)** instead |
+
+## Endpoints at a glance
+
+- **`POST /fast-spec`** — High-level plan in ~30–60s (~5–10 credits)
+- **`POST /deep-spec`** — Granular subtasks in ~2–5min (~10–50 credits)
+- **`GET /spec-status/:id`** — Poll async generation progress
+- **`GET /list-specs`** — List your generated specs
+- **`GET /find-specs`** — Search specs by content
+- **`GET /credits-balance`** — Check remaining credits
+
+See the full [API Reference](/architect-agent/api/fast-spec) or grab an [SDK](/architect-agent/sdks/overview).
+
+## Quick example
+
+```bash
+curl -X POST https://api.pre.dev/fast-spec \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"input": "Build a task management app with team collaboration"}'
+```
+
+## Explore
+
+| | |
+|---|---|
+| [Quickstart](/architect-agent/quickstart) | Your first spec in under 5 minutes |
+| [MCP Setup](/architect-agent/mcp-setup) | Install into Cursor / Claude Code / VS Code |
+| [Understanding Specs](/coding-agent/specifications/understanding-specs) | What's inside a pre.dev spec |
+| [Fast vs Deep Spec](/coding-agent/specifications/fast-vs-deep) | Which endpoint to pick |
+| [API Reference](/architect-agent/api/fast-spec) | Full endpoint docs |
+| [SDKs](/architect-agent/sdks/overview) | TypeScript and Python |
+
+## Why your coding agent needs it
+
+AI coding agents are powerful, but they struggle with complex, multi-file projects without proper architecture. Standard planning modes (like Cursor Plan) give basic task decomposition but lack deep architectural context, miss implementation details, and don't reason about schemas, API contracts, or system boundaries.
+
+The Architect Agent equips your agent with:
+
+- ✅ **Enterprise-grade architecture** — complete system designs with schemas, contracts, and component hierarchies
+- ✅ **Implementation roadmaps** — sequenced build plans that guide your agent through complex projects
+- ✅ **Technology decisions** — pre-made architectural choices for auth, state, APIs, and more
+- ✅ **Full context** — your agent knows exactly what to build, how, and why

@@ -1,1742 +1,2207 @@
 {
-	"openapi": "3.1.0",
-	"info": {
-		"title": "pre.dev Architect API",
-		"description": "Generate comprehensive software specifications for coding agents. The Architect API helps you create detailed project specifications that AI coding agents can understand and implement.",
-		"version": "1.1.0",
-		"contact": {
-			"name": "pre.dev Support",
-			"url": "https://pre.dev",
-			"email": "support@pre.dev"
-		},
-		"license": {
-			"name": "Proprietary",
-			"url": "https://pre.dev/terms"
-		}
-	},
-	"servers": [
-		{
-			"url": "https://api.pre.dev",
-			"description": "Production API Server"
-		}
-	],
-	"security": [
-		{
-			"apiKeyAuth": []
-		}
-	],
-	"paths": {
-		"/fast-spec": {
-			"post": {
-				"summary": "Generate Fast Spec",
-				"description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~30-40 seconds.",
-				"operationId": "generateFastSpec",
-				"tags": [
-					"Spec Generation"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/SpecRequest"
-							},
-							"examples": {
-								"newProject": {
-									"summary": "New Project",
-									"value": {
-										"input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging"
-									}
-								},
-								"featureAddition": {
-									"summary": "Feature Addition",
-									"value": {
-										"input": "Add a calendar view and Gantt chart visualization",
-										"currentContext": "Existing task management system with list and board views, user auth, and basic team features"
-									}
-								},
-								"asyncRequest": {
-									"summary": "Async Request",
-									"value": {
-										"input": "Build a comprehensive e-commerce platform with inventory management",
-										"async": true
-									}
-								}
-							}
-						},
-						"multipart/form-data": {
-							"schema": {
-								"$ref": "#/components/schemas/FileUploadRequest"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Specification generated successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"oneOf": [
-										{
-											"$ref": "#/components/schemas/SpecResponse"
-										},
-										{
-											"$ref": "#/components/schemas/AsyncResponse"
-										}
-									]
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request - Invalid input parameters",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Unauthorized",
-									"message": "Invalid or missing Authorization header"
-								}
-							}
-						}
-					},
-					"402": {
-						"description": "Payment Required - Insufficient credits",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/InsufficientCreditsError"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Too Many Requests - Rate limit exceeded",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/deep-spec": {
-			"post": {
-				"summary": "Generate Deep Spec",
-				"description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
-				"operationId": "generateDeepSpec",
-				"tags": [
-					"Spec Generation"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/SpecRequest"
-							},
-							"examples": {
-								"enterpriseProject": {
-									"summary": "Enterprise Healthcare Platform",
-									"value": {
-										"input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system"
-									}
-								},
-								"complexFeature": {
-									"summary": "Complex Feature Addition",
-									"value": {
-										"input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
-										"currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices"
-									}
-								},
-								"asyncProcessing": {
-									"summary": "Async Processing",
-									"value": {
-										"input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
-										"async": true
-									}
-								}
-							}
-						},
-						"multipart/form-data": {
-							"schema": {
-								"$ref": "#/components/schemas/FileUploadRequest"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Specification generated successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"oneOf": [
-										{
-											"$ref": "#/components/schemas/SpecResponse"
-										},
-										{
-											"$ref": "#/components/schemas/AsyncResponse"
-										}
-									]
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request - Invalid input parameters",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Unauthorized",
-									"message": "Invalid or missing Authorization header"
-								}
-							}
-						}
-					},
-					"402": {
-						"description": "Payment Required - Insufficient credits",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/InsufficientCreditsError"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden - Subscription required",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Subscription required",
-									"message": "Deep Spec requires Solo Premium or Enterprise subscription"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Too Many Requests - Rate limit exceeded",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/spec-status/{specId}": {
-			"get": {
-				"summary": "Get Spec Status",
-				"description": "Check the status of an asynchronous specification processing request. Use this endpoint to poll for completion when you make an async request (async: true).",
-				"operationId": "getSpecStatus",
-				"tags": [
-					"Status"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"name": "specId",
-						"in": "path",
-						"required": true,
-						"description": "The unique ID returned from an async spec generation request",
-						"schema": {
-							"type": "string",
-							"example": "507f1f77bcf86cd799439011"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Status retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/StatusResponse"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Unauthorized",
-									"message": "Invalid or missing Authorization header"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not Found - Spec ID not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Request not found",
-									"message": "No request found with ID: 507f1f77bcf86cd799439011"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/list-specs": {
-			"get": {
-				"summary": "List Specs",
-				"description": "List all specifications with pagination and filtering. Perfect for displaying user spec history, recent specs, or filtered views. This endpoint is free and does not consume credits.",
-				"operationId": "listSpecs",
-				"tags": [
-					"Spec Management"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"name": "limit",
-						"in": "query",
-						"required": false,
-						"description": "Number of results per page (1-100)",
-						"schema": {
-							"type": "integer",
-							"minimum": 1,
-							"maximum": 100,
-							"default": 20,
-							"example": 20
-						}
-					},
-					{
-						"name": "skip",
-						"in": "query",
-						"required": false,
-						"description": "Number of records to skip for pagination",
-						"schema": {
-							"type": "integer",
-							"minimum": 0,
-							"default": 0,
-							"example": 0
-						}
-					},
-					{
-						"name": "endpoint",
-						"in": "query",
-						"required": false,
-						"description": "Filter by endpoint type",
-						"schema": {
-							"type": "string",
-							"enum": [
-								"fast_spec",
-								"deep_spec"
-							],
-							"example": "fast_spec"
-						}
-					},
-					{
-						"name": "status",
-						"in": "query",
-						"required": false,
-						"description": "Filter by processing status",
-						"schema": {
-							"type": "string",
-							"enum": [
-								"pending",
-								"processing",
-								"completed",
-								"failed"
-							],
-							"example": "completed"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Specs retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ListSpecsResponse"
-								},
-								"examples": {
-									"recentSpecs": {
-										"summary": "Recent Specs",
-										"value": {
-											"specs": [
-												{
-													"_id": "507f1f77bcf86cd799439011",
-													"created": "2024-01-15T14:30:00.000Z",
-													"endpoint": "fast_spec",
-													"input": "Build a SaaS project management tool with team collaboration",
-													"status": "completed",
-													"success": true,
-													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
-													"executionTime": 38500
-												}
-											],
-											"total": 42,
-											"hasMore": true
-										}
-									},
-									"filteredSpecs": {
-										"summary": "Completed Fast Specs",
-										"value": {
-											"specs": [
-												{
-													"_id": "507f1f77bcf86cd799439012",
-													"created": "2024-01-15T12:15:00.000Z",
-													"endpoint": "fast_spec",
-													"input": "Add real-time notifications",
-													"status": "completed",
-													"success": true,
-													"executionTime": 35200
-												}
-											],
-											"total": 15,
-											"hasMore": false
-										}
-									}
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/find-specs": {
-			"get": {
-				"summary": "Find Specs (Search)",
-				"description": "Search for specifications using regex patterns. Perfect for finding specs by keywords, patterns, or complex search criteria. Case-insensitive search. This endpoint is free and does not consume credits.",
-				"operationId": "findSpecs",
-				"tags": [
-					"Spec Management"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"name": "query",
-						"in": "query",
-						"required": true,
-						"description": "REQUIRED - Regex pattern to search (case-insensitive)",
-						"schema": {
-							"type": "string",
-							"example": "payment"
-						}
-					},
-					{
-						"name": "limit",
-						"in": "query",
-						"required": false,
-						"description": "Number of results per page (1-100)",
-						"schema": {
-							"type": "integer",
-							"minimum": 1,
-							"maximum": 100,
-							"default": 20,
-							"example": 20
-						}
-					},
-					{
-						"name": "skip",
-						"in": "query",
-						"required": false,
-						"description": "Number of records to skip for pagination",
-						"schema": {
-							"type": "integer",
-							"minimum": 0,
-							"default": 0,
-							"example": 0
-						}
-					},
-					{
-						"name": "endpoint",
-						"in": "query",
-						"required": false,
-						"description": "Filter by endpoint type",
-						"schema": {
-							"type": "string",
-							"enum": [
-								"fast_spec",
-								"deep_spec"
-							],
-							"example": "fast_spec"
-						}
-					},
-					{
-						"name": "status",
-						"in": "query",
-						"required": false,
-						"description": "Filter by processing status",
-						"schema": {
-							"type": "string",
-							"enum": [
-								"pending",
-								"processing",
-								"completed",
-								"failed"
-							],
-							"example": "completed"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Search results retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ListSpecsResponse"
-								},
-								"examples": {
-									"keywordSearch": {
-										"summary": "Search for 'payment'",
-										"value": {
-											"specs": [
-												{
-													"_id": "507f1f77bcf86cd799439011",
-													"created": "2024-01-15T14:30:00.000Z",
-													"endpoint": "fast_spec",
-													"input": "Build a payment processing system with Stripe integration",
-													"status": "completed",
-													"success": true,
-													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
-												}
-											],
-											"total": 8,
-											"hasMore": false
-										}
-									},
-									"patternSearch": {
-										"summary": "Search for specs starting with 'Build'",
-										"value": {
-											"specs": [
-												{
-													"_id": "507f1f77bcf86cd799439012",
-													"created": "2024-01-15T12:00:00.000Z",
-													"endpoint": "fast_spec",
-													"input": "Build a real-time collaborative whiteboard",
-													"status": "completed",
-													"success": true,
-													"humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-													"codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
-												}
-											],
-											"total": 23,
-											"hasMore": true
-										}
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request - Missing required query parameter",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Bad Request",
-									"message": "Query parameter is required"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/credits-balance": {
-			"get": {
-				"summary": "Get Credits Balance",
-				"description": "Get the remaining prototype credits balance for the authenticated API key holder. This endpoint is free and does not consume credits.",
-				"operationId": "getCreditsBalance",
-				"tags": [
-					"Account"
-				],
-				"security": [
-					{
-						"apiKeyAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Credits balance retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/CreditsBalanceResponse"
-								},
-								"example": {
-									"success": true,
-									"creditsRemaining": 450
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request - Unable to determine user or organization from API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Missing context",
-									"message": "Unable to determine user or organization from API key"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized - Invalid or missing API key",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Unauthorized",
-									"message": "Invalid or missing Authorization header"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"example": {
-									"error": "Failed to retrieve credits balance",
-									"message": "Internal server error"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"components": {
-		"securitySchemes": {
-			"apiKeyAuth": {
-				"type": "http",
-				"scheme": "bearer",
-				"bearerFormat": "API Key",
-				"description": "API key for authentication. Get your API key from https://pre.dev/projects/playground (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise). Use format: Bearer YOUR_API_KEY",
-				"x-default": "YOUR_API_KEY"
-			}
-		},
-		"schemas": {
-			"SpecRequest": {
-				"type": "object",
-				"required": [
-					"input"
-				],
-				"properties": {
-					"input": {
-						"type": "string",
-						"description": "Description of what you want to build or the feature you want to add",
-						"example": "Build a SaaS project management tool with team collaboration and real-time updates"
-					},
-					"currentContext": {
-						"type": "string",
-						"description": "CRITICAL: Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance",
-						"example": "Existing Next.js app with Supabase, has auth, task CRUD, team features"
-					},
-					"docURLs": {
-						"type": "array",
-						"items": {
-							"type": "string",
-							"format": "uri"
-						},
-						"description": "Optional array of documentation URLs that Architect will reference when generating specifications. Each URL is automatically scraped and packaged into downloadable ZIP archives organized by platform",
-						"example": [
-							"https://docs.pre.dev",
-							"https://docs.stripe.com"
-						]
-					},
-					"async": {
-						"type": "boolean",
-						"default": false,
-						"description": "If true, returns immediately with requestId for status polling. If false (default), waits for completion"
-					}
-				}
-			},
-			"FileUploadRequest": {
-				"type": "object",
-				"properties": {
-					"file": {
-						"type": "string",
-						"format": "binary",
-						"description": "Optional file to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with input text"
-					},
-					"input": {
-						"type": "string",
-						"description": "Optional additional text description when using file upload. Can be empty string if using only file"
-					},
-					"docURLs": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "JSON stringified array of documentation URLs"
-					},
-					"async": {
-						"type": "boolean",
-						"default": false
-					}
-				}
-			},
-			"SpecResponse": {
-				"type": "object",
-				"properties": {
-					"endpoint": {
-						"type": "string",
-						"enum": [
-							"fast_spec",
-							"deep_spec"
-						],
-						"description": "Which endpoint was used"
-					},
-					"input": {
-						"type": "string",
-						"description": "Original input text provided"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"completed"
-						],
-						"description": "Completion status"
-					},
-					"success": {
-						"type": "boolean",
-						"description": "Whether the request succeeded"
-					},
-					"humanSpecUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL where the human-readable spec is hosted (downloadable markdown)"
-					},
-					"totalHumanHours": {
-						"type": "number",
-						"description": "Estimated total hours for a human to implement the spec"
-					},
-					"architectureInfographicUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL to a visual architecture infographic/diagram for the specification"
-					},
-					"codingAgentSpecUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL where the coding agent spec format is hosted (downloadable markdown)"
-					},
-					"codingAgentSpecJson": {
-						"$ref": "#/components/schemas/CodingAgentSpecJson",
-						"description": "Structured JSON spec optimized for AI coding assistants (excludes hours, personas, roles)"
-					},
-					"codingAgentSpecMarkdown": {
-						"type": "string",
-						"description": "Markdown spec optimized for AI coding assistants"
-					},
-					"humanSpecJson": {
-						"$ref": "#/components/schemas/HumanSpecJson",
-						"description": "Full structured JSON spec with hours, personas, and roles for human review"
-					},
-					"humanSpecMarkdown": {
-						"type": "string",
-						"description": "Full markdown spec with all details for human review"
-					},
-					"executionTime": {
-						"type": "integer",
-						"description": "Processing time in milliseconds"
-					},
-					"predevUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "pre.dev project URL where you can view and edit the spec"
-					},
-					"zippedDocsUrls": {
-						"type": "array",
-						"description": "Array of scraped documentation archives. Empty array if no docURLs provided or scraping fails. Each object contains platform identifier and download links",
-						"items": {
-							"$ref": "#/components/schemas/ZippedDocsUrl"
-						}
-					},
-					"creditsUsed": {
-						"type": "number",
-						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
-					},
-					"userFlowGraph": {
-						"$ref": "#/components/schemas/SpecGraph",
-						"description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
-					},
-					"architectureGraph": {
-						"$ref": "#/components/schemas/SpecGraph",
-						"description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
-					},
-					"enrichedTechStack": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecEnrichedTechStackItem"
-						},
-						"description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
-					}
-				}
-			},
-			"AsyncResponse": {
-				"type": "object",
-				"required": [
-					"specId",
-					"status"
-				],
-				"properties": {
-					"specId": {
-						"type": "string",
-						"description": "Unique ID to poll for status (use with /api/spec-status/:specId)",
-						"example": "507f1f77bcf86cd799439011"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"pending"
-						],
-						"description": "Initial status"
-					}
-				}
-			},
-			"StatusResponse": {
-				"type": "object",
-				"properties": {
-					"_id": {
-						"type": "string",
-						"description": "MongoDB ObjectId of the spec request"
-					},
-					"created": {
-						"type": "string",
-						"format": "date-time",
-						"description": "ISO timestamp when the request was created"
-					},
-					"endpoint": {
-						"type": "string",
-						"enum": [
-							"fast_spec",
-							"deep_spec"
-						],
-						"description": "Which endpoint was used"
-					},
-					"input": {
-						"type": "string",
-						"description": "Original input text provided"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"pending",
-							"processing",
-							"completed",
-							"failed"
-						],
-						"description": "Current status"
-					},
-					"success": {
-						"type": "boolean",
-						"description": "Whether the request succeeded"
-					},
-					"uploadedFileShortUrl": {
-						"type": "string",
-						"description": "Short URL for uploaded file (if file was uploaded)"
-					},
-					"uploadedFileName": {
-						"type": "string",
-						"description": "Name of uploaded file (if file was uploaded)"
-					},
-					"humanSpecUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL where the human-readable spec is hosted (only when completed)"
-					},
-					"totalHumanHours": {
-						"type": "number",
-						"description": "Estimated total hours for a human to implement the spec (only when completed)"
-					},
-					"architectureInfographicUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
-					},
-					"codingAgentSpecUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "URL where the coding agent spec format is hosted (only when completed)"
-					},
-					"codingAgentSpecJson": {
-						"$ref": "#/components/schemas/CodingAgentSpecJson",
-						"description": "Structured JSON spec optimized for AI coding assistants (only when completed)"
-					},
-					"codingAgentSpecMarkdown": {
-						"type": "string",
-						"description": "Markdown spec optimized for AI coding assistants (only when completed)"
-					},
-					"humanSpecJson": {
-						"$ref": "#/components/schemas/HumanSpecJson",
-						"description": "Full structured JSON spec with hours, personas, and roles (only when completed)"
-					},
-					"humanSpecMarkdown": {
-						"type": "string",
-						"description": "Full markdown spec with all details for human review (only when completed)"
-					},
-					"executionTime": {
-						"type": "integer",
-						"description": "Processing time in milliseconds (only when completed or failed)"
-					},
-					"predevUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "pre.dev project URL (only when completed)"
-					},
-					"zippedDocsUrls": {
-						"type": "array",
-						"description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
-						"items": {
-							"$ref": "#/components/schemas/ZippedDocsUrl"
-						}
-					},
-					"errorMessage": {
-						"type": "string",
-						"description": "Error description (only when failed)"
-					},
-					"progress": {
-						"type": "string",
-						"description": "Human-readable progress description"
-					},
-					"creditsUsed": {
-						"type": "number",
-						"description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
-					},
-					"userFlowGraph": {
-						"$ref": "#/components/schemas/SpecGraph",
-						"description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
-					},
-					"architectureGraph": {
-						"$ref": "#/components/schemas/SpecGraph",
-						"description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
-					},
-					"enrichedTechStack": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecEnrichedTechStackItem"
-						},
-						"description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
-					}
-				}
-			},
-			"Error": {
-				"type": "object",
-				"required": [
-					"error",
-					"message"
-				],
-				"properties": {
-					"error": {
-						"type": "string",
-						"description": "Error type or code"
-					},
-					"message": {
-						"type": "string",
-						"description": "Human-readable error message"
-					}
-				}
-			},
-			"InsufficientCreditsError": {
-				"type": "object",
-				"required": [
-					"error",
-					"message",
-					"generationsAvailable"
-				],
-				"properties": {
-					"error": {
-						"type": "string",
-						"example": "Insufficient credits"
-					},
-					"message": {
-						"type": "string",
-						"example": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan."
-					},
-					"generationsAvailable": {
-						"type": "integer",
-						"description": "Number of credits currently available",
-						"example": 0
-					}
-				}
-			},
-			"ListSpecsResponse": {
-				"type": "object",
-				"required": [
-					"specs",
-					"total",
-					"hasMore"
-				],
-				"properties": {
-					"specs": {
-						"type": "array",
-						"description": "Array of spec objects matching the filters",
-						"items": {
-							"$ref": "#/components/schemas/StatusResponse"
-						}
-					},
-					"total": {
-						"type": "integer",
-						"description": "Total number of specs matching the filters",
-						"example": 42
-					},
-					"hasMore": {
-						"type": "boolean",
-						"description": "Whether more pages are available",
-						"example": true
-					}
-				}
-			},
-			"ZippedDocsUrl": {
-				"type": "object",
-				"required": [
-					"platform",
-					"masterZipShortUrl"
-				],
-				"properties": {
-					"platform": {
-						"type": "string",
-						"description": "Hostname extracted from the documentation URL (e.g., 'stripe.com', 'docs.github.com')",
-						"example": "stripe.com"
-					},
-					"masterZipShortUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "Short URL to download the zipped documentation archive for this platform"
-					},
-					"masterMarkdownShortUrl": {
-						"type": "string",
-						"format": "uri",
-						"description": "Optional short URL to consolidated markdown file for this platform"
-					}
-				}
-			},
-			"SpecCoreFunctionality": {
-				"type": "object",
-				"required": [
-					"name",
-					"description"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"description": "Name of the core functionality"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the functionality"
-					},
-					"priority": {
-						"type": "string",
-						"enum": [
-							"High",
-							"Medium",
-							"Low"
-						],
-						"description": "Priority level of the functionality"
-					}
-				}
-			},
-			"SpecTechStackItem": {
-				"type": "object",
-				"required": [
-					"name",
-					"category"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"description": "Name of the technology"
-					},
-					"category": {
-						"type": "string",
-						"description": "Category of the technology (e.g., Frontend, Backend, Database)"
-					}
-				}
-			},
-			"SpecPersona": {
-				"type": "object",
-				"required": [
-					"title",
-					"description"
-				],
-				"properties": {
-					"title": {
-						"type": "string",
-						"description": "Title of the persona"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the persona"
-					},
-					"primaryGoals": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "Primary goals of the persona"
-					},
-					"painPoints": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "Pain points of the persona"
-					},
-					"keyTasks": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "Key tasks of the persona"
-					}
-				}
-			},
-			"SpecRole": {
-				"type": "object",
-				"required": [
-					"name",
-					"shortHand"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"description": "Full name of the role (e.g., Full Stack Developer)"
-					},
-					"shortHand": {
-						"type": "string",
-						"description": "Short abbreviation for the role (e.g., FSD)"
-					}
-				}
-			},
-			"CodingAgentSubTask": {
-				"type": "object",
-				"required": [
-					"description",
-					"complexity"
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Subtask identifier"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the subtask"
-					},
-					"complexity": {
-						"type": "string",
-						"enum": [
-							"S",
-							"M",
-							"L",
-							"XL"
-						],
-						"description": "Complexity estimate"
-					}
-				}
-			},
-			"CodingAgentStory": {
-				"type": "object",
-				"required": [
-					"title",
-					"subTasks"
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Story identifier (e.g., US-001)"
-					},
-					"title": {
-						"type": "string",
-						"description": "Title of the user story"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the user story"
-					},
-					"acceptanceCriteria": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "List of acceptance criteria"
-					},
-					"complexity": {
-						"type": "string",
-						"description": "Complexity estimate for the story"
-					},
-					"subTasks": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/CodingAgentSubTask"
-						},
-						"description": "List of subtasks for this story"
-					}
-				}
-			},
-			"CodingAgentMilestone": {
-				"type": "object",
-				"required": [
-					"milestoneNumber",
-					"description",
-					"stories"
-				],
-				"properties": {
-					"milestoneNumber": {
-						"type": "integer",
-						"description": "Milestone number"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the milestone"
-					},
-					"stories": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/CodingAgentStory"
-						},
-						"description": "List of user stories in this milestone"
-					}
-				}
-			},
-			"CodingAgentSpecJson": {
-				"type": "object",
-				"required": [
-					"executiveSummary",
-					"coreFunctionalities",
-					"techStack",
-					"milestones"
-				],
-				"description": "Simplified structured JSON for AI coding tools (excludes hours, personas, roles)",
-				"properties": {
-					"title": {
-						"type": "string",
-						"description": "Title of the specification"
-					},
-					"executiveSummary": {
-						"type": "string",
-						"description": "Executive summary of the project"
-					},
-					"coreFunctionalities": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecCoreFunctionality"
-						},
-						"description": "List of core functionalities"
-					},
-					"techStack": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecTechStackItem"
-						},
-						"description": "Technology stack items"
-					},
-					"techStackGrouped": {
-						"type": "object",
-						"additionalProperties": {
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						},
-						"description": "Technology stack grouped by category"
-					},
-					"milestones": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/CodingAgentMilestone"
-						},
-						"description": "List of milestones"
-					}
-				}
-			},
-			"HumanSpecSubTask": {
-				"type": "object",
-				"required": [
-					"description",
-					"hours",
-					"complexity"
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Subtask identifier"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the subtask"
-					},
-					"hours": {
-						"type": "number",
-						"description": "Estimated hours for this subtask"
-					},
-					"complexity": {
-						"type": "string",
-						"description": "Complexity estimate"
-					},
-					"roles": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecRole"
-						},
-						"description": "Roles assigned to this subtask"
-					}
-				}
-			},
-			"HumanSpecStory": {
-				"type": "object",
-				"required": [
-					"title",
-					"hours",
-					"subTasks"
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Story identifier (e.g., US-001)"
-					},
-					"title": {
-						"type": "string",
-						"description": "Title of the user story"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the user story"
-					},
-					"acceptanceCriteria": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						},
-						"description": "List of acceptance criteria"
-					},
-					"hours": {
-						"type": "number",
-						"description": "Estimated hours for this story"
-					},
-					"complexity": {
-						"type": "string",
-						"description": "Complexity estimate for the story"
-					},
-					"subTasks": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/HumanSpecSubTask"
-						},
-						"description": "List of subtasks for this story"
-					}
-				}
-			},
-			"HumanSpecMilestone": {
-				"type": "object",
-				"required": [
-					"milestoneNumber",
-					"description",
-					"hours",
-					"stories"
-				],
-				"properties": {
-					"milestoneNumber": {
-						"type": "integer",
-						"description": "Milestone number"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the milestone"
-					},
-					"hours": {
-						"type": "number",
-						"description": "Estimated hours for this milestone"
-					},
-					"stories": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/HumanSpecStory"
-						},
-						"description": "List of user stories in this milestone"
-					}
-				}
-			},
-			"HumanSpecJson": {
-				"type": "object",
-				"required": [
-					"executiveSummary",
-					"coreFunctionalities",
-					"personas",
-					"techStack",
-					"milestones",
-					"totalHours",
-					"roles"
-				],
-				"description": "Full structured JSON with hours, personas, and roles for human review",
-				"properties": {
-					"title": {
-						"type": "string",
-						"description": "Title of the specification"
-					},
-					"executiveSummary": {
-						"type": "string",
-						"description": "Executive summary of the project"
-					},
-					"coreFunctionalities": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecCoreFunctionality"
-						},
-						"description": "List of core functionalities"
-					},
-					"personas": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecPersona"
-						},
-						"description": "User personas"
-					},
-					"techStack": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecTechStackItem"
-						},
-						"description": "Technology stack items"
-					},
-					"techStackGrouped": {
-						"type": "object",
-						"additionalProperties": {
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						},
-						"description": "Technology stack grouped by category"
-					},
-					"milestones": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/HumanSpecMilestone"
-						},
-						"description": "List of milestones with hours"
-					},
-					"totalHours": {
-						"type": "number",
-						"description": "Total estimated hours for the project"
-					},
-					"roles": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecRole"
-						},
-						"description": "Roles required for the project"
-					}
-				}
-			},
-			"CreditsBalanceResponse": {
-				"type": "object",
-				"required": [
-					"success",
-					"creditsRemaining"
-				],
-				"properties": {
-					"success": {
-						"type": "boolean",
-						"description": "Whether the request was successful"
-					},
-					"creditsRemaining": {
-						"type": "integer",
-						"description": "The number of remaining credits available for the user"
-					}
-				}
-			},
-			"SpecGraphNode": {
-				"type": "object",
-				"required": [
-					"id",
-					"label"
-				],
-				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Unique identifier for the node"
-					},
-					"label": {
-						"type": "string",
-						"description": "Display label for the node"
-					},
-					"type": {
-						"type": "string",
-						"description": "Node type category. For architectureGraph: \"frontend\", \"api-services\", \"databases\", or \"external-services\". For userFlowGraph: \"flow\", \"role\", etc."
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the node"
-					},
-					"level": {
-						"type": "number",
-						"description": "Graph depth level (1, 2, 3...) for userFlowGraph nodes. Not present on architectureGraph nodes."
-					},
-					"hours": {
-						"type": "number",
-						"description": "Estimated hours for this node"
-					}
-				}
-			},
-			"SpecGraphEdge": {
-				"type": "object",
-				"required": [
-					"source",
-					"target"
-				],
-				"properties": {
-					"source": {
-						"type": "string",
-						"description": "Source node ID"
-					},
-					"target": {
-						"type": "string",
-						"description": "Target node ID"
-					},
-					"description": {
-						"type": "string",
-						"description": "Description of the relationship"
-					},
-					"edgeType": {
-						"type": "string",
-						"description": "Type of edge relationship"
-					}
-				}
-			},
-			"SpecGraph": {
-				"type": "object",
-				"required": [
-					"nodes",
-					"edges"
-				],
-				"properties": {
-					"nodes": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecGraphNode"
-						},
-						"description": "Array of graph nodes"
-					},
-					"edges": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/SpecGraphEdge"
-						},
-						"description": "Array of graph edges"
-					}
-				}
-			},
-			"SpecEnrichedTechStackItem": {
-				"type": "object",
-				"required": [
-					"name",
-					"useFor",
-					"reason",
-					"description"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"description": "Name of the technology (e.g., React, PostgreSQL)"
-					},
-					"useFor": {
-						"type": "string",
-						"description": "Category label (e.g., Frontend, Backend, Database)"
-					},
-					"reason": {
-						"type": "string",
-						"description": "Why this technology was chosen for this specific project"
-					},
-					"description": {
-						"type": "string",
-						"description": "Technical description of what the technology does"
-					},
-					"link": {
-						"type": "string",
-						"format": "uri",
-						"description": "Official website or documentation URL"
-					},
-					"helpfulLinks": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"url": {
-									"type": "string",
-									"format": "uri",
-									"description": "URL to helpful resource"
-								},
-								"description": {
-									"type": "string",
-									"description": "Description of the resource"
-								}
-							}
-						},
-						"description": "Array of helpful documentation and tutorial links"
-					},
-					"alternatives": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"name": {
-									"type": "string",
-									"description": "Name of the alternative technology"
-								},
-								"link": {
-									"type": "string",
-									"format": "uri",
-									"description": "URL of the alternative technology"
-								},
-								"description": {
-									"type": "string",
-									"description": "Description of the alternative"
-								}
-							}
-						},
-						"description": "Array of alternative technologies that could be used instead"
-					}
-				}
-			}
-		}
-	},
-	"tags": [
-		{
-			"name": "Spec Generation",
-			"description": "Generate comprehensive software specifications for AI coding agents"
-		},
-		{
-			"name": "Status",
-			"description": "Check status of asynchronous specification processing"
-		},
-		{
-			"name": "Spec Management",
-			"description": "List and search existing specifications"
-		},
-		{
-			"name": "Account",
-			"description": "Manage user account and credits"
-		}
-	]
+  "openapi": "3.1.0",
+  "info": {
+    "title": "pre.dev Architect API",
+    "description": "Generate comprehensive software specifications for coding agents. The Architect API helps you create detailed project specifications that AI coding agents can understand and implement.",
+    "version": "1.1.0",
+    "contact": {
+      "name": "pre.dev Support",
+      "url": "https://pre.dev",
+      "email": "support@pre.dev"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://pre.dev/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.pre.dev",
+      "description": "Production API Server"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/fast-spec": {
+      "post": {
+        "summary": "Generate Fast Spec",
+        "description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~30-40 seconds.",
+        "operationId": "generateFastSpec",
+        "tags": [
+          "Spec Generation"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpecRequest"
+              },
+              "examples": {
+                "newProject": {
+                  "summary": "New Project",
+                  "value": {
+                    "input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging"
+                  }
+                },
+                "featureAddition": {
+                  "summary": "Feature Addition",
+                  "value": {
+                    "input": "Add a calendar view and Gantt chart visualization",
+                    "currentContext": "Existing task management system with list and board views, user auth, and basic team features"
+                  }
+                },
+                "asyncRequest": {
+                  "summary": "Async Request",
+                  "value": {
+                    "input": "Build a comprehensive e-commerce platform with inventory management",
+                    "async": true
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Specification generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SpecResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AsyncResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required - Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsufficientCreditsError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deep-spec": {
+      "post": {
+        "summary": "Generate Deep Spec",
+        "description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
+        "operationId": "generateDeepSpec",
+        "tags": [
+          "Spec Generation"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpecRequest"
+              },
+              "examples": {
+                "enterpriseProject": {
+                  "summary": "Enterprise Healthcare Platform",
+                  "value": {
+                    "input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system"
+                  }
+                },
+                "complexFeature": {
+                  "summary": "Complex Feature Addition",
+                  "value": {
+                    "input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
+                    "currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices"
+                  }
+                },
+                "asyncProcessing": {
+                  "summary": "Async Processing",
+                  "value": {
+                    "input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
+                    "async": true
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Specification generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SpecResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AsyncResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required - Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsufficientCreditsError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Subscription required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Subscription required",
+                  "message": "Deep Spec requires Solo Premium or Enterprise subscription"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spec-status/{specId}": {
+      "get": {
+        "summary": "Get Spec Status",
+        "description": "Check the status of an asynchronous specification processing request. Use this endpoint to poll for completion when you make an async request (async: true).",
+        "operationId": "getSpecStatus",
+        "tags": [
+          "Status"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "specId",
+            "in": "path",
+            "required": true,
+            "description": "The unique ID returned from an async spec generation request",
+            "schema": {
+              "type": "string",
+              "example": "507f1f77bcf86cd799439011"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Spec ID not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Request not found",
+                  "message": "No request found with ID: 507f1f77bcf86cd799439011"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/list-specs": {
+      "get": {
+        "summary": "List Specs",
+        "description": "List all specifications with pagination and filtering. Perfect for displaying user spec history, recent specs, or filtered views. This endpoint is free and does not consume credits.",
+        "operationId": "listSpecs",
+        "tags": [
+          "Spec Management"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of results per page (1-100)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to skip for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "example": 0
+            }
+          },
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": false,
+            "description": "Filter by endpoint type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "fast_spec",
+                "deep_spec"
+              ],
+              "example": "fast_spec"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by processing status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "processing",
+                "completed",
+                "failed"
+              ],
+              "example": "completed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Specs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSpecsResponse"
+                },
+                "examples": {
+                  "recentSpecs": {
+                    "summary": "Recent Specs",
+                    "value": {
+                      "specs": [
+                        {
+                          "_id": "507f1f77bcf86cd799439011",
+                          "created": "2024-01-15T14:30:00.000Z",
+                          "endpoint": "fast_spec",
+                          "input": "Build a SaaS project management tool with team collaboration",
+                          "status": "completed",
+                          "success": true,
+                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
+                          "executionTime": 38500
+                        }
+                      ],
+                      "total": 42,
+                      "hasMore": true
+                    }
+                  },
+                  "filteredSpecs": {
+                    "summary": "Completed Fast Specs",
+                    "value": {
+                      "specs": [
+                        {
+                          "_id": "507f1f77bcf86cd799439012",
+                          "created": "2024-01-15T12:15:00.000Z",
+                          "endpoint": "fast_spec",
+                          "input": "Add real-time notifications",
+                          "status": "completed",
+                          "success": true,
+                          "executionTime": 35200
+                        }
+                      ],
+                      "total": 15,
+                      "hasMore": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/find-specs": {
+      "get": {
+        "summary": "Find Specs (Search)",
+        "description": "Search for specifications using regex patterns. Perfect for finding specs by keywords, patterns, or complex search criteria. Case-insensitive search. This endpoint is free and does not consume credits.",
+        "operationId": "findSpecs",
+        "tags": [
+          "Spec Management"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "description": "REQUIRED - Regex pattern to search (case-insensitive)",
+            "schema": {
+              "type": "string",
+              "example": "payment"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of results per page (1-100)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to skip for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "example": 0
+            }
+          },
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": false,
+            "description": "Filter by endpoint type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "fast_spec",
+                "deep_spec"
+              ],
+              "example": "fast_spec"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by processing status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "processing",
+                "completed",
+                "failed"
+              ],
+              "example": "completed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSpecsResponse"
+                },
+                "examples": {
+                  "keywordSearch": {
+                    "summary": "Search for 'payment'",
+                    "value": {
+                      "specs": [
+                        {
+                          "_id": "507f1f77bcf86cd799439011",
+                          "created": "2024-01-15T14:30:00.000Z",
+                          "endpoint": "fast_spec",
+                          "input": "Build a payment processing system with Stripe integration",
+                          "status": "completed",
+                          "success": true,
+                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
+                        }
+                      ],
+                      "total": 8,
+                      "hasMore": false
+                    }
+                  },
+                  "patternSearch": {
+                    "summary": "Search for specs starting with 'Build'",
+                    "value": {
+                      "specs": [
+                        {
+                          "_id": "507f1f77bcf86cd799439012",
+                          "created": "2024-01-15T12:00:00.000Z",
+                          "endpoint": "fast_spec",
+                          "input": "Build a real-time collaborative whiteboard",
+                          "status": "completed",
+                          "success": true,
+                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
+                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
+                        }
+                      ],
+                      "total": 23,
+                      "hasMore": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required query parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad Request",
+                  "message": "Query parameter is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credits-balance": {
+      "get": {
+        "summary": "Get Credits Balance",
+        "description": "Get the remaining prototype credits balance for the authenticated API key holder. This endpoint is free and does not consume credits.",
+        "operationId": "getCreditsBalance",
+        "tags": [
+          "Account"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credits balance retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsBalanceResponse"
+                },
+                "example": {
+                  "success": true,
+                  "creditsRemaining": 450
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Unable to determine user or organization from API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Missing context",
+                  "message": "Unable to determine user or organization from API key"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to retrieve credits balance",
+                  "message": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/browser-agents": {
+      "post": {
+        "operationId": "runTask",
+        "tags": [
+          "Batches"
+        ],
+        "summary": "Run one or more browser tasks",
+        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 5000 in-flight tasks per user.\n\nIdempotency: pass an `Idempotency-Key` header (or `idempotencyKey` in the body) to deduplicate retries.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Deduplicates retries for the same (user, key) pair."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchRequest"
+              },
+              "examples": {
+                "singleTask": {
+                  "summary": "Single task \u2014 extract a heading",
+                  "value": {
+                    "tasks": [
+                      {
+                        "url": "https://example.com",
+                        "instruction": "Extract the page heading.",
+                        "output": {
+                          "type": "object",
+                          "properties": {
+                            "heading": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "heading"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "multipleTasks": {
+                  "summary": "Multiple tasks with concurrency",
+                  "value": {
+                    "tasks": [
+                      {
+                        "url": "https://news.ycombinator.com",
+                        "instruction": "Extract the top 5 story titles."
+                      },
+                      {
+                        "url": "https://www.reddit.com/r/programming",
+                        "instruction": "Extract the top 5 post titles."
+                      }
+                    ],
+                    "concurrency": 2
+                  }
+                },
+                "asyncMode": {
+                  "summary": "Async \u2014 returns batchId immediately",
+                  "value": {
+                    "tasks": [
+                      {
+                        "url": "https://example.com",
+                        "instruction": "Extract the heading."
+                      }
+                    ],
+                    "async": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch result (sync mode) or batch stub (async mode).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchResult"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "SSE frames: `event: task_event | task_result | done | error`"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid `tasks` array, `tasks.length > 1000`, or a task without a `url`."
+          },
+          "401": {
+            "description": "Missing or invalid bearer token."
+          },
+          "402": {
+            "description": "Insufficient credits. Top up at [pre.dev/billing](https://pre.dev/billing)."
+          },
+          "429": {
+            "description": "Per-user in-flight queue depth exceeded (max 5000). Retry later or reduce concurrency."
+          },
+          "503": {
+            "description": "SSE capacity exceeded on this pod (5000 concurrent streams). Retry with `async: true` and poll."
+          }
+        }
+      },
+      "get": {
+        "operationId": "listRuns",
+        "tags": [
+          "Batches"
+        ],
+        "summary": "List your runs",
+        "description": "Paginated list of batches this API key has run.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "processing",
+                "completed"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of runs owned by this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "batches": {
+                      "type": "array",
+                      "description": "Run summaries (field is named `batches` for backwards compatibility).",
+                      "items": {
+                        "$ref": "#/components/schemas/BatchResult"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total matching runs, ignoring limit/skip."
+                    },
+                    "hasMore": {
+                      "type": "boolean",
+                      "description": "True when `skip + limit < total`."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token."
+          }
+        }
+      }
+    },
+    "/api/v1/browser-agents/{id}": {
+      "get": {
+        "operationId": "getRun",
+        "tags": [
+          "Batches"
+        ],
+        "summary": "Get a run by id",
+        "description": "Fetch a single run by id. Works for both in-progress and completed runs. Pending tasks are surfaced as stubs in `results` with `status: \"PENDING\"`. Pass `includeEvents=true` to include the full per-step event timeline for each task plus a top-level `liveEvents` array for tasks that are still running.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Run id (24-char Mongo ObjectId)."
+          },
+          {
+            "name": "includeEvents",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Include per-step event timelines. Payloads can be large \u2014 screenshots inflate them fast."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed run id."
+          },
+          "401": {
+            "description": "Missing or invalid bearer token."
+          },
+          "404": {
+            "description": "Run not found, or not owned by this API key."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "API key for authentication. Get your API key from https://pre.dev/projects/playground (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise). Use format: Bearer YOUR_API_KEY",
+        "x-default": "YOUR_API_KEY"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "`Authorization: Bearer YOUR_API_KEY` on every request."
+      }
+    },
+    "schemas": {
+      "SpecRequest": {
+        "type": "object",
+        "required": [
+          "input"
+        ],
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Description of what you want to build or the feature you want to add",
+            "example": "Build a SaaS project management tool with team collaboration and real-time updates"
+          },
+          "currentContext": {
+            "type": "string",
+            "description": "CRITICAL: Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance",
+            "example": "Existing Next.js app with Supabase, has auth, task CRUD, team features"
+          },
+          "docURLs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Optional array of documentation URLs that Architect will reference when generating specifications. Each URL is automatically scraped and packaged into downloadable ZIP archives organized by platform",
+            "example": [
+              "https://docs.pre.dev",
+              "https://docs.stripe.com"
+            ]
+          },
+          "async": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, returns immediately with requestId for status polling. If false (default), waits for completion"
+          }
+        }
+      },
+      "FileUploadRequest": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Optional file to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with input text"
+          },
+          "input": {
+            "type": "string",
+            "description": "Optional additional text description when using file upload. Can be empty string if using only file"
+          },
+          "docURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "JSON stringified array of documentation URLs"
+          },
+          "async": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "SpecResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "fast_spec",
+              "deep_spec"
+            ],
+            "description": "Which endpoint was used"
+          },
+          "input": {
+            "type": "string",
+            "description": "Original input text provided"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed"
+            ],
+            "description": "Completion status"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request succeeded"
+          },
+          "humanSpecUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL where the human-readable spec is hosted (downloadable markdown)"
+          },
+          "totalHumanHours": {
+            "type": "number",
+            "description": "Estimated total hours for a human to implement the spec"
+          },
+          "architectureInfographicUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to a visual architecture infographic/diagram for the specification"
+          },
+          "codingAgentSpecUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL where the coding agent spec format is hosted (downloadable markdown)"
+          },
+          "codingAgentSpecJson": {
+            "$ref": "#/components/schemas/CodingAgentSpecJson",
+            "description": "Structured JSON spec optimized for AI coding assistants (excludes hours, personas, roles)"
+          },
+          "codingAgentSpecMarkdown": {
+            "type": "string",
+            "description": "Markdown spec optimized for AI coding assistants"
+          },
+          "humanSpecJson": {
+            "$ref": "#/components/schemas/HumanSpecJson",
+            "description": "Full structured JSON spec with hours, personas, and roles for human review"
+          },
+          "humanSpecMarkdown": {
+            "type": "string",
+            "description": "Full markdown spec with all details for human review"
+          },
+          "executionTime": {
+            "type": "integer",
+            "description": "Processing time in milliseconds"
+          },
+          "predevUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "pre.dev project URL where you can view and edit the spec"
+          },
+          "zippedDocsUrls": {
+            "type": "array",
+            "description": "Array of scraped documentation archives. Empty array if no docURLs provided or scraping fails. Each object contains platform identifier and download links",
+            "items": {
+              "$ref": "#/components/schemas/ZippedDocsUrl"
+            }
+          },
+          "creditsUsed": {
+            "type": "number",
+            "description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
+          },
+          "userFlowGraph": {
+            "$ref": "#/components/schemas/SpecGraph",
+            "description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+          },
+          "architectureGraph": {
+            "$ref": "#/components/schemas/SpecGraph",
+            "description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+          },
+          "enrichedTechStack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
+            },
+            "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
+          }
+        }
+      },
+      "AsyncResponse": {
+        "type": "object",
+        "required": [
+          "specId",
+          "status"
+        ],
+        "properties": {
+          "specId": {
+            "type": "string",
+            "description": "Unique ID to poll for status (use with /api/spec-status/:specId)",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ],
+            "description": "Initial status"
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId of the spec request"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp when the request was created"
+          },
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "fast_spec",
+              "deep_spec"
+            ],
+            "description": "Which endpoint was used"
+          },
+          "input": {
+            "type": "string",
+            "description": "Original input text provided"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed"
+            ],
+            "description": "Current status"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request succeeded"
+          },
+          "uploadedFileShortUrl": {
+            "type": "string",
+            "description": "Short URL for uploaded file (if file was uploaded)"
+          },
+          "uploadedFileName": {
+            "type": "string",
+            "description": "Name of uploaded file (if file was uploaded)"
+          },
+          "humanSpecUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL where the human-readable spec is hosted (only when completed)"
+          },
+          "totalHumanHours": {
+            "type": "number",
+            "description": "Estimated total hours for a human to implement the spec (only when completed)"
+          },
+          "architectureInfographicUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
+          },
+          "codingAgentSpecUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL where the coding agent spec format is hosted (only when completed)"
+          },
+          "codingAgentSpecJson": {
+            "$ref": "#/components/schemas/CodingAgentSpecJson",
+            "description": "Structured JSON spec optimized for AI coding assistants (only when completed)"
+          },
+          "codingAgentSpecMarkdown": {
+            "type": "string",
+            "description": "Markdown spec optimized for AI coding assistants (only when completed)"
+          },
+          "humanSpecJson": {
+            "$ref": "#/components/schemas/HumanSpecJson",
+            "description": "Full structured JSON spec with hours, personas, and roles (only when completed)"
+          },
+          "humanSpecMarkdown": {
+            "type": "string",
+            "description": "Full markdown spec with all details for human review (only when completed)"
+          },
+          "executionTime": {
+            "type": "integer",
+            "description": "Processing time in milliseconds (only when completed or failed)"
+          },
+          "predevUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "pre.dev project URL (only when completed)"
+          },
+          "zippedDocsUrls": {
+            "type": "array",
+            "description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
+            "items": {
+              "$ref": "#/components/schemas/ZippedDocsUrl"
+            }
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Error description (only when failed)"
+          },
+          "progress": {
+            "type": "string",
+            "description": "Human-readable progress description"
+          },
+          "creditsUsed": {
+            "type": "number",
+            "description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
+          },
+          "userFlowGraph": {
+            "$ref": "#/components/schemas/SpecGraph",
+            "description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+          },
+          "architectureGraph": {
+            "$ref": "#/components/schemas/SpecGraph",
+            "description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+          },
+          "enrichedTechStack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
+            },
+            "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error",
+          "message"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error type or code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        }
+      },
+      "InsufficientCreditsError": {
+        "type": "object",
+        "required": [
+          "error",
+          "message",
+          "generationsAvailable"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Insufficient credits"
+          },
+          "message": {
+            "type": "string",
+            "example": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan."
+          },
+          "generationsAvailable": {
+            "type": "integer",
+            "description": "Number of credits currently available",
+            "example": 0
+          }
+        }
+      },
+      "ListSpecsResponse": {
+        "type": "object",
+        "required": [
+          "specs",
+          "total",
+          "hasMore"
+        ],
+        "properties": {
+          "specs": {
+            "type": "array",
+            "description": "Array of spec objects matching the filters",
+            "items": {
+              "$ref": "#/components/schemas/StatusResponse"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of specs matching the filters",
+            "example": 42
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "Whether more pages are available",
+            "example": true
+          }
+        }
+      },
+      "ZippedDocsUrl": {
+        "type": "object",
+        "required": [
+          "platform",
+          "masterZipShortUrl"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "description": "Hostname extracted from the documentation URL (e.g., 'stripe.com', 'docs.github.com')",
+            "example": "stripe.com"
+          },
+          "masterZipShortUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Short URL to download the zipped documentation archive for this platform"
+          },
+          "masterMarkdownShortUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional short URL to consolidated markdown file for this platform"
+          }
+        }
+      },
+      "SpecCoreFunctionality": {
+        "type": "object",
+        "required": [
+          "name",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the core functionality"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the functionality"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "High",
+              "Medium",
+              "Low"
+            ],
+            "description": "Priority level of the functionality"
+          }
+        }
+      },
+      "SpecTechStackItem": {
+        "type": "object",
+        "required": [
+          "name",
+          "category"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the technology"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the technology (e.g., Frontend, Backend, Database)"
+          }
+        }
+      },
+      "SpecPersona": {
+        "type": "object",
+        "required": [
+          "title",
+          "description"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the persona"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the persona"
+          },
+          "primaryGoals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Primary goals of the persona"
+          },
+          "painPoints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Pain points of the persona"
+          },
+          "keyTasks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Key tasks of the persona"
+          }
+        }
+      },
+      "SpecRole": {
+        "type": "object",
+        "required": [
+          "name",
+          "shortHand"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the role (e.g., Full Stack Developer)"
+          },
+          "shortHand": {
+            "type": "string",
+            "description": "Short abbreviation for the role (e.g., FSD)"
+          }
+        }
+      },
+      "CodingAgentSubTask": {
+        "type": "object",
+        "required": [
+          "description",
+          "complexity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Subtask identifier"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the subtask"
+          },
+          "complexity": {
+            "type": "string",
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "description": "Complexity estimate"
+          }
+        }
+      },
+      "CodingAgentStory": {
+        "type": "object",
+        "required": [
+          "title",
+          "subTasks"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Story identifier (e.g., US-001)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the user story"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the user story"
+          },
+          "acceptanceCriteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of acceptance criteria"
+          },
+          "complexity": {
+            "type": "string",
+            "description": "Complexity estimate for the story"
+          },
+          "subTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodingAgentSubTask"
+            },
+            "description": "List of subtasks for this story"
+          }
+        }
+      },
+      "CodingAgentMilestone": {
+        "type": "object",
+        "required": [
+          "milestoneNumber",
+          "description",
+          "stories"
+        ],
+        "properties": {
+          "milestoneNumber": {
+            "type": "integer",
+            "description": "Milestone number"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the milestone"
+          },
+          "stories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodingAgentStory"
+            },
+            "description": "List of user stories in this milestone"
+          }
+        }
+      },
+      "CodingAgentSpecJson": {
+        "type": "object",
+        "required": [
+          "executiveSummary",
+          "coreFunctionalities",
+          "techStack",
+          "milestones"
+        ],
+        "description": "Simplified structured JSON for AI coding tools (excludes hours, personas, roles)",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the specification"
+          },
+          "executiveSummary": {
+            "type": "string",
+            "description": "Executive summary of the project"
+          },
+          "coreFunctionalities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecCoreFunctionality"
+            },
+            "description": "List of core functionalities"
+          },
+          "techStack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecTechStackItem"
+            },
+            "description": "Technology stack items"
+          },
+          "techStackGrouped": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Technology stack grouped by category"
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodingAgentMilestone"
+            },
+            "description": "List of milestones"
+          }
+        }
+      },
+      "HumanSpecSubTask": {
+        "type": "object",
+        "required": [
+          "description",
+          "hours",
+          "complexity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Subtask identifier"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the subtask"
+          },
+          "hours": {
+            "type": "number",
+            "description": "Estimated hours for this subtask"
+          },
+          "complexity": {
+            "type": "string",
+            "description": "Complexity estimate"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecRole"
+            },
+            "description": "Roles assigned to this subtask"
+          }
+        }
+      },
+      "HumanSpecStory": {
+        "type": "object",
+        "required": [
+          "title",
+          "hours",
+          "subTasks"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Story identifier (e.g., US-001)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the user story"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the user story"
+          },
+          "acceptanceCriteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of acceptance criteria"
+          },
+          "hours": {
+            "type": "number",
+            "description": "Estimated hours for this story"
+          },
+          "complexity": {
+            "type": "string",
+            "description": "Complexity estimate for the story"
+          },
+          "subTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanSpecSubTask"
+            },
+            "description": "List of subtasks for this story"
+          }
+        }
+      },
+      "HumanSpecMilestone": {
+        "type": "object",
+        "required": [
+          "milestoneNumber",
+          "description",
+          "hours",
+          "stories"
+        ],
+        "properties": {
+          "milestoneNumber": {
+            "type": "integer",
+            "description": "Milestone number"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the milestone"
+          },
+          "hours": {
+            "type": "number",
+            "description": "Estimated hours for this milestone"
+          },
+          "stories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanSpecStory"
+            },
+            "description": "List of user stories in this milestone"
+          }
+        }
+      },
+      "HumanSpecJson": {
+        "type": "object",
+        "required": [
+          "executiveSummary",
+          "coreFunctionalities",
+          "personas",
+          "techStack",
+          "milestones",
+          "totalHours",
+          "roles"
+        ],
+        "description": "Full structured JSON with hours, personas, and roles for human review",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the specification"
+          },
+          "executiveSummary": {
+            "type": "string",
+            "description": "Executive summary of the project"
+          },
+          "coreFunctionalities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecCoreFunctionality"
+            },
+            "description": "List of core functionalities"
+          },
+          "personas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecPersona"
+            },
+            "description": "User personas"
+          },
+          "techStack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecTechStackItem"
+            },
+            "description": "Technology stack items"
+          },
+          "techStackGrouped": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Technology stack grouped by category"
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanSpecMilestone"
+            },
+            "description": "List of milestones with hours"
+          },
+          "totalHours": {
+            "type": "number",
+            "description": "Total estimated hours for the project"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecRole"
+            },
+            "description": "Roles required for the project"
+          }
+        }
+      },
+      "CreditsBalanceResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "creditsRemaining"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful"
+          },
+          "creditsRemaining": {
+            "type": "integer",
+            "description": "The number of remaining credits available for the user"
+          }
+        }
+      },
+      "SpecGraphNode": {
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the node"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the node"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type category. For architectureGraph: \"frontend\", \"api-services\", \"databases\", or \"external-services\". For userFlowGraph: \"flow\", \"role\", etc."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the node"
+          },
+          "level": {
+            "type": "number",
+            "description": "Graph depth level (1, 2, 3...) for userFlowGraph nodes. Not present on architectureGraph nodes."
+          },
+          "hours": {
+            "type": "number",
+            "description": "Estimated hours for this node"
+          }
+        }
+      },
+      "SpecGraphEdge": {
+        "type": "object",
+        "required": [
+          "source",
+          "target"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source node ID"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target node ID"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the relationship"
+          },
+          "edgeType": {
+            "type": "string",
+            "description": "Type of edge relationship"
+          }
+        }
+      },
+      "SpecGraph": {
+        "type": "object",
+        "required": [
+          "nodes",
+          "edges"
+        ],
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecGraphNode"
+            },
+            "description": "Array of graph nodes"
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecGraphEdge"
+            },
+            "description": "Array of graph edges"
+          }
+        }
+      },
+      "SpecEnrichedTechStackItem": {
+        "type": "object",
+        "required": [
+          "name",
+          "useFor",
+          "reason",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the technology (e.g., React, PostgreSQL)"
+          },
+          "useFor": {
+            "type": "string",
+            "description": "Category label (e.g., Frontend, Backend, Database)"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this technology was chosen for this specific project"
+          },
+          "description": {
+            "type": "string",
+            "description": "Technical description of what the technology does"
+          },
+          "link": {
+            "type": "string",
+            "format": "uri",
+            "description": "Official website or documentation URL"
+          },
+          "helpfulLinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to helpful resource"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the resource"
+                }
+              }
+            },
+            "description": "Array of helpful documentation and tutorial links"
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the alternative technology"
+                },
+                "link": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the alternative technology"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the alternative"
+                }
+              }
+            },
+            "description": "Array of alternative technologies that could be used instead"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Starting page URL the agent navigates to."
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Natural-language goal. What should the agent accomplish on this page?"
+          },
+          "input": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Form values, credentials, queries \u2014 any string inputs the agent should use during the task. Keys referenced from `instruction` (e.g. \"Search for {{query}}\") are interpolated before the run."
+          },
+          "output": {
+            "type": "object",
+            "description": "JSON Schema describing the shape of data to extract. When present, the agent's final output is validated against this schema before returning `SUCCESS`. If omitted, the agent returns unstructured text in `data`."
+          },
+          "successCondition": {
+            "type": "string",
+            "description": "Optional natural-language assertion. Task is marked `SUCCESS` only if this condition holds at the end (e.g. \"the page shows a confirmation with an order number\")."
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "default": 240000,
+            "minimum": 5000,
+            "description": "Per-task max runtime in milliseconds. Default 240000 (4 min). When reached, the task status becomes `TIMEOUT` and is not billed."
+          }
+        }
+      },
+      "BatchRequest": {
+        "type": "object",
+        "required": [
+          "tasks"
+        ],
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "concurrency": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "How many tasks to run in parallel. Default: 5."
+          },
+          "async": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, returns `{ id, status: 'processing' }` immediately \u2014 poll `GET /:id` for progress."
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, returns an SSE stream with `task_event`, `task_result`, `done`, and `error` frames."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Alternative to the `Idempotency-Key` header. Retries with the same key within TTL return the original batch."
+          }
+        }
+      },
+      "TaskResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Only `SUCCESS` is billed; every failure mode is free.",
+            "enum": [
+              "SUCCESS",
+              "PENDING",
+              "ERROR",
+              "TIMEOUT",
+              "BLOCKED",
+              "CAPTCHA_FAILED",
+              "LOOP",
+              "NO_TARGET"
+            ]
+          },
+          "data": {
+            "description": "Extracted data, validated against the task's `output` schema. `null` when no `output` was specified or the task failed."
+          },
+          "creditsUsed": {
+            "type": "number",
+            "description": "Credits billed for this task. 1 credit = $0.10. Floor 0.1 for SUCCESS, scales up with task complexity. Zero for non-SUCCESS statuses."
+          },
+          "durationMs": {
+            "type": "integer",
+            "description": "Wall-clock runtime of the task."
+          },
+          "error": {
+            "type": "string",
+            "description": "Failure reason, populated when `status` is not `SUCCESS`."
+          },
+          "events": {
+            "type": "array",
+            "description": "Full per-step event timeline. Only present when the caller requested `includeEvents=true`.",
+            "items": {
+              "$ref": "#/components/schemas/RunnerEvent"
+            }
+          }
+        }
+      },
+      "RunnerEvent": {
+        "type": "object",
+        "description": "One step in the agent's execution. Internal fields (sandbox provider, LLM model, token counts) are stripped before the event is returned.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "navigation",
+              "plan",
+              "action",
+              "screenshot",
+              "validation",
+              "done",
+              "error"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "description": "Event-specific payload. See the Get a Run docs for per-type field lists."
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BatchResult": {
+        "type": "object",
+        "description": "Run summary. The schema is named `BatchResult` for backwards compatibility with older clients.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Run id (24-char Mongo ObjectId)."
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total tasks in the run."
+          },
+          "completed": {
+            "type": "integer",
+            "description": "Number of tasks that have finished (any status)."
+          },
+          "results": {
+            "type": "array",
+            "description": "Per-task results aligned by `taskIndex`. In-progress runs return PENDING stubs for tasks that haven't started; the stub has only `url`, `instruction`, `input`, and `status: \"PENDING\"`.",
+            "items": {
+              "$ref": "#/components/schemas/TaskResult"
+            }
+          },
+          "totalCreditsUsed": {
+            "type": "number",
+            "description": "Sum of credits billed across all tasks in the run."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "completed",
+              "failed"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Populated once `status !== \"processing\"`."
+          },
+          "liveEvents": {
+            "type": "array",
+            "description": "Only present when `includeEvents=true` on `GET /:id`. Per-task in-flight event streams for tasks that haven't yet finished. Aligned by index with `results`; completed tasks get an empty array.",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/RunnerEvent"
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Set only when `status === \"failed\"`."
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Spec Generation",
+      "description": "Generate comprehensive software specifications for AI coding agents"
+    },
+    {
+      "name": "Status",
+      "description": "Check status of asynchronous specification processing"
+    },
+    {
+      "name": "Spec Management",
+      "description": "List and search existing specifications"
+    },
+    {
+      "name": "Account",
+      "description": "Manage user account and credits"
+    },
+    {
+      "name": "Batches",
+      "description": "Submit and retrieve browser-agent task batches"
+    }
+  ]
 }

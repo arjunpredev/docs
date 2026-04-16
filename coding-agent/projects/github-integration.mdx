@@ -1,0 +1,47 @@
+---
+title: "GitHub Integration"
+description: "How pre.dev reads your repos, opens pull requests against them, and keeps your git history clean."
+---
+
+pre.dev's Coding Agent is built around GitHub end-to-end. Connect once and every project can import existing repos, ship real PRs, and leave a clean branch-per-task history behind.
+
+## Connect your account
+
+Go to **[Integrations → OAuth Connectors](https://pre.dev/projects/integrations)** and click **Connect GitHub**. You authorize through GitHub's standard OAuth flow — pre.dev only ever holds a scoped token, never your password, and you can revoke it at any time.
+
+## Import an existing repo
+
+Once GitHub is connected you can start a project from any repo you have access to — public or private.
+
+<Card title="Import Repos" icon="download" href="/coding-agent/projects/importing-repos" horizontal>
+  See what pre.dev detects from your codebase (stack, patterns, schema, API contracts) and how imported projects behave afterwards.
+</Card>
+
+## Pull requests, not pushes
+
+Every task a build agent completes ends in a **pull request**. The agent never pushes to `main`.
+
+<CardGroup cols={2}>
+  <Card title="Feature branch per task" icon="code-branch">
+    Branches are named after the task (e.g. `feat/setup-user-auth`). One task in the spec = one branch = one PR.
+  </Card>
+  <Card title="Verified before it opens" icon="shield-check">
+    Types compile, lint passes, tests pass, browser checks pass — or the PR is never opened in the first place.
+  </Card>
+  <Card title="You stay in control" icon="hand">
+    Merge immediately, batch, or cherry-pick. Review the diff, verify acceptance results, merge on your terms.
+  </Card>
+  <Card title="Auditable history" icon="timeline">
+    Every PR maps back to a specific story in the spec, so your git log is a readable record of how the app was built.
+  </Card>
+</CardGroup>
+
+<Card title="Pull Request Workflow" icon="code-pull-request" href="/coding-agent/building/pull-requests" horizontal>
+  The full lifecycle: branch naming, diff contents, merge strategies, PR history.
+</Card>
+
+## Security
+
+- Tokens are encrypted at rest and only used for the scopes you approved
+- pre.dev requests the minimum scopes required (repo read for imports, repo write for PR creation)
+- Disconnect anytime from the [Integrations](https://pre.dev/projects/integrations) page — all active tokens are revoked

@@ -1,0 +1,106 @@
+---
+title: "Quickstart"
+description: "Call your first Architect Agent spec in under 5 minutes."
+---
+
+Pick the path that matches how you work: a one-line `curl`, an MCP install into your editor, or an SDK call.
+
+## 1. Get your API key
+
+<Card title="Grab a key" icon="key" href="https://pre.dev/projects/playground">
+  Visit the playground to copy your API key and see remaining credits.
+</Card>
+
+## 2. Call the Architect
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST https://api.pre.dev/fast-spec \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{"input": "Build a task management app with team collaboration"}'
+    ```
+
+    You'll get back a structured spec with milestones, user stories, and architecture — in ~30–60 seconds.
+  </Tab>
+  <Tab title="MCP (Cursor)">
+    [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
+
+    Click the button, paste your API key, restart Cursor. Then ask:
+
+    ```
+    Use pre.dev to generate a spec for a task management app with team collaboration
+    ```
+
+    Full setup for Cursor / Claude Code / VS Code / Windsurf: [MCP Setup](/architect-agent/mcp-setup).
+  </Tab>
+  <Tab title="MCP (Claude Code)">
+    ```bash
+    claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
+    ```
+
+    Then ask Claude:
+
+    ```
+    Use pre.dev fast_spec to plan a task management app
+    ```
+  </Tab>
+  <Tab title="TypeScript SDK">
+    ```bash
+    npm install @predev/sdk
+    ```
+
+    ```ts
+    import { Predev } from '@predev/sdk';
+
+    const client = new Predev({ apiKey: process.env.PREDEV_API_KEY });
+    const spec = await client.fastSpec({
+      input: 'Build a task management app with team collaboration',
+    });
+    console.log(spec);
+    ```
+
+    See [Node SDK](/architect-agent/sdks/node) for full docs.
+  </Tab>
+  <Tab title="Python SDK">
+    ```bash
+    pip install predev
+    ```
+
+    ```python
+    from predev import Predev
+
+    client = Predev(api_key=os.environ["PREDEV_API_KEY"])
+    spec = client.fast_spec(input="Build a task management app with team collaboration")
+    print(spec)
+    ```
+
+    See [Python SDK](/architect-agent/sdks/python) for full docs.
+  </Tab>
+</Tabs>
+
+## 3. Hand the spec to your coding agent
+
+Whatever you got back is structured markdown (or JSON) your coding agent can consume directly. Paste it into Cursor's chat, drop it into Claude Code, or feed it to Lovable / Bolt. Your agent now has the architectural context to build the whole thing on the first pass.
+
+For a richer breakdown, use [`/deep-spec`](/architect-agent/api/deep-spec) instead — it adds granular subtasks and per-task acceptance criteria (~2–5 minutes).
+
+---
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card title="Fast vs Deep" icon="scale-balanced" href="/coding-agent/specifications/fast-vs-deep">
+    Pick the right depth for your project.
+  </Card>
+  <Card title="Understanding Specs" icon="book" href="/coding-agent/specifications/understanding-specs">
+    What's actually in a pre.dev spec.
+  </Card>
+  <Card title="Full API reference" icon="code" href="/architect-agent/api/fast-spec">
+    All endpoints, parameters, and response schemas.
+  </Card>
+  <Card title="MCP Setup" icon="plug" href="/architect-agent/mcp-setup">
+    Install into every major AI editor.
+  </Card>
+</CardGroup>

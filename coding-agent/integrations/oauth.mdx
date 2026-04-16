@@ -1,0 +1,29 @@
+---
+title: "OAuth Connectors"
+description: "Sign in once to let pre.dev read and write to external services on your behalf."
+---
+
+OAuth Connectors let pre.dev act on your behalf in external services — reading data, creating resources, or keeping state in sync — without you pasting API keys. You click "Connect," sign in once, and the agent inherits that authorization for every project.
+
+## How it works
+
+1. Open **[Integrations → OAuth Connectors](https://pre.dev/projects/integrations)**
+2. Pick a service and click **Connect**
+3. Sign in through the service's standard OAuth flow
+4. Done — any project the agent builds can now use that connector
+
+## What agents do with them
+
+When a build task mentions a connected service, the agent uses the connector directly:
+
+- **"Create a Linear issue for every failing test"** → agent uses your Linear connector
+- **"Send a Slack message when a PR merges"** → agent uses your Slack connector
+- **"Read my Notion project brief before starting"** → agent reads via your Notion connector
+
+The agent never sees your password. It holds a scoped token that you can revoke from the Integrations page at any time.
+
+## Security
+
+- Tokens are encrypted at rest
+- Scopes are shown before you authorize — pre.dev requests the minimum required
+- You can disconnect any connector from the Integrations page and all active tokens are revoked

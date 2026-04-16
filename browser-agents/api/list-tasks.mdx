@@ -1,0 +1,172 @@
+---
+title: "List Tasks"
+api: "GET https://api.pre.dev/api/v1/browser-agents"
+openapi: "GET /api/v1/browser-agents"
+description: "Paginate over every browser-agent task submission your API key has created. Filter by status, control page size with limit/skip."
+---
+
+Paginate over every run this API key has created, newest first. Useful for building a history UI, reconciling your own records, or spot-checking processing runs.
+
+## Overview
+
+- **Method:** `GET`
+- **Path:** `/api/v1/browser-agents`
+- **Auth:** same `Authorization: Bearer YOUR_API_KEY` as [Run a Task](/browser-agents/api/run-task)
+- **Sort order:** newest first (`createdAt` descending).
+- **Scope:** only runs owned by this API key are returned.
+
+## Query Parameters
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `limit` | `integer` | `20` | Page size. `1` ≤ `limit` ≤ `100`. Values outside the range are clamped. |
+| `skip` | `integer` | `0` | Number of runs to skip (offset-based pagination). |
+| `status` | `"processing" \| "completed"` | — | Filter by run state. Omit to return all states. |
+
+## Response
+
+```typescript
+interface ListRunsResponse {
+  batches: BatchResult[]; // historical field name — each entry is a run summary
+  total: number;          // total matching runs (ignores limit/skip)
+  hasMore: boolean;       // true when skip + limit < total
+}
+```
+
+Each entry in `batches` is a summary row:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Run id. Pass to [`GET /:id`](/browser-agents/api/task-status) for full results. |
+| `total` | `integer` | Number of tasks in the run. |
+| `completed` | `integer` | How many tasks have finished. |
+| `results` | `TaskResult[]` | Array sized to `total`. Index `0` is pre-populated with a stub `{ url, instruction }` for the first task so you can render a list row even before it completes; other indices are `null` until the run finishes. |
+| `totalCreditsUsed` | `number` | Running credits total across completed tasks. |
+| `status` | `"processing" \| "completed" \| "failed"` | Current state. |
+| `createdAt` | ISO-8601 | Run creation time. |
+| `completedAt` | ISO-8601 | Only set once `status !== "processing"`. |
+
+<Note>
+The envelope field is historically named `batches`, not `runs`, to stay backward-compatible with older clients. Each entry is the same run-summary shape described above.
+</Note>
+
+## Example
+
+```bash
+curl "https://api.pre.dev/api/v1/browser-agents?limit=10&status=completed" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+```json
+{
+  "batches": [
+    {
+      "id": "65f8a9d2c1e4b5a6f7e8d9c0",
+      "total": 3,
+      "completed": 3,
+      "results": [
+        {
+          "url": "https://example.com",
+          "instruction": "Extract the heading.",
+          "status": "SUCCESS",
+          "data": { "heading": "Example Domain" },
+          "creditsUsed": 0.11,
+          "durationMs": 4820
+        },
+        { "...": "..." },
+        { "...": "..." }
+      ],
+      "totalCreditsUsed": 0.41,
+      "status": "completed",
+      "createdAt": "2026-04-16T18:22:10.224Z",
+      "completedAt": "2026-04-16T18:23:07.918Z"
+    }
+  ],
+  "total": 87,
+  "hasMore": true
+}
+```
+
+## Status Codes
+
+| Code | Meaning |
+|---|---|
+| `200` | OK. Body is the list envelope above. |
+| `401` | Missing or invalid bearer token. |
+
+## Pagination Patterns
+
+### Python — iterate every run
+
+```python
+import requests
+
+API_KEY = "YOUR_API_KEY"
+BASE = "https://api.pre.dev/api/v1/browser-agents"
+HDR = {"Authorization": f"Bearer {API_KEY}"}
+
+
+def iter_runs(status: str | None = None, page_size: int = 100):
+    skip = 0
+    while True:
+        params = {"limit": page_size, "skip": skip}
+        if status:
+            params["status"] = status
+        r = requests.get(BASE, headers=HDR, params=params)
+        r.raise_for_status()
+        page = r.json()
+        for run in page["batches"]:
+            yield run
+        if not page.get("hasMore"):
+            return
+        skip += page_size
+
+
+# Tally credits used across every completed run.
+total_credits = sum(run["totalCreditsUsed"] for run in iter_runs(status="completed"))
+print(f"Lifetime spend: {total_credits} credits")
+```
+
+### Node.js — fetch a single page
+
+```javascript
+const API_KEY = process.env.PREDEV_API_KEY;
+const BASE = "https://api.pre.dev/api/v1/browser-agents";
+
+async function listRuns({ limit = 20, skip = 0, status } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), skip: String(skip) });
+  if (status) params.set("status", status);
+
+  const res = await fetch(`${BASE}?${params}`, {
+    headers: { Authorization: `Bearer ${API_KEY}` },
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+const { batches, total, hasMore } = await listRuns({ limit: 25, status: "processing" });
+console.log(`${batches.length}/${total} in-flight runs`);
+```
+
+### TypeScript — pull all pages
+
+```typescript
+async function fetchAllRuns(opts: { status?: "processing" | "completed" } = {}) {
+  const all: any[] = [];
+  let skip = 0;
+  const limit = 100;
+
+  while (true) {
+    const page = await listRuns({ limit, skip, ...opts });
+    all.push(...page.batches);
+    if (!page.hasMore) break;
+    skip += limit;
+  }
+  return all;
+}
+```
+
+<Tip>
+List responses echo only the *first* task's URL/instruction into `results[0]` as a stub. To inspect every task in a run, fetch it by id with [`GET /:id`](/browser-agents/api/task-status).
+</Tip>
+

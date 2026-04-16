@@ -1,0 +1,45 @@
+---
+title: "Integrations"
+description: "Everything you connect once that every project inherits."
+---
+
+Agents are only as capable as the services they can reach. Integrations are the services, credentials, servers, and custom instructions you connect once — every project you build on pre.dev picks them up automatically.
+
+<Note>
+  Open your Integrations at **[pre.dev/projects/integrations](https://pre.dev/projects/integrations)**. Changes propagate to every project.
+</Note>
+
+## The four types
+
+<CardGroup cols={2}>
+  <Card title="OAuth Connectors" icon="plug" href="/coding-agent/integrations/oauth">
+    Sign in once to let pre.dev read and write to external services on your behalf.
+  </Card>
+  <Card title="Agent Skills" icon="wand-magic-sparkles" href="/coding-agent/integrations/skills">
+    Custom instructions injected into the agent prompt for every project.
+  </Card>
+  <Card title="MCP Servers" icon="server" href="/coding-agent/integrations/mcp-servers">
+    Connect external tool servers to extend what pre.dev can do.
+  </Card>
+  <Card title="API Keys" icon="key" href="/coding-agent/integrations/api-keys">
+    API keys and secrets for authenticating with third-party services.
+  </Card>
+</CardGroup>
+
+## How agents use your integrations
+
+When a build agent picks up a task, it scans your integrations and makes decisions:
+
+- Needs to send email? It finds your **Resend** or **SendGrid** API key and wires it up in the `.env`.
+- Needs to read your Linear issues? It uses the **Linear OAuth** connector you signed in with.
+- Needs to follow a style guide? It picks up your **Agent Skill** that says "always use Tailwind, never write inline styles."
+- Needs a custom tool outside our built-ins? It calls your **MCP Server** as if it were a native tool.
+
+No placeholder credentials. No stub implementations. Agents build with the real thing.
+
+## Security
+
+- API keys are **encrypted at rest** and only decrypted inside sandboxed build agents
+- OAuth tokens are scoped to the services you explicitly connect and revocable at any time
+- No key or secret ever appears in generated code or PR diffs — they're injected via the project's `.env`
+- Integrations are scoped to your account (or organization, for enterprise) and never shared between users

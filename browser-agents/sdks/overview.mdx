@@ -1,0 +1,33 @@
+---
+title: "Overview"
+description: "Official Python and Node SDKs for pre.dev Browser Agents — fully-typed clients with sync, async, and SSE streaming built in."
+---
+
+The same `predev-api` package that wraps the Architect endpoints also ships the Browser Agents client. One install, one key, both surfaces.
+
+## Official SDKs
+
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="python" href="/browser-agents/sdks/python">
+    `pip install predev-api` — synchronous, async, and streaming task runs with a single method.
+  </Card>
+  <Card title="Node SDK" icon="node-js" href="/browser-agents/sdks/node">
+    `npm install predev-api` — fully-typed TypeScript client with async generators for SSE streams.
+  </Card>
+</CardGroup>
+
+## Features
+
+Both SDKs expose the full Browser Agents surface:
+
+- **Run tasks** — submit one or thousands of tasks in a single call, with `concurrency` control
+- **Sync mode** — waits for every task to complete and returns the full result
+- **Async mode** — submit and return immediately with a batch id you can poll
+- **Streaming mode** — live SSE stream of `task_event`, `task_result`, `done`, and `error` frames
+- **Status polling** — fetch a task submission by id, optionally with the full per-step event timeline (screenshots, plans, actions, validations)
+- **Typed results** — structured `data` validated against your JSON Schema `output`
+- **Error handling** — typed exceptions for auth, rate limits, and API errors
+
+<Card title="Get your API key" icon="key" href="https://pre.dev/projects/browser-agents" horizontal>
+  Grab a key, set it as `PREDEV_API_KEY`, then follow either SDK page.
+</Card>

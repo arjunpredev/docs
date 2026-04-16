@@ -1,0 +1,234 @@
+---
+title: "Node SDK"
+description: "TypeScript / Node.js client for pre.dev Browser Agents — run tasks sync, async, or streamed."
+icon: "node-js"
+---
+
+The official TypeScript client for pre.dev. `predev-api` ships both the Architect and Browser Agents surfaces — one package, one key, full type support.
+
+## Installation
+
+```bash
+npm install predev-api
+```
+
+## Quick Start
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const predev = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+
+const result = await predev.browserTasks([
+  {
+    url: 'https://example.com',
+    instruction: 'Extract the page heading.',
+    output: {
+      type: 'object',
+      properties: { heading: { type: 'string' } },
+      required: ['heading'],
+    },
+  },
+]);
+
+console.log(result.results[0].data);
+// → { heading: "Example Domain" }
+```
+
+## Authentication
+
+<Card title="Get your API key" icon="key" href="https://pre.dev/projects/browser-agents" horizontal>
+  Grab a key from the Browser Agents dashboard.
+</Card>
+
+```typescript
+const predev = new PredevAPI({ apiKey: 'YOUR_API_KEY' });
+```
+
+## API Methods
+
+### `browserTasks()`
+
+Submit one or more browser tasks. Overloaded based on `stream`:
+
+```typescript
+// Sync / async → Promise<BrowserTasksResponse>
+predev.browserTasks(tasks, { concurrency?: number; async?: boolean }): Promise<BrowserTasksResponse>;
+
+// Streaming → AsyncGenerator<BrowserTaskSSEMessage>
+predev.browserTasks(tasks, { concurrency?: number; stream: true }): AsyncGenerator<BrowserTaskSSEMessage>;
+```
+
+**Parameters:**
+- `tasks` **(required)**: `BrowserTask[]` — see [Task shape](#task-shape)
+- `options.concurrency` **(optional)**: `number` — parallel workers (1–20, default 5)
+- `options.async` **(optional)**: `boolean` — return immediately with a batch id; poll with `getBrowserTasks()`
+- `options.stream` **(optional)**: `true` — return an async generator of SSE frames instead
+
+### Task shape
+
+```typescript
+interface BrowserTask {
+  url: string;                           // required
+  instruction?: string;                  // natural-language goal
+  input?: Record<string, string>;        // string inputs the agent uses during the run
+  output?: Record<string, any>;          // JSON Schema for the data to extract
+}
+```
+
+### `getBrowserTasks()`
+
+Fetch the status and results of a task submission by id. Works for in-progress and completed submissions.
+
+```typescript
+const result = await predev.getBrowserTasks(id, { includeEvents?: boolean });
+```
+
+**Parameters:**
+- `id` **(required)**: `string` — id returned from `browserTasks(tasks, { async: true })` or from streaming
+- `options.includeEvents` **(optional)**: `boolean` — include the full per-step event timeline (navigation, plan, screenshot, action, validation). Payloads can be large.
+
+## Response Types
+
+```typescript
+interface BrowserTaskResult {
+  url: string;
+  status:
+    | 'SUCCESS'
+    | 'PENDING'
+    | 'ERROR'
+    | 'TIMEOUT'
+    | 'BLOCKED'
+    | 'CAPTCHA_FAILED'
+    | 'LOOP'
+    | 'NO_TARGET';
+  data?: unknown;
+  creditsUsed: number;
+  durationMs: number;
+  error?: string;
+}
+
+interface BrowserTasksResponse {
+  id: string;
+  total: number;
+  completed: number;
+  results: BrowserTaskResult[];
+  totalCreditsUsed: number;
+  status: 'processing' | 'completed' | 'failed';
+  createdAt?: string;
+  completedAt?: string;
+}
+```
+
+## Streaming Events
+
+```typescript
+type BrowserTaskEventType =
+  | 'navigation'    // agent loaded a URL
+  | 'screenshot'    // frame captured
+  | 'plan'          // agent reasoned about next steps
+  | 'action'        // click / type / scroll / extract
+  | 'validation'    // output schema or success condition checked
+  | 'done'          // task finished
+  | 'error';        // task errored
+
+interface BrowserTaskStreamEvent {
+  taskIndex: number;
+  type: BrowserTaskEventType;
+  timestamp: number;
+  iteration?: number;
+  data: any;
+}
+
+type BrowserTaskSSEMessage =
+  | { event: 'task_event';  data: BrowserTaskStreamEvent }
+  | { event: 'task_result'; data: BrowserTaskResult & { taskIndex: number } }
+  | { event: 'done';        data: BrowserTasksResponse }
+  | { event: 'error';       data: { error: string } };
+```
+
+## Examples
+
+### Sync — wait for every task
+
+```typescript
+const result = await predev.browserTasks(
+  [
+    { url: 'https://news.ycombinator.com', instruction: 'Extract the top 5 story titles.' },
+    { url: 'https://www.reddit.com/r/programming', instruction: 'Extract the top 5 post titles.' },
+  ],
+  { concurrency: 2 },
+);
+
+for (const r of result.results) {
+  console.log(r.status, r.data);
+}
+```
+
+### Async — poll for completion
+
+```typescript
+const { id } = await predev.browserTasks(tasks, { async: true });
+
+while (true) {
+  const status = await predev.getBrowserTasks(id);
+  if (status.status === 'completed' || status.status === 'failed') {
+    console.log(status.results);
+    break;
+  }
+  console.log(`${status.completed}/${status.total} done`);
+  await new Promise(r => setTimeout(r, 5000));
+}
+```
+
+### Streaming — live per-step events
+
+```typescript
+for await (const msg of predev.browserTasks(tasks, { stream: true })) {
+  if (msg.event === 'task_event') {
+    console.log(`[task ${msg.data.taskIndex}]`, msg.data.type);
+  } else if (msg.event === 'task_result') {
+    console.log(`[task ${msg.data.taskIndex}]`, msg.data.status, msg.data.data);
+  } else if (msg.event === 'done') {
+    console.log('batch done:', msg.data.id, msg.data.totalCreditsUsed, 'credits');
+  } else if (msg.event === 'error') {
+    console.error('error:', msg.data.error);
+  }
+}
+```
+
+### Full timeline for a past submission
+
+```typescript
+const result = await predev.getBrowserTasks(id, { includeEvents: true });
+
+for (const task of result.results) {
+  console.log(task.status, task.url);
+  for (const event of (task as any).events ?? []) {
+    console.log('  -', event.type);
+  }
+}
+```
+
+## Error Handling
+
+```typescript
+import {
+  PredevAPIError,
+  AuthenticationError,
+  RateLimitError,
+} from 'predev-api';
+
+try {
+  const result = await predev.browserTasks(tasks);
+} catch (err) {
+  if (err instanceof AuthenticationError) {
+    // 401 — invalid or missing API key
+  } else if (err instanceof RateLimitError) {
+    // 429 — per-user in-flight queue cap exceeded
+  } else if (err instanceof PredevAPIError) {
+    // Any other API error (400, 402 insufficient credits, 500, etc.)
+    console.error(err.message);
+  }
+}
+```

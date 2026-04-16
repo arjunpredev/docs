@@ -1,0 +1,504 @@
+---
+title: "Run a Task"
+api: "POST https://api.pre.dev/api/v1/browser-agents"
+openapi: "POST /api/v1/browser-agents"
+description: "Run one or more browser-automation tasks. Supports sync, async, and SSE streaming modes. Up to 1000 tasks per request."
+---
+
+Run one or more browser-agent tasks in parallel. One request, one clean response — or a live SSE stream, or an async handle to poll.
+
+<Note>
+The `tasks` field is always an array, even for a single task — so one endpoint covers both "run one task" and "run 1000 tasks in parallel". No separate batch vs. single-task API.
+</Note>
+
+## Overview
+
+- **Method:** `POST`
+- **Path:** `/api/v1/browser-agents`
+- **Cost:** billed per successful task. Failed tasks are free.
+- **Max tasks per request:** `1000`
+- **Max in-flight tasks per user:** `5000`
+- **Per-task default timeout:** `240000` ms
+
+## Headers
+
+| Header | Required | Description |
+|---|---|---|
+| `Authorization` | ✅ | `Bearer YOUR_API_KEY` |
+| `Content-Type` | ✅ | `application/json` |
+| `Idempotency-Key` | ❌ | Deduplicates retries for this `(user, key)` pair within 24h. Returns the original run instead of creating a duplicate. |
+
+## Request Body
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `tasks` | `Task[]` | ✅ | Array of tasks. `1` ≤ length ≤ `1000`. |
+| `concurrency` | `integer` | ❌ | Parallel workers within this run. `1`–`20`. Default `5`. |
+| `async` | `boolean` | ❌ | If `true`, returns `{ id, status: "processing" }` immediately. Poll [`GET /:id`](/browser-agents/api/task-status). Default `false`. |
+| `stream` | `boolean` | ❌ | If `true`, returns an SSE stream with per-step events + final results. Default `false`. Mutually exclusive with `async`. |
+| `idempotencyKey` | `string` | ❌ | Body-level alternative to the `Idempotency-Key` header. |
+
+### `Task` object
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `url` | `string` (URI) | ✅ | Starting page URL the agent navigates to. |
+| `instruction` | `string` | ❌ | Natural-language goal. What should the agent accomplish on this page? |
+| `input` | `Record<string, string>` | ❌ | String values the agent should use during the run — form values, credentials, search queries. |
+| `output` | JSON Schema | ❌ | Schema describing the shape of data to extract. If omitted, the agent returns unstructured text. |
+| `successCondition` | `string` | ❌ | Natural-language assertion. Task is marked `SUCCESS` only if this holds at the end. |
+| `timeoutMs` | `integer` | ❌ | Per-task max runtime in milliseconds. Default `240000`. |
+
+## Response Modes
+
+### Sync (default)
+
+Default behavior. The request holds the HTTP connection until every task in the run completes, then returns the full `BatchResult`.
+
+Best for: small runs (≤ 50 tasks), interactive scripts, jobs where you want one clean response.
+
+```bash
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [
+      { "url": "https://example.com", "instruction": "Extract the page heading." }
+    ]
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "id": "65f8a9d2c1e4b5a6f7e8d9c0",
+  "total": 1,
+  "completed": 1,
+  "results": [
+    {
+      "url": "https://example.com",
+      "instruction": "Extract the page heading.",
+      "status": "SUCCESS",
+      "data": { "heading": "Example Domain" },
+      "creditsUsed": 0.11,
+      "durationMs": 4820
+    }
+  ],
+  "totalCreditsUsed": 0.11,
+  "status": "completed",
+  "createdAt": "2026-04-16T18:22:10.224Z",
+  "completedAt": "2026-04-16T18:22:15.044Z"
+}
+```
+
+### Async (`async: true`)
+
+Returns immediately with a `batchId`. Poll [`GET /api/v1/browser-agents/:id`](/browser-agents/api/task-status) for progress.
+
+Best for: large runs, long-running tasks, fire-and-forget jobs.
+
+```bash
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [{ "url": "https://example.com", "instruction": "Extract the heading." }],
+    "async": true
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "id": "65f8a9d2c1e4b5a6f7e8d9c0",
+  "total": 1,
+  "completed": 0,
+  "results": [],
+  "totalCreditsUsed": 0,
+  "status": "processing"
+}
+```
+
+### Stream (`stream: true`)
+
+Returns `text/event-stream` with per-step events. Each frame has a `taskIndex` tying it back to a task in the run.
+
+Best for: live UI progress, debugging, watching what the agent is doing in real time.
+
+**SSE frames:**
+
+| Event | When | Payload |
+|---|---|---|
+| `task_event` | Agent performs a step (navigation, plan, action, screenshot, validation) | `{ taskIndex, type, data }` |
+| `task_result` | A single task finishes | `{ taskIndex, ...TaskResult }` |
+| `done` | Entire run finishes | Full `BatchResult` |
+| `error` | Fatal error aborted the run | `{ error }` |
+
+Keepalive `:keepalive` comments are sent every 10s to stop intermediaries from closing the connection.
+
+```bash
+curl -N -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [{ "url": "https://example.com", "instruction": "Extract the heading." }],
+    "stream": true
+  }'
+```
+
+**Example frames:**
+
+```
+:ok
+
+event: task_event
+data: {"taskIndex":0,"type":"navigation","data":{"url":"https://example.com"}}
+
+event: task_event
+data: {"taskIndex":0,"type":"screenshot","data":{"url":"https://..."}}
+
+event: task_result
+data: {"taskIndex":0,"status":"SUCCESS","data":{"heading":"Example Domain"},"durationMs":4820}
+
+event: done
+data: {"id":"65f8...","total":1,"completed":1,"results":[...],"status":"completed"}
+```
+
+<Note>
+If a pod is already serving its SSE cap (`5000` concurrent streams), new stream requests get `503`. Fall back to `async: true` + polling.
+</Note>
+
+## Response Schemas
+
+### `BatchResult`
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Run id (Mongo ObjectId). Use with [`GET /:id`](/browser-agents/api/task-status). |
+| `total` | `integer` | Number of tasks in the run. |
+| `completed` | `integer` | Number of tasks finished (any status). |
+| `results` | `TaskResult[]` | Per-task results, aligned by `taskIndex`. |
+| `totalCreditsUsed` | `number` | Sum of credits billed across the run. 1 credit = $0.10, floor 0.1 per billed task. |
+| `status` | `"processing" \| "completed" \| "failed"` | Run state. |
+| `createdAt` | ISO-8601 | Run creation time. |
+| `completedAt` | ISO-8601 | Run completion time. Omitted while processing. |
+| `liveEvents` | `RunnerEvent[][]` | Only when fetching with `includeEvents=true` — in-flight event streams for tasks that haven't yet completed. |
+| `error` | `string` | Set only when `status === "failed"`. |
+
+### `TaskResult`
+
+| Field | Type | Description |
+|---|---|---|
+| `url` | `string` | Starting URL (echoed from the request). |
+| `instruction` | `string` | Task instruction (echoed). |
+| `input` | `Record<string, string>` | Task input (echoed). |
+| `status` | `TaskStatus` | See [task statuses](#task-statuses). |
+| `data` | `any` | Extracted data, validated against the task's `output` schema. `null` if no `output` was specified or the task failed. |
+| `creditsUsed` | `number` | Credits billed for this task. Floor 0.1 (= $0.01) for `SUCCESS`; scales up with task complexity. Zero for non-`SUCCESS` statuses. |
+| `durationMs` | `integer` | Wall-clock runtime. |
+| `error` | `string` | Failure reason, when `status` is not `SUCCESS`. |
+| `events` | `RunnerEvent[]` | Full step timeline. Only returned when fetching with `includeEvents=true`. |
+
+### Task statuses
+
+| Status | Meaning | Billed? |
+|---|---|---|
+| `SUCCESS` | Task completed; `output` schema (if any) validated. | ✅ |
+| `PENDING` | Task queued, not yet started (async/polling response only). | — |
+| `ERROR` | Task errored during execution. | ❌ |
+| `TIMEOUT` | Task hit `timeoutMs`. | ❌ |
+| `BLOCKED` | Target site blocked the agent (bot protection, geo-block, etc.). | ❌ |
+| `CAPTCHA_FAILED` | CAPTCHA challenge couldn't be solved. | ❌ |
+| `LOOP` | Agent got stuck in a redirect or action loop. | ❌ |
+| `NO_TARGET` | Required element wasn't found on the page. | ❌ |
+
+## Status Codes
+
+| Code | Meaning |
+|---|---|
+| `200` | Sync result, async stub, or start of SSE stream. |
+| `400` | Missing `tasks`, task without `url`, or `tasks.length > 1000`. |
+| `401` | Missing or invalid bearer token. |
+| `402` | Insufficient credits. [Top up](https://pre.dev/billing). |
+| `429` | User's in-flight queue depth exceeded. Retry later or reduce concurrency. |
+| `503` | SSE capacity exceeded on this pod. Retry with `async: true` and poll. |
+
+## Idempotency
+
+Network retries can cause duplicate submissions. Pass an `Idempotency-Key` (header or body) to ensure the same key within 24h returns the original run — you won't be double-charged.
+
+```bash
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: import-run-2026-04-15-042" \
+  -d '{ "tasks": [{ "url": "https://example.com", "instruction": "Extract the heading." }] }'
+```
+
+Keys are scoped per API-key owner. Use a key that uniquely identifies the *intent* of the submission (e.g., a DB row id, a job id), not a random UUID regenerated on retry.
+
+## Code Examples
+
+### Multiple tasks with concurrency
+
+```bash
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [
+      { "url": "https://news.ycombinator.com", "instruction": "Extract the top 5 story titles." },
+      { "url": "https://www.reddit.com/r/programming", "instruction": "Extract the top 5 post titles." }
+    ],
+    "concurrency": 2
+  }'
+```
+
+### Structured extraction with `output` schema
+
+```bash
+curl -X POST https://api.pre.dev/api/v1/browser-agents \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": [
+      {
+        "url": "https://news.ycombinator.com",
+        "instruction": "Extract the top 5 stories.",
+        "output": {
+          "type": "object",
+          "properties": {
+            "stories": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "points": { "type": "number" }
+                },
+                "required": ["title", "points"]
+              }
+            }
+          },
+          "required": ["stories"]
+        }
+      }
+    ]
+  }'
+```
+
+
+### Python — sync + async + streaming
+
+```python
+import json
+import time
+import requests
+
+API_KEY = "YOUR_API_KEY"
+BASE = "https://api.pre.dev/api/v1/browser-agents"
+HDR = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+
+
+def run_sync(tasks, concurrency=5):
+    r = requests.post(BASE, headers=HDR, json={"tasks": tasks, "concurrency": concurrency})
+    r.raise_for_status()
+    return r.json()
+
+
+def run_async(tasks, concurrency=5, poll_every=5):
+    r = requests.post(BASE, headers=HDR, json={"tasks": tasks, "concurrency": concurrency, "async": True})
+    r.raise_for_status()
+    batch_id = r.json()["id"]
+    while True:
+        poll = requests.get(f"{BASE}/{batch_id}", headers=HDR).json()
+        if poll["status"] in ("completed", "failed"):
+            return poll
+        print(f"{poll['completed']}/{poll['total']} done")
+        time.sleep(poll_every)
+
+
+def run_stream(tasks):
+    with requests.post(BASE, headers=HDR, json={"tasks": tasks, "stream": True}, stream=True) as r:
+        r.raise_for_status()
+        event = None
+        for line in r.iter_lines(decode_unicode=True):
+            if line is None or line.startswith(":"):
+                continue
+            if line.startswith("event: "):
+                event = line[len("event: "):].strip()
+            elif line.startswith("data: "):
+                data = json.loads(line[len("data: "):])
+                yield event, data
+
+
+# sync
+result = run_sync([{"url": "https://example.com", "instruction": "Extract the heading."}])
+print(result["results"][0]["data"])
+
+# stream
+for event, data in run_stream([{"url": "https://example.com", "instruction": "Extract the heading."}]):
+    if event == "task_event":
+        print(f"[task {data['taskIndex']}] {data.get('type')}")
+    elif event == "task_result":
+        print(f"[task {data['taskIndex']}] {data['status']} → {data.get('data')}")
+    elif event == "done":
+        print("batch done:", data["id"])
+        break
+```
+
+### Node.js — sync + streaming
+
+```javascript
+const API_KEY = process.env.PREDEV_API_KEY;
+const BASE = "https://api.pre.dev/api/v1/browser-agents";
+const HDR = {
+  "Authorization": `Bearer ${API_KEY}`,
+  "Content-Type": "application/json",
+};
+
+async function runSync(tasks, concurrency = 5) {
+  const res = await fetch(BASE, {
+    method: "POST",
+    headers: HDR,
+    body: JSON.stringify({ tasks, concurrency }),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+async function* runStream(tasks) {
+  const res = await fetch(BASE, {
+    method: "POST",
+    headers: HDR,
+    body: JSON.stringify({ tasks, stream: true }),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let event = null;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let idx;
+    while ((idx = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, idx).trim();
+      buffer = buffer.slice(idx + 1);
+      if (!line || line.startsWith(":")) continue;
+      if (line.startsWith("event: ")) event = line.slice(7).trim();
+      else if (line.startsWith("data: ")) yield { event, data: JSON.parse(line.slice(6)) };
+    }
+  }
+}
+
+// sync
+const result = await runSync([
+  { url: "https://example.com", instruction: "Extract the heading." },
+]);
+console.log(result.results[0].data);
+
+// stream
+for await (const { event, data } of runStream([
+  { url: "https://example.com", instruction: "Extract the heading." },
+])) {
+  if (event === "task_event") console.log(`[task ${data.taskIndex}]`, data.type);
+  if (event === "task_result") console.log(`[task ${data.taskIndex}]`, data.status, data.data);
+  if (event === "done") break;
+}
+```
+
+### TypeScript — fully typed client
+
+```typescript
+type TaskStatus =
+  | "SUCCESS" | "PENDING" | "ERROR" | "TIMEOUT"
+  | "BLOCKED" | "CAPTCHA_FAILED" | "LOOP" | "NO_TARGET";
+
+interface Task {
+  url: string;
+  instruction?: string;
+  input?: Record<string, string>;
+  output?: Record<string, unknown>;
+  successCondition?: string;
+  timeoutMs?: number;
+}
+
+interface TaskResult {
+  url: string;
+  instruction?: string;
+  input?: Record<string, string>;
+  status: TaskStatus;
+  data?: unknown;
+  creditsUsed: number;
+  durationMs: number;
+  error?: string;
+}
+
+interface BatchResult {
+  id: string;
+  total: number;
+  completed: number;
+  results: TaskResult[];
+  totalCreditsUsed: number;
+  status: "processing" | "completed" | "failed";
+  createdAt?: string;
+  completedAt?: string;
+  error?: string;
+}
+
+interface BatchRequest {
+  tasks: Task[];
+  concurrency?: number;
+  async?: boolean;
+  stream?: boolean;
+  idempotencyKey?: string;
+}
+
+export class BrowserAgents {
+  constructor(private apiKey: string, private base = "https://api.pre.dev/api/v1/browser-agents") {}
+
+  private headers() {
+    return {
+      "Authorization": `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+  }
+
+  async run(req: BatchRequest, idempotencyKey?: string): Promise<BatchResult> {
+    const headers: Record<string, string> = this.headers();
+    if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+    const res = await fetch(this.base, { method: "POST", headers, body: JSON.stringify(req) });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    return res.json();
+  }
+}
+```
+
+## Error Handling
+
+### `402 Insufficient credits`
+
+You need at least 1 credit per task upfront, even though only `SUCCESS` tasks are actually billed. Top up at [pre.dev/billing](https://pre.dev/billing).
+
+### `429 Queue depth exceeded`
+
+Your account has more than `5000` in-flight tasks. Wait for some to drain, or lower `concurrency`.
+
+### `503 SSE capacity exceeded`
+
+The serving pod is already at its SSE connection cap. Retry the request with `"async": true` and poll — the underlying work isn't affected.
+
+### `400` / invalid task shape
+
+Every task needs a `url`. If you get `400`, check you're not sending `tasks: { ... }` (a single object) — it must always be an array, even for one task.
+
+<Card title="Next: Task Status" icon="arrow-right" href="/browser-agents/api/task-status">
+  Fetch results for an async or historical task submission, with the full per-step event timeline.
+</Card>

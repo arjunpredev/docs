@@ -26,102 +26,178 @@
 	"navigation": {
 		"tabs": [
 			{
-				"tab": "Labs",
-				"groups": [
-					{
-						"group": "Overview",
-						"pages": ["labs/overview"]
-					},
-					{
-						"group": "Browser Agents",
-						"pages": [
-							"labs/browser-agents/overview",
-							"labs/browser-agents/quickstart",
-							"labs/browser-agents/rest-api",
-							"labs/browser-agents/mcp-tool",
-							"labs/browser-agents/task-schemas",
-							"labs/browser-agents/benchmarks",
-							"labs/browser-agents/pricing"
-						]
-					}
-				]
+				"tab": "Overview",
+				"pages": ["overview"]
 			},
 			{
-				"tab": "Platform",
+				"tab": "Coding Agent",
 				"groups": [
 					{
-						"group": "Getting Started",
-						"pages": ["what-is-predev", "quickstart", "how-it-works"]
+						"group": "Get Started",
+						"pages": [
+							"coding-agent/overview",
+							"coding-agent/quickstart"
+						]
 					},
 					{
 						"group": "Projects",
-						"pages": ["projects/creating-a-project", "projects/importing-repos"]
+						"pages": [
+							"coding-agent/projects/creating-a-project",
+							"coding-agent/projects/importing-repos",
+							"coding-agent/projects/github-integration"
+						]
 					},
 					{
 						"group": "Specifications",
 						"pages": [
-							"specifications/understanding-specs",
-							"specifications/fast-vs-deep"
+							"coding-agent/specifications/fast-vs-deep",
+							"coding-agent/specifications/understanding-specs"
 						]
 					},
 					{
 						"group": "Building",
 						"pages": [
-							"building/build-modes",
-							"building/acceptance-criteria",
-							"building/pull-requests",
-							"building/progress-tracking",
-							"building/pro-mode",
-							"building/custom-domains",
-							"building/collaboration"
+							"coding-agent/building/build-modes",
+							"coding-agent/building/acceptance-criteria",
+							"coding-agent/building/pull-requests",
+							"coding-agent/building/progress-tracking",
+							"coding-agent/building/pro-mode",
+							"coding-agent/building/custom-domains",
+							"coding-agent/building/collaboration"
 						]
 					},
 					{
 						"group": "Integrations",
-						"pages": ["integrations/overview"]
+						"pages": [
+							"coding-agent/integrations/overview",
+							"coding-agent/integrations/oauth",
+							"coding-agent/integrations/skills",
+							"coding-agent/integrations/mcp-servers",
+							"coding-agent/integrations/api-keys"
+						]
 					}
 				]
 			},
 			{
-				"tab": "API & MCP",
+				"tab": "Browser Agents",
 				"groups": [
 					{
-						"group": "Overview",
-						"pages": ["api-mcp/overview", "mcp-server"]
+						"group": "Get Started",
+						"pages": [
+							"browser-agents/overview",
+							"browser-agents/quickstart",
+							"browser-agents/mcp-tool"
+						]
 					},
 					{
 						"group": "API Reference",
 						"pages": [
-							"api-reference/introduction",
-							"api-reference/overview",
-							"api-reference/fast-spec",
-							"api-reference/deep-spec",
-							"api-reference/list-specs",
-							"api-reference/find-specs",
-							"api-reference/spec-status",
-							"api-reference/credits-balance"
+							"browser-agents/api/run-task",
+							"browser-agents/api/task-status",
+							"browser-agents/api/list-tasks"
 						]
 					},
 					{
 						"group": "SDKs",
-						"pages": ["sdks/overview", "sdks/python", "sdks/node"]
+						"pages": [
+							"browser-agents/sdks/overview",
+							"browser-agents/sdks/python",
+							"browser-agents/sdks/node"
+						]
 					}
 				]
 			},
 			{
-				"tab": "Guides",
+				"tab": "Architect Agent",
 				"groups": [
 					{
-						"group": "Best Practices",
+						"group": "Get Started",
 						"pages": [
-							"guides/use-cases",
-							"guides/integration-patterns",
-							"guides/best-practices",
-							"guides/documentation-scraping"
+							"architect-agent/overview",
+							"architect-agent/quickstart",
+							"architect-agent/mcp-setup"
+						]
+					},
+					{
+						"group": "API Reference",
+						"pages": [
+							"architect-agent/api/fast-spec",
+							"architect-agent/api/deep-spec",
+							"architect-agent/api/spec-status",
+							"architect-agent/api/list-specs",
+							"architect-agent/api/find-specs",
+							"architect-agent/api/credits-balance"
+						]
+					},
+					{
+						"group": "SDKs",
+						"pages": [
+							"architect-agent/sdks/overview",
+							"architect-agent/sdks/python",
+							"architect-agent/sdks/node"
 						]
 					}
 				]
 			}
+		],
+		"redirects": [
+			{ "source": "/", "destination": "/overview" },
+			{ "source": "/what-is-predev", "destination": "/overview" },
+			{ "source": "/quickstart", "destination": "/coding-agent/quickstart" },
+			{ "source": "/how-it-works", "destination": "/coding-agent/overview" },
+			{ "source": "/coding-agent/how-it-works", "destination": "/coding-agent/overview" },
+			{ "source": "/labs", "destination": "/overview" },
+			{ "source": "/labs/overview", "destination": "/overview" },
+			{ "source": "/labs/browser-agents/overview", "destination": "/browser-agents/overview" },
+			{ "source": "/labs/browser-agents/quickstart", "destination": "/browser-agents/quickstart" },
+			{ "source": "/labs/browser-agents/rest-api", "destination": "/browser-agents/api/run-task" },
+			{ "source": "/browser-agents/rest-api", "destination": "/browser-agents/api/run-task" },
+			{ "source": "/browser-agents/api/overview", "destination": "/browser-agents/api/run-task" },
+			{ "source": "/labs/browser-agents/mcp-tool", "destination": "/browser-agents/mcp-tool" },
+			{ "source": "/labs/browser-agents/task-schemas", "destination": "/browser-agents/api/run-task" },
+			{ "source": "/browser-agents/task-schemas", "destination": "/browser-agents/api/run-task" },
+			{ "source": "/labs/browser-agents/benchmarks", "destination": "/browser-agents/overview" },
+			{ "source": "/browser-agents/benchmarks", "destination": "/browser-agents/overview" },
+			{ "source": "/specifications/understanding-specs", "destination": "/coding-agent/specifications/understanding-specs" },
+			{ "source": "/specifications/fast-vs-deep", "destination": "/coding-agent/specifications/fast-vs-deep" },
+			{ "source": "/architect-agent/concepts/understanding-specs", "destination": "/coding-agent/specifications/understanding-specs" },
+			{ "source": "/architect-agent/concepts/fast-vs-deep", "destination": "/coding-agent/specifications/fast-vs-deep" },
+			{ "source": "/guides/use-cases", "destination": "/coding-agent/overview" },
+			{ "source": "/guides/integration-patterns", "destination": "/coding-agent/integrations/overview" },
+			{ "source": "/guides/best-practices", "destination": "/coding-agent/overview" },
+			{ "source": "/guides/documentation-scraping", "destination": "/coding-agent/integrations/api-keys" },
+			{ "source": "/api-mcp/overview", "destination": "/architect-agent/overview" },
+			{ "source": "/mcp-server", "destination": "/architect-agent/mcp-setup" },
+			{ "source": "/api-reference/introduction", "destination": "/architect-agent/overview" },
+			{ "source": "/api-reference/overview", "destination": "/architect-agent/overview" },
+			{ "source": "/api-reference/fast-spec", "destination": "/architect-agent/api/fast-spec" },
+			{ "source": "/api-reference/deep-spec", "destination": "/architect-agent/api/deep-spec" },
+			{ "source": "/api-reference/spec-status", "destination": "/architect-agent/api/spec-status" },
+			{ "source": "/api-reference/list-specs", "destination": "/architect-agent/api/list-specs" },
+			{ "source": "/api-reference/find-specs", "destination": "/architect-agent/api/find-specs" },
+			{ "source": "/api-reference/credits-balance", "destination": "/architect-agent/api/credits-balance" },
+			{ "source": "/api-reference/browser-agents", "destination": "/browser-agents/api/run-task" },
+				{ "source": "/browser-agents/api/run-batch", "destination": "/browser-agents/api/run-task" },
+				{ "source": "/browser-agents/api/get-batch", "destination": "/browser-agents/api/task-status" },
+				{ "source": "/browser-agents/api/get-run", "destination": "/browser-agents/api/task-status" },
+				{ "source": "/browser-agents/api/list-batches", "destination": "/browser-agents/api/list-tasks" },
+				{ "source": "/browser-agents/api/list-runs", "destination": "/browser-agents/api/list-tasks" },
+				{ "source": "/browser-agents/api/capacity", "destination": "/browser-agents/api/run-task" },
+				{ "source": "/browser-agents/pricing", "destination": "/browser-agents/overview" },
+				{ "source": "/labs/browser-agents/pricing", "destination": "/browser-agents/overview" },
+			{ "source": "/sdks/overview", "destination": "/architect-agent/sdks/overview" },
+			{ "source": "/sdks/python", "destination": "/architect-agent/sdks/python" },
+			{ "source": "/sdks/node", "destination": "/architect-agent/sdks/node" },
+			{ "source": "/projects/creating-a-project", "destination": "/coding-agent/projects/creating-a-project" },
+			{ "source": "/projects/importing-repos", "destination": "/coding-agent/projects/importing-repos" },
+			{ "source": "/building/build-modes", "destination": "/coding-agent/building/build-modes" },
+			{ "source": "/building/acceptance-criteria", "destination": "/coding-agent/building/acceptance-criteria" },
+			{ "source": "/building/pull-requests", "destination": "/coding-agent/building/pull-requests" },
+			{ "source": "/building/progress-tracking", "destination": "/coding-agent/building/progress-tracking" },
+			{ "source": "/building/pro-mode", "destination": "/coding-agent/building/pro-mode" },
+			{ "source": "/building/custom-domains", "destination": "/coding-agent/building/custom-domains" },
+			{ "source": "/building/collaboration", "destination": "/coding-agent/building/collaboration" },
+			{ "source": "/integrations/overview", "destination": "/coding-agent/overview" }
 		],
 		"global": {
 			"anchors": [
@@ -134,11 +210,6 @@
 					"anchor": "Dashboard",
 					"href": "https://pre.dev/projects",
 					"icon": "grid-2"
-				},
-				{
-					"anchor": "API Playground",
-					"href": "https://pre.dev/projects/playground",
-					"icon": "code"
 				},
 				{
 					"anchor": "Blog",

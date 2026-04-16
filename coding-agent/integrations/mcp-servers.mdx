@@ -1,0 +1,36 @@
+---
+title: "MCP Servers"
+description: "Connect external tool servers to extend what pre.dev can do."
+---
+
+MCP Servers let you plug any Model Context Protocol server into your Coding Agent. Whatever tools that server exposes, the agent can call — as if they were built into pre.dev.
+
+If you've already built an MCP server for Claude, Cursor, or VS Code, it works here with zero changes.
+
+## When to use one
+
+- **Internal tooling** — your team has an MCP server that queries your staging database, triggers deploys, or exposes a private API
+- **Third-party MCP servers** — GitHub, Linear, Sentry, Grafana, Notion — any MCP-speaking service
+- **Custom automations** — any script you've wrapped as an MCP server (cron control, DNS changes, feature flag flips)
+
+## Connecting a server
+
+1. Open **[Integrations → MCP Servers](https://pre.dev/projects/integrations)**
+2. Click **Add MCP Server**
+3. Paste the server URL and auth headers (if required)
+4. Click **Test Connection** — pre.dev handshakes with the server and lists its tools
+5. Save — the agent can now call those tools on any project
+
+## What the agent sees
+
+Once a server is connected, its tools show up in the agent's available toolset automatically. If your server exposes a `queryStaging` tool, the agent can reason about when to call it ("this task needs the latest customer count from staging → call `queryStaging`") and execute the call during a build.
+
+## Per-project toggling
+
+MCP server connections can be toggled per project from the project dashboard. Turn them off for projects where the extra tools would add noise; leave them on where they're useful.
+
+## Security
+
+- Connection URLs and headers are encrypted at rest
+- Requests from pre.dev sandboxes to your MCP server come from a known IP range (available on request for allow-listing)
+- Your server's auth is respected — pre.dev forwards the headers you configured on every call

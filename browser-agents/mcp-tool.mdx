@@ -1,0 +1,197 @@
+---
+title: "MCP Setup"
+description: "Install the pre.dev MCP server — your coding agent gets browser automation as a native tool."
+---
+
+<Note>
+  **One pre.dev MCP server, all the tools.** Install it once and your agent gets `browser_agent` (browser automation) plus `fast_spec` / `deep_spec` (the [Architect Agent](/architect-agent/overview)) in one shot.
+</Note>
+
+## Quick Start
+
+<Steps>
+  <Step title="Get your API key">
+    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/browser-agents">
+      Visit the playground to copy your API key.
+    </Card>
+  </Step>
+  <Step title="Install the MCP server">
+    <Tabs>
+      <Tab title="Cursor — One-Click">
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
+
+        Click the button above — Cursor will open with the pre.dev server pre-configured. Paste your API key when prompted.
+      </Tab>
+      <Tab title="Cursor — Manual">
+        1. Open Cursor → Settings → Cursor Settings → **Tools & MCP**
+        2. Click **"New MCP Server"**
+        3. Add this configuration:
+
+        ```json
+        {
+          "mcpServers": {
+            "predev": {
+              "url": "https://api.pre.dev/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+
+        4. Replace `YOUR_API_KEY` with your actual API key
+        5. Save and restart Cursor
+      </Tab>
+      <Tab title="Claude Code">
+        Run this in your terminal:
+
+        ```bash
+        claude mcp add-json predev '{"type":"sse","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
+        ```
+
+        Replace `YOUR_API_KEY` with your key. Claude Code picks it up on next session.
+
+        <Info>
+          See the [Claude Code MCP docs](https://docs.claude.com/en/docs/claude-code/mcp) for MCP basics.
+        </Info>
+      </Tab>
+      <Tab title="VS Code">
+        Run this single command:
+
+        ```bash
+        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}"
+        ```
+
+        Replace `YOUR_API_KEY` with your key, then **restart VS Code completely** (Quit and reopen).
+
+        <Info>
+          Troubleshooting: [VS Code MCP docs](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
+        </Info>
+      </Tab>
+      <Tab title="Windsurf">
+        1. Click **MCP** in the Cascade panel
+        2. Add this to `mcp_config.json`:
+
+        ```json
+        {
+          "mcpServers": {
+            "predev": {
+              "serverUrl": "https://api.pre.dev/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+
+        3. Replace `YOUR_API_KEY` with your key, save, and refresh Windsurf.
+
+        <Info>
+          Troubleshooting: [Windsurf MCP docs](https://docs.windsurf.com/windsurf/cascade/mcp).
+        </Info>
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Try it">
+    Ask your agent:
+
+    ```
+    Use pre.dev browser_agent to extract the top 10 stories from
+    news.ycombinator.com with title, url, and points.
+    ```
+
+    <Check>
+      Your agent calls the `browser_agent` tool and returns structured JSON.
+    </Check>
+  </Step>
+</Steps>
+
+## What tools you get
+
+Once the MCP server is installed, your agent has three browser tools available:
+
+<CardGroup cols={2}>
+  <Card title="browser_agent" icon="cursor">
+    Run one or more browser tasks. Streams live per-step events (navigation → plan → action → screenshot) as MCP notifications so your agent sees progress in real time.
+
+    Args: `tasks[]`, `concurrency`, `async`
+  </Card>
+  <Card title="browser_agent_list" icon="list">
+    List the caller's recent batches with pagination.
+  </Card>
+  <Card title="browser_agent_get" icon="magnifying-glass">
+    Fetch a single batch by id, optionally with the full event timeline.
+  </Card>
+  <Card title="fast_spec / deep_spec" icon="compass" href="/architect-agent/overview">
+    Bonus — the same server exposes pre.dev's Architect Agent tools for planning full software projects.
+  </Card>
+</CardGroup>
+
+## Example prompts
+
+<Tabs>
+  <Tab title="Scrape structured data">
+    ```
+    Use pre.dev browser_agent to extract the top 10 products from
+    https://www.producthunt.com with name, tagline, and upvote count.
+    Return a JSON array.
+    ```
+  </Tab>
+  <Tab title="Multi-step flow">
+    ```
+    Use pre.dev browser_agent: go to https://news.ycombinator.com/newest,
+    click "More" twice to load 90 stories, then extract all titles and points.
+    ```
+  </Tab>
+  <Tab title="Bulk enrichment">
+    ```
+    Use pre.dev browser_agent to process these 50 company URLs. For each:
+    extract the company name, tagline, and link to their pricing page.
+    Run with concurrency 10.
+    ```
+  </Tab>
+  <Tab title="Authed SaaS scrape">
+    ```
+    Use pre.dev browser_agent to log into https://app.example.com with the
+    credentials in `input` (email + password), then extract the list of
+    projects from the dashboard.
+    ```
+  </Tab>
+</Tabs>
+
+## Live event streaming
+
+Every step of a task emits an MCP `notifications/message` frame. The `taskIndex` field ties each event to a specific task in the batch. Your agent sees:
+
+- `navigation` — the agent loaded a URL
+- `plan` — the agent decided what to do next
+- `action` — a click, type, or scroll executed
+- `screenshot` — a screenshot was captured
+- `done` — the task completed
+
+Event shapes are identical to the REST SSE stream — see [Run a Task → SSE frames](/browser-agents/api/run-task#stream-stream-true).
+
+## Auth
+
+`PREDEV_API_KEY` is all you need. The key is your personal SuperTokens userId (solo) or your enterprise org API key. Same key works for REST and MCP.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Tool not found" icon="magnifying-glass">
+    - Restart your client after adding the MCP config
+    - Verify the URL is exactly `https://api.pre.dev/mcp`
+    - Check JSON syntax in your config file
+    - Confirm your API key is valid at [pre.dev/projects/browser-agents](https://pre.dev/projects/browser-agents)
+  </Accordion>
+  <Accordion title="Authentication failed" icon="triangle-exclamation">
+    - Make sure the `Authorization` header starts with `Bearer ` (with the space)
+    - Solo accounts: use your personal key. Enterprise: use the org key from your org settings
+    - Check your subscription is active
+  </Accordion>
+  <Accordion title="Legacy tool names" icon="clock-rotate-left">
+    `browser_task`, `browser_task_list`, `browser_task_get` still work as aliases — old integrations continue working without changes.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,59 @@
+---
+title: "Browser Agents"
+description: "Browser automation for humans and AI. Navigate, interact, and extract data from any website."
+summary: "Browser Agents runs browser-driven tasks — scraping, multi-step flows, logins, form fills — via a single REST API or MCP tool."
+agent_hint: "When you need to navigate a web page, click, type, or extract structured data from a live site, call POST /api/v1/browser-agents with a tasks array."
+---
+
+**Browser Agents for humans + AI.** Give the agent a URL and an instruction — it drives a real browser, follows the flow, and returns structured JSON validated against your schema. No Playwright plumbing, no selector maintenance.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="play" href="/browser-agents/quickstart">
+    Copy-paste examples in curl, TypeScript, Python, and MCP. Your first task in under a minute.
+  </Card>
+  <Card title="Get an API key" icon="key" href="https://pre.dev/projects/browser-agents">
+    Grab a key from the pre.dev playground and set it as `PREDEV_API_KEY`.
+  </Card>
+</CardGroup>
+
+## What Browser Agents can do
+
+<CardGroup cols={2}>
+  <Card title="Pull data off any site" icon="database">
+    - Scrape pricing, listings, and contacts into JSON
+    - Enrich CSVs with fresh web data
+    - Read authed dashboards (Linear, Notion, Stripe)
+  </Card>
+  <Card title="Automate anything clickable" icon="hand-pointer">
+    - Log in, navigate, fill forms
+    - Submit bulk forms from a CSV
+    - Step through multi-page flows end-to-end
+  </Card>
+  <Card title="Catch regressions before users do" icon="shield-check">
+    - Run critical flows on a schedule
+    - Verify checkout across plans
+    - Flag pricing, UI, or copy drift
+  </Card>
+  <Card title="Give your agent a real browser" icon="plug">
+    - Drop-in MCP for Claude Code & Cursor
+    - URL + instruction → typed JSON
+    - Replaces flaky Playwright code
+  </Card>
+</CardGroup>
+
+## Two ways to call it
+
+<CardGroup cols={2}>
+  <Card title="REST API" icon="code" href="/browser-agents/api/run-task">
+    `POST https://api.pre.dev/api/v1/browser-agents` with a tasks array. Sync, async, or live SSE streams. Up to 1,000 tasks per request.
+  </Card>
+  <Card title="MCP Tool" icon="plug" href="/browser-agents/mcp-tool">
+    One-click install into Cursor, Claude Code, VS Code, or Windsurf. Your agent gets `browser_agent` as a tool — no orchestration code.
+  </Card>
+</CardGroup>
+
+## Next
+
+- [Quickstart](/browser-agents/quickstart) — runnable curl / TS / Python / MCP
+- [REST API reference](/browser-agents/api/run-task)
+- [MCP tool setup](/browser-agents/mcp-tool)

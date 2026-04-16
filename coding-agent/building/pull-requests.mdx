@@ -1,0 +1,84 @@
+---
+title: "Pull Requests"
+description: "How pre.dev agents deliver code through reviewable PRs."
+---
+
+Every task completed by a build agent produces a pull request. The AI never pushes directly to main — you always have the opportunity to review, request changes, or reject code before it's merged.
+
+## PR Workflow
+
+```
+Task assigned → Agent builds in sandbox → Verification passes → Feature branch created → PR opened
+```
+
+### What Each PR Contains
+
+```diff
+ # feat/dtc-913 → predev · 631a912 · PR #1
+ # feat(Setup): Write concise design aesthetic/rules
+ # workspace/package.json (+251)
+
++ "private": true,
+  "name": "mobile",
+  "sideEffects": false,
+  "scripts": {
++   "build": "react-router build",
+    "clean": "node scripts/clean.js",
++   "dev": "react-router dev",
+    "test": "vitest run",
+```
+
+- **Feature branch** — Named descriptively based on the task (e.g., `feat/setup-user-auth`)
+- **Implementation code** — All files created or modified for the task
+- **Tests** — Unit tests covering the new functionality
+- **Diff summary** — Clear view of what changed and why
+- **Verification status** — All acceptance criteria results
+
+## Branch Strategy
+
+pre.dev follows a clean branch strategy:
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Your production branch — agents never push here |
+| `feat/*` | Feature branches for each completed task |
+
+Each task gets its own feature branch. You can merge them individually or batch them.
+
+## Reviewing PRs
+
+When reviewing agent-generated PRs:
+
+1. **Check the diff** — Verify the implementation matches what you expected
+2. **Review acceptance results** — All automated checks should show PASSED
+3. **Test locally** (optional) — Pull the branch and run it yourself
+4. **Merge or request changes** — If something's off, the agent can iterate
+
+## Merge Strategies
+
+You control how PRs are merged:
+
+- **Merge immediately** — For tasks you're confident about
+- **Batch merge** — Let several PRs accumulate, review them together, merge in order
+- **Cherry-pick** — Merge only specific PRs while skipping or reworking others
+
+## Code Quality
+
+<Check>
+  Because every PR passes [acceptance verification](/coding-agent/building/acceptance-criteria) before it's opened, you're reviewing **verified, working code** — not hoping it compiles.
+</Check>
+
+- Types compile cleanly
+- Linting rules pass
+- Tests pass
+- UI renders correctly (for frontend tasks)
+
+## PR History
+
+Your project's PR history serves as a detailed log of how the codebase was built:
+
+- Each PR maps to a specific task in the spec
+- PRs are opened in milestone order
+- The commit history tells the story of the project's construction
+
+This makes it easy to understand why any piece of code exists — trace it back to the task and user story in the spec.

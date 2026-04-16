@@ -1,0 +1,51 @@
+---
+title: "API Keys"
+description: "API keys and secrets for authenticating with third-party services."
+---
+
+API Keys are the credentials your projects need to talk to third-party services — Stripe, OpenAI, Supabase, Resend, anything. Store them once; every project inherits them.
+
+## Categories
+
+pre.dev groups supported services into categories so you can see what you've configured at a glance:
+
+- **AI Text** — OpenAI, Anthropic, Mistral, Groq, …
+- **AI Image / Video / Audio** — DALL·E, Stability, Runway, ElevenLabs, …
+- **Search** — Exa, Tavily, You.com
+- **Web Scraping** — Firecrawl, Browserbase
+- **Payments** — Stripe, PayPal
+- **Email** — Resend, SendGrid, Mailgun
+- **Auth** — Clerk, Auth0, Supabase Auth
+- **Database** — Supabase, PlanetScale, Neon
+- **Storage** — S3, Cloudflare R2, Uploadthing
+- **Analytics** — PostHog, Mixpanel, Amplitude
+
+You can also add keys for any service not on this list.
+
+## Adding a key
+
+1. Open **[Integrations → API Keys](https://pre.dev/projects/integrations)**
+2. Pick a provider (or add a custom one)
+3. Paste your key
+4. Save
+
+The key is encrypted before it's stored. It never appears in plaintext after saving — not in the UI, not in agent output, not in PR diffs.
+
+## Bulk import from `.env`
+
+Click **Import** on the API Keys tab and paste a `.env` file. pre.dev parses the keys, detects which provider each one belongs to (based on key format), and stages them for review before saving.
+
+## How agents use them
+
+On every build, the agent:
+
+1. Scans your configured API keys
+2. Picks the ones relevant to the current task
+3. Writes them into the project's `.env` (secrets), not the code
+4. References them via `process.env.STRIPE_SECRET_KEY` etc. in the generated code
+
+Result: the code you get back runs against your real accounts from the first build.
+
+## Propagating changes
+
+If you rotate a key, update it in Integrations — pre.dev detects which existing projects use it and shows a **"N projects behind"** banner. Click through to push the new key to those projects' `.env` files.
