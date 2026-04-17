@@ -14,7 +14,7 @@ Both services pass 100/100 on our public [benchmark](/browser-agents/overview#be
 <Tab title="Node / TypeScript">
 ```bash
 npm uninstall browser-use-sdk
-npm install @predotdev/sdk
+npm install predev-api
 
 # Replace in .env, .env.example, CI, docker-compose, etc.
 # BROWSER_USE_API_KEY=...  →  PREDEV_API_KEY=...
@@ -23,7 +23,7 @@ npm install @predotdev/sdk
 <Tab title="Python">
 ```bash
 pip uninstall browser-use-sdk
-pip install predev
+pip install predev-api
 
 # Replace in .env, .env.example, CI, docker-compose, etc.
 # BROWSER_USE_API_KEY=...  →  PREDEV_API_KEY=...
@@ -56,12 +56,12 @@ const data = JSON.parse(response.output);
 **After — pre.dev**
 
 ```ts
-import { Predev } from '@predotdev/sdk';
+import { PredevAPI } from 'predev-api';
 
-const client = new Predev({ apiKey: process.env.PREDEV_API_KEY! });
+const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
 
-const { results } = await client.browserAgents.run({
-  tasks: [{
+const result = await client.browserAgent([
+  {
     url: 'https://example.com',
     instruction: 'Extract the H1.',
     output: {
@@ -69,9 +69,9 @@ const { results } = await client.browserAgents.run({
       properties: { heading: { type: 'string' } },
       required: ['heading'],
     },
-  }],
-});
-const data = results[0].data; // { heading: 'Example Domain' }
+  },
+]);
+const data = result.results[0].data; // { heading: 'Example Domain' }
 ```
 </Tab>
 <Tab title="Python">
@@ -94,12 +94,12 @@ data = json.loads(response.output)
 
 ```python
 import os
-from predev import Predev
+from predev_api import PredevAPI
 
-client = Predev(api_key=os.environ["PREDEV_API_KEY"])
+client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
 
-result = client.browser_agents.run(
-    tasks=[{
+result = client.browser_agent([
+    {
         "url": "https://example.com",
         "instruction": "Extract the H1.",
         "output": {
@@ -107,9 +107,9 @@ result = client.browser_agents.run(
             "properties": {"heading": {"type": "string"}},
             "required": ["heading"],
         },
-    }]
-)
-data = result.results[0].data  # {'heading': 'Example Domain'}
+    }
+])
+data = result["results"][0]["data"]  # {'heading': 'Example Domain'}
 ```
 </Tab>
 </Tabs>
@@ -117,7 +117,7 @@ data = result.results[0].data  # {'heading': 'Example Domain'}
 Key differences:
 - **URL is a first-class field**, not embedded in the instruction. The agent navigates there before running.
 - **Output schema is JSON Schema**, not a serialized Pydantic/Zod model. The runner validates the response and retries on schema-failure.
-- **`tasks` is always an array** — one endpoint covers 1 task or 1,000.
+- **Tasks is always an array** — one method covers 1 task or 1,000.
 
 ---
 
@@ -143,9 +143,8 @@ const data = responses.map((r) => JSON.parse(r.output));
 **After — pre.dev (one call, server-side concurrency)**
 
 ```ts
-const { results } = await client.browserAgents.run({
-  concurrency: 3,
-  tasks: urls.map((url) => ({
+const result = await client.browserAgent(
+  urls.map((url) => ({
     url,
     instruction: 'Extract the top 5 story titles.',
     output: {
@@ -154,8 +153,9 @@ const { results } = await client.browserAgents.run({
       required: ['titles'],
     },
   })),
-});
-const data = results.map((r) => r.data);
+  { concurrency: 3 },
+);
+const data = result.results.map((r) => r.data);
 ```
 </Tab>
 <Tab title="Python">
@@ -176,19 +176,22 @@ data = await asyncio.gather(*(one(u) for u in urls))
 **After — pre.dev (one call, server-side concurrency)**
 
 ```python
-result = client.browser_agents.run(
+result = client.browser_agent(
+    [
+        {
+            "url": url,
+            "instruction": "Extract the top 5 story titles.",
+            "output": {
+                "type": "object",
+                "properties": {"titles": {"type": "array", "items": {"type": "string"}}},
+                "required": ["titles"],
+            },
+        }
+        for url in urls
+    ],
     concurrency=3,
-    tasks=[{
-        "url": url,
-        "instruction": "Extract the top 5 story titles.",
-        "output": {
-            "type": "object",
-            "properties": {"titles": {"type": "array", "items": {"type": "string"}}},
-            "required": ["titles"],
-        },
-    } for url in urls]
 )
-data = [r.data for r in result.results]
+data = [r["data"] for r in result["results"]]
 ```
 </Tab>
 </Tabs>
@@ -199,7 +202,7 @@ Up to 1,000 tasks per request. See [Run a Task](/browser-agents/api/run-task) fo
 
 ## 4. Async + poll pattern
 
-If you were polling Browser Use by session id, pre.dev has a direct equivalent: set `async: true` on submit, then `GET /browser-agent/:id`.
+If you were polling Browser Use by session id, pre.dev has a direct equivalent: pass `async: true` on submit, then call `getBrowserAgent(id)`.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -209,7 +212,6 @@ If you were polling Browser Use by session id, pre.dev has a direct equivalent: 
 const handle = client.run(task, { llm: 'bu-mini' });
 const sessionId = handle.sessionId;
 
-// Later — poll by session id
 while (true) {
   const status = await client.sessions.get(sessionId);
   if (status.state === 'finished') break;
@@ -220,13 +222,13 @@ while (true) {
 **After — pre.dev**
 
 ```ts
-const { id } = await client.browserAgents.run({
-  async: true,
-  tasks: [{ url, instruction, output }],
-});
+const { id } = await client.browserAgent(
+  [{ url, instruction, output }],
+  { async: true },
+);
 
 while (true) {
-  const batch = await client.browserAgents.get(id);
+  const batch = await client.getBrowserAgent(id);
   if (batch.status === 'completed' || batch.status === 'failed') break;
   await new Promise((r) => setTimeout(r, 2000));
 }
@@ -253,18 +255,21 @@ while True:
 ```python
 import time
 
-batch = client.browser_agents.run(async_=True, tasks=[{"url": url, "instruction": instruction, "output": output}])
+batch = client.browser_agent(
+    [{"url": url, "instruction": instruction, "output": output}],
+    run_async=True,
+)
 
 while True:
-    status = client.browser_agents.get(batch.id)
-    if status.status in ("completed", "failed"):
+    state = client.get_browser_agent(batch["id"])
+    if state["status"] in ("completed", "failed"):
         break
     time.sleep(2)
 ```
 </Tab>
 </Tabs>
 
-See [Task Status](/browser-agents/api/task-status) for the full polling contract (including `includeEvents=true` for the per-step timeline).
+See [Task Status](/browser-agents/api/task-status) for the full polling contract (pass `includeEvents=True` for the per-step timeline).
 
 ---
 
@@ -274,7 +279,7 @@ pre.dev Browser Agents covers the run-a-task-and-get-structured-JSON flow that ~
 
 - **Persistent sessions** — keeping a browser warm across requests for login-gated flows. Workaround: pass credentials in each task's `input` field; the agent will log in fresh each run.
 - **Agent profiles** — reusable personas with tools/settings. Workaround: put the persona in each task's `instruction`.
-- **Schedules** — recurring runs. Workaround: cron + a 10-line script that calls `/browser-agent` on your own scheduler (GitHub Actions, Render cron, Cloudflare Workers cron).
+- **Schedules** — recurring runs. Workaround: cron + a 10-line script that calls `browserAgent(...)` on your own scheduler (GitHub Actions, Render cron, Cloudflare Workers cron).
 - **Raw Playwright access** — Browser Use lets you hop into the session with raw Playwright. pre.dev abstracts this away entirely; if you need raw browser control, stick with Browser Use for that subset.
 
 The Claude prompt below will flag any usage of these features with `// TODO: pre.dev equivalent not yet available` so you can migrate the common paths automatically and hand-handle the rest.
@@ -308,9 +313,9 @@ https://docs.pre.dev/browser-agents/migrate-from-browser-use
 
 2. **Swap the SDK.**
    - Node/TS/Bun: replace `browser-use-sdk` dependency with
-     `@predotdev/sdk` in `package.json`, `bun.lockb`, `yarn.lock`,
-     or `pnpm-lock.yaml` (let the user run the install).
-   - Python: replace `browser-use-sdk` with `predev` in
+     `predev-api` in `package.json`, `bun.lockb`, `yarn.lock`, or
+     `pnpm-lock.yaml` (let the user run the install).
+   - Python: replace `browser-use-sdk` with `predev-api` in
      `requirements.txt`, `pyproject.toml`, `poetry.lock`, or
      `Pipfile` (let the user run the install).
 
@@ -320,19 +325,23 @@ https://docs.pre.dev/browser-agents/migrate-from-browser-use
 
    | Browser Use | pre.dev |
    |---|---|
-   | `new BrowserUse({ apiKey })` | `new Predev({ apiKey })` |
-   | `client.run(taskStr, { llm })` | `client.browserAgents.run({ tasks: [{ url, instruction, output }] })` |
-   | Python `BrowserUse(api_key=...)` | `Predev(api_key=...)` |
-   | Python `client.run(task, llm=...)` | `client.browser_agents.run(tasks=[{...}])` |
-   | `response.output` (JSON string) | `results[0].data` (already parsed) |
+   | `import { BrowserUse } from 'browser-use-sdk/v3'` | `import { PredevAPI } from 'predev-api'` |
+   | `new BrowserUse({ apiKey })` | `new PredevAPI({ apiKey })` |
+   | `client.run(taskStr, { llm })` | `client.browserAgent([{ url, instruction, output }])` |
+   | `response.output` (JSON string) | `result.results[0].data` (already parsed) |
+   | Python `from browser_use_sdk import BrowserUse` | `from predev_api import PredevAPI` |
+   | Python `BrowserUse(api_key=...)` | `PredevAPI(api_key=...)` |
+   | Python `client.run(task, llm=...)` | `client.browser_agent([{...}])` |
+   | Python `json.loads(response.output)` | `result["results"][0]["data"]` |
    | Embedded URL in task string | first-class `url` field |
    | Zod/Pydantic schema | JSON Schema in `output` field |
-   | Parallel via `Promise.all(client.run(...))` | single call with `tasks: [...]` array + `concurrency` |
-   | `handle.sessionId` + session polling | `{ async: true }` + `client.browserAgents.get(id)` |
+   | Parallel via `Promise.all(client.run(...))` | single call with `client.browserAgent([...])` + `{ concurrency }` |
+   | `handle.sessionId` + session polling | `client.browserAgent([...], { async: true })` + `client.getBrowserAgent(id)` |
+   | Python async equivalent | `client.browser_agent([...], run_async=True)` + `client.get_browser_agent(id)` |
 
 4. **Env vars.** Rename `BROWSER_USE_API_KEY` → `PREDEV_API_KEY`
    everywhere (code, env files, CI, docker). Base URL is
-   `https://api.pre.dev` if it's referenced explicitly anywhere.
+   `https://api.pre.dev` if it's referenced explicitly.
 
 5. **Unsupported features — leave TODOs, don't delete.** For any of:
    - `client.sessions.*` (persistent sessions)
@@ -351,19 +360,20 @@ https://docs.pre.dev/browser-agents/migrate-from-browser-use
    Do not skip this step.
 
 7. **Report.** At the end, print:
-   - Files changed (grouped by purpose: imports, env, call sites).
+   - Files changed (grouped: imports, env, call sites).
    - Count of migrated calls.
    - Count of TODO-comments left for unsupported features.
-   - Any test/typecheck failures you couldn't fix, with the exact
+   - Any test/typecheck failures you couldn't fix, with exact
      file:line and why.
 
 ## Constraints
 
 - **Don't delete** any original code until the replacement is verified
-  working. If you're unsure of a mapping, leave the old call with a
-  TODO and surface it in the final report.
-- **Don't guess** the pre.dev SDK name if `@predotdev/sdk` or `predev`
-  isn't on the registry your project uses — stop and ask.
+  working. If unsure of a mapping, leave the old call with a TODO
+  and surface it in the final report.
+- **Don't guess** the pre.dev SDK name — it's `predev-api` on both
+  npm and pip. If that's not what the project's package manager
+  resolves, stop and ask.
 - **Respect the user's existing code style** — don't reformat files
   you didn't otherwise change.
 ````
