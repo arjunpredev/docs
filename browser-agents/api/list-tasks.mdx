@@ -1,7 +1,7 @@
 ---
 title: "List Tasks"
-api: "GET https://api.pre.dev/browser-agent"
-openapi: "GET /browser-agent"
+api: "GET https://api.pre.dev/list-browser-agents"
+openapi: "GET /list-browser-agents"
 description: "Paginate over every browser-agent task submission your API key has created. Filter by status, control page size with limit/skip."
 ---
 
@@ -10,7 +10,7 @@ Paginate over every run this API key has created, newest first. Useful for build
 ## Overview
 
 - **Method:** `GET`
-- **Path:** `/browser-agent`
+- **Path:** `/list-browser-agents`
 - **Auth:** same `Authorization: Bearer YOUR_API_KEY` as [Run a Task](/browser-agents/api/run-task)
 - **Sort order:** newest first (`createdAt` descending).
 - **Scope:** only runs owned by this API key are returned.
@@ -37,7 +37,7 @@ Each entry in `batches` is a summary row:
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | `string` | Run id. Pass to [`GET /:id`](/browser-agents/api/task-status) for full results. |
+| `id` | `string` | Run id. Pass to [`GET /browser-agent/:id`](/browser-agents/api/task-status) for full results. |
 | `total` | `integer` | Number of tasks in the run. |
 | `completed` | `integer` | How many tasks have finished. |
 | `results` | `TaskResult[]` | Array sized to `total`. Index `0` is pre-populated with a stub `{ url, instruction }` for the first task so you can render a list row even before it completes; other indices are `null` until the run finishes. |
@@ -53,7 +53,7 @@ The envelope field is historically named `batches`, not `runs`, to stay backward
 ## Example
 
 ```bash
-curl "https://api.pre.dev/browser-agent?limit=10&status=completed" \
+curl "https://api.pre.dev/list-browser-agents?limit=10&status=completed" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
@@ -102,7 +102,7 @@ curl "https://api.pre.dev/browser-agent?limit=10&status=completed" \
 import requests
 
 API_KEY = "YOUR_API_KEY"
-BASE = "https://api.pre.dev/browser-agent"
+BASE = "https://api.pre.dev/list-browser-agents"
 HDR = {"Authorization": f"Bearer {API_KEY}"}
 
 
@@ -131,7 +131,7 @@ print(f"Lifetime spend: {total_credits} credits")
 
 ```javascript
 const API_KEY = process.env.PREDEV_API_KEY;
-const BASE = "https://api.pre.dev/browser-agent";
+const BASE = "https://api.pre.dev/list-browser-agents";
 
 async function listRuns({ limit = 20, skip = 0, status } = {}) {
   const params = new URLSearchParams({ limit: String(limit), skip: String(skip) });
@@ -167,6 +167,6 @@ async function fetchAllRuns(opts: { status?: "processing" | "completed" } = {}) 
 ```
 
 <Tip>
-List responses echo only the *first* task's URL/instruction into `results[0]` as a stub. To inspect every task in a run, fetch it by id with [`GET /:id`](/browser-agents/api/task-status).
+List responses echo only the *first* task's URL/instruction into `results[0]` as a stub. To inspect every task in a run, fetch it by id with [`GET /browser-agent/:id`](/browser-agents/api/task-status).
 </Tip>
 

@@ -211,7 +211,7 @@ console.log(run.results.map((r) => r.data));
 ```
 
 <Tip>
-For interactive UIs use `stream: true` on the initial [Run a Task](/browser-agents/api/run-task) request to skip polling entirely. Use `GET /:id?includeEvents=true` only to reconstruct timelines for historical runs.
+For interactive UIs use `stream: true` on the initial [Run a Task](/browser-agents/api/run-task) request to skip polling entirely. Use `GET /browser-agent/:id?includeEvents=true` only to reconstruct timelines for historical runs.
 </Tip>
 
 <Card title="Next: List Tasks" icon="arrow-right" href="/browser-agents/api/list-tasks">

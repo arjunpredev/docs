@@ -33,7 +33,7 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 |---|---|---|---|
 | `tasks` | `Task[]` | ✅ | Array of tasks. `1` ≤ length ≤ `1000`. |
 | `concurrency` | `integer` | ❌ | Parallel workers within this run. `1`–`20`. Default `5`. |
-| `async` | `boolean` | ❌ | If `true`, returns `{ id, status: "processing" }` immediately. Poll [`GET /:id`](/browser-agents/api/task-status). Default `false`. |
+| `async` | `boolean` | ❌ | If `true`, returns `{ id, status: "processing" }` immediately. Poll [`GET /browser-agent/:id`](/browser-agents/api/task-status). Default `false`. |
 | `stream` | `boolean` | ❌ | If `true`, returns an SSE stream with per-step events + final results. Default `false`. Mutually exclusive with `async`. |
 
 ### `Task` object
@@ -174,7 +174,7 @@ If a pod is already serving its SSE cap (`5000` concurrent streams), new stream 
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | `string` | Run id (Mongo ObjectId). Use with [`GET /:id`](/browser-agents/api/task-status). |
+| `id` | `string` | Run id (Mongo ObjectId). Use with [`GET /browser-agent/:id`](/browser-agents/api/task-status). |
 | `total` | `integer` | Number of tasks in the run. |
 | `completed` | `integer` | Number of tasks finished (any status). |
 | `results` | `TaskResult[]` | Per-task results, aligned by `taskIndex`. |

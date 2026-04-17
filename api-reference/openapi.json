@@ -826,7 +826,61 @@
             "description": "SSE capacity exceeded on this pod (5000 concurrent streams). Retry with `async: true` and poll."
           }
         }
-      },
+      }
+    },
+    "/browser-agent/{id}": {
+      "get": {
+        "operationId": "getRun",
+        "tags": [
+          "Batches"
+        ],
+        "summary": "Get a run by id",
+        "description": "Fetch a single run by id. Works for both in-progress and completed runs. Pending tasks are surfaced as stubs in `results` with `status: \"PENDING\"`. Pass `includeEvents=true` to include the full per-step event timeline for each task plus a top-level `liveEvents` array for tasks that are still running.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Run id (24-char Mongo ObjectId)."
+          },
+          {
+            "name": "includeEvents",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Include per-step event timelines. Payloads can be large \u2014 screenshots inflate them fast."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed run id."
+          },
+          "401": {
+            "description": "Missing or invalid bearer token."
+          },
+          "404": {
+            "description": "Run not found, or not owned by this API key."
+          }
+        }
+      }
+    },
+    "/list-browser-agents": {
       "get": {
         "operationId": "listRuns",
         "tags": [
@@ -899,58 +953,6 @@
           },
           "401": {
             "description": "Missing or invalid bearer token."
-          }
-        }
-      }
-    },
-    "/browser-agent/{id}": {
-      "get": {
-        "operationId": "getRun",
-        "tags": [
-          "Batches"
-        ],
-        "summary": "Get a run by id",
-        "description": "Fetch a single run by id. Works for both in-progress and completed runs. Pending tasks are surfaced as stubs in `results` with `status: \"PENDING\"`. Pass `includeEvents=true` to include the full per-step event timeline for each task plus a top-level `liveEvents` array for tasks that are still running.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Run id (24-char Mongo ObjectId)."
-          },
-          {
-            "name": "includeEvents",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "Include per-step event timelines. Payloads can be large \u2014 screenshots inflate them fast."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Run result.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BatchResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Malformed run id."
-          },
-          "401": {
-            "description": "Missing or invalid bearer token."
-          },
-          "404": {
-            "description": "Run not found, or not owned by this API key."
           }
         }
       }
