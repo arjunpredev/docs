@@ -25,9 +25,9 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
     You'll get back a structured spec with milestones, user stories, and architecture — in ~30–60 seconds.
   </Tab>
   <Tab title="MCP (Cursor)">
-    [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
+    [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
 
-    Click the button, paste your API key, restart Cursor. Then ask:
+    Click the button, restart Cursor. On first use a browser tab opens — sign in to pre.dev and pick which account or organization to authorize. Then ask:
 
     ```
     Use pre.dev to generate a spec for a task management app with team collaboration
@@ -37,10 +37,10 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
   </Tab>
   <Tab title="MCP (Claude Code)">
     ```bash
-    claude mcp add-json predev '{"type":"http","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
+    claude mcp add --transport http predev https://api.pre.dev/mcp
     ```
 
-    Then ask Claude:
+    Your browser will open to authorize — pick which account or organization to connect. Then ask Claude:
 
     ```
     Use pre.dev fast_spec to plan a task management app

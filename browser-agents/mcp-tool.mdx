@@ -21,19 +21,19 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
         Run this in your terminal:
 
         ```bash
-        claude mcp add-json predev '{"type":"sse","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
+        claude mcp add --transport http predev https://api.pre.dev/mcp
         ```
 
-        Replace `YOUR_API_KEY` with your key. Claude Code picks it up on next session.
+        Your browser opens to authorize — sign into pre.dev (if not already) and pick which account or organization to connect.
 
         <Info>
           See the [Claude Code MCP docs](https://docs.claude.com/en/docs/claude-code/mcp) for MCP basics.
         </Info>
       </Tab>
       <Tab title="Cursor — One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
 
-        Click the button above — Cursor will open with the pre.dev server pre-configured. Paste your API key when prompted.
+        Click the button above — Cursor installs the pre.dev server. On first tool use, a browser tab opens to authorize.
       </Tab>
       
     </Tabs>

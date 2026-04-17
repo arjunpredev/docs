@@ -10,35 +10,43 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
 ## Quick Start
 
 <Steps>
-  <Step title="Get Your API Key">
-    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/playground">
-      Visit the playground to get your API key
+  <Step title="Sign in to pre.dev">
+    <Card title="pre.dev account" icon="user" href="https://pre.dev">
+      Make sure you're signed in. The MCP install will open a browser tab to ask which account (solo or enterprise organization) to authorize.
     </Card>
   </Step>
   <Step title="Install the MCP Server">
     <Tabs>
-    <Tab title="Claude Code">
-        Run this single command in your terminal:
+      <Tab title="Claude Code">
+        Run this in your terminal:
 
         ```bash
-        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}"
+        claude mcp add --transport http predev https://api.pre.dev/mcp
         ```
 
-        Replace `YOUR_API_KEY` with your actual API key.
+        A browser window opens — sign into pre.dev (if not already), pick which account or organization to authorize, and click **Approve**. Claude Code completes the handshake automatically.
 
-        **After running the command:**
+        <Info>
+          For troubleshooting, see the [Claude Code MCP documentation](https://docs.claude.com/en/docs/claude-code/mcp).
+        </Info>
+      </Tab>
+      <Tab title="VS Code">
+        Run this in your terminal:
 
-        1. Restart VS Code completely (Quit and reopen)
-        2. The MCP server will be automatically configured
+        ```bash
+        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\"}"
+        ```
+
+        Restart VS Code. On first tool use, VS Code opens a browser tab to authorize — pick which account or organization to connect.
 
         <Info>
           For troubleshooting, see the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
         </Info>
       </Tab>
       <Tab title="Cursor - One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
-        
-        Click the button above to automatically install the pre.dev MCP server in Cursor. You'll be prompted to enter your API key during installation.
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
+
+        Click the button to install. On first tool use Cursor opens a browser tab to authorize — pick which pre.dev account or organization to connect.
       </Tab>
     </Tabs>
   </Step>
@@ -218,12 +226,13 @@ The pre.dev MCP Server equips your AI coding agent with:
 
 <AccordionGroup>
   <Accordion title="Authentication Failed" icon="triangle-exclamation">
-    - Verify your API key is correct
-    - Ensure you're using the right key (solo vs enterprise)
-    - Check your subscription is active
+    - Re-run `claude mcp add` (or the Cursor one-click) to redo the browser authorization
+    - Make sure you're signed into the right pre.dev account in your browser before the consent page loads
+    - If you're an enterprise admin, pick the correct organization on the consent page — each org has its own credit pool
+    - Check that your subscription is active at [pre.dev/projects/playground](https://pre.dev/projects/playground)
   </Accordion>
   <Accordion title="Tool Not Found" icon="magnifying-glass">
-    - Restart Cursor after adding MCP config
+    - Restart your editor after adding the MCP config
     - Verify the URL: `https://api.pre.dev/mcp`
     - Check JSON syntax in configuration
   </Accordion>
