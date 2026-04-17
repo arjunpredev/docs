@@ -104,6 +104,12 @@
 							"browser-agents/sdks/python",
 							"browser-agents/sdks/node"
 						]
+					},
+					{
+						"group": "Migrations",
+						"pages": [
+							"browser-agents/migrate-from-browser-use"
+						]
 					}
 				]
 			},
