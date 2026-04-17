@@ -6,7 +6,7 @@ agent_hint: "Use the one-shot Claude Code prompt at the bottom of this page to a
 
 If you're running Browser Use Cloud today, switching to pre.dev Browser Agents is an SDK swap + an env-var rename. Same task shape (URL + instruction + schema), same structured JSON out.
 
-Both services pass 100/100 on our public [benchmark](/browser-agents/overview#benchmark) — pre.dev is **12× cheaper** ($0.0103 vs $0.1222 per task).
+Both services pass 100/100 on our public [benchmark](/browser-agents/overview#benchmark) — pre.dev is **12× cheaper**.
 
 ## 1. Swap env vars + install the SDK
 
@@ -273,18 +273,6 @@ See [Task Status](/browser-agents/api/task-status) for the full polling contract
 
 ---
 
-## What's different / not yet supported
-
-pre.dev Browser Agents covers the run-a-task-and-get-structured-JSON flow that ~95% of Browser Use code does. A few Browser Use features don't have direct equivalents yet:
-
-- **Persistent sessions** — keeping a browser warm across requests for login-gated flows. Workaround: pass credentials in each task's `input` field; the agent will log in fresh each run.
-- **Agent profiles** — reusable personas with tools/settings. Workaround: put the persona in each task's `instruction`.
-- **Schedules** — recurring runs. Workaround: cron + a 10-line script that calls `browserAgent(...)` on your own scheduler (GitHub Actions, Render cron, Cloudflare Workers cron).
-- **Raw Playwright access** — Browser Use lets you hop into the session with raw Playwright. pre.dev abstracts this away entirely; if you need raw browser control, stick with Browser Use for that subset.
-
-The Claude prompt below will flag any usage of these features with `// TODO: pre.dev equivalent not yet available` so you can migrate the common paths automatically and hand-handle the rest.
-
----
 
 ## One-shot Claude Code prompt
 

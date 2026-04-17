@@ -17,32 +17,6 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
   </Step>
   <Step title="Install the MCP server">
     <Tabs>
-      <Tab title="Cursor — One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
-
-        Click the button above — Cursor will open with the pre.dev server pre-configured. Paste your API key when prompted.
-      </Tab>
-      <Tab title="Cursor — Manual">
-        1. Open Cursor → Settings → Cursor Settings → **Tools & MCP**
-        2. Click **"New MCP Server"**
-        3. Add this configuration:
-
-        ```json
-        {
-          "mcpServers": {
-            "predev": {
-              "url": "https://api.pre.dev/mcp",
-              "headers": {
-                "Authorization": "Bearer YOUR_API_KEY"
-              }
-            }
-          }
-        }
-        ```
-
-        4. Replace `YOUR_API_KEY` with your actual API key
-        5. Save and restart Cursor
-      </Tab>
       <Tab title="Claude Code">
         Run this in your terminal:
 
@@ -56,42 +30,12 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
           See the [Claude Code MCP docs](https://docs.claude.com/en/docs/claude-code/mcp) for MCP basics.
         </Info>
       </Tab>
-      <Tab title="VS Code">
-        Run this single command:
+      <Tab title="Cursor — One-Click">
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
 
-        ```bash
-        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}"
-        ```
-
-        Replace `YOUR_API_KEY` with your key, then **restart VS Code completely** (Quit and reopen).
-
-        <Info>
-          Troubleshooting: [VS Code MCP docs](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
-        </Info>
+        Click the button above — Cursor will open with the pre.dev server pre-configured. Paste your API key when prompted.
       </Tab>
-      <Tab title="Windsurf">
-        1. Click **MCP** in the Cascade panel
-        2. Add this to `mcp_config.json`:
-
-        ```json
-        {
-          "mcpServers": {
-            "predev": {
-              "serverUrl": "https://api.pre.dev/mcp",
-              "headers": {
-                "Authorization": "Bearer YOUR_API_KEY"
-              }
-            }
-          }
-        }
-        ```
-
-        3. Replace `YOUR_API_KEY` with your key, save, and refresh Windsurf.
-
-        <Info>
-          Troubleshooting: [Windsurf MCP docs](https://docs.windsurf.com/windsurf/cascade/mcp).
-        </Info>
-      </Tab>
+      
     </Tabs>
   </Step>
   <Step title="Try it">
@@ -107,27 +51,6 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
     </Check>
   </Step>
 </Steps>
-
-## What tools you get
-
-Once the MCP server is installed, your agent has three browser tools available:
-
-<CardGroup cols={2}>
-  <Card title="browser_agent" icon="cursor">
-    Run one or more browser tasks. Streams live per-step events (navigation → plan → action → screenshot) as MCP notifications so your agent sees progress in real time.
-
-    Args: `tasks[]`, `concurrency`, `async`
-  </Card>
-  <Card title="browser_agent_list" icon="list">
-    List the caller's recent batches with pagination.
-  </Card>
-  <Card title="browser_agent_get" icon="magnifying-glass">
-    Fetch a single batch by id, optionally with the full event timeline.
-  </Card>
-  <Card title="fast_spec / deep_spec" icon="compass" href="/architect-agent/overview">
-    Bonus — the same server exposes pre.dev's Architect Agent tools for planning full software projects.
-  </Card>
-</CardGroup>
 
 ## Example prompts
 

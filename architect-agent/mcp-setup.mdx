@@ -17,46 +17,7 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
   </Step>
   <Step title="Install the MCP Server">
     <Tabs>
-      <Tab title="Cursor - One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
-        
-        Click the button above to automatically install the pre.dev MCP server in Cursor. You'll be prompted to enter your API key during installation.
-      </Tab>
-      <Tab title="Cursor - Manual">
-        1. Open Cursor → Settings → Cursor Settings → **Tools & MCP**
-        2. Click **"New MCP Server"**
-        3. Add this configuration:
-
-        ```json
-        {
-          "mcpServers": {
-            "predev": {
-              "url": "https://api.pre.dev/mcp",
-              "headers": {
-                "Authorization": "Bearer YOUR_API_KEY"
-              }
-            }
-          }
-        }
-        ```
-
-        4. Replace `YOUR_API_KEY` with your actual API key
-        5. Save and restart Cursor
-      </Tab>
-      <Tab title="Claude Code">
-        Run this command in your terminal:
-
-        ```bash
-        claude mcp add-json predev '{"type":"sse","url":"https://api.pre.dev/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
-        ```
-
-        Replace `YOUR_API_KEY` with your actual API key from the playground.
-
-        <Info>
-          The command automatically configures Claude Code's MCP settings.
-        </Info>
-      </Tab>
-      <Tab title="VS Code">
+    <Tab title="Claude Code">
         Run this single command in your terminal:
 
         ```bash
@@ -74,31 +35,10 @@ description: "Supercharge your AI coding agents with enterprise-grade planning c
           For troubleshooting, see the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
         </Info>
       </Tab>
-      <Tab title="Windsurf">
-        **Step 1:** Click **MCP** in the Cascade panel to open MCP configuration
-
-        **Step 2:** Add this to your `mcp_config.json`:
-
-        ```json
-        {
-          "mcpServers": {
-            "predev": {
-              "serverUrl": "https://api.pre.dev/mcp",
-              "headers": {
-                "Authorization": "Bearer YOUR_API_KEY"
-              }
-            }
-          }
-        }
-        ```
-
-        **Step 3:** Replace `YOUR_API_KEY` with your actual API key
-
-        **Step 4:** Save and refresh Windsurf
-
-        <Info>
-          For troubleshooting, see the [Windsurf MCP documentation](https://docs.windsurf.com/windsurf/cascade/mcp).
-        </Info>
+      <Tab title="Cursor - One-Click">
+        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCIsImhlYWRlcnMiOnsiQXV0aG9yaXphdGlvbiI6IkJlYXJlciA8WU9VUl9BUElfS0VZPiJ9fQ%3D%3D)
+        
+        Click the button above to automatically install the pre.dev MCP server in Cursor. You'll be prompted to enter your API key during installation.
       </Tab>
     </Tabs>
   </Step>
