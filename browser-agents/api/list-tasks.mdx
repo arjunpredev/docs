@@ -1,7 +1,7 @@
 ---
 title: "List Tasks"
-api: "GET https://api.pre.dev/api/v1/browser-agents"
-openapi: "GET /api/v1/browser-agents"
+api: "GET https://api.pre.dev/browser-agent"
+openapi: "GET /browser-agent"
 description: "Paginate over every browser-agent task submission your API key has created. Filter by status, control page size with limit/skip."
 ---
 
@@ -10,7 +10,7 @@ Paginate over every run this API key has created, newest first. Useful for build
 ## Overview
 
 - **Method:** `GET`
-- **Path:** `/api/v1/browser-agents`
+- **Path:** `/browser-agent`
 - **Auth:** same `Authorization: Bearer YOUR_API_KEY` as [Run a Task](/browser-agents/api/run-task)
 - **Sort order:** newest first (`createdAt` descending).
 - **Scope:** only runs owned by this API key are returned.
@@ -53,7 +53,7 @@ The envelope field is historically named `batches`, not `runs`, to stay backward
 ## Example
 
 ```bash
-curl "https://api.pre.dev/api/v1/browser-agents?limit=10&status=completed" \
+curl "https://api.pre.dev/browser-agent?limit=10&status=completed" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
@@ -102,7 +102,7 @@ curl "https://api.pre.dev/api/v1/browser-agents?limit=10&status=completed" \
 import requests
 
 API_KEY = "YOUR_API_KEY"
-BASE = "https://api.pre.dev/api/v1/browser-agents"
+BASE = "https://api.pre.dev/browser-agent"
 HDR = {"Authorization": f"Bearer {API_KEY}"}
 
 
@@ -131,7 +131,7 @@ print(f"Lifetime spend: {total_credits} credits")
 
 ```javascript
 const API_KEY = process.env.PREDEV_API_KEY;
-const BASE = "https://api.pre.dev/api/v1/browser-agents";
+const BASE = "https://api.pre.dev/browser-agent";
 
 async function listRuns({ limit = 20, skip = 0, status } = {}) {
   const params = new URLSearchParams({ limit: String(limit), skip: String(skip) });

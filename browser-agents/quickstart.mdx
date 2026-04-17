@@ -17,7 +17,7 @@ Every example below:
 
 ```bash
 export PREDEV_API_KEY=...   # solo userId or enterprise org API key
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -122,21 +122,21 @@ For long-running batches, flip to async:
 
 ```bash
 # Async: returns immediately with batchId, poll for progress
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "async": true, "tasks": [...] }'
 # → { "id": "69df...", "status": "processing" }
 
 # Poll for the batch
-curl https://api.pre.dev/api/v1/browser-agents/$BATCH_ID \
+curl https://api.pre.dev/browser-agent/$BATCH_ID \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
 Or Server-Sent Events for live per-step updates:
 
 ```bash
-curl -N -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -N -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "stream": true, "tasks": [...] }'

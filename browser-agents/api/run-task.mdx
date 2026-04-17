@@ -1,7 +1,7 @@
 ---
 title: "Run a Task"
-api: "POST https://api.pre.dev/api/v1/browser-agents"
-openapi: "POST /api/v1/browser-agents"
+api: "POST https://api.pre.dev/browser-agent"
+openapi: "POST /browser-agent"
 description: "Run one or more browser-automation tasks. Supports sync, async, and SSE streaming modes. Up to 1000 tasks per request."
 ---
 
@@ -14,7 +14,7 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 ## Overview
 
 - **Method:** `POST`
-- **Path:** `/api/v1/browser-agents`
+- **Path:** `/browser-agent`
 - **Cost:** billed per successful task. Failed tasks are free.
 - **Max tasks per request:** `1000`
 - **Max in-flight tasks per user:** `5000`
@@ -56,7 +56,7 @@ Default behavior. The request holds the HTTP connection until every task in the 
 Best for: small runs (≤ 50 tasks), interactive scripts, jobs where you want one clean response.
 
 ```bash
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -92,12 +92,12 @@ curl -X POST https://api.pre.dev/api/v1/browser-agents \
 
 ### Async (`async: true`)
 
-Returns immediately with a `batchId`. Poll [`GET /api/v1/browser-agents/:id`](/browser-agents/api/task-status) for progress.
+Returns immediately with a `batchId`. Poll [`GET /browser-agent/:id`](/browser-agents/api/task-status) for progress.
 
 Best for: large runs, long-running tasks, fire-and-forget jobs.
 
 ```bash
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -137,7 +137,7 @@ Best for: live UI progress, debugging, watching what the agent is doing in real 
 Keepalive `:keepalive` comments are sent every 10s to stop intermediaries from closing the connection.
 
 ```bash
-curl -N -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -N -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -228,7 +228,7 @@ If a pod is already serving its SSE cap (`5000` concurrent streams), new stream 
 ### Multiple tasks with concurrency
 
 ```bash
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -243,7 +243,7 @@ curl -X POST https://api.pre.dev/api/v1/browser-agents \
 ### Structured extraction with `output` schema
 
 ```bash
-curl -X POST https://api.pre.dev/api/v1/browser-agents \
+curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -282,7 +282,7 @@ import time
 import requests
 
 API_KEY = "YOUR_API_KEY"
-BASE = "https://api.pre.dev/api/v1/browser-agents"
+BASE = "https://api.pre.dev/browser-agent"
 HDR = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
 
 
@@ -337,7 +337,7 @@ for event, data in run_stream([{"url": "https://example.com", "instruction": "Ex
 
 ```javascript
 const API_KEY = process.env.PREDEV_API_KEY;
-const BASE = "https://api.pre.dev/api/v1/browser-agents";
+const BASE = "https://api.pre.dev/browser-agent";
 const HDR = {
   "Authorization": `Bearer ${API_KEY}`,
   "Content-Type": "application/json",
@@ -445,7 +445,7 @@ interface BatchRequest {
 }
 
 export class BrowserAgents {
-  constructor(private apiKey: string, private base = "https://api.pre.dev/api/v1/browser-agents") {}
+  constructor(private apiKey: string, private base = "https://api.pre.dev/browser-agent") {}
 
   private headers() {
     return {

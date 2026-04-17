@@ -19,7 +19,7 @@ from predev_api import PredevAPI
 
 predev = PredevAPI(api_key="YOUR_API_KEY")
 
-result = predev.browser_tasks([
+result = predev.browser_agent([
     {
         "url": "https://example.com",
         "instruction": "Extract the page heading.",
@@ -47,12 +47,12 @@ predev = PredevAPI(api_key="YOUR_API_KEY")
 
 ## API Methods
 
-### `browser_tasks()`
+### `browser_agent()`
 
 Submit one or more browser tasks and get the results back.
 
 ```python
-result = predev.browser_tasks(
+result = predev.browser_agent(
     tasks,
     concurrency=None,     # parallel workers, 1–20, default 5
     stream=False,         # set True to get an SSE iterator
@@ -64,12 +64,12 @@ result = predev.browser_tasks(
 - `tasks` **(required)**: `List[Dict]` — see [Task shape](#task-shape) below
 - `concurrency` **(optional)**: `int` — parallel workers within this batch (1–20, default 5)
 - `stream` **(optional)**: `bool` — when `True`, returns an iterator yielding SSE events instead of a final result
-- `run_async` **(optional)**: `bool` — when `True`, returns immediately with `{ id, status: "processing" }`; poll with `get_browser_tasks(id)`
+- `run_async` **(optional)**: `bool` — when `True`, returns immediately with `{ id, status: "processing" }`; poll with `get_browser_agent(id)`
 
 **Returns:**
 - Default: `Dict` with `id`, `total`, `completed`, `results`, `totalCreditsUsed`, `status`
 - With `stream=True`: `Iterator[Dict]` yielding `{ "event": ..., "data": ... }` frames
-- With `run_async=True`: `Dict` with `id` and `status: "processing"` — poll `get_browser_tasks(id)`
+- With `run_async=True`: `Dict` with `id` and `status: "processing"` — poll `get_browser_agent(id)`
 
 ### Task shape
 
@@ -86,19 +86,19 @@ result = predev.browser_tasks(
 }
 ```
 
-### `get_browser_tasks()`
+### `get_browser_agent()`
 
 Fetch the status and results of a task submission by id. Works for in-progress and completed submissions.
 
 ```python
-result = predev.get_browser_tasks(batch_id, include_events=False)
+result = predev.get_browser_agent(batch_id, include_events=False)
 ```
 
 **Parameters:**
-- `batch_id` **(required)**: `str` — id returned from `browser_tasks(..., run_async=True)` or from streaming
+- `batch_id` **(required)**: `str` — id returned from `browser_agent(..., run_async=True)` or from streaming
 - `include_events` **(optional)**: `bool` — when `True`, includes the full per-step event timeline (navigation, plan, screenshot, action, validation) for each task. Payloads can be large.
 
-**Returns:** `Dict` with the same shape as `browser_tasks()` sync response, plus `events[]` on each task (or `liveEvents[]` for tasks still in flight) when `include_events=True`.
+**Returns:** `Dict` with the same shape as `browser_agent()` sync response, plus `events[]` on each task (or `liveEvents[]` for tasks still in flight) when `include_events=True`.
 
 ## Response Shape
 
@@ -136,7 +136,7 @@ result = predev.get_browser_tasks(batch_id, include_events=False)
 ### Sync — wait for every task
 
 ```python
-result = predev.browser_tasks([
+result = predev.browser_agent([
     { "url": "https://news.ycombinator.com", "instruction": "Extract the top 5 story titles." },
     { "url": "https://www.reddit.com/r/programming", "instruction": "Extract the top 5 post titles." },
 ], concurrency=2)
@@ -150,11 +150,11 @@ for r in result["results"]:
 ```python
 import time
 
-batch = predev.browser_tasks(tasks, run_async=True)
+batch = predev.browser_agent(tasks, run_async=True)
 batch_id = batch["id"]
 
 while True:
-    status = predev.get_browser_tasks(batch_id)
+    status = predev.get_browser_agent(batch_id)
     if status["status"] in ("completed", "failed"):
         break
     print(f"{status['completed']}/{status['total']} done")
@@ -167,7 +167,7 @@ for r in status["results"]:
 ### Streaming — live per-step events
 
 ```python
-for msg in predev.browser_tasks(tasks, stream=True):
+for msg in predev.browser_agent(tasks, stream=True):
     if msg["event"] == "task_event":
         e = msg["data"]
         print(f"[task {e['taskIndex']}] {e['type']}")
@@ -183,7 +183,7 @@ for msg in predev.browser_tasks(tasks, stream=True):
 ### Full timeline for a past submission
 
 ```python
-result = predev.get_browser_tasks(batch_id, include_events=True)
+result = predev.get_browser_agent(batch_id, include_events=True)
 
 for task in result["results"]:
     print(task["status"], task["url"])
@@ -201,7 +201,7 @@ from predev_api import (
 )
 
 try:
-    result = predev.browser_tasks(tasks)
+    result = predev.browser_agent(tasks)
 except AuthenticationError:
     # 401 — invalid or missing API key
     ...

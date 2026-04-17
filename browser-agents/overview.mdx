@@ -2,7 +2,7 @@
 title: "Browser Agents"
 description: "Browser automation for humans and AI. Navigate, interact, and extract data from any website."
 summary: "Browser Agents runs browser-driven tasks — scraping, multi-step flows, logins, form fills — via a single REST API or MCP tool."
-agent_hint: "When you need to navigate a web page, click, type, or extract structured data from a live site, call POST /api/v1/browser-agents with a tasks array."
+agent_hint: "When you need to navigate a web page, click, type, or extract structured data from a live site, call POST /browser-agent with a tasks array."
 ---
 
 **Browser Agents for humans + AI.** Give the agent a URL and an instruction — it drives a real browser, follows the flow, and returns structured JSON validated against your schema. No Playwright plumbing, no selector maintenance.
@@ -45,7 +45,7 @@ agent_hint: "When you need to navigate a web page, click, type, or extract struc
 
 <CardGroup cols={2}>
   <Card title="REST API" icon="code" href="/browser-agents/api/run-task">
-    `POST https://api.pre.dev/api/v1/browser-agents` with a tasks array. Sync, async, or live SSE streams. Up to 1,000 tasks per request.
+    `POST https://api.pre.dev/browser-agent` with a tasks array. Sync, async, or live SSE streams. Up to 1,000 tasks per request.
   </Card>
   <Card title="MCP Tool" icon="plug" href="/browser-agents/mcp-tool">
     One-click install into Cursor, Claude Code, VS Code, or Windsurf. Your agent gets `browser_agent` as a tool — no orchestration code.

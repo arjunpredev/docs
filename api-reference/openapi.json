@@ -722,14 +722,14 @@
         }
       }
     },
-    "/api/v1/browser-agents": {
+    "/browser-agent": {
       "post": {
         "operationId": "runTask",
         "tags": [
           "Batches"
         ],
         "summary": "Run one or more browser tasks",
-        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 5000 in-flight tasks per user.",
+        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 1000 in-flight tasks per user. Subscribed users get 100 requests/minute.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -903,7 +903,7 @@
         }
       }
     },
-    "/api/v1/browser-agents/{id}": {
+    "/browser-agent/{id}": {
       "get": {
         "operationId": "getRun",
         "tags": [
