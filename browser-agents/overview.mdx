@@ -43,14 +43,14 @@ agent_hint: "When you need to navigate a web page, click, type, or extract struc
 
 ## Benchmark
 
-pre.dev Browser Agents passes **100 / 100** tasks in our public suite vs Browser Use Cloud's **81 / 100** — and costs **12× less**.
+pre.dev Browser Agents passes **100 / 100** tasks in our public suite vs Browser Use Cloud's **97 / 100** — and it's **2.9× cheaper AND 2.8× faster**.
 
 | Provider | Pass rate | $ / task | Total $ | Avg time / task |
 |---|---:|---:|---:|---:|
-| **pre.dev Browser Agents** | **100 / 100** | **$0.0100** | **$1.00** | **31.2 s** |
-| Browser Use Cloud | 81 / 100 | $0.1199 | $11.99 | 26.3 s |
+| **pre.dev Browser Agents** | **100 / 100** | **$0.0129** | **$1.29** | **12.7 s** |
+| Browser Use Cloud | 97 / 100 | $0.0372 | $3.72 | 35.7 s |
 
-Same 100 tasks. Same JSON output schemas. Same uniform pass predicate.
+Same 100 tasks. Same JSON output schemas. Same uniform pass predicate. Both providers run on their cheapest published tier (pre.dev: `gemini-2.5-flash-lite`; Browser Use: `bu-mini`).
 
 - **[Interactive report](https://pre.dev/benchmark.html)** — radar chart, leaderboard, per-task drilldown with traces and screenshots.
 - **[Raw data + reproduction](https://github.com/predotdev/browser-agents-benchmark)** — clone, set two API keys, `bun run bench`.

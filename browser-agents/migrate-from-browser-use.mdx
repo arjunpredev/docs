@@ -1,12 +1,12 @@
 ---
 title: "Migrate from Browser Use"
-description: "Swap Browser Use Cloud for pre.dev Browser Agents — same task shape, 100/100 vs 81/100 pass rate, 12× cheaper."
+description: "Swap Browser Use Cloud for pre.dev Browser Agents — same task shape, 100/100 vs 97/100 pass rate, 2.9× cheaper AND 2.8× faster."
 agent_hint: "Use the one-shot Claude Code prompt at the bottom of this page to auto-migrate any codebase that uses browser-use-sdk."
 ---
 
 If you're running Browser Use Cloud today, switching to pre.dev Browser Agents is an SDK swap + an env-var rename. Same task shape (URL + instruction + schema), same structured JSON out.
 
-On our public [benchmark](/browser-agents/overview#benchmark), pre.dev passes **100/100** vs Browser Use Cloud's **81/100** — and is **12× cheaper** ($0.0100 vs $0.1199 per task).
+On our public [benchmark](/browser-agents/overview#benchmark), pre.dev passes **100/100** vs Browser Use Cloud's **97/100** — and is **2.9× cheaper and 2.8× faster** ($0.0129 vs $0.0372 per task, 12.7s vs 35.7s avg).
 
 ## 1. Swap env vars + install the SDK
 
@@ -285,7 +285,8 @@ Migrate this codebase from Browser Use Cloud to pre.dev Browser Agents.
 
 pre.dev Browser Agents is a drop-in replacement for Browser Use Cloud's
 task API: same URL + instruction + JSON-schema contract, structured JSON
-output, 12× cheaper at 100/100 pass on the public benchmark. Docs:
+output, 2.9× cheaper AND 2.8× faster at 100/100 pass on the public
+benchmark (vs Browser Use's 97/100). Docs:
 https://docs.pre.dev/browser-agents/migrate-from-browser-use
 
 ## Do this
