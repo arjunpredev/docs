@@ -217,11 +217,43 @@ If a pod is already serving its SSE cap (`5000` concurrent streams), new stream 
 | Code | Meaning |
 |---|---|
 | `200` | Sync result, async stub, or start of SSE stream. |
-| `400` | Missing `tasks`, task without `url`, or `tasks.length > 1000`. |
+| `400` | Missing `tasks`, task without `url`, `tasks.length > 1000`, or `code: BATCH_TOO_LARGE`. |
 | `401` | Missing or invalid bearer token. |
-| `402` | Insufficient credits. [Top up](https://pre.dev/billing). |
-| `429` | User's in-flight queue depth exceeded. Retry later or reduce concurrency. |
+| `402` | Subscription required (`code: SUBSCRIPTION_REQUIRED`) or insufficient credits (`code: INSUFFICIENT_CREDITS`). Body includes `actionUrl` — see [Error response shape](#error-response-shape). |
+| `429` | Rate-limited (`code: RATE_LIMITED`) or queue full (`code: QUEUE_FULL`). Retry after a back-off. |
 | `503` | SSE capacity exceeded on this pod. Retry with `async: true` and poll. |
+
+### Error response shape
+
+Non-2xx responses return a structured JSON body (and the matching SSE
+`error` event when streaming):
+
+```json
+{
+  "error": "Need ~0.5 credits, have 0.00. Buy more to continue.",
+  "code": "INSUFFICIENT_CREDITS",
+  "actionUrl": "https://pre.dev/projects/browser-agents?upgrade=credits"
+}
+```
+
+`code` lets clients dispatch typed handlers without parsing strings.
+`actionUrl`, when present, deep-links the user back to pre.dev with the
+right modal pre-opened — paste it into `window.open` and they'll land
+on the credit-purchase or subscription flow ready to go.
+
+| `code` | When | `actionUrl` |
+|---|---|---|
+| `SUBSCRIPTION_REQUIRED` | Trial limit reached on this API key. | Subscribe modal. |
+| `INSUFFICIENT_CREDITS` | Subscribed but credit balance too low for this batch. | Credits modal. |
+| `RATE_LIMITED` | Per-minute request cap hit. | — |
+| `QUEUE_FULL` | Per-user in-flight task cap hit. | — |
+| `BATCH_TOO_LARGE` | `tasks.length` exceeds the per-request maximum. | — |
+
+The Node and Python SDKs map every `code` value to a typed exception
+class with the `actionUrl` populated — see the
+[Node SDK](/browser-agents/sdks/node#error-handling) and
+[Python SDK](/browser-agents/sdks/python#error-handling) error-handling
+sections.
 
 ## Code Examples
 
@@ -464,13 +496,19 @@ export class BrowserAgents {
 
 ## Error Handling
 
-### `402 Insufficient credits`
+All non-2xx responses follow the [structured shape above](#error-response-shape). The two billing codes carry an `actionUrl` that auto-opens the right modal on pre.dev — surface it in your UI and the user is one click from resolving the gate.
 
-You need at least 1 credit per task upfront, even though only `SUCCESS` tasks are actually billed. Top up at [pre.dev/billing](https://pre.dev/billing).
+### `402 SUBSCRIPTION_REQUIRED`
 
-### `429 Queue depth exceeded`
+This API key's user is on the trial plan and has used their lifetime free task. Send them to `actionUrl` (subscribe modal) or have them upgrade at [pre.dev/billing](https://pre.dev/billing).
 
-Your account has more than `5000` in-flight tasks. Wait for some to drain, or lower `concurrency`.
+### `402 INSUFFICIENT_CREDITS`
+
+Subscription is fine, but the credit balance is below the per-task estimate (0.1 credits/task by default; failed tasks aren't billed but you need the headroom to start). Send them to `actionUrl` (credits modal) — or top up at [pre.dev/billing](https://pre.dev/billing).
+
+### `429 RATE_LIMITED` / `QUEUE_FULL`
+
+Per-minute request cap hit, or your account has more than `5000` in-flight tasks. Wait for some to drain, or lower `concurrency`.
 
 ### `503 SSE capacity exceeded`
 

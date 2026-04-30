@@ -212,23 +212,54 @@ for (const task of result.results) {
 
 ## Error Handling
 
+The SDK throws typed exceptions for the most common gating cases. The two
+billing-gate exceptions carry an `actionUrl` — a deep link back to pre.dev
+that auto-opens the right modal (subscribe / buy credits) when the user
+lands there. Same exceptions fire on REST and SSE error paths.
+
 ```typescript
 import {
   PredevAPIError,
   AuthenticationError,
   RateLimitError,
+  SubscriptionRequiredError,
+  InsufficientCreditsError,
+  QueueFullError,
+  BatchTooLargeError,
 } from 'predev-api';
 
 try {
   const result = await predev.browserAgent(tasks);
 } catch (err) {
-  if (err instanceof AuthenticationError) {
+  if (err instanceof InsufficientCreditsError) {
+    // Subscription is fine, balance is too low — send the user to the credits modal.
+    if (err.actionUrl) window.open(err.actionUrl, '_blank');
+  } else if (err instanceof SubscriptionRequiredError) {
+    // Trial limit hit — send the user to the subscribe modal.
+    if (err.actionUrl) window.open(err.actionUrl, '_blank');
+  } else if (err instanceof AuthenticationError) {
     // 401 — invalid or missing API key
   } else if (err instanceof RateLimitError) {
-    // 429 — per-user in-flight queue cap exceeded
+    // 429 RATE_LIMITED — back off and retry
+  } else if (err instanceof QueueFullError) {
+    // 429 QUEUE_FULL — wait for in-flight tasks to drain
+  } else if (err instanceof BatchTooLargeError) {
+    // 400 — split into smaller batches
   } else if (err instanceof PredevAPIError) {
-    // Any other API error (400, 402 insufficient credits, 500, etc.)
     console.error(err.message);
   }
 }
 ```
+
+| Exception | HTTP | `code` |
+|---|---|---|
+| `SubscriptionRequiredError` | 402 | `SUBSCRIPTION_REQUIRED` |
+| `InsufficientCreditsError` | 402 | `INSUFFICIENT_CREDITS` |
+| `RateLimitError` | 429 | `RATE_LIMITED` |
+| `QueueFullError` | 429 | `QUEUE_FULL` |
+| `BatchTooLargeError` | 400 | `BATCH_TOO_LARGE` |
+| `AuthenticationError` | 401 | — |
+| `PredevAPIError` | other | — |
+
+Mid-stream errors on the SSE stream throw the same typed exceptions — a
+`for await` loop wrapped in `try/catch` is enough.

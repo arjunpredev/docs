@@ -1,0 +1,77 @@
+---
+title: "Changelog"
+description: "What's new in the pre.dev API and SDKs."
+---
+
+User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
+the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
+to get notified on every SDK bump.
+
+## 2026-04-30
+
+### `pre.dev/api-key` — one-click API key copy
+
+New top-level page at [https://pre.dev/api-key](https://pre.dev/api-key).
+Sign in once and copy your key — same UI as the in-product reveal. Useful
+when sharing example apps and SDK quickstarts: link any "Get an API key"
+CTA straight here and the user lands on a single-purpose page with a
+masked-key reveal + copy button.
+
+Unauthenticated visitors are bounced to sign-in and auto-returned to
+`/api-key` after.
+
+### Browser Agents — typed billing errors with `actionUrl`
+
+Non-2xx responses for [`POST /browser-agent`](/browser-agents/api/run-task)
+now carry a structured body:
+
+```json
+{
+  "error": "Need ~0.5 credits, have 0.00. Buy more to continue.",
+  "code": "INSUFFICIENT_CREDITS",
+  "actionUrl": "https://pre.dev/projects/browser-agents?upgrade=credits"
+}
+```
+
+`code` is one of `SUBSCRIPTION_REQUIRED`, `INSUFFICIENT_CREDITS`,
+`RATE_LIMITED`, `QUEUE_FULL`, `BATCH_TOO_LARGE`. `actionUrl` (when
+present) deep-links the user back to pre.dev with the right billing
+modal pre-opened — `window.open(actionUrl)` is enough to send the user
+to the credit-purchase or subscription flow without any extra UI.
+
+The same body is emitted on the SSE `error` event when streaming.
+
+#### Node SDK — `predev-api@1.1.0`
+
+```ts
+import { InsufficientCreditsError, SubscriptionRequiredError } from 'predev-api';
+
+try {
+  await client.browserAgent(tasks);
+} catch (e) {
+  if (e instanceof InsufficientCreditsError) window.open(e.actionUrl);
+  else if (e instanceof SubscriptionRequiredError) window.open(e.actionUrl);
+}
+```
+
+New typed exceptions: `SubscriptionRequiredError`,
+`InsufficientCreditsError`, `QueueFullError`, `BatchTooLargeError`. All
+non-breaking — existing `instanceof PredevAPIError` checks still match.
+See the [Node SDK error-handling docs](/browser-agents/sdks/node#error-handling).
+
+#### Python SDK — `predev-api==1.1.0`
+
+```python
+from predev_api import InsufficientCreditsError, SubscriptionRequiredError
+import webbrowser
+
+try:
+    client.browser_agent(tasks)
+except InsufficientCreditsError as e:
+    if e.action_url: webbrowser.open(e.action_url)
+except SubscriptionRequiredError as e:
+    if e.action_url: webbrowser.open(e.action_url)
+```
+
+New exceptions mirror the Node SDK with `action_url` field. See the
+[Python SDK error-handling docs](/browser-agents/sdks/python#error-handling).

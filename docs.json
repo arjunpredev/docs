@@ -144,6 +144,10 @@
 						]
 					}
 				]
+			},
+			{
+				"tab": "Changelog",
+				"pages": ["changelog"]
 			}
 		],
 		"redirects": [
