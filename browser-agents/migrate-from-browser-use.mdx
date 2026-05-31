@@ -1,12 +1,12 @@
 ---
 title: "Migrate from Browser Use"
-description: "Swap Browser Use Cloud for pre.dev Browser Agents — same task shape, 100/100 vs 97/100 pass rate, 2.9× cheaper AND 2.8× faster."
+description: "Swap Browser Use Cloud for pre.dev Browser Agents — same task shape, 100/100 vs 97/100 pass rate, 2.3× cheaper AND 3.4× faster."
 agent_hint: "Use the one-shot Claude Code prompt at the bottom of this page to auto-migrate any codebase that uses browser-use-sdk."
 ---
 
 If you're running Browser Use Cloud today, switching to pre.dev Browser Agents is an SDK swap + an env-var rename. Same task shape (URL + instruction + schema), same structured JSON out.
 
-On our public [benchmark](/browser-agents/overview#benchmark), pre.dev passes **100/100** vs Browser Use Cloud's **97/100** — and is **2.9× cheaper and 2.8× faster** ($0.0129 vs $0.0372 per task, 12.7s vs 35.7s avg).
+On our public [benchmark](/browser-agents/overview#benchmark), pre.dev passes **100/100** vs Browser Use Cloud's **97/100** — and is **2.3× cheaper and 3.4× faster** ($0.0164 vs $0.0370 per task, 9.0s vs 30.6s avg).
 
 ## 1. Swap env vars + install the SDK
 
@@ -48,7 +48,7 @@ const client = new BrowserUse({ apiKey: process.env.BROWSER_USE_API_KEY! });
 
 const response = await client.run(
   'Extract the H1 from https://example.com. Return JSON { heading: string }.',
-  { llm: 'bu-mini' },
+  { model: 'bu-mini' },
 );
 const data = JSON.parse(response.output);
 ```
@@ -85,7 +85,7 @@ client = BrowserUse(api_key=os.environ["BROWSER_USE_API_KEY"])
 
 response = client.run(
     "Extract the H1 from https://example.com. Return JSON { heading: string }.",
-    llm="bu-mini",
+    model="bu-mini",
 )
 data = json.loads(response.output)
 ```
@@ -134,7 +134,7 @@ const urls = ['https://news.ycombinator.com', 'https://lobste.rs', 'https://redd
 
 const responses = await Promise.all(
   urls.map((url) =>
-    client.run(`Extract the top 5 story titles from ${url}. Return JSON { titles: string[] }.`, { llm: 'bu-mini' }),
+    client.run(`Extract the top 5 story titles from ${url}. Return JSON { titles: string[] }.`, { model: 'bu-mini' }),
   ),
 );
 const data = responses.map((r) => JSON.parse(r.output));
@@ -167,7 +167,7 @@ import asyncio, json
 urls = ['https://news.ycombinator.com', 'https://lobste.rs', 'https://reddit.com/r/programming']
 
 async def one(url):
-    r = await client.run(f"Extract the top 5 story titles from {url}. Return JSON {{titles: string[]}}.", llm="bu-mini")
+    r = await client.run(f"Extract the top 5 story titles from {url}. Return JSON {{titles: string[]}}.", model="bu-mini")
     return json.loads(r.output)
 
 data = await asyncio.gather(*(one(u) for u in urls))
@@ -209,7 +209,7 @@ If you were polling Browser Use by session id, pre.dev has a direct equivalent: 
 **Before — Browser Use**
 
 ```ts
-const handle = client.run(task, { llm: 'bu-mini' });
+const handle = client.run(task, { model: 'bu-mini' });
 const sessionId = handle.sessionId;
 
 while (true) {
@@ -240,7 +240,7 @@ while (true) {
 ```python
 import time
 
-handle = client.run(task, llm="bu-mini")
+handle = client.run(task, model="bu-mini")
 session_id = handle.session_id
 
 while True:
@@ -285,7 +285,7 @@ Migrate this codebase from Browser Use Cloud to pre.dev Browser Agents.
 
 pre.dev Browser Agents is a drop-in replacement for Browser Use Cloud's
 task API: same URL + instruction + JSON-schema contract, structured JSON
-output, 2.9× cheaper AND 2.8× faster at 100/100 pass on the public
+output, 2.3× cheaper AND 3.4× faster at 100/100 pass on the public
 benchmark (vs Browser Use's 97/100). Docs:
 https://docs.pre.dev/browser-agents/migrate-from-browser-use
 
@@ -316,11 +316,11 @@ https://docs.pre.dev/browser-agents/migrate-from-browser-use
    |---|---|
    | `import { BrowserUse } from 'browser-use-sdk/v3'` | `import { PredevAPI } from 'predev-api'` |
    | `new BrowserUse({ apiKey })` | `new PredevAPI({ apiKey })` |
-   | `client.run(taskStr, { llm })` | `client.browserAgent([{ url, instruction, output }])` |
+   | `client.run(taskStr, { model })` | `client.browserAgent([{ url, instruction, output }])` |
    | `response.output` (JSON string) | `result.results[0].data` (already parsed) |
    | Python `from browser_use_sdk import BrowserUse` | `from predev_api import PredevAPI` |
    | Python `BrowserUse(api_key=...)` | `PredevAPI(api_key=...)` |
-   | Python `client.run(task, llm=...)` | `client.browser_agent([{...}])` |
+   | Python `client.run(task, model=...)` | `client.browser_agent([{...}])` |
    | Python `json.loads(response.output)` | `result["results"][0]["data"]` |
    | Embedded URL in task string | first-class `url` field |
    | Zod/Pydantic schema | JSON Schema in `output` field |
