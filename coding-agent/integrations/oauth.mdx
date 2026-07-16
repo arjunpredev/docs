@@ -9,8 +9,45 @@ OAuth Connectors let pre.dev act on your behalf in external services — reading
 
 1. Open **[Integrations → OAuth Connectors](https://pre.dev/projects/integrations)**
 2. Pick a service and click **Connect**
-3. Sign in through the service's standard OAuth flow
+3. Sign in through the service's standard OAuth flow — the service shows you a consent screen listing exactly what access pre.dev is requesting, and nothing is granted until you approve
 4. Done — any project the agent builds can now use that connector
+
+## Available connectors
+
+**Project management**
+
+- **Linear** — create and update issues; sync your roadmap into a Linear project
+- **Jira** (Atlassian) — create and update tickets; sync your roadmap into a Jira project
+- **Asana** — tasks and projects
+- **Monday.com** — boards and items
+
+**Communication**
+
+- **Slack** — send messages, post updates to channels
+- **Discord** — interact with your servers
+
+**Docs, files & knowledge**
+
+- **Notion** — read briefs and docs, write pages and databases
+- **Google Workspace** — Sheets, Drive, Docs, Calendar, Gmail
+- **Microsoft** — Microsoft Graph (Outlook, OneDrive, Teams data)
+- **Dropbox** — read and write files
+
+**Design**
+
+- **Figma** — read design files and components
+
+**Data & CRM**
+
+- **Airtable** — read and write bases
+- **HubSpot** — contacts, deals, CRM records
+- **Salesforce** — objects and records in your org
+
+**Source control**
+
+- **GitHub** — repositories for your project's code (see [Pull Requests](/coding-agent/building/pull-requests))
+- **GitLab** — API access to your GitLab resources
+- **Bitbucket** — repository access
 
 ## What agents do with them
 
@@ -19,11 +56,16 @@ When a build task mentions a connected service, the agent uses the connector dir
 - **"Create a Linear issue for every failing test"** → agent uses your Linear connector
 - **"Send a Slack message when a PR merges"** → agent uses your Slack connector
 - **"Read my Notion project brief before starting"** → agent reads via your Notion connector
+- **"Pull the pricing table from my Google Sheet"** → agent reads via your Google connector
+- **"Log new signups as HubSpot contacts"** → agent writes via your HubSpot connector
+
+If the agent needs a service you haven't connected yet, it tells you and points you to the Integrations page.
 
 The agent never sees your password. It holds a scoped token that you can revoke from the Integrations page at any time.
 
 ## Security
 
-- Tokens are encrypted at rest
-- Scopes are shown before you authorize — pre.dev requests the minimum required
+- Tokens stay server-side — the agent calls each service through pre.dev's integration layer, so tokens are never embedded in your project's code or exposed to the browser
+- Scopes are shown on the consent screen before you authorize — pre.dev requests the minimum required
+- Expiring tokens are refreshed automatically; if a refresh fails, the agent asks you to reconnect rather than failing silently
 - You can disconnect any connector from the Integrations page and all active tokens are revoked

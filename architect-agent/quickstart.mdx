@@ -7,8 +7,8 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
 
 ## 1. Get your API key
 
-<Card title="Grab a key" icon="key" href="https://pre.dev/projects/playground">
-  Visit the playground to copy your API key and see remaining credits.
+<Card title="Grab a key" icon="key" href="https://pre.dev/projects/key">
+  One click to copy your API key and see remaining credits.
 </Card>
 
 ## 2. Call the Architect
@@ -22,7 +22,7 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
       -d '{"input": "Build a task management app with team collaboration"}'
     ```
 
-    You'll get back a structured spec with milestones, user stories, and architecture — in ~30–60 seconds.
+    You'll get back a structured spec with milestones, user stories, and architecture — in about a minute.
   </Tab>
   <Tab title="MCP (Cursor)">
     [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
@@ -48,13 +48,13 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
   </Tab>
   <Tab title="TypeScript SDK">
     ```bash
-    npm install @predev/sdk
+    npm install predev-api
     ```
 
     ```ts
-    import { Predev } from '@predev/sdk';
+    import { PredevAPI } from 'predev-api';
 
-    const client = new Predev({ apiKey: process.env.PREDEV_API_KEY });
+    const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY });
     const spec = await client.fastSpec({
       input: 'Build a task management app with team collaboration',
     });
@@ -65,14 +65,15 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
   </Tab>
   <Tab title="Python SDK">
     ```bash
-    pip install predev
+    pip install predev-api
     ```
 
     ```python
-    from predev import Predev
+    import os
+    from predev_api import PredevAPI
 
-    client = Predev(api_key=os.environ["PREDEV_API_KEY"])
-    spec = client.fast_spec(input="Build a task management app with team collaboration")
+    client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
+    spec = client.fast_spec(input_text="Build a task management app with team collaboration")
     print(spec)
     ```
 
@@ -84,7 +85,7 @@ Pick the path that matches how you work: a one-line `curl`, an MCP install into 
 
 Whatever you got back is structured markdown (or JSON) your coding agent can consume directly. Paste it into Cursor's chat, drop it into Claude Code, or feed it to Lovable / Bolt. Your agent now has the architectural context to build the whole thing on the first pass.
 
-For a richer breakdown, use [`/deep-spec`](/architect-agent/api/deep-spec) instead — it adds granular subtasks and per-task acceptance criteria (~2–5 minutes).
+For a richer breakdown, use [`/deep-spec`](/architect-agent/api/deep-spec) instead — it adds granular subtasks and per-task acceptance criteria (~3–5 minutes).
 
 ---
 

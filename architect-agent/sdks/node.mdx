@@ -43,7 +43,7 @@ console.log(result);
 
 ## Authentication
 
-The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground) under Settings → API Keys:
+The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/key):
 
 ```typescript
 const predev = new PredevAPI({ apiKey: 'your_api_key' });
@@ -55,7 +55,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 #### fastSpec()
 
-Generate a fast specification (30-40 seconds, ~5-10 credits).
+Generate a fast specification (~1 minute, ~5-10 credits).
 
 ```typescript
 const result = await predev.fastSpec({
@@ -72,7 +72,7 @@ const result = await predev.fastSpec({
 
 #### deepSpec()
 
-Generate a deep specification (2-3 minutes, ~10-50 credits).
+Generate a deep specification (~3-5 minutes, ~10-50 credits).
 
 ```typescript
 const result = await predev.deepSpec({
@@ -329,6 +329,16 @@ interface SpecResponse {
 
   // Integration URLs (when completed)
   predevUrl?: string;              // Link to pre.dev project
+  architectureInfographicUrl?: string; // Rendered architecture infographic
+  zippedDocsUrls?: ZippedDocsUrl[];    // Downloadable doc bundles
+
+  // Structured graphs (when completed)
+  userFlowGraph?: SpecGraph;       // User flow nodes + edges
+  architectureGraph?: SpecGraph;   // System architecture nodes + edges
+  enrichedTechStack?: EnrichedTechStackItem[]; // Tech choices with useFor/reason
+
+  // Billing
+  creditsUsed?: number;            // Credits consumed (live during processing)
 
   // Error handling
   errorMessage?: string;           // Error details if failed
@@ -580,6 +590,48 @@ if (balance.creditsRemaining >= 50) {
 }
 ```
 
+## Error Handling
+
+All SDK errors inherit from `PredevAPIError`. Typed subclasses map to HTTP status codes:
+
+| Exception | HTTP | When |
+|---|---|---|
+| `AuthenticationError` | 401 | Missing or invalid API key |
+| `SubscriptionRequiredError` | 402 | Endpoint needs an active subscription |
+| `InsufficientCreditsError` | 402 | Not enough credits — top up at [pre.dev/projects/key](https://pre.dev/projects/key) |
+| `BatchTooLargeError` | 400 | Request exceeds size limits |
+| `QueueFullError` | 429 | Per-user in-flight queue is full — retry later |
+| `RateLimitError` | 429 | Too many requests — back off and retry |
+| `PredevAPIError` | other | Any other API error (has `.statusCode`) |
+
+```typescript
+import {
+  PredevAPI,
+  AuthenticationError,
+  InsufficientCreditsError,
+  RateLimitError,
+  PredevAPIError,
+} from 'predev-api';
+
+const predev = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+
+try {
+  const spec = await predev.fastSpec({ input: 'Build a task management app' });
+} catch (err) {
+  if (err instanceof AuthenticationError) {
+    console.error('Check your API key at pre.dev/projects/key');
+  } else if (err instanceof InsufficientCreditsError) {
+    console.error('Out of credits:', err.message);
+  } else if (err instanceof RateLimitError) {
+    console.error('Rate limited - retry with backoff');
+  } else if (err instanceof PredevAPIError) {
+    console.error(`API error (${err.statusCode}):`, err.message);
+  } else {
+    throw err;
+  }
+}
+```
+
 ## Documentation
 
 For more information about the Pre.dev Architect API, visit:
@@ -594,11 +646,3 @@ For issues, questions, or contributions:
 
 - [GitHub Repository](https://github.com/predotdev/predev-api)
 - [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
-
-
-
-
-
-
-
-

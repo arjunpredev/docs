@@ -1,66 +1,53 @@
 ---
-title: "Pro Mode"
-description: "Enhanced AI generation for higher-quality results."
+title: "Pro Mode & Model Selection"
+description: "Pin every phase to the strongest model, or pick models per phase."
 ---
 
-Pro Mode is an advanced reasoning mode that produces more comprehensive, production-grade outputs from pre.dev's build agents. When enabled, agents use deeper reasoning to generate higher-quality code, better architecture decisions, and more thorough implementations.
+Pro Mode is the quality dial turned all the way up: toggling `/pro` pins **every phase** of the agent's work — chat, research, coding, and acceptance — to the Pro model, **Claude Opus 4.8**.
 
-## How to Enable
+## What it changes
 
-Pro Mode is toggled **per-project** from the project dashboard:
+Every sprint runs in phases, and each phase normally uses the default model (GLM 5.2) unless you've overridden it. Pro Mode overrides all of them at once:
 
-1. Look for the **Pro** toggle button in the project interface
-2. Click to enable — the toggle shows a matrix-style animation when active
-3. All subsequent builds in that project use enhanced reasoning
+| | Standard | Pro Mode |
+|---|----------|----------|
+| Chat | GLM 5.2 (or your override) | Claude Opus 4.8 |
+| Research | GLM 5.2 (or your override) | Claude Opus 4.8 |
+| Coding | GLM 5.2 (or your override) | Claude Opus 4.8 |
+| Acceptance | GLM 5.2 (or your override) | Claude Opus 4.8 |
 
-You can toggle Pro Mode on or off at any time. The setting applies to the current project only.
+Toggle it off with `/pro` again and your previous per-phase settings apply.
 
-## Subscription Requirements
+## Credits
 
-Pro Mode is available on the following tiers:
-
-| Tier | Pro Mode Access |
-|------|----------------|
-| **Solo Premium** | Included |
-| **Solo Pro** | Included |
-| **Enterprise Premium** | Included |
-| Free / Starter tiers | Not available |
-
-If you're on a tier without Pro Mode access, clicking the toggle will prompt you to upgrade.
-
-## Credit Implications
-
-Pro Mode uses **more credits per generation** compared to standard mode. The enhanced reasoning requires additional computation, which is reflected in credit consumption.
-
-<Note>
-  The exact credit multiplier varies by task complexity. Monitor your credit balance in the dashboard to plan usage accordingly.
-</Note>
-
-## When to Use Pro Mode
-
-<CardGroup cols={2}>
-  <Card title="Use Pro Mode for" icon="check">
-    - Complex, multi-service architectures
-    - Production-grade code with proper error handling
-    - Projects requiring deep integration logic
-    - Final builds you plan to ship
-    - Applications with complex business logic
-  </Card>
-  <Card title="Standard mode is fine for" icon="minus">
-    - Prototyping and early exploration
-    - Simple CRUD applications
-    - Quick feature validation
-    - Learning and experimentation
-    - Early iterations before finalizing
-  </Card>
-</CardGroup>
-
-## Tips
+Pro Mode uses **more credits** per sprint — the Pro model costs more per token than the default. Check your remaining balance anytime with `/balance`, and see [pricing](https://pre.dev/pricing) for plan differences.
 
 <Tip>
-  A common workflow is to use **standard mode** for initial prototyping and iteration, then switch to **Pro Mode** for your final production build. This balances credit usage with output quality.
+  A common workflow: iterate in standard mode while shaping a feature, then flip on Pro Mode for the final production pass. You can toggle between sprints without losing any project state.
 </Tip>
 
-- Pro Mode works with all build types (spec generation and coding agents)
-- You can switch modes between builds without losing any project state
-- The setting persists until you change it — it won't reset between sessions
+## Per-phase control with /model
+
+If all-Opus is more than you need, `/model` gives you the same power with precision — pin a strong model to just the phase that matters:
+
+```
+/model coding sonnet-4.6
+/model acceptance opus-4.8
+```
+
+The full catalog:
+
+| Model | Notes |
+|-------|-------|
+| **GLM 5.2** | The default |
+| **Kimi K2.6** / **K2.7** | Strong open-weight alternatives |
+| **MiniMax M3** | Open-weight alternative |
+| **Claude Sonnet 4.6** | High quality, balanced cost |
+| **Claude Opus 4.8** | The Pro model |
+| **GPT 5.5** | OpenAI's flagship |
+
+Set a phase back to **Default** to return it to GLM 5.2.
+
+<Note>
+  For the full picture — sprint modes, effort levels, and how the model picker fits in — see [Build Modes & Effort](/coding-agent/building/build-modes).
+</Note>

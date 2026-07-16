@@ -29,7 +29,7 @@
     "/fast-spec": {
       "post": {
         "summary": "Generate Fast Spec",
-        "description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~30-40 seconds.",
+        "description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~1 minute.",
         "operationId": "generateFastSpec",
         "tags": [
           "Spec Generation"
@@ -154,7 +154,7 @@
     "/deep-spec": {
       "post": {
         "summary": "Generate Deep Spec",
-        "description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~2-3 minutes. Requires Solo Premium or Enterprise subscription.",
+        "description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~3-5 minutes.",
         "operationId": "generateDeepSpec",
         "tags": [
           "Spec Generation"
@@ -729,7 +729,7 @@
           "Batches"
         ],
         "summary": "Run one or more browser tasks",
-        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Max 1000 in-flight tasks per user. Subscribed users get 100 requests/minute.",
+        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Per-user in-flight cap varies by plan (see GET /browser-agent-status). Rate limit: 600 requests/minute.",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -820,10 +820,10 @@
             "description": "Insufficient credits. Top up at [pre.dev/billing](https://pre.dev/billing)."
           },
           "429": {
-            "description": "Per-user in-flight queue depth exceeded (max 5000). Retry later or reduce concurrency."
+            "description": "Per-user in-flight queue depth exceeded (cap varies by plan; see GET /browser-agent-status). Retry later or reduce concurrency."
           },
           "503": {
-            "description": "SSE capacity exceeded on this pod (5000 concurrent streams). Retry with `async: true` and poll."
+            "description": "Server at SSE capacity. Retry with `async: true` and poll."
           }
         }
       }
@@ -956,6 +956,126 @@
           }
         }
       }
+    },
+    "/browser-agent-status": {
+      "get": {
+        "summary": "Your Queue Status",
+        "operationId": "browserAgentStatus",
+        "tags": [
+          "Browser Agents"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "description": "Live snapshot of your own queue: running / claimed / pending counts and your plan's in-flight cap. Cheap to call; poll freely to throttle a submit loop.",
+        "responses": {
+          "200": {
+            "description": "Queue snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrowserAgentStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/browser-agent-capacity": {
+      "get": {
+        "summary": "Global Capacity",
+        "operationId": "browserAgentCapacity",
+        "tags": [
+          "Browser Agents"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "description": "Global queue and sandbox-pool statistics. Any valid API key can read it; useful before submitting a very large batch.",
+        "responses": {
+          "200": {
+            "description": "Pool statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/browser-agent/{id}/stream": {
+      "get": {
+        "summary": "Stream a Running Task (SSE)",
+        "operationId": "streamBrowserAgent",
+        "tags": [
+          "Browser Agents"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "description": "Server-Sent Events stream for an in-progress batch: a `snapshot` event on connect, then live `task_event` / `task_result` events, then `done`. Accepts `apiKey` as a query parameter for EventSource clients. Closes when the batch completes or fails.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "apiKey",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Alternative auth for EventSource clients that can't set headers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "text/event-stream of snapshot, task_event, task_result, done events"
+          },
+          "404": {
+            "description": "Batch not found"
+          },
+          "503": {
+            "description": "Server at SSE capacity \u2014 fall back to polling GET /browser-agent/{id}"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -964,13 +1084,8 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "API Key",
-        "description": "API key for authentication. Get your API key from https://pre.dev/projects/playground (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise). Use format: Bearer YOUR_API_KEY",
+        "description": "API key for authentication. Get your API key from https://pre.dev/projects/key (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise). Use format: Bearer YOUR_API_KEY",
         "x-default": "YOUR_API_KEY"
-      },
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "`Authorization: Bearer YOUR_API_KEY` on every request."
       }
     },
     "schemas": {
@@ -1255,8 +1370,8 @@
             "description": "Error description (only when failed)"
           },
           "progress": {
-            "type": "string",
-            "description": "Human-readable progress description"
+            "type": "number",
+            "description": "Completion percentage (0-100) while processing"
           },
           "creditsUsed": {
             "type": "number",
@@ -1276,6 +1391,10 @@
               "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
             },
             "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
+          },
+          "progressMessage": {
+            "type": "string",
+            "description": "Human-readable progress description (e.g. 'Generating architecture...')"
           }
         }
       },
@@ -2165,6 +2284,34 @@
           "error": {
             "type": "string",
             "description": "Set only when `status === \"failed\"`."
+          }
+        }
+      },
+      "BrowserAgentStatus": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "running": {
+            "type": "integer",
+            "description": "Tasks executing right now"
+          },
+          "claimed": {
+            "type": "integer",
+            "description": "Tasks picked up, about to run"
+          },
+          "pending": {
+            "type": "integer",
+            "description": "Tasks waiting in your queue"
+          },
+          "total": {
+            "type": "integer",
+            "description": "running + claimed + pending"
+          },
+          "cap": {
+            "type": "integer",
+            "description": "Your plan's max in-flight tasks"
           }
         }
       }

@@ -17,7 +17,7 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 - **Path:** `/browser-agent`
 - **Cost:** billed per successful task. Failed tasks are free.
 - **Max tasks per request:** `1000`
-- **Max in-flight tasks per user:** `5000`
+- **Max in-flight tasks per user:** varies by plan (5 on trial, up to 150 on Enterprise). Check yours with [`GET /browser-agent-status`](/browser-agents/api/queue-status)
 - **Per-task default timeout:** `240000` ms
 
 ## Headers
@@ -165,7 +165,7 @@ data: {"id":"65f8...","total":1,"completed":1,"results":[...],"status":"complete
 ```
 
 <Note>
-If a pod is already serving its SSE cap (`5000` concurrent streams), new stream requests get `503`. Fall back to `async: true` + polling.
+If the server is at SSE capacity, new stream requests get `503`. Fall back to `async: true` + polling.
 </Note>
 
 ## Response Schemas
@@ -232,7 +232,7 @@ Non-2xx responses return a structured JSON body (and the matching SSE
 {
   "error": "Need ~0.5 credits, have 0.00. Buy more to continue.",
   "code": "INSUFFICIENT_CREDITS",
-  "actionUrl": "https://pre.dev/projects/browser-agents?upgrade=credits"
+  "actionUrl": "https://pre.dev/projects/key?upgrade=credits"
 }
 ```
 
@@ -508,7 +508,7 @@ Subscription is fine, but the credit balance is below the per-task estimate (0.1
 
 ### `429 RATE_LIMITED` / `QUEUE_FULL`
 
-Per-minute request cap hit, or your account has more than `5000` in-flight tasks. Wait for some to drain, or lower `concurrency`.
+Per-minute request cap hit, or you're at your plan's in-flight task cap. Wait for tasks to drain, lower `concurrency`, or check [`GET /browser-agent-status`](/browser-agents/api/queue-status).
 
 ### `503 SSE capacity exceeded`
 

@@ -1,0 +1,104 @@
+---
+title: "Preview & Hosting"
+description: "Every project runs live at its own pre.dev URL while you build — preview it, test it on your phone, roll back versions, and take the code anywhere."
+---
+
+Every pre.dev project gets a **live deployment at its own `.pre.dev` subdomain** from the moment the agent starts building. There's no separate deploy step to see your app — the running application is always a click away, and it updates as the agent works.
+
+## Live preview
+
+Click the **Preview** button in your workspace to open the running app. Once the agent has captured screenshots of your app, the button itself shows the latest one as a thumbnail — a live snapshot of where your build stands.
+
+When you open the preview, pre.dev checks that the deployment is healthy first. If the environment has gone idle, it's brought back automatically — you'll see a brief "Checking deployment..." state, then your app.
+
+<Tip>
+  The preview URL is a real, shareable URL. Set the preview to public in the Share menu and anyone with the link can try your app — no pre.dev account needed.
+</Tip>
+
+If you're working in multiple sessions on the same project, each fork gets its **own preview URL** (`{project}-{session}.pre.dev`), so parallel experiments never overwrite each other's running app.
+
+## Mobile preview
+
+For Expo / React Native projects, the Preview button opens a **mobile preview** instead:
+
+<CardGroup cols={2}>
+  <Card title="Phone frame" icon="mobile">
+    Your app renders inside a phone-sized frame right in the browser, so you see it at real device proportions while you iterate.
+  </Card>
+  <Card title="Scan to open on your device" icon="qrcode">
+    A QR code sits alongside the frame. Install <a href="https://expo.dev/client">Expo Go</a>, scan the code with your camera, and the app opens on your actual phone — or copy the URL directly.
+  </Card>
+</CardGroup>
+
+The QR link is tokenized and time-limited; it refreshes automatically while the preview is open, and you can regenerate it with one click if it expires.
+
+<Note>
+  If the mobile bundler stops responding, the preview shows a **Debug with Agent** button — one click sends the agent everything it needs to diagnose and restart the dev server.
+</Note>
+
+### Using the mobile preview
+
+<Steps>
+  <Step title="Open the preview">
+    Click **Preview** — for mobile projects the button shows a phone icon and opens the phone-framed view.
+  </Step>
+  <Step title="Install Expo Go">
+    Grab the free <a href="https://expo.dev/client">Expo Go</a> app on iOS or Android.
+  </Step>
+  <Step title="Scan the QR code">
+    Point your camera at the QR code in the sidebar. The app opens on your device and hot-reloads as the agent makes changes.
+  </Step>
+</Steps>
+
+## Version history
+
+Every change the agent makes lands as a **git commit**, and the Version History panel gives you the full timeline:
+
+- Commits per branch, with author, relative time, and the commit message
+- Expandable file-level detail — which files changed, with additions and deletions
+- Branch tabs, and a repository selector for multi-repo projects
+
+Click any commit and hit **Revert** to restore your codebase to that exact point. The revert checks out the commit and syncs every file, with live progress — no git commands, no terminal.
+
+<Warning>
+  Reverting moves your working code back to the selected commit. Anything after that point is still safe in git history, so you can roll forward again the same way.
+</Warning>
+
+## Hosting
+
+The `.pre.dev` URL isn't just a preview — it's real hosting:
+
+- **HTTPS by default** on every project URL
+- **HTTP and WebSocket traffic** both supported, so realtime features work out of the box
+- Apps that serve on a non-standard port are routed automatically — the agent wires the preview URL to whichever port your main app actually runs on
+
+## Custom domains
+
+When your app is ready for the world, point your own domain at it — `app.yourcompany.com` instead of the `.pre.dev` URL. Add the domain in your project dashboard, create one CNAME record, and SSL is provisioned automatically.
+
+See [Custom Domains](/coding-agent/building/custom-domains) for the full setup.
+
+## Take it anywhere
+
+Your project is never locked in. From the project action menu:
+
+<CardGroup cols={2}>
+  <Card title="Download the codebase" icon="file-zipper">
+    **Export Code** downloads your full codebase as a zip — every file, ready to run locally or host anywhere.
+  </Card>
+  <Card title="Export the spec" icon="file-lines">
+    Your complete specification exports as `spec.md` — the same document that drives the build agent.
+  </Card>
+  <Card title="Open in another tool" icon="arrow-up-right-from-square">
+    **Open in IDE** hands your spec to Cursor, Lovable, v0, or Bolt.new with a prompt that tells the tool to implement it step by step.
+  </Card>
+  <Card title="Sync to GitHub" icon="github">
+    Link GitHub for automatic commits and pull requests. See <a href="/coding-agent/building/pull-requests">Pull Requests</a>.
+  </Card>
+</CardGroup>
+
+## GitHub is the source of truth
+
+Once linked, your GitHub repository holds the canonical code: the agent commits its work there, PRs are opened there, and Version History reads from the same commits. If you push changes to the repo yourself, pre.dev detects that the branch has moved ahead and offers a one-click **Refresh from GitHub** to pull your commits in before the next build or export.
+
+Learn more in [Pull Requests](/coding-agent/building/pull-requests).

@@ -37,7 +37,7 @@ print(result["results"][0]["data"])
 
 ## Authentication
 
-<Card title="Get your API key" icon="key" href="https://pre.dev/projects/browser-agents" horizontal>
+<Card title="Get your API key" icon="key" href="https://pre.dev/projects/key" horizontal>
   Grab a key from the Browser Agents dashboard.
 </Card>
 
@@ -99,6 +99,27 @@ result = predev.get_browser_agent(batch_id, include_events=False)
 - `include_events` **(optional)**: `bool` — when `True`, includes the full per-step event timeline (navigation, plan, screenshot, action, validation) for each task. Payloads can be large.
 
 **Returns:** `Dict` with the same shape as `browser_agent()` sync response, plus `events[]` on each task (or `liveEvents[]` for tasks still in flight) when `include_events=True`.
+
+### `list_browser_agents()`
+
+List your past and in-progress runs, newest first.
+
+```python
+result = client.list_browser_agents(limit=20, skip=0, status="completed")
+# {"batches": [...], "total": 132, "hasMore": True}
+```
+
+### `browser_agent_status()`
+
+Your live queue snapshot — running / queued counts and your plan's
+in-flight cap. Poll it to throttle a large submit loop.
+
+```python
+q = client.browser_agent_status()
+# {"userId": ..., "running": 12, "claimed": 3, "pending": 40, "total": 55, "cap": 100}
+if q["total"] < q["cap"] - 10:
+    client.browser_agent(next_chunk, run_async=True)
+```
 
 ## Response Shape
 

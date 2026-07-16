@@ -1,0 +1,99 @@
+---
+title: "Plans & Credits"
+description: "What each plan includes, what credits pay for, and what happens when you run out mid-build."
+---
+
+Everything on pre.dev — spec generation, build sprints, browser agent tasks — draws from one credit balance. Every plan refills that balance monthly.
+
+<Note>
+  [pre.dev/pricing](https://pre.dev/pricing) is the source of truth for current prices, credit amounts, and plan features. The numbers below reflect the pricing page at the time of writing.
+</Note>
+
+## Plans
+
+| Plan | Price | Monthly credits | Adds |
+|------|-------|-----------------|------|
+| **Free** | $0 | 100 | Everything you need to plan and build: architecture planning, autonomous coding and verification, deployment and preview, GitHub automation |
+| **Plus** | $25/mo | 200 | More credits |
+| **Premium** | $49/mo | 500 | [Pro Mode](/coding-agent/building/pro-mode) |
+| **Pro** | $199/mo | 2,500 | Deep Spec |
+| **Enterprise** | Custom | Unlimited | Architect API + MCP, dedicated solutions engineer |
+
+A few feature notes, per the [pricing page](https://pre.dev/pricing):
+
+- **[Pro Mode](/coding-agent/building/pro-mode)** — pin the strongest model to every phase of a build — is included from the **Premium** plan.
+- **[Deep Spec](/coding-agent/specifications/fast-vs-deep)** — the granular, subtask-level specification — is included from the **Pro** plan. Fast Spec is available on every plan.
+- Core building blocks — architecture planning, autonomous coding and verification agents, automatic deployment and preview, GitHub automation, and data-source connections — are on **every plan, including Free**.
+
+## What credits pay for
+
+<CardGroup cols={3}>
+  <Card title="Spec generation" icon="compass" href="/coding-agent/specifications/fast-vs-deep">
+    **Fast Spec:** ~5–10 credits, ~1 minute.
+    **Deep Spec:** ~10–50 credits, ~3–5 minutes.
+    Cost scales with project complexity.
+  </Card>
+  <Card title="Build work" icon="hammer" href="/coding-agent/building/build-modes">
+    Sprints consume credits as the agent researches, codes, and verifies. Higher [effort levels](/coding-agent/building/build-modes#effort-level-how-deep-each-sprint-goes) do more model work and cost more.
+  </Card>
+  <Card title="Browser agent tasks" icon="browser" href="/browser-agents/overview">
+    **1 credit = $0.10**, billed per task with a **0.1-credit floor**. Failed tasks are free.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Failed browser agent tasks aren't billed, but you need at least the 0.1-credit floor available for a task to start.
+</Tip>
+
+## Check your balance
+
+Three ways, depending on where you are:
+
+<CardGroup cols={3}>
+  <Card title="In the workspace" icon="terminal" href="/coding-agent/workspace">
+    Type `/balance` in the chat composer for your remaining credits.
+  </Card>
+  <Card title="On the web" icon="key" href="https://pre.dev/projects/key">
+    [pre.dev/projects/key](https://pre.dev/projects/key) shows your balance alongside your API key.
+  </Card>
+  <Card title="From the API" icon="code" href="/architect-agent/api/credits-balance">
+    `GET /credits-balance` returns your remaining credits programmatically.
+  </Card>
+</CardGroup>
+
+## Per-project cost analytics
+
+The workspace tracks what each project has spent, so you can see where credits actually go — which sprints, which phases, which features. Use it to decide where Auto effort is fine and where a cheaper Vibe pass would do.
+
+## What happens when credits run out mid-build
+
+Running out of credits during a sprint doesn't lose your work:
+
+<Steps>
+  <Step title="The build pauses safely">
+    The agent stops at a clean point. Nothing is discarded — the code, the plan, and the sprint's progress are all preserved.
+  </Step>
+  <Step title="You get an email">
+    It includes the build's current progress, screenshots of the app so far, and a link to the live preview — so you can judge how far it got without opening the workspace.
+  </Step>
+  <Step title="Top up and resume">
+    Add credits or upgrade at [pre.dev/pricing](https://pre.dev/pricing), then resume the build. It picks up where it paused.
+  </Step>
+</Steps>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Do unused credits roll over?">
+    See [pre.dev/pricing](https://pre.dev/pricing) for the current policy on credit refills and rollover.
+  </Accordion>
+  <Accordion title="Which spec type should I budget for?">
+    Fast Spec (~5–10 credits) is the default and right for most projects. Deep Spec (~10–50 credits) adds granular subtasks and is worth it for complex, production-bound builds. See [Fast vs Deep](/coding-agent/specifications/fast-vs-deep).
+  </Accordion>
+  <Accordion title="How far do credits go on browser agents?">
+    At 1 credit = $0.10 with a 0.1-credit floor per task, a credit covers up to ~10 simple tasks — and failed tasks cost nothing.
+  </Accordion>
+  <Accordion title="I need more than the Pro plan offers.">
+    The Enterprise plan has unlimited credits, the Architect API + MCP, and a dedicated solutions engineer — [contact us via pricing](https://pre.dev/pricing).
+  </Accordion>
+</AccordionGroup>

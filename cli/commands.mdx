@@ -1,0 +1,78 @@
+---
+title: "Commands"
+description: "Every slash command in the pre.dev CLI, grouped by what it does."
+---
+
+Type `/` in the chat input to open the command palette. Keep typing to filter, use ↑/↓ to move, Enter to run, Esc to dismiss. Commands that take arguments (like `/sprint` and `/fork`) keep the composer open so you can type the rest.
+
+## Building
+
+| Command | Description |
+|---------|-------------|
+| `/sprint <feature>` | Launch a custom sprint in a new session — builds the feature you describe |
+| `/effort` | Set the sprint effort level (auto / low / medium / high) |
+| `/model` | Choose models per phase (chat / research / coding / acceptance) |
+| `/pro` | Toggle pro mode — pin every phase to Claude Opus |
+
+### /sprint example
+
+```
+/sprint add CSV export to the reports page with a progress toast
+```
+
+The sprint opens as a new tab in the fleet bar and builds in an isolated session while you keep chatting in main. Your `/effort` and `/model` settings apply and persist per project.
+
+## Sessions
+
+| Command | Description |
+|---------|-------------|
+| `/fork <prompt>` | Spin a prompt off into a new isolated session |
+
+### /fork example
+
+```
+/fork write integration tests for the billing webhooks
+```
+
+The fork runs in parallel in its own tab — you stay in your current session. Prefixing any message with `>>` does the same thing:
+
+```
+>> upgrade eslint and fix any new violations
+```
+
+Forked sessions work in isolated git worktrees, so parallel sessions never trample each other's changes. Open sessions persist: quit the CLI and relaunch, and your tabs come back.
+
+## Project
+
+| Command | Description |
+|---------|-------------|
+| `/reverse` | Map the existing codebase — runs reverse engineering |
+| `/arch` | Open the Architecture graph view |
+| `/kanban` | Open the Kanban board |
+| `/roadmap` | Open the Roadmap / Gantt view |
+
+`/kanban`, `/roadmap`, and `/arch` render right in the terminal — press Esc to return to chat. They show the same project data as the web workspace.
+
+`/reverse` runs in the background (typically a few minutes) and you can keep chatting while it maps your codebase into the architecture graph. See [Work on an Existing Repo](/cli/existing-repos) for the full flow.
+
+## Setup
+
+| Command | Description |
+|---------|-------------|
+| `/login` | Log in to pre.dev (or switch accounts) via your browser |
+| `/skills` | Manage agent skills — toggle, add, remove |
+| `/mcp` | Manage MCP servers — toggle, add, remove |
+| `/balance` | Show your remaining credit balance |
+
+<Note>
+  Skills and MCP servers are project-level — anything you configure in the CLI applies when you open the same project on the web, and vice versa. OAuth integrations are managed from the web workspace. See [Integrations](/coding-agent/integrations/overview).
+</Note>
+
+## Launch flags
+
+Flags you can pass to `predev` itself:
+
+| Flag | Description |
+|------|-------------|
+| `predev "<prompt>"` | Start with an opening prompt instead of an empty chat |
+| `predev --new` (or `-n`) | Create a fresh project for this directory, even if one already exists |

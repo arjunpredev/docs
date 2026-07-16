@@ -11,7 +11,7 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
 
 <Steps>
   <Step title="Get your API key">
-    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/browser-agents">
+    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/key">
       Visit the playground to copy your API key.
     </Card>
   </Step>
@@ -98,7 +98,7 @@ Event shapes are identical to the REST SSE stream — see [Run a Task → SSE fr
 
 ## Auth
 
-`PREDEV_API_KEY` is all you need. The key is your personal SuperTokens userId (solo) or your enterprise org API key. Same key works for REST and MCP.
+`PREDEV_API_KEY` is all you need. Grab it at [pre.dev/projects/key](https://pre.dev/projects/key) (solo) or from your enterprise dashboard. The same key works for REST and MCP.
 
 ## Troubleshooting
 
@@ -107,7 +107,7 @@ Event shapes are identical to the REST SSE stream — see [Run a Task → SSE fr
     - Restart your client after adding the MCP config
     - Verify the URL is exactly `https://api.pre.dev/mcp`
     - Check JSON syntax in your config file
-    - Confirm your API key is valid at [pre.dev/projects/browser-agents](https://pre.dev/projects/browser-agents)
+    - Confirm your API key is valid at [pre.dev/projects/key](https://pre.dev/projects/key)
   </Accordion>
   <Accordion title="Authentication failed" icon="triangle-exclamation">
     - Make sure the `Authorization` header starts with `Bearer ` (with the space)

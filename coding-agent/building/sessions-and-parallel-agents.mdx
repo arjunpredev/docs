@@ -1,0 +1,99 @@
+---
+title: "Sessions & Parallel Agents"
+description: "Work several streams at once — isolated sessions you merge back, and sub-agents that fan out within a sprint."
+---
+
+pre.dev gives you two ways to parallelize work: **sessions** (isolated branches of your project, each with its own agent and chat) and **parallel agents** (sub-agents that fan out within a single sprint).
+
+## Sessions
+
+Every session is an **isolated branch of your project**. It gets its own `predev/<task-slug>` git branch, its own chat thread, and its own sandbox — so an experiment in one session can't break another.
+
+The tab bar above the chat shows your sessions. **Main** is always first; every other session is a fork.
+
+### Create a session
+
+- Click **+ New session** in the tab bar (forks from your current session), or
+- Use the slash command to fork and hand the new session a task in one step:
+
+```
+/fork rebuild the settings page with tabs
+```
+
+`/sprint <feature>` also launches its custom sprint in a new session, keeping your current session free.
+
+<Note>
+  Sessions require the project to be connected to GitHub — each one lives on its own branch. There's a cap on active sessions per project; archive an unused one if you hit it.
+</Note>
+
+### Work in parallel, merge back
+
+Run different tasks in different sessions simultaneously — a feature in one, a refactor in another — then bring the work together:
+
+<Steps>
+  <Step title="Merge into Main">
+    Open a session's menu (▾) and choose **Merge into Main**. pre.dev opens a pull request and auto-merges it when it's clean.
+  </Step>
+  <Step title="Conflicts? Let the agent resolve them">
+    If the merge conflicts, you'll see the PR link plus a **Let agent resolve** button. The agent in Main picks up the conflict markers, resolves them, commits, and pushes — or you can resolve on GitHub yourself.
+  </Step>
+  <Step title="Or promote a session to Main">
+    If a fork *became* the real project, choose **Make this the Main** instead of merging. The session becomes Main — including taking over the project's live preview URL.
+  </Step>
+</Steps>
+
+### Archive and revive
+
+Done with a session? **Archive** it from the menu — it leaves the tab bar but its git branch is preserved, so you can **Revive** it later from the Archived dropdown and pick up exactly where it left off.
+
+### Working with teammates
+
+Sessions are multiplayer. Presence avatars on each tab show who else is viewing that session right now, and session changes (create, rename, archive, promote) sync live to everyone in the project. Double-click a tab to rename it.
+
+## Parallel agents
+
+Within a single sprint, the agent can **fan independent tasks out to multiple sub-agents in one wave** — for example, building three unrelated components at the same time instead of one after another.
+
+When this happens, a live panel appears in the chat feed:
+
+<CardGroup cols={2}>
+  <Card title="One tab per agent" icon="table-columns">
+    Each sub-agent gets a tab showing its objective, live status, and tool count. Switch tabs to watch any of them work.
+  </Card>
+  <Card title="Full inspectability" icon="magnifying-glass">
+    Every tool call inside a branch is a click-to-expand card — search results, command output, and file diffs, same as the main feed.
+  </Card>
+  <Card title="Files touched" icon="file-pen">
+    A strip at the top of each branch lists every file that agent wrote or edited.
+  </Card>
+  <Card title="Conclusions" icon="flag-checkered">
+    When a branch finishes, its summary and findings appear in a conclusion box — including a pass/fail verdict for verification branches.
+  </Card>
+</CardGroup>
+
+Sub-agents work within the session's workspace, so their results land together in the same branch — no merge step needed. Verification branches run read-only; building branches write code.
+
+## When to use which
+
+| Situation | Use |
+|-----------|-----|
+| Two features you want to build side by side, reviewed separately | **Sessions** |
+| A risky experiment you might throw away | **Session** (archive it if it doesn't pan out) |
+| A teammate working on something else in the same project | **Sessions** (one each, presence shows who's where) |
+| One feature with several independent pieces | **Parallel agents** — the agent fans out automatically |
+| Deciding a fork is now the real product | **Promote to Main** |
+
+<Tip>
+  These compose: each session's agent can fan out its own parallel sub-agents. Sessions are the coarse-grained split you control; parallel agents are the fine-grained split the agent manages within a sprint.
+</Tip>
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card title="Build Modes & Effort" icon="play" href="/coding-agent/building/build-modes">
+    Control what each session builds and how deep sprints go.
+  </Card>
+  <Card title="Collaboration" icon="users" href="/coding-agent/building/collaboration">
+    Invite teammates and control project access.
+  </Card>
+</CardGroup>

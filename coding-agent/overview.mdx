@@ -1,25 +1,44 @@
 ---
 title: "Coding Agent"
-description: "Describe an app. pre.dev builds it, ships real pull requests to your GitHub, and deploys."
+description: "Describe an app. pre.dev plans it, builds it autonomously for hours, and ships real pull requests to your GitHub."
 ---
 
-The **Coding Agent** is pre.dev's flagship. Point it at a prompt, a template, or an existing GitHub repo — it plans the architecture, writes the code, opens real PRs, and deploys the result. You stay in the loop as a reviewer, not a typist.
+The **Coding Agent** is pre.dev's flagship. Point it at a prompt, a template, or an existing GitHub repo — it plans the architecture first, then builds against that plan autonomously, verifying each task, opening real PRs, and deploying a live preview. You stay in the loop as a reviewer, not a typist.
 
 <Card title="Build your first project" icon="play" href="/coding-agent/quickstart" horizontal>
-  Sign up, describe an app, hit **Build on Autopilot**. ~5 minutes to a deployed product.
+  Sign up, describe an app, hit **Build on Autopilot**. Minutes to a deployed product.
 </Card>
 
 ## How it works
 
 <CardGroup cols={3}>
   <Card title="1. Plan" icon="compass" href="/coding-agent/specifications/fast-vs-deep">
-    One prompt → a full structured spec: stack, milestones, user stories, acceptance criteria. Pick Fast (~30s) or Deep (~2–5min).
+    One prompt → a full structured spec: stack, milestones, user stories, acceptance criteria. Fast Spec in ~1 minute, Deep Spec in ~3–5.
   </Card>
   <Card title="2. Build" icon="hammer" href="/coding-agent/building/build-modes">
-    Focused agents work the roadmap in isolated sandboxes. Each task verifies itself before it ships.
+    Agents work the roadmap in isolated sandboxes — for hours if the roadmap calls for it. Each task verifies itself (types, lint, tests, browser) before it ships.
   </Card>
   <Card title="3. Ship" icon="rocket" href="/coding-agent/building/pull-requests">
-    Real PRs land on feature branches in your GitHub. Review, merge, deploy. Custom domains supported.
+    Real PRs land on feature branches in your GitHub. A live preview runs the whole time; hosting and custom domains are built in.
+  </Card>
+</CardGroup>
+
+## Built for long-horizon work
+
+Most coding agents are great for twenty minutes. pre.dev is built for the build that takes all day:
+
+<CardGroup cols={2}>
+  <Card title="Effort levels" icon="gauge-high" href="/coding-agent/building/build-modes">
+    Dial how deep each sprint goes — **Vibe** for fast direct edits, **Todo** for task-list loops, **Build** for the full research → code → verify pipeline. Or leave it on Auto.
+  </Card>
+  <Card title="Your models, per phase" icon="microchip" href="/coding-agent/building/build-modes">
+    Pin a different model to each phase of the work — chat, research, coding, acceptance — with `/model`, or flip on Pro Mode for the strongest model everywhere.
+  </Card>
+  <Card title="Sessions: fork & merge" icon="code-branch" href="/coding-agent/workspace">
+    Every session is an isolated branch of your project. Fork to try something risky, work several in parallel, merge back what works. Context persists across all of them.
+  </Card>
+  <Card title="Parallel agents" icon="layer-group">
+    Big sprints fan out to multiple agents at once. Watch each branch's objective, progress, live diffs, and conclusion in real time.
   </Card>
 </CardGroup>
 
@@ -30,15 +49,17 @@ The **Coding Agent** is pre.dev's flagship. Point it at a prompt, a template, or
     Stripe, Supabase, Clerk, OpenAI, Linear, Slack — any service you've connected. Real keys, real endpoints, real data. No `YOUR_API_KEY` placeholders.
   </Card>
   <Card title="Verified code, not vibes" icon="shield-check">
-    Every PR passes types, lint, tests, and browser verification before it's opened.
+    Every PR passes types, lint, tests, and browser verification — with before/after screenshots as evidence — before it's opened.
   </Card>
   <Card title="Progress you can watch" icon="eye">
-    Live timeline of the agent's work — which file it's editing, which test just passed, which PR just opened.
+    Live timeline of the agent's work — its streaming thoughts, which file it's editing, which test just passed, which PR just opened.
   </Card>
-  <Card title="Your choice of control" icon="sliders">
-    Autopilot (ship the whole roadmap), one task at a time (review each PR), or chat (interactive).
+  <Card title="Your choice of control" icon="sliders" href="/coding-agent/building/build-modes">
+    Pick a **sprint mode** — Autopilot for the whole roadmap, Next Task to review each PR, custom sprints for anything else, or plain chat — and an **effort level** for how deep each sprint goes.
   </Card>
 </CardGroup>
+
+Work from the **web workspace** — a terminal-style chat with live Plan, Code, and Preview views — or from the **[pre.dev CLI](/cli/overview)** with the same slash commands and controls. See [The Workspace](/coding-agent/workspace).
 
 ## Extend what the agent can do
 

@@ -1,0 +1,71 @@
+---
+title: "Work on an Existing Repo"
+description: "Point the pre.dev CLI at a codebase you already have and start shipping features on it."
+---
+
+The CLI is the fastest way to bring pre.dev into a codebase that already exists. There's no import step and nothing to upload — `cd` into the repo, run `predev`, and the agent works on your files where they live.
+
+<Steps>
+  <Step title="Launch in your repo">
+    ```bash
+    cd my-existing-app
+    predev
+    ```
+    The first launch in a folder creates a pre.dev project linked to that directory. When the CLI sees an existing codebase — a GitHub remote or a directory full of source files — it offers to reverse-engineer it before you start:
+
+    ```
+    Existing repo detected — GitHub: acme/my-existing-app.
+    Want pre.dev to reverse-engineer it first?
+    ```
+
+    Pick **Yes** to kick off the mapping right away, or **Not now** and run `/reverse` whenever you're ready.
+  </Step>
+  <Step title="Reverse-engineer the codebase with /reverse">
+    ```
+    /reverse
+    ```
+    Maps the existing code into your project's architecture graph. It runs in the background — typically a few minutes — and you can keep chatting while it works. When it's done, `/arch` shows the resulting architecture graph right in the terminal, and the agent plans future work against it instead of rediscovering your codebase every session.
+  </Step>
+  <Step title="Sprint on new features">
+    ```
+    /sprint add SSO login with Okta alongside the existing email auth
+    ```
+    Each sprint opens as a new tab and builds in an isolated session. With the architecture mapped, sprints slot new work into the structure you already have — reusing your patterns, stack, and conventions rather than inventing new ones.
+
+    For smaller changes, just chat:
+
+    ```
+    the date formatting on the invoices page is wrong for non-US locales — fix it
+    ```
+  </Step>
+  <Step title="Review with git">
+    The agent edits files directly in your working tree, so your normal workflow is the review process:
+
+    ```bash
+    git status
+    git diff
+    ```
+
+    Stage, commit, and push on your own terms. Parallel sessions (`/fork`, `/sprint`) work in isolated git worktrees so they never collide with your checkout or with each other; their work lands back in your main workspace when they finish.
+  </Step>
+</Steps>
+
+<Note>
+  Everything stays in sync with the web workspace. The reverse-engineered architecture, Kanban board, and roadmap for this repo are all there when you open the same project at pre.dev.
+</Note>
+
+## Tips
+
+- **One directory, one project.** Relaunching `predev` in the same folder resumes the same project — history, sessions, and settings included. Use `predev --new` if you want a clean slate for the same directory.
+- **Re-run `/reverse` after big changes.** If the codebase shifts significantly (a large merge, a refactor done outside pre.dev), reverse-engineer again so the architecture graph matches reality.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Command reference" icon="list" href="/cli/commands">
+    Every slash command, grouped by what it does.
+  </Card>
+  <Card title="CLI overview" icon="terminal" href="/cli/overview">
+    Install, first run, and when to use the CLI vs the web.
+  </Card>
+</CardGroup>

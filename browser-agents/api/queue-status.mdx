@@ -1,0 +1,65 @@
+---
+title: "Queue Status & Capacity"
+description: "GET /browser-agent-status and GET /browser-agent-capacity — watch your in-flight work and the global pool."
+---
+
+# Queue status
+
+Two lightweight read endpoints for operating at volume.
+
+## GET /browser-agent-status
+
+Your own live queue: how many tasks you have running and queued, and your
+plan's in-flight cap. Free to call, cheap on our side — poll it as often as
+you like.
+
+```bash
+curl https://api.pre.dev/browser-agent-status \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+```json
+{
+  "userId": "...",
+  "running": 12,
+  "claimed": 3,
+  "pending": 40,
+  "total": 55,
+  "cap": 100
+}
+```
+
+| Field | Description |
+|---|---|
+| `running` | Tasks executing right now |
+| `claimed` | Tasks picked up, about to run |
+| `pending` | Tasks waiting in your queue |
+| `total` | running + claimed + pending |
+| `cap` | Your plan's max in-flight tasks — submits beyond this return `429 QUEUE_FULL` |
+
+Use it to throttle your own submit loop: stay under `cap` and you'll never
+see `QUEUE_FULL`.
+
+Also available in the SDKs as `browserAgentStatus()` (TypeScript) and
+`browser_agent_status()` (Python).
+
+## GET /browser-agent-capacity
+
+Global pool state — useful for deciding whether now is a good time to
+submit a very large batch. Any valid API key can read it.
+
+```bash
+curl https://api.pre.dev/browser-agent-capacity \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+Returns current queue and sandbox-pool statistics.
+
+<CardGroup cols={2}>
+  <Card title="Run tasks" icon="play" href="/browser-agents/api/run-task">
+    POST /browser-agent — sync, async, or streaming.
+  </Card>
+  <Card title="List runs" icon="list" href="/browser-agents/api/list-tasks">
+    GET /list-browser-agents — history with pagination.
+  </Card>
+</CardGroup>

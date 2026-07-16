@@ -7,6 +7,81 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-07-15
+
+### Act from your inbox, and a much snappier app
+
+- **Answer the agent's questions straight from email.** If the agent asks a clarifying question while you're away, the email now has one-click answer buttons — tap your choice and the build picks up immediately. Links are signed and safe from email scanners.
+- **Credits run out mid-build? You get the full picture.** The build pauses safely and you receive an email with current progress, screenshots, and the live preview link. Top up and resume where it left off. A "we'll email you when it's ready" cue now appears during sprints so you can close the tab with confidence.
+- **A broad speed pass.** The dashboard, opening a project, and chat are all significantly faster — heavy views load roughly 30% quicker, and the hottest screens paint instantly from cache.
+- **Renaming a project keeps old links working**, and builds now survive server restarts and idle timers instead of stalling.
+
+## 2026-07-13
+
+### Watch the agent think, and dial the effort
+
+- **Live thinking ticker.** While the agent reasons, its thinking streams in real time; finished reasoning collapses into a "Thoughts" block you can expand later.
+- **Effort levels.** Choose how deep each sprint goes with `/effort` — **Vibe** (fast direct pass, now the default for quick work), **Todo** (task-list loop), or **Build** (full research → code → verify pipeline). See [Build Modes & Effort](/coding-agent/building/build-modes).
+- **Fewer unnecessary questions.** The agent now asks clarifying questions only when it genuinely needs an answer — and pings you when a direct sprint finishes.
+- **Cleaner parallel-agent view** with per-branch objective, progress, and conclusion.
+
+## 2026-07-09
+
+### The terminal-style workspace, on the web
+
+- **Terminal chat everywhere.** The web workspace now matches the CLI: a terminal-style chat with a `/` command palette (`/sprint`, `/effort`, `/model`, `/balance`, `/fork`, and more) and live view tabs for Plan, Code, and Preview. See [The Workspace](/coding-agent/workspace).
+- **The pre.dev CLI** brings the same agent, slash commands, and views to your terminal.
+- **Before/after screenshot evidence** on every browser verification step — see exactly what the agent checked and what changed.
+- **Builds pick themselves back up.** Interrupted sprints resume automatically instead of waiting for you to notice.
+
+## 2026-07-08
+
+### Generate media inside your build
+
+- **Images, video, audio, and music in chat.** Ask the agent for a logo, a hero video, a voiceover, or a soundtrack mid-build — generated media lands directly in your project.
+- **More reliable builds against your acceptance criteria**, with a hardened verification loop.
+- Faster, cheaper generated images, and GitHub sync no longer breaks from build cache.
+
+## 2026-06-25
+
+### Parallel agents you can actually inspect
+
+- **The parallel-agent panel shows real work**: per-agent live streaming, full tool detail, and real file diffs as multiple agents fan out across a sprint.
+- **Upgraded coding agent model** across all build paths, plus fixes for the agent getting stuck repeating itself.
+- Faster app load and a cleaner agent step view with per-step timestamps.
+
+## 2026-06-14
+
+### Usage-based billing for Browser Agents
+
+- **Pay per task, not per seat.** Browser agent tasks bill against your credit balance — 1 credit = $0.10, with a 0.1-credit floor per task. **Failed tasks are free.**
+- **Tier-aware rate limits** raise throughput for paid plans.
+- Typed billing errors with `actionUrl` deep-links (see the 2026-04-30 entry) now cover the full task lifecycle.
+
+## 2026-06-09
+
+### Sessions: fork, merge, and build in parallel
+
+- **Run multiple build sessions at once.** Fork a session to try something risky, work several in parallel, and merge back what works — merges no longer drop fork edits, even when git is in a bad state.
+- **OAuth connectors, MCP servers, and agent skills** arrive in the coding agent: connect your services once and every build inherits them. See [Integrations](/coding-agent/integrations/overview).
+- Secrets and build artifacts now stay strictly out of your GitHub repos.
+
+## 2026-05-26
+
+### Real-time collaboration and mobile preview
+
+- **Multi-session collaboration**: live sync, presence avatars, and per-session status across everyone working on a project. Session forks landed earlier in the month and are now hardened.
+- **Mobile preview** with a phone-framed viewport and an Expo QR code for native projects.
+- **Much faster returns to a project**: speculative pre-resume from the dashboard and an instant hot path when nothing changed.
+
+## 2026-05-08
+
+### Browser agents join the chat
+
+- **`browser_agent` in the workspace**: the planning agent can now drive a real browser mid-conversation, with an inline timeline card showing every step.
+- **Faster and tougher browser automation**: an express path for simple extractions, a form-fill specialist, and stronger stealth for protected sites.
+- Queue messages while architecture generation is running — they're picked up the moment it finishes.
+
 ## 2026-04-30
 
 ### `pre.dev/projects/key` — one-click API key copy

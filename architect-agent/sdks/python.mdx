@@ -43,7 +43,7 @@ print(result)
 
 ## Authentication
 
-The pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground) under **Settings → API Keys**:
+The pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/key):
 
 ```python
 predev = PredevAPI(api_key="your_api_key")
@@ -55,7 +55,7 @@ predev = PredevAPI(api_key="your_api_key")
 
 #### Fast Spec Generation
 
-Generate a fast specification (30-40 seconds, ~5-10 credits).
+Generate a fast specification (~1 minute, ~5-10 credits).
 
 ```python
 result = predev.fast_spec(
@@ -83,7 +83,7 @@ result = predev.fast_spec(
 
 #### Deep Spec Generation
 
-Generate a deep specification (2-3 minutes, ~10-50 credits).
+Generate a deep specification (~3-5 minutes, ~10-50 credits).
 
 ```python
 result = predev.deep_spec(
@@ -357,6 +357,12 @@ class SpecResponse:
 
     # Integration URLs (when completed)
     predevUrl: Optional[str] = None               # Link to pre.dev project
+    architectureInfographicUrl: Optional[str] = None  # Rendered architecture infographic
+    zippedDocsUrls: Optional[List[dict]] = None   # Downloadable doc bundles
+    userFlowGraph: Optional[dict] = None          # User flow nodes + edges
+    architectureGraph: Optional[dict] = None      # System architecture nodes + edges
+    enrichedTechStack: Optional[List[dict]] = None  # Tech choices with useFor/reason
+    creditsUsed: Optional[float] = None           # Credits consumed (live during processing)
 
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
@@ -490,7 +496,15 @@ class CreditsBalanceResponse:
 
 ### Generate Fast Spec
 
-```
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+spec = predev.fast_spec(
+    input_text="Build a task management app with team collaboration"
+)
+print(spec.codingAgentSpecMarkdown)
 ```
 
 ### Search Specs with Regex
@@ -541,3 +555,42 @@ else:
 ```
 
 ## Error Handling
+
+All SDK errors inherit from `PredevAPIError`. Typed subclasses map to HTTP status codes so you can handle billing and rate-limit cases explicitly:
+
+| Exception | HTTP | When |
+|---|---|---|
+| `AuthenticationError` | 401 | Missing or invalid API key |
+| `SubscriptionRequiredError` | 402 | Endpoint needs an active subscription |
+| `InsufficientCreditsError` | 402 | Not enough credits — top up at [pre.dev/projects/key](https://pre.dev/projects/key) |
+| `BatchTooLargeError` | 400 | Request exceeds size limits |
+| `QueueFullError` | 429 | Per-user in-flight queue is full — retry later |
+| `RateLimitError` | 429 | Too many requests — back off and retry |
+| `PredevAPIError` | other | Any other API error (has `.status_code`) |
+
+```python
+from predev_api import (
+    PredevAPI,
+    AuthenticationError,
+    InsufficientCreditsError,
+    RateLimitError,
+    PredevAPIError,
+)
+
+predev = PredevAPI(api_key="your_api_key")
+
+try:
+    spec = predev.fast_spec(input_text="Build a task management app")
+except AuthenticationError:
+    print("Check your API key at pre.dev/projects/key")
+except InsufficientCreditsError as e:
+    print(f"Out of credits: {e}")
+except RateLimitError:
+    print("Rate limited - retry with backoff")
+except PredevAPIError as e:
+    print(f"API error ({e.status_code}): {e}")
+```
+
+<Note>
+Typed exceptions require `predev-api` >= 1.1.0.
+</Note>

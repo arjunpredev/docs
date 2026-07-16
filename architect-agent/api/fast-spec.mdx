@@ -2,7 +2,7 @@
 title: "Generate Fast Spec"
 api: "POST https://api.pre.dev/fast-spec"
 openapi: "POST /fast-spec"
-description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in 30-40 seconds."
+description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in ~1 minute."
 ---
 
 # POST /fast-spec
@@ -13,7 +13,7 @@ Generate a quick, comprehensive project specification.
 
 - **Cost:** Variable (typically ~5-10 credits based on complexity)
 - **Use Cases:** MVPs, prototypes, rapid iteration
-- **Processing Time:** ~30-40 seconds (sync) or instant return (async)
+- **Processing Time:** ~1 minute (sync) or instant return (async)
 - **Output:** Complete feature breakdown, architecture, milestones
 
 ## Endpoint
@@ -47,7 +47,7 @@ Authorization: Bearer YOUR_API_KEY
 | `input` | string | ✅ | Description of what you want to build |
 | `currentContext` | string | ❌ | **CRITICAL:** Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance |
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
-| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
+| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with `specId` for status polling |
 
 **For file upload requests (multipart/form-data):**
 
@@ -56,7 +56,7 @@ Authorization: Bearer YOUR_API_KEY
 | `file` | File | ❌ | **Optional:** File to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with `input` text |
 | `input` | string | ❌ | **Optional:** Additional text description when using file upload. Can be empty string if using only file |
 | `docURLs` | string[] | ❌ | **Optional:** Array of documentation URLs that Architect will reference when generating specifications. Useful for API documentation, design systems, or existing project docs |
-| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with requestId for status polling |
+| `async` | boolean | ❌ | `false` (default) - wait for completion, or `true` - return immediately with `specId` for status polling |
 
 ### Understanding `currentContext`
 
@@ -135,7 +135,7 @@ formData.append('file', fileInput.files[0]); // fileInput is your HTML file inpu
 formData.append('input', '');
 formData.append('docURLs', JSON.stringify(["https://docs.pre.dev"]));
 
-const response = await fetch('http://localhost:3001/fast-spec', {
+const response = await fetch('https://api.pre.dev/fast-spec', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
@@ -278,8 +278,8 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 4. **Failed** → Error occurred
 
 **Typical processing times:**
-- Fast Spec: 30-40 seconds
-- Deep Spec: 2-3 minutes
+- Fast Spec: ~1 minute
+- Deep Spec: ~3-5 minutes
 
 Poll every 10-15 seconds for best UX.
 
@@ -859,108 +859,9 @@ As your agent implements features, actively manage progress:
 
 **Pro Tip:** Don't let your agent skip tasks without questioning why. This keeps implementation comprehensive and on-track.
 
-## Documentation Scraping & Archives
+import DocScraping from '/snippets/doc-scraping.mdx';
 
-### Overview
-
-When you provide `docURLs` in your request, Architect automatically scrapes the documentation in parallel with spec generation and packages it into downloadable ZIP archives. This feature helps AI agents and developers have context about external APIs, design systems, or frameworks referenced in the spec.
-
-### How It Works
-
-1. **Parallel Processing:** Documentation scraping runs simultaneously with spec generation (not sequentially), so it doesn't slow down your request
-2. **Graceful Degradation:** If documentation scraping fails, spec generation still completes successfully
-3. **Organized Archives:** Each platform gets its own ZIP with hierarchical folder structure based on the documentation site
-
-### Response Field: `zippedDocsUrls`
-
-```typescript
-interface ZippedDocsUrl {
-  platform: string;              // Hostname extracted from doc URL (e.g., "stripe.com", "docs.github.com")
-  masterZipShortUrl: string;     // Short URL to download the ZIP archive
-  masterMarkdownShortUrl?: string; // Optional: consolidated markdown file
-}
-```
-
-### Example Request with Documentation URLs
-
-```json
-{
-  "input": "Build a payment processing system with Stripe integration",
-  "docURLs": [
-    "https://stripe.com/docs/api",
-    "https://stripe.com/docs/payments",
-    "https://docs.github.com/en/rest"
-  ]
-}
-```
-
-### Example Response with Documentation Archives
-
-```json
-{
-  "endpoint": "fast_spec",
-  "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-  "zippedDocsUrls": [
-    {
-      "platform": "stripe.com",
-      "masterZipShortUrl": "https://api.pre.dev/s/xyz789"
-    },
-    {
-      "platform": "docs.github.com",
-      "masterZipShortUrl": "https://api.pre.dev/s/abc456"
-    }
-  ]
-}
-```
-
-### ZIP Archive Structure
-
-Each ZIP archive contains:
-- Individual markdown files (one per scraped page)
-- Hierarchical folder structure mirroring the documentation site
-- Organized by documentation site structure
-
-### Supported Domain Formats
-
-The system handles various domain formats:
-- `.com`, `.io`, `.org`, `.net`
-- `.cloud`, `.dev`, `.ai`
-- Country-specific TLDs (`.co.uk`, `.com.au`, etc.)
-- Newer TLDs (`.tech`, `.app`, etc.)
-
-### Best Practices for Documentation URLs
-
-**Do:**
-- ✅ Provide specific documentation pages relevant to your spec
-- ✅ Include API documentation for integrations you're building
-- ✅ Reference design system docs for UI consistency
-- ✅ Use official documentation sources
-
-**Don't:**
-- ❌ Include general marketing pages
-- ❌ Link to blog posts instead of official documentation
-- ❌ Reference deprecated or outdated documentation
-- ❌ Link to non-documentation content
-
-### Viewing Documentation Archives
-
-**Enterprise users** can view and download documentation archives from the API Usage Logs browser:
-
-1. Navigate to [https://pre.dev/enterprise/dashboard?page=api](https://pre.dev/enterprise/dashboard?page=api)
-2. Click on any API call to open the details modal
-3. View the "Documentation Archives" section
-4. Click download links to get the ZIP files
-
-### Error Handling
-
-If documentation scraping fails:
-- `zippedDocsUrls` will be an empty array `[]`
-- Spec generation continues normally
-- No error is thrown (graceful degradation)
-
-If `docURLs` is not provided or is an empty array:
-- `zippedDocsUrls` will be an empty array `[]`
-- Spec generation proceeds normally
+<DocScraping />
 
 ## Best Practices
 
@@ -975,6 +876,6 @@ If `docURLs` is not provided or is an empty array:
 - Verify acceptance criteria before marking complete
 - Triple check that tests are written
 
-<Card title="Next: Deep Spec Endpoint" icon="arrow-right" href="/api-reference/deep-spec">
+<Card title="Next: Deep Spec Endpoint" icon="arrow-right" href="/architect-agent/api/deep-spec">
   Generate ultra-detailed specifications for complex projects.
 </Card>

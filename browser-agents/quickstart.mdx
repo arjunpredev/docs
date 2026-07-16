@@ -16,7 +16,7 @@ Every example below:
 ## 1. curl
 
 ```bash
-export PREDEV_API_KEY=...   # solo userId or enterprise org API key
+export PREDEV_API_KEY=...   # from pre.dev/projects/key
 curl -X POST https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
@@ -78,21 +78,25 @@ print(result["results"][0]["data"])  # {'heading': 'Example Domain'}
 
 ## 4. MCP (Claude Code, Cursor)
 
-Add pre.dev as an MCP server (one-line in `~/.claude.json` or
-`~/.cursor/mcp.json`):
+Add pre.dev as an MCP server. For Claude Code:
+
+```bash
+claude mcp add --transport http predev https://api.pre.dev/mcp
+```
+
+For Cursor and other editors, add the HTTP server to your MCP config:
 
 ```json
 {
   "mcpServers": {
-    "pre.dev": {
-      "command": "npx",
-      "args": ["-y", "@predotdev/mcp-server"],
-      "env": { "PREDEV_API_KEY": "..." }
+    "predev": {
+      "url": "https://api.pre.dev/mcp"
     }
   }
 }
 ```
 
+On first use a browser tab opens — sign in to pre.dev to authorize.
 Then your agent gets a `browser_agent` tool it can call directly.
 Example prompt to the agent:
 
@@ -104,12 +108,11 @@ Full MCP reference: [MCP Tool](/browser-agents/mcp-tool)
 
 ## What happens under the hood
 
-1. POST lands, we check credits + enqueue your tasks in Mongo.
-2. Scheduler dispatches each task to a sandbox (Daytona → E2B → Modal
-   fallback chain, cheapest first).
-3. Inside the sandbox, a planner LLM (`gemini-2.5-flash-lite`) drives
-   Playwright through navigation + actions + extraction.
-4. Result streams back as structured JSON, validated against your
+1. Your POST lands and your tasks are queued.
+2. Each task is dispatched to an isolated, sandboxed browser.
+3. An AI planner drives the browser through navigation, actions, and
+   extraction.
+4. The result streams back as structured JSON, validated against your
    `output` schema.
 5. Billed per successful task. Failed tasks are free.
 

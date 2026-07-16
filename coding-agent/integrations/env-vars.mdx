@@ -1,0 +1,81 @@
+---
+title: "Environment Variables"
+description: "Configure your app's secrets and settings — pre.dev detects what's needed, you fill in the values, the running app picks them up."
+---
+
+Environment variables are how your project gets its secrets and configuration — database URLs, payment keys, auth credentials. pre.dev detects which variables your app actually needs, tells you when any are missing, and applies your values to the running app.
+
+## The environment editor
+
+Click the **Environment** button in your workspace to open the editor. If required variables are missing, the button shows a red badge with the count.
+
+The editor lists every variable your project needs — detected automatically by scanning your code — with the service each one belongs to and instructions for where to find its value. Detection runs with live progress, so you can watch variables appear as the scan finds them. From here you can:
+
+- **Fill in values** for detected variables (sensitive values are masked, with a toggle to reveal)
+- **Add custom variables** your app needs beyond what was detected
+- **Remove** variables you don't want set (and restore them if you change your mind)
+
+Hit **Save** and your values are persisted and written to the running app, so the change takes effect without you touching a terminal.
+
+<Note>
+  A few things the editor handles for you:
+
+  - Custom variable names are normalized to `UPPER_CASE` automatically
+  - Saved values persist across re-scans — updating the detected list never wipes what you've entered
+  - Known providers are recognized by name, so a custom `RESEND_API_KEY` still gets the right service attribution and instructions
+</Note>
+
+## Bulk import
+
+You don't have to enter values one at a time:
+
+<Steps>
+  <Step title="Paste or drop">
+    Switch to **Paste text** and paste your `.env` contents (or raw API keys) — or drop a `.env`, `.txt`, or `.json` file. Even a screenshot of your keys works.
+  </Step>
+  <Step title="Automatic matching">
+    pre.dev parses the input and matches each value to the variable it belongs to. Variables that aren't in the detected list are added as custom variables.
+  </Step>
+  <Step title="Review and save">
+    Matched values fill in live so you can verify before saving.
+  </Step>
+</Steps>
+
+## Missing variable detection
+
+While building, the agent works out which environment variables the project genuinely requires. If required values are missing, pre.dev emails you a precise list — each variable's **name**, the **service it belongs to**, and **what it's for**:
+
+```text
+Missing Variables
+
+STRIPE_SECRET_KEY
+Stripe — Payment processing
+
+CLERK_SECRET_KEY
+Clerk — Authentication
+```
+
+The email links straight back to your project with the environment editor already open, and each variable comes with step-by-step instructions for where to find its value.
+
+<Note>
+  Nothing blocks silently: without the required values some features won't work, so the email tells you exactly what's needed instead of leaving you to discover it at runtime.
+</Note>
+
+## Organization-wide propagation
+
+Teams on an enterprise organization can define **shared environment variables at the org level** in the knowledge base. When shared variables change — or new projects are missing them — the propagation panel shows every project that's out of date and exactly which variables each one is missing.
+
+Push updates per project, or hit **Update All** to bring every project up to date in one click.
+
+## Environment variables vs. API keys
+
+The two work together:
+
+- **[API Keys](/coding-agent/integrations/api-keys)** are stored once at the account level ([pre.dev/projects/key](https://pre.dev/projects/key)) — the agent picks the relevant ones on each build and writes them into the project's `.env` automatically.
+- **Environment variables** are per-project: the editor shows you what the project needs, including values that came from your stored keys, plus anything project-specific.
+
+<Tip>
+  Store credentials you reuse across projects (Stripe, OpenAI, Resend, …) as API keys so every new project inherits them. Use the environment editor for one-off, project-specific values.
+</Tip>
+
+Plan availability for team and organization features is listed on the [pricing page](https://pre.dev/pricing).

@@ -86,7 +86,8 @@ Authorization: Bearer YOUR_API_KEY
       "input": "Build an enterprise healthcare platform with HIPAA compliance",
       "status": "processing",
       "success": false,
-      "progress": "Generating architecture recommendations..."
+      "progress": 45,
+      "progressMessage": "Generating architecture recommendations..."
     }
   ],
   "total": 42,
@@ -120,7 +121,8 @@ Authorization: Bearer YOUR_API_KEY
 | `executionTime` | number | ❌ | Processing time in ms (when completed) |
 | `predevUrl` | string | ❌ | pre.dev project URL (when completed) |
 | `errorMessage` | string | ❌ | Error details (when failed) |
-| `progress` | string | ❌ | Status message (when processing) |
+| `progress` | number | ❌ | Completion percentage 0-100 (when processing) |
+| `progressMessage` | string | ❌ | Status message (when processing) |
 
 ## Code Examples
 
@@ -268,7 +270,8 @@ interface SpecObject {
   executionTime?: number;
   predevUrl?: string;
   errorMessage?: string;
-  progress?: string;
+  progress?: number;
+  progressMessage?: string;
 }
 
 interface ListSpecsResponse {
@@ -602,7 +605,7 @@ async function loadPage(
 - Handle empty result sets gracefully
 - Show appropriate messages when no specs match filters
 
-<Card title="Next: Find Specs (Search)" icon="arrow-right" href="/api-reference/find-specs">
+<Card title="Next: Find Specs (Search)" icon="arrow-right" href="/architect-agent/api/find-specs">
   Search specs using regex patterns for advanced filtering.
 </Card>
 

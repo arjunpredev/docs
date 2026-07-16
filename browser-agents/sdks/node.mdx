@@ -37,7 +37,7 @@ console.log(result.results[0].data);
 
 ## Authentication
 
-<Card title="Get your API key" icon="key" href="https://pre.dev/projects/browser-agents" horizontal>
+<Card title="Get your API key" icon="key" href="https://pre.dev/projects/key" horizontal>
   Grab a key from the Browser Agents dashboard.
 </Card>
 
@@ -87,6 +87,31 @@ const result = await predev.getBrowserAgent(id, { includeEvents?: boolean });
 **Parameters:**
 - `id` **(required)**: `string` — id returned from `browserAgent(tasks, { async: true })` or from streaming
 - `options.includeEvents` **(optional)**: `boolean` — include the full per-step event timeline (navigation, plan, screenshot, action, validation). Payloads can be large.
+
+### `listBrowserAgents()`
+
+List your past and in-progress runs, newest first.
+
+```ts
+const { batches, total, hasMore } = await client.listBrowserAgents({
+  limit: 20,          // optional
+  skip: 0,            // optional
+  status: 'completed' // optional: 'processing' | 'completed'
+});
+```
+
+### `browserAgentStatus()`
+
+Your live queue snapshot — running / queued counts and your plan's
+in-flight cap. Poll it to throttle a large submit loop.
+
+```ts
+const q = await client.browserAgentStatus();
+// { userId, running, claimed, pending, total, cap }
+if (q.total < q.cap - 10) {
+  await client.browserAgent(nextChunk, { async: true });
+}
+```
 
 ## Response Types
 

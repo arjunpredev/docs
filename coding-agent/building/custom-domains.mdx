@@ -66,7 +66,7 @@ After verification, your app is accessible at both your custom domain and the or
 
 ## How It Works
 
-- pre.dev creates a Kubernetes ingress rule for your custom domain
+- pre.dev routes your custom domain to your deployed app
 - SSL certificates are automatically provisioned and managed
 - Traffic is routed to the same deployment as your `.pre.dev` URL
 - The app's `PREDEV_DEPLOYMENT_URL` environment variable is updated to reflect your custom domain
@@ -81,7 +81,7 @@ After verification, your app is accessible at both your custom domain and the or
 
 1. Click the **trash icon** next to your domain in the Custom Domain section
 2. Confirm removal
-3. The ingress and SSL certificate are cleaned up automatically
+3. The routing rule and SSL certificate are cleaned up automatically
 4. Your app reverts to being accessible only at the `.pre.dev` URL
 
 <Warning>

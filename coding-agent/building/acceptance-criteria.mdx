@@ -1,86 +1,110 @@
 ---
-title: "Acceptance Verification"
-description: "How pre.dev ensures every task ships working code."
+title: "Verification"
+description: "How pre.dev proves every task ships working code — static checks, real browser flows, screenshots, and design review."
 ---
 
-pre.dev's key differentiator: agents **cannot mark a task as complete** until it passes automated verification. No more "looks good but is broken."
+pre.dev's key differentiator: agents **cannot mark a task as complete** until it passes verification. Not "the code compiles" — the agent drives your app in a real browser, exercises the feature end to end, and captures screenshot evidence before a PR opens.
 
-## What Gets Verified
+## What drives verification
 
-Every completed task goes through a verification pipeline before a PR is opened:
+Verification isn't generic smoke testing. Each user story in your spec carries **acceptance criteria** — concrete, testable statements of what "done" means. Those criteria are what the agent verifies against, so the checks map directly to what you asked for.
 
-<AccordionGroup>
-  <Accordion title="Type Checking" icon="code">
-    For TypeScript/typed projects, the full compilation must pass:
-    - No type errors
-    - No missing imports
-    - Proper interface compliance
-    - Strict mode checks (when configured)
-  </Accordion>
-  <Accordion title="Linting" icon="broom">
-    Code must pass the project's linting rules:
-    - ESLint, Prettier, or your configured linter
-    - Consistent formatting
-    - No unused variables or imports
-    - Style guide compliance
-  </Accordion>
-  <Accordion title="Unit Tests" icon="flask-vial">
-    If the task includes test requirements:
-    - All new tests must pass
-    - Existing tests must not break
-    - Coverage thresholds met (if configured)
-  </Accordion>
-  <Accordion title="Visual Browser Verification" icon="browser">
-    For frontend/UI tasks, pre.dev runs visual checks:
-    - Components render without errors
-    - Layout matches expectations
-    - Interactive elements function correctly
-    - No console errors in the browser
-    - CTA elements redirect properly
-  </Accordion>
-</AccordionGroup>
+<Note>
+  During verification the agent's editing tools are disabled. It can observe and report, but it cannot quietly patch code to make a check pass — fixes happen in a separate coding pass, then verification runs again.
+</Note>
 
-## How It Works
+## The verification gate
+
+Every completed task passes through the full pipeline before a pull request is opened:
 
 <Steps>
-  <Step title="Agent Writes Code">
-    The build agent implements the task based on the specification
+  <Step title="Agent writes code">
+    The build agent implements the task based on the specification.
   </Step>
-  <Step title="Type Check">
-    Compilation must pass — if it fails, the agent fixes and retries
+  <Step title="Static checks">
+    Type checking, linting, and tests must pass — if any fail, the agent fixes and retries.
   </Step>
-  <Step title="Lint Check">
-    Code style rules must pass — if they fail, the agent fixes and retries
+  <Step title="Browser flows">
+    The agent drives the running app in a real browser, exercising each acceptance criterion as a multi-step flow.
   </Step>
-  <Step title="Tests">
-    All tests must pass — if they fail, the agent fixes and retries
+  <Step title="Design review">
+    UI files are scanned for accessibility, dark-mode, layout, and placeholder issues.
   </Step>
-  <Step title="Browser Verification">
-    UI must render correctly — if it fails, the agent fixes and retries
-  </Step>
-  <Step title="PR Opened">
-    All checks passed — a pull request is created with verified, working code
+  <Step title="PR opened">
+    All checks passed — a pull request is created with verified, working code.
   </Step>
 </Steps>
 
-<Note>
-  The agent iterates automatically until all checks pass. You only see the final, verified result.
-</Note>
+## Static checks
 
-## Why This Matters
+The baseline gate, adapted to your stack:
 
-Without acceptance verification, AI-generated code often has:
-- Type errors that surface only at build time
-- Missing imports that break at runtime
-- UI components that render incorrectly
-- Tests that were never actually run
-- Formatting inconsistencies
+<AccordionGroup>
+  <Accordion title="Type checking" icon="code">
+    For typed projects, full compilation must pass — no type errors, no missing imports, strict mode when configured. Python projects get mypy/pyright, Rust gets cargo check, and so on.
+  </Accordion>
+  <Accordion title="Linting" icon="broom">
+    Code must pass your project's configured linter (ESLint, Prettier, ruff, clippy, …) — consistent formatting, no unused variables, style guide compliance.
+  </Accordion>
+  <Accordion title="Tests" icon="flask-vial">
+    New tests must pass and existing tests must not break.
+  </Accordion>
+</AccordionGroup>
 
-pre.dev eliminates these by making verification a **gate** — not an afterthought.
+Verification rules are detected from your project configuration (tsconfig, eslint config, pytest.ini, etc.) — you don't configure anything manually.
+
+## Browser flows
+
+For anything with a UI, static checks aren't enough. The agent drives your app in a real browser using scripted multi-step flows — the same way a user would:
+
+- **Navigate** to a page, then move between pages through the app's own links and buttons
+- **Fill** forms and **type** into inputs
+- **Click** buttons and links (resolved by visible text or selector)
+- **Wait** for elements to appear after an action triggers a load
+- **Evaluate** JavaScript to assert the outcome — row counts, toast text, updated state
+
+A flow that interacts with the app **must assert its outcome in the same flow**. Filling a form in one step and checking a count in a separate, unrelated flow proves nothing causally — the platform enforces that cause and effect are demonstrated together.
+
+```text
+Example flow — add a book and prove it appears:
+1. navigate  /dashboard
+2. fill      #title  →  "The Great Gatsby"
+3. fill      #author →  "F. Scott Fitzgerald"
+4. click     Submit
+5. wait      .book-card
+6. evaluate  document.querySelectorAll('.book-card').length
+```
+
+If a step fails, the flow stops and reports exactly which step broke and why — the agent adjusts and re-runs the remaining steps.
+
+### Screenshot evidence
+
+Before/after screenshots are captured automatically around every flow. They appear as cards on the flow's message in chat, so you can watch verification happen, and they're collected in your project's screenshot feed — the most recent one even becomes the thumbnail on your Preview button.
+
+## Design review
+
+Alongside functional checks, an automated design review scans the UI files written in the session and returns issues with **file, line number, severity, and a suggested fix**:
+
+- **Accessibility** — missing alt text, unlabeled inputs, icon-only buttons without labels, removed focus outlines, click handlers without keyboard support, undersized touch targets, heading-hierarchy skips
+- **Typography** — missing font fallbacks, text too small to read on mobile
+- **Layout** — content-clipping overflow, fixed widths that break on mobile, z-index conflicts, inconsistent spacing scales
+- **Color & dark mode** — hardcoded colors without dark-mode variants, low-contrast text
+- **Component states** — buttons missing hover, disabled, or cursor styles
+- **Leftover placeholders** — lorem ipsum, TODO comments in rendered markup, example.com URLs, and hardcoded credentials
+
+Errors must be fixed before the task completes; the review re-runs to confirm.
+
+## Verifying auth and roles
+
+Apps with authentication get verified as real signed-in users. The agent provisions temporary test accounts on demand — and for role-based access control, it can create a **separate test user per role** (admin, member, employer, job-seeker, whatever your app defines) and sign in as each one to confirm that role-gated routes show the right thing to the right user.
+
+<Tip>
+  Repeated verification of the same role reuses the same test user, so state you set up as "admin" persists across checks.
+</Tip>
 
 ## Verification in the PR
 
-Each PR shows a verification panel with all acceptance criteria results:
+Each pull request shows a verification panel with the result for every acceptance criterion:
 
 ```bash
 # Acceptance Verification
@@ -89,16 +113,19 @@ CRITERION                                   STATUS
 ------------------------------------------  ------
 Hero renders, CTA redirects to /signup      PASSED
 TypeScript compiles, all unit tests pass    PASSED
-API < 200ms, error handling user-friendly   PASSED
+Admin dashboard hidden from member role     PASSED
 ```
 
-## Custom Verification
+You review the PR knowing every line was exercised, not just generated.
 
-The verification pipeline adapts to your project:
+## Why this matters
 
-- **Python projects** — mypy/pyright type checking, pytest, flake8/ruff
-- **Go projects** — go vet, go test, golint
-- **Rust projects** — cargo check, cargo test, clippy
-- **Frontend projects** — TypeScript, ESLint, Vitest/Jest, Playwright
+Without a verification gate, AI-generated code often has:
 
-Verification rules are detected from your project configuration (tsconfig, eslint config, pytest.ini, etc.) — you don't need to configure anything manually.
+- Type errors that surface only at build time
+- Features that compile but don't actually work when clicked
+- UI that looks broken in dark mode or on mobile
+- Role checks that were never exercised
+- Placeholder text that ships to production
+
+pre.dev eliminates these by making verification a **gate** — not an afterthought. The agent iterates until everything passes; you only see the final, verified result.

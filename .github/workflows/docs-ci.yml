@@ -1,0 +1,33 @@
+name: Docs CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate openapi.json is parseable
+        run: node -e "JSON.parse(require('fs').readFileSync('api-reference/openapi.json','utf8')); console.log('openapi.json OK')"
+
+      - name: Validate docs.json is parseable
+        run: node -e "JSON.parse(require('fs').readFileSync('docs.json','utf8')); console.log('docs.json OK')"
+
+      - name: Check for broken internal links
+        run: npx --yes mintlify@latest broken-links
+
+      - name: Guard against fictional packages
+        run: |
+          ! grep -rn "@predev/sdk\|pip install predev[^-]\|@predotdev/mcp-server" --include="*.mdx" . || (echo "Found reference to a package that does not exist on npm/PyPI" && exit 1)
+
+      - name: Guard against internal infra leaks
+        run: |
+          ! grep -rni "supertokens\|daytona\|e2b\|kubernetes ingress" --include="*.mdx" . || (echo "Internal infrastructure mentioned in public docs" && exit 1)
