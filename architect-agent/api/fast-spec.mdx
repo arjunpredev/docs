@@ -5,8 +5,6 @@ openapi: "POST /fast-spec"
 description: "Complete documentation for the Fast Spec endpoint. Generate comprehensive project specifications in ~1 minute."
 ---
 
-# POST /fast-spec
-
 Generate a quick, comprehensive project specification.
 
 ## Overview
@@ -313,111 +311,14 @@ Fast Spec follows a **two-level hierarchy** optimized for rapid development:
 ```
 
 **Key Characteristics:**
-- ✅ High-level milestones group related features
-- ✅ User stories with acceptance criteria
-- ✅ Complexity estimates (XS, S, M, L, XL)
+- High-level milestones group related features
+- User stories with acceptance criteria
+- Complexity estimates (XS, S, M, L, XL)
 - ❌ No granular implementation subtasks
 
 ## Direct SOW Formats
 
-Fast Spec returns the Scope of Work directly in both JSON and Markdown, and also provides URL endpoints. The JSON is typed and split for coding agents vs. human reviewers:
-
-**Coding Agent JSON (concise, no hours/personas/roles):**
-```typescript
-interface CodingAgentSpecJson {
-  title?: string;
-  executiveSummary: string;
-  coreFunctionalities: SpecCoreFunctionality[];
-  techStack: SpecTechStackItem[];
-  techStackGrouped: Record<string, string[]>;
-  milestones: CodingAgentMilestone[];
-}
-
-interface CodingAgentMilestone {
-  milestoneNumber: number;
-  description: string;
-  stories: CodingAgentStory[];
-}
-
-interface CodingAgentStory {
-  id?: string;
-  title: string;
-  description?: string;
-  acceptanceCriteria?: string[];
-  complexity?: string;
-  subTasks: CodingAgentSubTask[];
-}
-
-interface CodingAgentSubTask {
-  id?: string;
-  description: string;
-  complexity: string; // "S" | "M" | "L" | "XL"
-}
-```
-
-**Human JSON (full detail with hours/personas/roles):**
-```typescript
-interface HumanSpecJson {
-  title?: string;
-  executiveSummary: string;
-  coreFunctionalities: SpecCoreFunctionality[];
-  personas: SpecPersona[];
-  techStack: SpecTechStackItem[];
-  techStackGrouped: Record<string, string[]>;
-  milestones: HumanSpecMilestone[];
-  totalHours: number;
-  roles: SpecRole[];
-}
-
-interface HumanSpecMilestone {
-  milestoneNumber: number;
-  description: string;
-  hours: number;
-  stories: HumanSpecStory[];
-}
-
-interface HumanSpecStory {
-  id?: string;
-  title: string;
-  description?: string;
-  acceptanceCriteria?: string[];
-  hours: number;
-  complexity?: string;
-  subTasks: HumanSpecSubTask[];
-}
-
-interface HumanSpecSubTask {
-  id?: string;
-  description: string;
-  hours: number;
-  complexity: string;
-  roles?: SpecRole[];
-}
-
-interface SpecPersona {
-  title: string;
-  description: string;
-  primaryGoals?: string[];
-  painPoints?: string[];
-  keyTasks?: string[];
-}
-
-interface SpecRole {
-  name: string;
-  shortHand: string;
-}
-
-interface SpecCoreFunctionality {
-  name: string;
-  description: string;
-  priority?: string; // "High" | "Medium" | "Low"
-}
-
-interface SpecTechStackItem {
-  name: string;
-  category: string;
-}
-```
+Fast Spec returns the Scope of Work directly in both JSON and Markdown, and also provides URL endpoints. The JSON is typed and split for coding agents vs. human reviewers.
 
 **Recommended usage**
 - Feed AI tools: `codingAgentSpecJson` or `codingAgentSpecMarkdown`
@@ -425,6 +326,9 @@ interface SpecTechStackItem {
 - Planning dashboards: `humanSpecJson.totalHours`, `humanSpecJson.roles`
 - Download links: `codingAgentSpecUrl` and `humanSpecUrl`
 
+import SowTypes from '/snippets/sow-types.mdx';
+
+<SowTypes />
 
 ## Code Examples
 
@@ -839,17 +743,14 @@ class ArchitectAPI {
 
 The generated specification includes:
 
-- ✅ **Executive summary**
-- ✅ **Feature breakdown** by category
-- ✅ **Technical architecture** recommendations
-- ✅ **Implementation milestones** with effort estimates
-- ✅ **User stories** and acceptance criteria
-- ✅ **Task checklist** with progress tracking
-  - Task status legend: `[ ]` → `[→]` → `[✓]` → `[⊘]`
-  - Update as your agent completes work
-  - Keep both you and AI aligned on progress
-- ✅ **Risk analysis** and considerations
-- ✅ **Markdown formatted** for direct agent use
+- **Executive summary**
+- **Feature breakdown** by category
+- **Technical architecture** recommendations
+- **Implementation milestones** with effort estimates
+- **User stories** and acceptance criteria
+- **Task checklist** with progress tracking (status legend: `[ ]` → `[→]` → `[✓]` → `[⊘]`)
+- **Risk analysis** and considerations
+- **Markdown formatted** for direct agent use
 
 ## Using Task Tracking
 
@@ -859,7 +760,7 @@ As your agent implements features, actively manage progress:
 2. **Mark complete:** Change `[→]` to `[✓]` when done
 3. **Mark skipped:** Change `[ ]` to `[⊘]` if skipping (with reason)
 
-**Pro Tip:** Don't let your agent skip tasks without questioning why. This keeps implementation comprehensive and on-track.
+Don't let your agent skip tasks without questioning why — it keeps implementation comprehensive and on-track.
 
 import DocScraping from '/snippets/doc-scraping.mdx';
 

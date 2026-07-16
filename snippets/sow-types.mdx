@@ -1,0 +1,98 @@
+### Type definitions (shared by Fast and Deep Spec)
+
+**Coding Agent JSON (concise, no hours/personas/roles):**
+```typescript
+interface CodingAgentSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: CodingAgentMilestone[];
+}
+
+interface CodingAgentMilestone {
+  milestoneNumber: number;
+  description: string;
+  stories: CodingAgentStory[];
+}
+
+interface CodingAgentStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  complexity?: string;
+  subTasks: CodingAgentSubTask[];
+}
+
+interface CodingAgentSubTask {
+  id?: string;
+  description: string;
+  complexity: string; // "S" | "M" | "L" | "XL"
+}
+```
+
+**Human JSON (full detail with hours/personas/roles):**
+```typescript
+interface HumanSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  personas: SpecPersona[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: HumanSpecMilestone[];
+  totalHours: number;
+  roles: SpecRole[];
+}
+
+interface HumanSpecMilestone {
+  milestoneNumber: number;
+  description: string;
+  hours: number;
+  stories: HumanSpecStory[];
+}
+
+interface HumanSpecStory {
+  id?: string;
+  title: string;
+  description?: string;
+  acceptanceCriteria?: string[];
+  hours: number;
+  complexity?: string;
+  subTasks: HumanSpecSubTask[];
+}
+
+interface HumanSpecSubTask {
+  id?: string;
+  description: string;
+  hours: number;
+  complexity: string;
+  roles?: SpecRole[];
+}
+
+interface SpecPersona {
+  title: string;
+  description: string;
+  primaryGoals?: string[];
+  painPoints?: string[];
+  keyTasks?: string[];
+}
+
+interface SpecRole {
+  name: string;
+  shortHand: string;
+}
+
+interface SpecCoreFunctionality {
+  name: string;
+  description: string;
+  priority?: string; // "High" | "Medium" | "Low"
+}
+
+interface SpecTechStackItem {
+  name: string;
+  category: string;
+}
+```

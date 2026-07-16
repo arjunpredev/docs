@@ -3,8 +3,6 @@ title: "Stream a Running Task"
 description: "GET /browser-agent/{id}/stream — Server-Sent Events for a task run that's already in progress."
 ---
 
-# GET /browser-agent/:id/stream
-
 Attach a live Server-Sent Events stream to an in-progress run. You get an
 immediate snapshot, then per-step events as they happen. The stream closes
 itself when the run completes or fails.
