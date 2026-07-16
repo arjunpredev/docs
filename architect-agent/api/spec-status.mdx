@@ -5,7 +5,7 @@ openapi: "GET /spec-status/{specId}"
 description: "Monitor the progress of asynchronous specification processing requests."
 ---
 
-# GET /api/spec-status/:specId
+# GET /spec-status/:specId
 
 Check the status of an asynchronous specification processing request.
 
@@ -190,6 +190,16 @@ The `specId` in the URL is the value returned as `specId` from the async spec ge
 | `userFlowGraph` | object | User flow graph with `nodes` (id, label, type, description, level) and `edges` (source, target, edgeType). Nodes include a numeric `level` (1, 2, 3...) indicating graph depth for layered rendering (only when completed) |
 | `architectureGraph` | object | System architecture graph with `nodes` (id, label, type, description) and `edges` (source, target, edgeType). Node `type` is one of: `"frontend"`, `"api-services"`, `"databases"`, `"external-services"` (only when completed) |
 | `enrichedTechStack` | array | Enriched tech stack items with `name`, `useFor`, `reason`, `description`, `link`, `helpfulLinks`, and `alternatives` for each technology (only when completed) |
+
+## Fetching the spec URLs
+
+`humanSpecUrl` and `codingAgentSpecUrl` are public short links (`https://api.pre.dev/s/...`). They need no auth header and return the document directly (markdown, or a zip for bundles):
+
+```bash
+curl https://api.pre.dev/s/a6hFJRV6 -o spec.md
+```
+
+The same content is also inlined in the response as `humanSpecMarkdown` / `codingAgentSpecMarkdown`, so you rarely need to fetch the URLs at all.
 
 ## Polling Best Practices
 

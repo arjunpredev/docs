@@ -17,7 +17,11 @@ The `tasks` field is always an array, even for a single task — so one endpoint
 - **Path:** `/browser-agent`
 - **Cost:** billed per successful task. Failed tasks are free.
 - **Max tasks per request:** `1000`
-- **Max in-flight tasks per user:** varies by plan (5 on trial, up to 150 on Enterprise). Check yours with [`GET /browser-agent-status`](/browser-agents/api/queue-status)
+- **Max in-flight tasks per user:** varies by plan (5 on the free tier, up to 150 on Enterprise). Check yours with [`GET /browser-agent-status`](/browser-agents/api/queue-status)
+
+<Note>
+**`concurrency` vs your in-flight cap:** `concurrency` controls parallel workers *within one request*. Your in-flight cap counts *every* submitted task (pending, claimed, and running) across your account — so a 200-task submission counts as 200 against the cap immediately, even at `concurrency: 5`. If a submission would exceed your remaining cap, it's rejected with `429 QUEUE_FULL`; chunk large workloads to your cap using [`GET /browser-agent-status`](/browser-agents/api/queue-status).
+</Note>
 - **Per-task default timeout:** `240000` ms
 
 ## Headers

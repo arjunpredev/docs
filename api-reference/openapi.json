@@ -1256,7 +1256,7 @@
         "properties": {
           "specId": {
             "type": "string",
-            "description": "Unique ID to poll for status (use with /api/spec-status/:specId)",
+            "description": "Unique ID to poll for status (use with /spec-status/:specId)",
             "example": "507f1f77bcf86cd799439011"
           },
           "status": {
