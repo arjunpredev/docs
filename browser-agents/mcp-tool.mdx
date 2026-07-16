@@ -10,10 +10,8 @@ description: "Install the pre.dev MCP server — your coding agent gets browser 
 ## Quick Start
 
 <Steps>
-  <Step title="Get your API key">
-    <Card title="Get API Key" icon="key" href="https://pre.dev/projects/key">
-      Visit the playground to copy your API key.
-    </Card>
+  <Step title="Have a pre.dev account">
+    Setup uses browser OAuth — your first MCP call opens pre.dev to sign in and authorize. No API key needed for editor use.
   </Step>
   <Step title="Install the MCP server">
     <Tabs>
@@ -98,7 +96,7 @@ Event shapes are identical to the REST SSE stream — see [Run a Task → SSE fr
 
 ## Auth
 
-`PREDEV_API_KEY` is all you need. Grab it at [pre.dev/projects/key](https://pre.dev/projects/key) (solo) or from your enterprise dashboard. The same key works for REST and MCP.
+In editors, auth is browser OAuth — you sign in once and pick the account or org to connect. For programmatic MCP clients, an API key from [pre.dev/projects/key](https://pre.dev/projects/key) also works as a `predev-api-key` header.
 
 ## Troubleshooting
 

@@ -12,7 +12,7 @@ A TypeScript/Node.js client library for the pre.dev Architect API. Generate comp
 - 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
 - ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
-- 💳 **Credits Management**: Check your remaining prototype credits balance
+- 💳 **Credits Management**: Check your remaining credits balance
 - ✨ **Full TypeScript Support**: Complete type definitions for better IDE support
 - 🛡️ **Error Handling**: Custom exceptions for different error scenarios
 - 🌐 **Modern ES Modules**: Uses ES6+ import/export syntax
@@ -136,7 +136,7 @@ const status = await predev.getSpecStatus('spec_123');
 
 #### getCreditsBalance()
 
-Get the remaining prototype credits balance for your API key.
+Get the remaining credits balance for your API key.
 
 ```typescript
 const balance = await predev.getCreditsBalance();
@@ -219,15 +219,15 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 
 **Regex Pattern Examples:**
 
-|| Pattern | Matches |
+| Pattern | Matches |
 ||---------|---------|
-|| `payment` | "payment", "Payment", "make payment" |
-|| `^Build` | Specs starting with "Build" |
-|| `platform$` | Specs ending with "platform" |
-|| `(API\|REST)` | Either "API" or "REST" |
-|| `auth.*system` | "auth" then anything then "system" |
-|| `\\d{3,}` | 3+ digits (budgets, quantities) |
-|| `saas\|sass` | SaaS or SASS |
+| `payment` | "payment", "Payment", "make payment" |
+| `^Build` | Specs starting with "Build" |
+| `platform$` | Specs ending with "platform" |
+| `(API\|REST)` | Either "API" or "REST" |
+| `auth.*system` | "auth" then anything then "system" |
+| `\\d{3,}` | 3+ digits (budgets, quantities) |
+| `saas\|sass` | SaaS or SASS |
 
 ## File Upload Support
 
@@ -471,7 +471,9 @@ const result = await predev.fastSpec({
 });
 
 console.log(`Specification URL: ${result.humanSpecUrl}`);
-```### Generate Deep Spec with Context
+```
+
+### Generate Deep Spec with Context
 
 ```typescript
 import { PredevAPI } from 'predev-api';
@@ -532,7 +534,9 @@ async function generateSpec() {
 }
 
 generateSpec();
-```### List and Filter Specs
+```
+
+### List and Filter Specs
 
 ```typescript
 import { PredevAPI } from 'predev-api';

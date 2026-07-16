@@ -504,11 +504,11 @@ All non-2xx responses follow the [structured shape above](#error-response-shape)
 
 ### `402 SUBSCRIPTION_REQUIRED`
 
-This API key's user is on the trial plan and has used their lifetime free task. Send them to `actionUrl` (subscribe modal) or have them upgrade at [pre.dev/billing](https://pre.dev/billing).
+This API key's user is on the trial plan and has used their lifetime free task. Send them to `actionUrl` (subscribe modal) or have them upgrade at [pre.dev/projects/key](https://pre.dev/projects/key).
 
 ### `402 INSUFFICIENT_CREDITS`
 
-Subscription is fine, but the credit balance is below the per-task estimate (0.1 credits/task by default; failed tasks aren't billed but you need the headroom to start). Send them to `actionUrl` (credits modal) — or top up at [pre.dev/billing](https://pre.dev/billing).
+Subscription is fine, but the credit balance is below the per-task estimate (0.1 credits/task by default; failed tasks aren't billed but you need the headroom to start). Send them to `actionUrl` (credits modal) — or top up at [pre.dev/projects/key](https://pre.dev/projects/key).
 
 ### `429 RATE_LIMITED` / `QUEUE_FULL`
 

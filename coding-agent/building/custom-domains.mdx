@@ -74,7 +74,7 @@ After verification, your app is accessible at both your custom domain and the or
 ## Limitations
 
 - **One custom domain per project** — To add a different domain, remove the existing one first
-- **Subdomains only** — Use `app.example.com`, not bare domains like `example.com` (CNAME records require a subdomain)
+- **Subdomains work best** — `app.example.com` maps cleanly with a CNAME; bare domains like `example.com` need a DNS provider that supports CNAME flattening / ALIAS records at the apex
 - **No `pre.dev` subdomains** — You cannot add `*.pre.dev` as a custom domain
 
 ## Removing a Domain

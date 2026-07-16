@@ -17,20 +17,19 @@ If you've already built an MCP server for Claude, Cursor, or VS Code, it works h
 
 1. Open **[Integrations → MCP Servers](https://pre.dev/projects/integrations)**
 2. Click **Add MCP Server**
-3. Paste the server URL and auth headers (if required)
-4. Click **Test Connection** — pre.dev handshakes with the server and lists its tools
+3. Paste the server's JSON config — a remote server (`url` + `headers`) or a stdio server (`command`, `args`, `env`)
+4. Click **Test** — pre.dev handshakes with the server and lists its tools
 5. Save — the agent can now call those tools on any project
 
 ## What the agent sees
 
 Once a server is connected, its tools show up in the agent's available toolset automatically. If your server exposes a `queryStaging` tool, the agent can reason about when to call it ("this task needs the latest customer count from staging → call `queryStaging`") and execute the call during a build.
 
-## Per-project toggling
+## Toggling servers
 
-MCP server connections can be toggled per project from the project dashboard. Turn them off for projects where the extra tools would add noise; leave them on where they're useful.
+MCP servers can be toggled on and off from the Integrations page (and with `/mcp` in the workspace or CLI). Turn off servers whose tools would add noise; leave on the ones that earn their place.
 
 ## Security
 
-- Connection URLs and headers are encrypted at rest
-- Requests from pre.dev sandboxes to your MCP server come from a known IP range (available on request for allow-listing)
+- Connection configs stay server-side and are never embedded in project code
 - Your server's auth is respected — pre.dev forwards the headers you configured on every call

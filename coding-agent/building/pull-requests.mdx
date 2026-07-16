@@ -14,7 +14,7 @@ Task assigned → Agent builds in sandbox → Verification passes → Feature br
 ### What Each PR Contains
 
 ```diff
- # feat/dtc-913 → predev · 631a912 · PR #1
+ # predev/dtc-913 → main · 631a912 · PR #1
  # feat(Setup): Write concise design aesthetic/rules
  # workspace/package.json (+251)
 
@@ -28,7 +28,7 @@ Task assigned → Agent builds in sandbox → Verification passes → Feature br
     "test": "vitest run",
 ```
 
-- **Feature branch** — Named descriptively based on the task (e.g., `feat/setup-user-auth`)
+- **Feature branch** — Named after the task (e.g., `predev/setup-user-auth`)
 - **Implementation code** — All files created or modified for the task
 - **Tests** — Unit tests covering the new functionality
 - **Diff summary** — Clear view of what changed and why
@@ -41,7 +41,7 @@ pre.dev follows a clean branch strategy:
 | Branch | Purpose |
 |--------|---------|
 | `main` | Your production branch — agents never push here |
-| `feat/*` | Feature branches for each completed task |
+| `predev/*` | Feature branches for each completed task |
 
 Each task gets its own feature branch. You can merge them individually or batch them.
 

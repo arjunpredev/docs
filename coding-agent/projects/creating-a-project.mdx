@@ -3,24 +3,15 @@ title: "Creating a Project"
 description: "Three ways to start a project on pre.dev."
 ---
 
-pre.dev supports three project creation modes, each suited to different starting points.
+There are two ways to start: describe what you want to build, or import an existing repo.
 
 <Tabs>
-  <Tab title="Full-Stack Template">
-    Start with a curated, pre-configured template. Templates include a recommended tech stack, folder structure, and boilerplate — pre.dev's planning engine builds on top of this foundation.
+  <Tab title="Describe your idea">
+    Type what you want to build into the prompt box and hit **Start building**. pre.dev's planning engine analyzes your requirements, picks the stack and architecture, and generates the spec — you review it before any code is written.
 
-    **When to use:**
-    - You know what stack you want (e.g., React + Node + PostgreSQL)
-    - You want a proven starting structure
-    - You're building a common app type (SaaS, e-commerce, dashboard)
-  </Tab>
-  <Tab title="Adaptive">
-    Describe your idea in plain English and let pre.dev choose the best architecture. pre.dev's planning engine analyzes your requirements and selects the optimal stack, patterns, and structure.
-
-    **When to use:**
-    - You're not sure what tech stack fits best
-    - You want pre.dev to make architectural decisions for you
-    - You're exploring a new domain or idea
+    Two toggles shape the run:
+    - **Deep Spec** — a more comprehensive plan with granular subtasks (see [Fast vs Deep](/coding-agent/specifications/fast-vs-deep))
+    - **Pro** — the strongest models on every phase (see [Pro Mode](/coding-agent/building/pro-mode))
 
     **Example input:**
     ```
@@ -28,10 +19,8 @@ pre.dev supports three project creation modes, each suited to different starting
     sticky notes, video chat, and export to PDF.
     The app should support teams of up to 50 people.
     ```
-
-    The agent might choose: React + Canvas API, WebSocket server, WebRTC for video, Puppeteer for PDF export.
   </Tab>
-  <Tab title="Import">
+  <Tab title="Import a repo">
     Connect an existing GitHub repository and continue building on it. pre.dev reverse-engineers the existing codebase — understanding the tech stack, patterns, and architecture — then generates specs for new features that integrate seamlessly.
 
     **When to use:**

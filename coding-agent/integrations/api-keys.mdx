@@ -11,8 +11,7 @@ pre.dev groups supported services into categories so you can see what you've con
 
 - **AI Text** — OpenAI, Anthropic, Mistral, Groq, …
 - **AI Image / Video / Audio** — DALL·E, Stability, Runway, ElevenLabs, …
-- **Search** — Exa, Tavily, You.com
-- **Web Scraping** — Firecrawl, Browserbase
+- **AI Search & Scraping** — Exa, Tavily, Perplexity, Brave Search, You.com, Firecrawl, Serper, Browserbase
 - **Payments** — Stripe, PayPal
 - **Email** — Resend, SendGrid, Mailgun
 - **Auth** — Clerk, Auth0, Supabase Auth
@@ -33,7 +32,7 @@ The key is encrypted before it's stored. It never appears in plaintext after sav
 
 ## Bulk import from `.env`
 
-Click **Import** on the API Keys tab and paste a `.env` file. pre.dev parses the keys, detects which provider each one belongs to (based on key format), and stages them for review before saving.
+Click **Import Keys** on the API Keys tab and paste a `.env` — or drop a `.env`/`.txt`/`.json` file, even a screenshot. pre.dev parses the keys, detects which provider each belongs to, and stages them for review before saving.
 
 ## How agents use them
 
@@ -48,4 +47,4 @@ Result: the code you get back runs against your real accounts from the first bui
 
 ## Propagating changes
 
-If you rotate a key, update it in Integrations — pre.dev detects which existing projects use it and shows a **"N projects behind"** banner. Click through to push the new key to those projects' `.env` files.
+If you rotate a key, update it in Integrations, then use **Propagate Environment Variables** to push the new value to existing projects — per project, or all at once.

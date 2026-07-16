@@ -2,12 +2,12 @@
 title: "Get Credits Balance"
 api: "GET https://api.pre.dev/credits-balance"
 openapi: "GET /credits-balance"
-description: "Check the remaining prototype credits balance for your API key."
+description: "Check the remaining credits balance for your API key."
 ---
 
 # GET /credits-balance
 
-Get the remaining prototype credits balance for the authenticated API key holder.
+Get the remaining credits balance for the authenticated API key holder.
 
 ## Overview
 
@@ -52,7 +52,7 @@ curl https://api.pre.dev/credits-balance \
 | Field | Type | Description |
 |-------|------|-------------|
 | `success` | boolean | Whether the request succeeded |
-| `creditsRemaining` | number | Number of prototype credits remaining for this API key |
+| `creditsRemaining` | number | Number of credits remaining for this API key |
 
 ### Error Response - Missing Context
 
@@ -71,16 +71,6 @@ curl https://api.pre.dev/credits-balance \
   "message": "Internal server error details"
 }
 ```
-
-## Credit Types and Priority
-
-Credits are consumed in this priority order:
-
-1. **Prototype Credits** - Used first if available
-2. **Daily Allocation** - Based on subscription tier
-3. **Rollover Credits** - Unused daily credits (if applicable)
-
-This endpoint returns only the **prototype credits** balance.
 
 ## Credit Costs
 
@@ -245,7 +235,7 @@ async function checkAndNotify(apiKey: string) {
 
 View your credits balance via the dashboard:
 - **URL:** [https://pre.dev/projects/key](https://pre.dev/projects/key)
-- Shows prototype credits and daily allocation
+- Shows your remaining credits
 - Option to purchase additional credits
 
 ### Enterprise Users

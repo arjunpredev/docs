@@ -251,7 +251,7 @@ formData.append('docURLs', JSON.stringify(["https://docs.pre.dev/auth"]));
 | `executionTime` | number | Processing time in milliseconds |
 | `predevUrl` | string | pre.dev project URL where you can view and edit the spec |
 | `creditsUsed` | number | Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50 |
-| `zippedDocsUrls` | array | **New:** Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
+| `zippedDocsUrls` | array | Array of scraped documentation archives. Each object contains `platform` (hostname from the doc URL), `masterZipShortUrl` (download link to the ZIP archive), and optional `masterMarkdownShortUrl` (consolidated markdown). Empty array if no `docURLs` provided or scraping fails |
 
 ### Success Response (Async Mode)
 
@@ -740,9 +740,11 @@ interface FileUploadRequest {
 }
 
 interface SpecResponse {
+  status: 'pending' | 'processing' | 'completed' | 'failed';
   codingAgentSpecUrl?: string;
-  markdown?: string;
-  fileUrl: string;
+  codingAgentSpecMarkdown?: string;
+  humanSpecUrl?: string;
+  humanSpecMarkdown?: string;
 }
 
 interface AsyncResponse {

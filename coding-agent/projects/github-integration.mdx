@@ -23,7 +23,7 @@ Every task a build agent completes ends in a **pull request**. The agent never p
 
 <CardGroup cols={2}>
   <Card title="Feature branch per task" icon="code-branch">
-    Branches are named after the task (e.g. `feat/setup-user-auth`). One task in the spec = one branch = one PR.
+    Branches are named after the task (e.g. `predev/setup-user-auth`). One task in the spec = one branch = one PR.
   </Card>
   <Card title="Verified before it opens" icon="shield-check">
     Types compile, lint passes, tests pass, browser checks pass — or the PR is never opened in the first place.
@@ -42,6 +42,6 @@ Every task a build agent completes ends in a **pull request**. The agent never p
 
 ## Security
 
-- Tokens are encrypted at rest and only used for the scopes you approved
-- pre.dev requests the minimum scopes required (repo read for imports, repo write for PR creation)
+- Tokens stay server-side and are only used for the scopes you approved
+- pre.dev requests the `repo` scope (GitHub has no narrower read/write split) to import repos and open PRs, `workflow` so pushes that touch CI files don't fail, and basic profile scopes (`read:user`, `user:email`)
 - Disconnect anytime from the [Integrations](https://pre.dev/projects/integrations) page — all active tokens are revoked
