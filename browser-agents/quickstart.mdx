@@ -119,7 +119,7 @@ Full MCP reference: [MCP Tool](/browser-agents/mcp-tool)
 ## Streaming + async modes
 
 The quickstart uses sync mode (one HTTP request, one JSON response).
-For long-running batches, flip to async:
+For long-running task sets, flip to async:
 
 ```bash
 # Async: returns immediately with batchId, poll for progress
@@ -129,7 +129,7 @@ curl -X POST https://api.pre.dev/browser-agent \
   -d '{ "async": true, "tasks": [...] }'
 # → { "id": "69df...", "status": "processing" }
 
-# Poll for the batch
+# Poll for the run
 curl https://api.pre.dev/browser-agent/$BATCH_ID \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```

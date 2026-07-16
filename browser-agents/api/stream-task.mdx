@@ -1,13 +1,13 @@
 ---
 title: "Stream a Running Task"
-description: "GET /browser-agent/{id}/stream — Server-Sent Events for a batch that's already running."
+description: "GET /browser-agent/{id}/stream — Server-Sent Events for a task run that's already in progress."
 ---
 
 # GET /browser-agent/:id/stream
 
-Attach a live Server-Sent Events stream to an in-progress batch. You get an
+Attach a live Server-Sent Events stream to an in-progress run. You get an
 immediate snapshot, then per-step events as they happen. The stream closes
-itself when the batch completes or fails.
+itself when the run completes or fails.
 
 Use this when you submitted with `async: true` and want live progress without
 polling. If you want streaming from the moment of submission, pass
@@ -37,17 +37,17 @@ curl -N "https://api.pre.dev/browser-agent/$BATCH_ID/stream?apiKey=$PREDEV_API_K
 
 | Event | Payload | When |
 |---|---|---|
-| `snapshot` | Full batch result (with events) | Immediately on connect |
+| `snapshot` | Full result so far (with events) | Immediately on connect |
 | `task_event` | One execution step (navigation, action, extraction) | Live, per step |
 | `task_result` | A task's final result | As each task finishes |
-| `done` | Final batch state | Batch completed or failed, then the stream closes |
+| `done` | Final state | The run completed or failed, then the stream closes |
 
 ## Errors
 
 | Status | Meaning |
 |---|---|
-| `404` | Batch not found (or not yours) |
-| `400` | Invalid batch id |
+| `404` | Run not found (or not yours) |
+| `400` | Invalid id |
 | `503` | Server at SSE capacity — fall back to polling [`GET /browser-agent/{id}`](/browser-agents/api/task-status) |
 
 ## Example
