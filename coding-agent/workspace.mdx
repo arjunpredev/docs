@@ -32,10 +32,9 @@ The view switcher (top of the workspace) moves between live views of your projec
 | **Plan → Architecture** | `⌘3` | Interactive system architecture graph |
 | **Plan → Spec** | `⌘4` | The full project specification documents |
 | **Code** | `⌘5` | The live codebase with git status and history |
-| **Preview** | — | The running app, live in the browser |
 
 <Tip>
-  The Plan tabs, Code, and Preview all update in real time as the agent builds — you can watch files appear in the Code view while a sprint runs.
+  The Plan tabs and Code update in real time as the agent builds — you can watch files appear in the Code view while a sprint runs. The running app itself lives behind the **Preview** button.
 </Tip>
 
 Two buttons sit alongside the views:
@@ -55,16 +54,12 @@ Type `/` in the chat composer to open the palette:
 | `/effort` | Set the sprint effort level (auto / low / medium / high) |
 | `/sprint <feature>` | Launch a custom sprint in a new session |
 | `/fork <prompt>` | Spin a prompt off into a new isolated session |
-| `/skills` | Manage agent skills — toggle, add, remove |
-| `/mcp` | Manage MCP servers — toggle, add, remove |
-| `/integrations` | Connect Slack, Notion, Linear, Jira, Google, and GitHub |
 | `/reverse` | Map an existing codebase with reverse engineering |
-| `/share` | Share the project with collaborators |
 | `/kanban` | Jump to the Kanban board |
 | `/roadmap` | Jump to the Roadmap / Gantt |
 | `/arch` | Jump to the Architecture graph |
-| `/clear` | Clear the chat feed (history is preserved) |
-| `/help` | Show all slash commands |
+
+A few more (`/skills`, `/mcp`, `/integrations`, `/share`, `/clear`, `/help`) appear in the palette marked "soon" — skills, MCP servers, and integrations are managed from the Integrations page until they go live in the composer.
 
 Two commands are two-level: `/effort ` lists the levels inline, and `/model ` walks you through phase, then model — all without leaving the composer.
 

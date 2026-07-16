@@ -102,21 +102,11 @@ Apps with authentication get verified as real signed-in users. The agent provisi
   Repeated verification of the same role reuses the same test user, so state you set up as "admin" persists across checks.
 </Tip>
 
-## Verification in the PR
+## Verification before the PR
 
-Each pull request shows a verification panel with the result for every acceptance criterion:
+A pull request only opens after the acceptance pass finishes — the PR body lists the completed stories, and the evidence behind them (browser-flow steps, before/after screenshots, static-check results) lives in the chat feed and the project's screenshot gallery.
 
-```bash
-# Acceptance Verification
-
-CRITERION                                   STATUS
-------------------------------------------  ------
-Hero renders, CTA redirects to /signup      PASSED
-TypeScript compiles, all unit tests pass    PASSED
-Admin dashboard hidden from member role     PASSED
-```
-
-You review the PR knowing every line was exercised, not just generated.
+You review the PR knowing every story it lists was exercised, not just generated.
 
 ## Why this matters
 

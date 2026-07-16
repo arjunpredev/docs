@@ -335,7 +335,7 @@ interface SpecResponse {
   // Structured graphs (when completed)
   userFlowGraph?: SpecGraph;       // User flow nodes + edges
   architectureGraph?: SpecGraph;   // System architecture nodes + edges
-  enrichedTechStack?: EnrichedTechStackItem[]; // Tech choices with useFor/reason
+  enrichedTechStack?: SpecEnrichedTechStackItem[]; // Tech choices with useFor/reason
 
   // Billing
   creditsUsed?: number;            // Credits consumed (live during processing)

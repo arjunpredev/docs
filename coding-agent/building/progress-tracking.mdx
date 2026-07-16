@@ -91,7 +91,7 @@ Sync is versioned against your roadmap. When the roadmap changes — new stories
 Sync is one-way: pre.dev is the source of truth, and each sync brings the external project in line with your roadmap. Progress streams into the sync panel while it runs, so you can watch issues land.
 
 <Note>
-  Connecting **GitHub** does something different: it creates a repository and keeps your project's code pushed to a `predev` branch. See [Pull Requests](/coding-agent/building/pull-requests) for how code review works.
+  Connecting **GitHub** does something different: it creates a repository and pushes each session's work to its own `predev/<task-slug>` branch, with pull requests into `main`. See [Pull Requests](/coding-agent/building/pull-requests) for how code review works.
 </Note>
 
 ## Email Notifications

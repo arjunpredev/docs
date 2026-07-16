@@ -358,10 +358,10 @@ class SpecResponse:
     # Integration URLs (when completed)
     predevUrl: Optional[str] = None               # Link to pre.dev project
     architectureInfographicUrl: Optional[str] = None  # Rendered architecture infographic
-    zippedDocsUrls: Optional[List[dict]] = None   # Downloadable doc bundles
-    userFlowGraph: Optional[dict] = None          # User flow nodes + edges
-    architectureGraph: Optional[dict] = None      # System architecture nodes + edges
-    enrichedTechStack: Optional[List[dict]] = None  # Tech choices with useFor/reason
+    zippedDocsUrls: Optional[List[ZippedDocsUrl]] = None  # Downloadable doc bundles
+    userFlowGraph: Optional[SpecGraph] = None     # User flow nodes + edges
+    architectureGraph: Optional[SpecGraph] = None # System architecture nodes + edges
+    enrichedTechStack: Optional[List[SpecEnrichedTechStackItem]] = None  # Tech choices with useFor/reason
     creditsUsed: Optional[float] = None           # Credits consumed (live during processing)
 
     # Error handling
