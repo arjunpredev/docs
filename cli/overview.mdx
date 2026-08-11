@@ -16,9 +16,10 @@ Works on macOS and Linux (Apple Silicon, ARM64, and x64). The installer puts eve
 <Steps>
   <Step title="Install">
     ```bash
+    cd my-project
     curl -fsSL https://pre.dev/install | bash
     ```
-    Restart your shell (or source your rc file) so `predev` is on your PATH.
+    The installer launches `predev` for you as soon as it finishes — one command and you're in the agent. It also adds `predev` to your PATH for next time (set `PREDEV_NO_AUTORUN=1` to skip the auto-launch, e.g. in provisioning scripts).
   </Step>
   <Step title="Run predev in a project directory">
     ```bash
@@ -58,7 +59,7 @@ Everything runs through the chat input. Type `/` to open the command palette —
     `/kanban`, `/roadmap`, and `/arch` render the Kanban board, roadmap, and architecture graph right in your terminal.
   </Card>
   <Card title="Credits and models" icon="sliders">
-    `/balance` shows remaining credits; `/model`, `/effort`, and `/pro` control which models do the work.
+    `/balance` shows remaining credits; `/model`, `/effort`, and `/pro` control which models do the work. If you run out mid-task, the CLI opens your billing page — top up and it resumes the interrupted work automatically.
   </Card>
 </CardGroup>
 
