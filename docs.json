@@ -253,6 +253,30 @@
 		{
 			"source": "/integrations/overview",
 			"destination": "/coding-agent/integrations/overview"
+		},
+		{
+			"source": "/why-architect-api",
+			"destination": "/architect-agent/overview"
+		},
+		{
+			"source": "/introduction",
+			"destination": "/overview"
+		},
+		{
+			"source": "/choosing-spec-level",
+			"destination": "/coding-agent/specifications/fast-vs-deep"
+		},
+		{
+			"source": "/mcp-integration/overview",
+			"destination": "/architect-agent/mcp-setup"
+		},
+		{
+			"source": "/mcp-integration/setup",
+			"destination": "/architect-agent/mcp-setup"
+		},
+		{
+			"source": "/mcp-integration/usage",
+			"destination": "/architect-agent/mcp-setup"
 		}
 	],
 	"navigation": {
