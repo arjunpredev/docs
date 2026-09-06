@@ -52,3 +52,9 @@
 /building/custom-domains /coding-agent/building/custom-domains 301!
 /building/collaboration /coding-agent/building/collaboration 301!
 /integrations/overview /coding-agent/integrations/overview 301!
+/why-architect-api /architect-agent/overview 301!
+/introduction /overview 301!
+/choosing-spec-level /coding-agent/specifications/fast-vs-deep 301!
+/mcp-integration/overview /architect-agent/mcp-setup 301!
+/mcp-integration/setup /architect-agent/mcp-setup 301!
+/mcp-integration/usage /architect-agent/mcp-setup 301!
