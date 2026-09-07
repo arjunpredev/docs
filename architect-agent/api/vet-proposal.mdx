@@ -1,0 +1,26 @@
+---
+title: "Vet a proposal"
+openapi: "/api-reference/openapi.json POST /vet-proposal"
+description: "Compare a proposal with a completed specification and return the assessment."
+---
+
+Provide `specId` and either an existing `proposalId`, or a new `proposalName` with `text` or `file`. An existing `proposalId` takes precedence over file/text fields.
+
+```bash
+curl --fail-with-body https://api.pre.dev/vet-proposal \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "specId": "507f1f77bcf86cd799439011",
+    "proposalName": "Reporting dashboard implementation",
+    "text": "We propose organization-scoped reports, CSV export, and audit logging delivered in three milestones."
+  }'
+```
+
+Replace the example ID with an actual completed specification ID. The HTTP `200` response contains `success`, `vettedProposal`, and `proposal`. The assessment's `_id` is used to [retrieve it later](/architect-agent/api/get-vetted-proposal).
+
+## Billing behavior
+
+This operation charges **100 credits before later proposal validation and analysis**. Check the specification, proposal ID, name, and content before calling it. There is no documented idempotency key, async mode, or automatic refund guarantee for validation/analysis failures. Check [existing assessments](/architect-agent/api/list-vetted-proposals) before retrying a request whose outcome is uncertain.
+
+Insufficient credits returns `402`. Input or ID validation can return `400`; a missing proposal can return `404`. Read the [proposal workflow](/architect-agent/proposals) for assessment fields.

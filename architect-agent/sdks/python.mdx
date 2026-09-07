@@ -1,596 +1,116 @@
 ---
 title: "Python SDK"
-description: "Python client for the pre.dev Architect API - Generate comprehensive software specifications"
+description: "Generate and retrieve specifications with the published predev-api Python package."
 icon: "python"
 ---
-
-A Python client library for the pre.dev Architect API. Generate comprehensive software specifications using AI-powered analysis.
-
-## Features
-
-- **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
-- **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
-- **Async Spec**: Non-blocking async methods for long-running requests
-- **Status Tracking**: Check the status of async specification generation requests
-- **List & Search**: Discover, filter, and search through your specification history
-- **Credits Management**: Check your remaining credits balance
-- **Type Hints**: Full type annotations for better IDE support
-- **Error Handling**: Custom exceptions for different error scenarios
-
-## Installation
-
-Install the pre.dev Python SDK using pip:
 
 ```bash
 pip install predev-api
 ```
 
-## Quick Start
+Python 3.8+ is supported.
+
+## Generate and wait for a specification
 
 ```python
+import os
+import time
 from predev_api import PredevAPI
 
-# Initialize the predev client with your API key
-predev = PredevAPI(api_key="your_api_key_here")
-
-# Generate a fast specification
-result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration"
+client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
+job = client.fast_spec_async(
+    input_text="Build a team task manager with projects and assignees.",
+    current_context="Use TypeScript and preserve organization-scoped access.",
 )
+print("Save this ID:", job["specId"])
+deadline = time.monotonic() + 600
 
-print(result)
-```
-
-## Authentication
-
-The pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/key):
-
-```python
-predev = PredevAPI(api_key="your_api_key")
-```
-
-## API Methods
-
-### Synchronous Methods
-
-#### Fast Spec Generation
-
-Generate a fast specification (~1 minute, ~5-10 credits).
-
-```python
-result = predev.fast_spec(
-    input_text="Build a SaaS project management tool with real-time collaboration",
-    current_context=None,  # Optional: existing project context
-    doc_urls=None  # Optional: documentation URLs to reference
-)
-```
-
-**Parameters:**
-
-- `input_text` **(required)**: `str` - Description of what you want to build
-- `current_context` **(optional)**: `str` - Existing project context
-- `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
-
-**Returns:** `SpecResponse` object with complete specification data
-
-**Example:**
-
-```python
-result = predev.fast_spec(
-    input_text="Build a SaaS project management tool with real-time collaboration"
-)
-```
-
-#### Deep Spec Generation
-
-Generate a deep specification (~3-5 minutes, ~10-50 credits).
-
-```python
-result = predev.deep_spec(
-    input_text="Build a healthcare platform with HIPAA compliance",
-    current_context=None,  # Optional: existing project context
-    doc_urls=None  # Optional: documentation URLs
-)
-```
-
-**Parameters:** Same as `fast_spec`
-
-**Returns:** `SpecResponse` object with comprehensive specification data
-
-**Example:**
-
-```python
-result = predev.deep_spec(
-    input_text="Build a healthcare platform with HIPAA compliance"
-)
-```
-
-### Asynchronous Methods
-
-#### Fast Spec Async
-
-Generate a fast specification asynchronously (returns immediately).
-
-```python
-result = predev.fast_spec_async(
-    input_text="Build a comprehensive e-commerce platform"
-)
-# Returns: AsyncResponse(specId="spec_123", status="pending")
-```
-
-**Parameters:** Same as `fast_spec`
-
-**Returns:** `AsyncResponse` object with `specId` for polling
-
-#### Deep Spec Async
-
-Generate a deep specification asynchronously (returns immediately).
-
-```python
-result = predev.deep_spec_async(
-    input_text="Build a fintech platform with regulatory compliance"
-)
-# Returns: AsyncResponse(specId="spec_456", status="pending")
-```
-
-**Parameters:** Same as `fast_spec`
-
-**Returns:** `AsyncResponse` object with `specId` for polling
-
-### Status Checking
-
-#### Get Spec Status
-
-Check the status of an async specification generation request.
-
-```python
-status = predev.get_spec_status("spec_123")
-# Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
-```
-
-**Parameters:**
-
-- `spec_id` **(required)**: `str` - The specification ID from async methods
-
-**Returns:** `SpecResponse` object with current status and data (when completed)
-
-**Example:**
-
-```python
-status = predev.get_spec_status("spec_123")
-# Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
-```
-
-### Credits Management
-
-#### Get Credits Balance
-
-Get the remaining credits balance for your API key.
-
-```python
-balance = predev.get_credits_balance()
-# Returns: CreditsBalanceResponse(success=True, creditsRemaining=450)
-```
-
-**Parameters:** None
-
-**Returns:** `CreditsBalanceResponse` object with credits remaining
-
-**Example:**
-
-```python
-balance = predev.get_credits_balance()
-if balance.creditsRemaining < 50:
-    print(f"Low credits: {balance.creditsRemaining} remaining")
+while time.monotonic() < deadline:
+    spec = client.get_spec_status(job["specId"])
+    if spec["status"] == "completed":
+        print(spec.get("codingAgentSpecMarkdown", "No Markdown returned"))
+        break
+    if spec["status"] == "failed":
+        raise RuntimeError(spec.get("errorMessage", "Specification failed"))
+    time.sleep(5)
 else:
-    print(f"Credits available: {balance.creditsRemaining}")
-```
-
-### Listing and Searching Specs
-
-#### List Specifications
-
-List all specs with optional filtering and pagination.
-
-```python
-# Get first 20 specs
-result = predev.list_specs()
-
-# Get completed specs only
-completed = predev.list_specs(status='completed')
-
-# Paginate: get specs 20-40
-page2 = predev.list_specs(skip=20, limit=20)
-
-# Filter by endpoint type
-fast_specs = predev.list_specs(endpoint='fast_spec')
-```
-
-**Parameters:**
-
-- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
-- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
-- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
-- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
-
-**Returns:** `ListSpecsResponse` object with specs array and pagination metadata
-
-#### Search Specifications
-
-Search for specs using regex patterns (case-insensitive).
-
-```python
-# Search for "payment" specs
-payment_specs = predev.find_specs(query='payment')
-
-# Search for specs starting with "Build"
-build_specs = predev.find_specs(query='^Build')
-
-# Search: only completed specs mentioning "auth"
-auth_specs = predev.find_specs(
-    query='auth',
-    status='completed'
-)
-
-# Complex regex: find SaaS or SASS projects
-saas_specs = predev.find_specs(query='saas|sass')
-```
-
-**Parameters:**
-
-- `query` **(required)**: `str` - Regex pattern (case-insensitive)
-- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
-- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
-- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
-- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
-
-**Returns:** `ListSpecsResponse` object with matching specs and pagination metadata
-
-**Regex Pattern Examples:**
-
-| Pattern | Matches |
-|---------|---------|
-| `payment` | "payment", "Payment", "make payment" |
-| `^Build` | Specs starting with "Build" |
-| `platform$` | Specs ending with "platform" |
-| `(API\|REST)` | Either "API" or "REST" |
-| `auth.*system` | "auth" then anything then "system" |
-| `\\d{3,}` | 3+ digits (budgets, quantities) |
-| `saas\|sass` | SaaS or SASS |
-
-## File Upload Support
-
-All `fast_spec`, `deep_spec`, `fast_spec_async`, and `deep_spec_async` methods support optional file uploads. This allows you to provide architecture documents, requirements files, design mockups, RFPs (Request for Proposals), or other context files to improve specification generation.
-
-### Using File Path (Simplest)
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Just pass the file path as a string
-result = predev.fast_spec(
-    input_text="Generate specs based on these requirements",
-    file="path/to/requirements.pdf"
-)
-```
-
-### Using File-like Objects
-
-```python
-# Open and upload a file
-with open("architecture.doc", "rb") as f:
-    result = predev.deep_spec(
-        input_text="Create comprehensive specs",
-        file=f
-    )
-
-# Or pass a file-like object
-from io import BytesIO
-
-file_content = BytesIO(b"Design specifications...")
-result = predev.fast_spec(
-    input_text="Generate specs",
-    file=file_content
-)
-```
-
-### Supported File Types
-
-- PDF documents (`*.pdf`)
-- Word documents (`*.doc`, `*.docx`)
-- Text files (`*.txt`)
-- Images (`*.jpg`, `*.png`, `*.jpeg`)
-
-### Response with File Upload
-
-When you upload a file, the response includes:
-
-```python
-result = predev.fast_spec(
-    input_text="Based on the design document",
-    file="design.pdf"
-)
-
-print(result.uploadedFileName)       # "design.pdf"
-print(result.uploadedFileShortUrl)   # "https://api.pre.dev/f/xyz123"
-print(result.codingAgentSpecUrl)     # Spec for AI systems
-print(result.humanSpecUrl)           # Spec for humans
-```
-
-## Response Types
-
-### AsyncResponse
-
-```python
-@dataclass
-class AsyncResponse:
-    specId: str                                    # Unique ID for polling (e.g., "spec_abc123")
-    status: Literal['pending', 'processing', 'completed', 'failed']
-```
-
-### SpecResponse
-
-```python
-@dataclass
-class SpecResponse:
-    # Basic info
-    _id: Optional[str] = None                      # Internal ID
-    created: Optional[str] = None                  # ISO timestamp
-    endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None
-    input: Optional[str] = None                    # Original input text
-    status: Optional[Literal['pending', 'processing', 'completed', 'failed']] = None
-    success: Optional[bool] = None
-
-    # Output data (when completed)
-    uploadedFileShortUrl: Optional[str] = None    # URL to input file
-    uploadedFileName: Optional[str] = None        # Name of input file
-    humanSpecUrl: Optional[str] = None            # URL to human-readable spec
-    humanSpecMarkdown: Optional[str] = None       # Full markdown SOW for humans/clients
-    humanSpecJson: Optional['HumanSpecJson'] = None   # Full structured SOW JSON
-    totalHumanHours: Optional[float] = None       # Estimated hours for human implementation
-    codingAgentSpecUrl: Optional[str] = None          # URL to coding agent spec format
-    codingAgentSpecMarkdown: Optional[str] = None     # Simplified markdown SOW for AI tools
-    codingAgentSpecJson: Optional['CodingAgentSpecJson'] = None  # Structured SOW JSON for AI tools
-    executionTime: Optional[int] = None           # Processing time in milliseconds
-
-    # Integration URLs (when completed)
-    predevUrl: Optional[str] = None               # Link to pre.dev project
-    architectureInfographicUrl: Optional[str] = None  # Rendered architecture infographic
-    zippedDocsUrls: Optional[List[ZippedDocsUrl]] = None  # Downloadable doc bundles
-    userFlowGraph: Optional[SpecGraph] = None     # User flow nodes + edges
-    architectureGraph: Optional[SpecGraph] = None # System architecture nodes + edges
-    enrichedTechStack: Optional[List[SpecEnrichedTechStackItem]] = None  # Tech choices with useFor/reason
-    creditsUsed: Optional[float] = None           # Credits consumed (live during processing)
-
-    # Error handling
-    errorMessage: Optional[str] = None            # Error details if failed
-    progress: Optional[int] = None                # Overall progress percentage (0-100)
-    progressMessage: Optional[str] = None         # Detailed progress message (e.g., "Generating User Stories...")
-
-
-@dataclass
-class CodingAgentSpecJson:
-    title: Optional[str] = None
-    executiveSummary: Optional[str] = None
-    coreFunctionalities: Optional[List['SpecCoreFunctionality']] = None
-    techStack: Optional[List['SpecTechStackItem']] = None
-    techStackGrouped: Optional[dict] = None
-    milestones: Optional[List['CodingAgentMilestone']] = None
-
-
-@dataclass
-class CodingAgentMilestone:
-    milestoneNumber: int = 0
-    description: str = ''
-    stories: List['CodingAgentStory'] = None
-
-
-@dataclass
-class CodingAgentStory:
-    id: Optional[str] = None
-    title: str = ''
-    description: Optional[str] = None
-    acceptanceCriteria: Optional[List[str]] = None
-    complexity: Optional[str] = None
-    subTasks: List['CodingAgentSubTask'] = None
-
-
-@dataclass
-class CodingAgentSubTask:
-    id: Optional[str] = None
-    description: str = ''
-    complexity: str = ''
-
-
-@dataclass
-class HumanSpecJson:
-    title: Optional[str] = None
-    executiveSummary: Optional[str] = None
-    coreFunctionalities: Optional[List['SpecCoreFunctionality']] = None
-    personas: Optional[List['SpecPersona']] = None
-    techStack: Optional[List['SpecTechStackItem']] = None
-    techStackGrouped: Optional[dict] = None
-    milestones: Optional[List['HumanSpecMilestone']] = None
-    totalHours: Optional[float] = None
-    roles: Optional[List['SpecRole']] = None
-
-
-@dataclass
-class HumanSpecMilestone:
-    milestoneNumber: int = 0
-    description: str = ''
-    hours: float = 0.0
-    stories: List['HumanSpecStory'] = None
-
-
-@dataclass
-class HumanSpecStory:
-    id: Optional[str] = None
-    title: str = ''
-    description: Optional[str] = None
-    acceptanceCriteria: Optional[List[str]] = None
-    hours: float = 0.0
-    complexity: Optional[str] = None
-    subTasks: List['HumanSpecSubTask'] = None
-
-
-@dataclass
-class HumanSpecSubTask:
-    id: Optional[str] = None
-    description: str = ''
-    hours: float = 0.0
-    complexity: str = ''
-    roles: Optional[List['SpecRole']] = None
-
-
-@dataclass
-class SpecPersona:
-    title: str = ''
-    description: str = ''
-    primaryGoals: Optional[List[str]] = None
-    painPoints: Optional[List[str]] = None
-    keyTasks: Optional[List[str]] = None
-
-
-@dataclass
-class SpecRole:
-    name: str = ''
-    shortHand: str = ''
-
-
-@dataclass
-class SpecCoreFunctionality:
-    name: str = ''
-    description: str = ''
-    priority: Optional[str] = None  # "High" | "Medium" | "Low"
-
-
-@dataclass
-class SpecTechStackItem:
-    name: str = ''
-    category: str = ''
-```
-
-### ListSpecsResponse
-
-```python
-@dataclass
-class ListSpecsResponse:
-    specs: List[SpecResponse]  # Array of spec objects
-    total: int                 # Total count of matching specs
-    hasMore: bool              # Whether more results are available
-```
-
-### CreditsBalanceResponse
-
-```python
-@dataclass
-class CreditsBalanceResponse:
-    success: bool
-    creditsRemaining: int
-```
-
-## Examples
-
-### Generate Fast Spec
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-spec = predev.fast_spec(
-    input_text="Build a task management app with team collaboration"
-)
-print(spec.codingAgentSpecMarkdown)
-```
-
-### Search Specs with Regex
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Find all payment-related specs
-payment_specs = predev.find_specs(query='payment')
-print(f"Found {payment_specs.total} payment specs")
-
-# Find specs starting with "Build"
-build_specs = predev.find_specs(query='^Build')
-
-# Find completed authentication specs
-auth_specs = predev.find_specs(
-    query='auth',
-    status='completed',
-    endpoint='deep_spec'
-)
-
-# Complex search: SaaS or SASS projects
-saas_specs = predev.find_specs(query='saas|sass')
-for spec in saas_specs.specs:
-    print(f"Found: {spec.input}")
-```
-
-### Check Credits Balance
-
-```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Get current credit balance
-balance = predev.get_credits_balance()
-print(f"Credits remaining: {balance.creditsRemaining}")
-
-# Check before making expensive request
-if balance.creditsRemaining >= 50:
-    result = predev.deep_spec(
-        input_text="Build an enterprise platform"
-    )
-else:
-    print(f"Insufficient credits. Need 50, have {balance.creditsRemaining}")
-```
-
-## Error Handling
-
-All SDK errors inherit from `PredevAPIError`. Typed subclasses map to HTTP status codes so you can handle billing and rate-limit cases explicitly:
-
-| Exception | HTTP | When |
-|---|---|---|
-| `AuthenticationError` | 401 | Missing or invalid API key |
-| `SubscriptionRequiredError` | 402 | Endpoint needs an active subscription |
-| `InsufficientCreditsError` | 402 | Not enough credits — top up at [pre.dev/projects/key](https://pre.dev/projects/key) |
-| `BatchTooLargeError` | 400 | Request exceeds size limits |
-| `QueueFullError` | 429 | Per-user in-flight queue is full — retry later |
-| `RateLimitError` | 429 | Too many requests — back off and retry |
-| `PredevAPIError` | other | Any other API error (has `.status_code`) |
-
-```python
-from predev_api import (
-    PredevAPI,
-    AuthenticationError,
-    InsufficientCreditsError,
-    RateLimitError,
-    PredevAPIError,
-)
-
-predev = PredevAPI(api_key="your_api_key")
-
-try:
-    spec = predev.fast_spec(input_text="Build a task management app")
-except AuthenticationError:
-    print("Check your API key at pre.dev/projects/key")
-except InsufficientCreditsError as e:
-    print(f"Out of credits: {e}")
-except RateLimitError:
-    print("Rate limited - retry with backoff")
-except PredevAPIError as e:
-    print(f"API error ({e.status_code}): {e}")
+    raise TimeoutError("Polling deadline reached; retrieve the saved spec ID later.")
 ```
 
 <Note>
-Typed exceptions require `predev-api` >= 1.1.0.
+  Specification, status, search, list, and browser methods return **dictionaries** at runtime, despite dataclass return annotations in the package. Use `job["specId"]` and `spec["status"]`, not `job.specId` or `spec.status`. `get_credits_balance()` is the exception: it constructs a `CreditsBalanceResponse` object.
 </Note>
+
+## Method reference
+
+| Method | Parameters | Runtime return |
+| --- | --- | --- |
+| `fast_spec(...)` | `input_text`, optional `current_context`, `doc_urls`, `file` | Completed specification dictionary |
+| `deep_spec(...)` | Same | Completed specification dictionary |
+| `fast_spec_async(...)` | Same | Dictionary with `specId`, `status` |
+| `deep_spec_async(...)` | Same | Dictionary with `specId`, `status` |
+| `get_spec_status(spec_id)` | Specification ID | Specification dictionary |
+| `list_specs(...)` | Optional `limit`, `skip`, `endpoint`, `status` | Dictionary with `specs`, `total`, `hasMore` |
+| `find_specs(query, ...)` | Required regex `query`; same filters | Dictionary with `specs`, `total`, `hasMore` |
+| `get_credits_balance()` | None | `CreditsBalanceResponse` object |
+
+`*_async` submits server-side work and returns its ID; these are ordinary blocking Python functions, not coroutines. Do not `await` them. Calls to generate specs use a 300-second HTTP timeout; status/list/search calls use 60 seconds. A polling deadline is separate from an individual HTTP timeout.
+
+## History and credits
+
+```python
+page = client.find_specs(query="report|export", status="completed", limit=20)
+for summary in page["specs"]:
+    print(summary["_id"], summary.get("input"))
+
+balance = client.get_credits_balance()
+print(balance.creditsRemaining)
+```
+
+List and search return summaries. Fetch the ID with `get_spec_status` for full Markdown, JSON, and graphs. See [inputs and outputs](/architect-agent/inputs-and-outputs).
+
+## File uploads
+
+The SDK accepts a file path or binary file object via `file`. In 1.1.0, it does not set an explicit file-part MIME type or JSON-encode multipart `doc_urls`. Use direct HTTP when uploading reference documents, especially when supplying documentation URLs:
+
+```python
+import json
+import requests
+
+with open("requirements.pdf", "rb") as document:
+    response = requests.post(
+        "https://api.pre.dev/fast-spec",
+        headers={"Authorization": "Bearer " + os.environ["PREDEV_API_KEY"]},
+        data={
+            "input": "Create an implementation plan from these requirements.",
+            "docURLs": json.dumps(["https://www.postgresql.org/docs/current/"]),
+            "async": "true",
+        },
+        files={"file": ("requirements.pdf", document, "application/pdf")},
+        timeout=60,
+    )
+    response.raise_for_status()
+    job = response.json()
+print(job["specId"])
+```
+
+See [accepted formats and limits](/architect-agent/inputs-and-outputs#upload-a-file).
+
+## Errors
+
+```python
+from predev_api import AuthenticationError, RateLimitError, PredevAPIError
+
+try:
+    page = client.list_specs(limit=20)
+except AuthenticationError:
+    print("Check the API key and account access at pre.dev/projects/key.")
+except RateLimitError:
+    print("Back off before retrying.")
+except PredevAPIError as error:
+    print(str(error))
+```
+
+The base exception has no `status_code` attribute. Browser gate errors have additional typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`.
+
+Continue with the [Browser Agents Python guide](/browser-agents/sdks/python), [PyPI package](https://pypi.org/project/predev-api/), or [SDK source](https://github.com/predotdev/predev-api).

@@ -1,512 +1,540 @@
 {
-	"$schema": "https://mintlify.com/docs.json",
-	"theme": "mint",
-	"name": "pre.dev",
-	"appearance": {
-		"default": "dark"
-	},
-	"colors": {
-		"primary": "#000000",
-		"light": "#FFFFFF",
-		"dark": "#333333"
-	},
-	"favicon": "https://pre.dev/favicon.ico",
-	"api": {
-		"baseUrl": "https://api.pre.dev",
-		"auth": {
-			"method": "bearer",
-			"name": "Authorization"
-		},
-		"playground": {
-			"mode": "show"
-		},
-		"maintainOrder": true
-	},
-	"openapi": [
-		"api-reference/openapi.json"
-	],
-	"redirects": [
-		{
-			"source": "/",
-			"destination": "/overview"
-		},
-		{
-			"source": "/what-is-predev",
-			"destination": "/overview"
-		},
-		{
-			"source": "/quickstart",
-			"destination": "/coding-agent/quickstart"
-		},
-		{
-			"source": "/how-it-works",
-			"destination": "/coding-agent/overview"
-		},
-		{
-			"source": "/coding-agent/how-it-works",
-			"destination": "/coding-agent/overview"
-		},
-		{
-			"source": "/labs",
-			"destination": "/overview"
-		},
-		{
-			"source": "/labs/overview",
-			"destination": "/overview"
-		},
-		{
-			"source": "/labs/browser-agents/overview",
-			"destination": "/browser-agents/overview"
-		},
-		{
-			"source": "/labs/browser-agents/quickstart",
-			"destination": "/browser-agents/quickstart"
-		},
-		{
-			"source": "/labs/browser-agents/rest-api",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/rest-api",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/api/overview",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/labs/browser-agents/mcp-tool",
-			"destination": "/browser-agents/mcp-tool"
-		},
-		{
-			"source": "/labs/browser-agents/task-schemas",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/task-schemas",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/labs/browser-agents/benchmarks",
-			"destination": "/browser-agents/overview"
-		},
-		{
-			"source": "/browser-agents/benchmarks",
-			"destination": "/browser-agents/overview"
-		},
-		{
-			"source": "/specifications/understanding-specs",
-			"destination": "/coding-agent/specifications/understanding-specs"
-		},
-		{
-			"source": "/specifications/fast-vs-deep",
-			"destination": "/coding-agent/specifications/fast-vs-deep"
-		},
-		{
-			"source": "/architect-agent/concepts/understanding-specs",
-			"destination": "/coding-agent/specifications/understanding-specs"
-		},
-		{
-			"source": "/architect-agent/concepts/fast-vs-deep",
-			"destination": "/coding-agent/specifications/fast-vs-deep"
-		},
-		{
-			"source": "/guides/use-cases",
-			"destination": "/coding-agent/overview"
-		},
-		{
-			"source": "/guides/integration-patterns",
-			"destination": "/coding-agent/integrations/overview"
-		},
-		{
-			"source": "/guides/best-practices",
-			"destination": "/coding-agent/overview"
-		},
-		{
-			"source": "/guides/documentation-scraping",
-			"destination": "/coding-agent/integrations/api-keys"
-		},
-		{
-			"source": "/api-mcp/overview",
-			"destination": "/architect-agent/overview"
-		},
-		{
-			"source": "/mcp-server",
-			"destination": "/architect-agent/mcp-setup"
-		},
-		{
-			"source": "/api-reference/introduction",
-			"destination": "/architect-agent/overview"
-		},
-		{
-			"source": "/api-reference/overview",
-			"destination": "/architect-agent/overview"
-		},
-		{
-			"source": "/api-reference/fast-spec",
-			"destination": "/architect-agent/api/fast-spec"
-		},
-		{
-			"source": "/api-reference/deep-spec",
-			"destination": "/architect-agent/api/deep-spec"
-		},
-		{
-			"source": "/api-reference/spec-status",
-			"destination": "/architect-agent/api/spec-status"
-		},
-		{
-			"source": "/api-reference/list-specs",
-			"destination": "/architect-agent/api/list-specs"
-		},
-		{
-			"source": "/api-reference/find-specs",
-			"destination": "/architect-agent/api/find-specs"
-		},
-		{
-			"source": "/api-reference/credits-balance",
-			"destination": "/architect-agent/api/credits-balance"
-		},
-		{
-			"source": "/api-reference/browser-agents",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/api/run-batch",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/api/get-batch",
-			"destination": "/browser-agents/api/task-status"
-		},
-		{
-			"source": "/browser-agents/api/get-run",
-			"destination": "/browser-agents/api/task-status"
-		},
-		{
-			"source": "/browser-agents/api/list-batches",
-			"destination": "/browser-agents/api/list-tasks"
-		},
-		{
-			"source": "/browser-agents/api/list-runs",
-			"destination": "/browser-agents/api/list-tasks"
-		},
-		{
-			"source": "/browser-agents/api/capacity",
-			"destination": "/browser-agents/api/run-task"
-		},
-		{
-			"source": "/browser-agents/pricing",
-			"destination": "/browser-agents/overview"
-		},
-		{
-			"source": "/labs/browser-agents/pricing",
-			"destination": "/browser-agents/overview"
-		},
-		{
-			"source": "/sdks/overview",
-			"destination": "/architect-agent/sdks/overview"
-		},
-		{
-			"source": "/sdks/python",
-			"destination": "/architect-agent/sdks/python"
-		},
-		{
-			"source": "/sdks/node",
-			"destination": "/architect-agent/sdks/node"
-		},
-		{
-			"source": "/projects/creating-a-project",
-			"destination": "/coding-agent/projects/creating-a-project"
-		},
-		{
-			"source": "/projects/importing-repos",
-			"destination": "/coding-agent/projects/importing-repos"
-		},
-		{
-			"source": "/building/build-modes",
-			"destination": "/coding-agent/building/build-modes"
-		},
-		{
-			"source": "/building/acceptance-criteria",
-			"destination": "/coding-agent/building/acceptance-criteria"
-		},
-		{
-			"source": "/building/pull-requests",
-			"destination": "/coding-agent/building/pull-requests"
-		},
-		{
-			"source": "/building/progress-tracking",
-			"destination": "/coding-agent/building/progress-tracking"
-		},
-		{
-			"source": "/building/pro-mode",
-			"destination": "/coding-agent/building/pro-mode"
-		},
-		{
-			"source": "/building/custom-domains",
-			"destination": "/coding-agent/building/custom-domains"
-		},
-		{
-			"source": "/building/collaboration",
-			"destination": "/coding-agent/building/collaboration"
-		},
-		{
-			"source": "/integrations/overview",
-			"destination": "/coding-agent/integrations/overview"
-		},
-		{
-			"source": "/why-architect-api",
-			"destination": "/architect-agent/overview"
-		},
-		{
-			"source": "/introduction",
-			"destination": "/overview"
-		},
-		{
-			"source": "/choosing-spec-level",
-			"destination": "/coding-agent/specifications/fast-vs-deep"
-		},
-		{
-			"source": "/mcp-integration/overview",
-			"destination": "/architect-agent/mcp-setup"
-		},
-		{
-			"source": "/mcp-integration/setup",
-			"destination": "/architect-agent/mcp-setup"
-		},
-		{
-			"source": "/mcp-integration/usage",
-			"destination": "/architect-agent/mcp-setup"
-		}
-	],
-	"navigation": {
-		"tabs": [
-			{
-				"tab": "Overview",
-				"pages": [
-					"overview"
-				]
-			},
-			{
-				"tab": "Coding Agent",
-				"groups": [
-					{
-						"group": "Get Started",
-						"pages": [
-							"coding-agent/overview",
-							"coding-agent/quickstart",
-							"coding-agent/plans-and-credits"
-						]
-					},
-					{
-						"group": "The Workspace",
-						"pages": [
-							"coding-agent/workspace",
-							"coding-agent/projects/creating-a-project",
-							"coding-agent/projects/importing-repos",
-							"coding-agent/projects/github-integration"
-						]
-					},
-					{
-						"group": "Plan",
-						"pages": [
-							"coding-agent/specifications/fast-vs-deep",
-							"coding-agent/specifications/understanding-specs"
-						]
-					},
-					{
-						"group": "Build",
-						"pages": [
-							"coding-agent/building/build-modes",
-							"coding-agent/building/pro-mode",
-							"coding-agent/building/sessions-and-parallel-agents"
-						]
-					},
-					{
-						"group": "Verify",
-						"pages": [
-							"coding-agent/building/acceptance-criteria"
-						]
-					},
-					{
-						"group": "Ship",
-						"pages": [
-							"coding-agent/building/pull-requests",
-							"coding-agent/building/preview-and-hosting",
-							"coding-agent/building/custom-domains"
-						]
-					},
-					{
-						"group": "Track & Collaborate",
-						"pages": [
-							"coding-agent/building/progress-tracking",
-							"coding-agent/building/collaboration"
-						]
-					},
-					{
-						"group": "Integrations",
-						"pages": [
-							"coding-agent/integrations/overview",
-							"coding-agent/integrations/oauth",
-							"coding-agent/integrations/skills",
-							"coding-agent/integrations/mcp-servers",
-							"coding-agent/integrations/api-keys",
-							"coding-agent/integrations/env-vars"
-						]
-					}
-				]
-			},
-			{
-				"tab": "CLI",
-				"groups": [
-					{
-						"group": "Get Started",
-						"pages": [
-							"cli/overview",
-							"cli/commands",
-							"cli/existing-repos"
-						]
-					}
-				]
-			},
-			{
-				"tab": "Browser Agents",
-				"groups": [
-					{
-						"group": "Get Started",
-						"pages": [
-							"browser-agents/overview",
-							"browser-agents/quickstart",
-							"browser-agents/mcp-tool"
-						]
-					},
-					{
-						"group": "API Reference",
-						"pages": [
-							"browser-agents/api/run-task",
-							"browser-agents/api/task-status",
-							"browser-agents/api/stream-task",
-							"browser-agents/api/queue-status",
-							"browser-agents/api/list-tasks"
-						]
-					},
-					{
-						"group": "SDKs",
-						"pages": [
-							"browser-agents/sdks/overview",
-							"browser-agents/sdks/python",
-							"browser-agents/sdks/node"
-						]
-					},
-					{
-						"group": "Migrations",
-						"pages": [
-							"browser-agents/migrate-from-browser-use"
-						]
-					}
-				]
-			},
-			{
-				"tab": "Architect API",
-				"groups": [
-					{
-						"group": "Get Started",
-						"pages": [
-							"architect-agent/overview",
-							"architect-agent/quickstart",
-							"architect-agent/mcp-setup"
-						]
-					},
-					{
-						"group": "API Reference",
-						"pages": [
-							"architect-agent/api/fast-spec",
-							"architect-agent/api/deep-spec",
-							"architect-agent/api/spec-status",
-							"architect-agent/api/list-specs",
-							"architect-agent/api/find-specs",
-							"architect-agent/api/credits-balance"
-						]
-					},
-					{
-						"group": "SDKs",
-						"pages": [
-							"architect-agent/sdks/overview",
-							"architect-agent/sdks/python",
-							"architect-agent/sdks/node"
-						]
-					}
-				]
-			},
-			{
-				"tab": "Changelog",
-				"pages": [
-					"changelog"
-				]
-			}
-		],
-		"global": {
-			"anchors": [
-				{
-					"anchor": "Create a Project",
-					"href": "https://pre.dev",
-					"icon": "plus"
-				},
-				{
-					"anchor": "Dashboard",
-					"href": "https://pre.dev/projects",
-					"icon": "grid-2"
-				},
-				{
-					"anchor": "Blog",
-					"href": "https://pre.dev/blog",
-					"icon": "newspaper"
-				},
-				{
-					"anchor": "Community",
-					"href": "https://discord.com/invite/ejVTRJ6WXS",
-					"icon": "discord"
-				}
-			]
-		}
-	},
-	"logo": {
-		"light": "https://pre.dev/predev_logo_name_white.png",
-		"dark": "https://pre.dev/predev_logo_name.png"
-	},
-	"navbar": {
-		"links": [
-			{
-				"label": "pre.dev",
-				"href": "https://pre.dev"
-			}
-		],
-		"primary": {
-			"type": "button",
-			"label": "Start Building",
-			"href": "https://pre.dev"
-		},
-		"logoHeight": "60px"
-	},
-	"contextual": {
-		"options": [
-			"copy",
-			"view",
-			"chatgpt",
-			"claude",
-			"perplexity",
-			"mcp",
-			"cursor",
-			"vscode"
-		]
-	},
-	"footer": {
-		"socials": {
-			"linkedin": "https://www.linkedin.com/company/99516177/",
-			"x": "https://x.com/predotdev",
-			"youtube": "https://www.youtube.com/@predotdev",
-			"instagram": "https://www.instagram.com/predev.ai/",
-			"discord": "https://discord.gg/ejVTRJ6WXS"
-		}
-	}
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "pre.dev",
+  "appearance": {
+    "default": "dark"
+  },
+  "colors": {
+    "primary": "#000000",
+    "light": "#FFFFFF",
+    "dark": "#737373"
+  },
+  "favicon": "/images/favicon.ico",
+  "api": {
+    "openapi": "api-reference/openapi.json",
+    "playground": {
+      "display": "interactive"
+    },
+    "examples": {
+      "prefill": true,
+      "defaults": "required"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/overview"
+    },
+    {
+      "source": "/what-is-predev",
+      "destination": "/overview"
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/coding-agent/quickstart"
+    },
+    {
+      "source": "/how-it-works",
+      "destination": "/coding-agent/overview"
+    },
+    {
+      "source": "/coding-agent/how-it-works",
+      "destination": "/coding-agent/overview"
+    },
+    {
+      "source": "/labs",
+      "destination": "/overview"
+    },
+    {
+      "source": "/labs/overview",
+      "destination": "/overview"
+    },
+    {
+      "source": "/labs/browser-agents/overview",
+      "destination": "/browser-agents/overview"
+    },
+    {
+      "source": "/labs/browser-agents/quickstart",
+      "destination": "/browser-agents/quickstart"
+    },
+    {
+      "source": "/labs/browser-agents/rest-api",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/browser-agents/rest-api",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/browser-agents/api/overview",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/labs/browser-agents/mcp-tool",
+      "destination": "/browser-agents/mcp-tool"
+    },
+    {
+      "source": "/labs/browser-agents/task-schemas",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/browser-agents/task-schemas",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/labs/browser-agents/benchmarks",
+      "destination": "/browser-agents/overview"
+    },
+    {
+      "source": "/browser-agents/benchmarks",
+      "destination": "/browser-agents/overview"
+    },
+    {
+      "source": "/specifications/understanding-specs",
+      "destination": "/coding-agent/specifications/understanding-specs"
+    },
+    {
+      "source": "/specifications/fast-vs-deep",
+      "destination": "/coding-agent/specifications/fast-vs-deep"
+    },
+    {
+      "source": "/architect-agent/concepts/understanding-specs",
+      "destination": "/coding-agent/specifications/understanding-specs"
+    },
+    {
+      "source": "/architect-agent/concepts/fast-vs-deep",
+      "destination": "/coding-agent/specifications/fast-vs-deep"
+    },
+    {
+      "source": "/guides/use-cases",
+      "destination": "/coding-agent/overview"
+    },
+    {
+      "source": "/guides/integration-patterns",
+      "destination": "/coding-agent/integrations/overview"
+    },
+    {
+      "source": "/guides/best-practices",
+      "destination": "/coding-agent/overview"
+    },
+    {
+      "source": "/guides/documentation-scraping",
+      "destination": "/architect-agent/inputs-and-outputs"
+    },
+    {
+      "source": "/api-mcp/overview",
+      "destination": "/api-reference/overview"
+    },
+    {
+      "source": "/mcp-server",
+      "destination": "/architect-agent/mcp-setup"
+    },
+    {
+      "source": "/api-reference/introduction",
+      "destination": "/api-reference/overview"
+    },
+    {
+      "source": "/api-reference/fast-spec",
+      "destination": "/architect-agent/api/fast-spec"
+    },
+    {
+      "source": "/api-reference/deep-spec",
+      "destination": "/architect-agent/api/deep-spec"
+    },
+    {
+      "source": "/api-reference/spec-status",
+      "destination": "/architect-agent/api/spec-status"
+    },
+    {
+      "source": "/api-reference/list-specs",
+      "destination": "/architect-agent/api/list-specs"
+    },
+    {
+      "source": "/api-reference/find-specs",
+      "destination": "/architect-agent/api/find-specs"
+    },
+    {
+      "source": "/api-reference/credits-balance",
+      "destination": "/architect-agent/api/credits-balance"
+    },
+    {
+      "source": "/api-reference/browser-agents",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/browser-agents/api/run-batch",
+      "destination": "/browser-agents/api/run-task"
+    },
+    {
+      "source": "/browser-agents/api/get-batch",
+      "destination": "/browser-agents/api/task-status"
+    },
+    {
+      "source": "/browser-agents/api/get-run",
+      "destination": "/browser-agents/api/task-status"
+    },
+    {
+      "source": "/browser-agents/api/list-batches",
+      "destination": "/browser-agents/api/list-tasks"
+    },
+    {
+      "source": "/browser-agents/api/list-runs",
+      "destination": "/browser-agents/api/list-tasks"
+    },
+    {
+      "source": "/browser-agents/pricing",
+      "destination": "/browser-agents/overview"
+    },
+    {
+      "source": "/labs/browser-agents/pricing",
+      "destination": "/browser-agents/overview"
+    },
+    {
+      "source": "/sdks/overview",
+      "destination": "/architect-agent/sdks/overview"
+    },
+    {
+      "source": "/sdks/python",
+      "destination": "/architect-agent/sdks/python"
+    },
+    {
+      "source": "/sdks/node",
+      "destination": "/architect-agent/sdks/node"
+    },
+    {
+      "source": "/projects/creating-a-project",
+      "destination": "/coding-agent/projects/creating-a-project"
+    },
+    {
+      "source": "/projects/importing-repos",
+      "destination": "/coding-agent/projects/importing-repos"
+    },
+    {
+      "source": "/building/build-modes",
+      "destination": "/coding-agent/building/build-modes"
+    },
+    {
+      "source": "/building/acceptance-criteria",
+      "destination": "/coding-agent/building/acceptance-criteria"
+    },
+    {
+      "source": "/building/pull-requests",
+      "destination": "/coding-agent/building/pull-requests"
+    },
+    {
+      "source": "/building/progress-tracking",
+      "destination": "/coding-agent/building/progress-tracking"
+    },
+    {
+      "source": "/building/pro-mode",
+      "destination": "/coding-agent/building/pro-mode"
+    },
+    {
+      "source": "/building/custom-domains",
+      "destination": "/coding-agent/building/custom-domains"
+    },
+    {
+      "source": "/building/collaboration",
+      "destination": "/coding-agent/building/collaboration"
+    },
+    {
+      "source": "/integrations/overview",
+      "destination": "/coding-agent/integrations/overview"
+    },
+    {
+      "source": "/why-architect-api",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/introduction",
+      "destination": "/overview"
+    },
+    {
+      "source": "/choosing-spec-level",
+      "destination": "/coding-agent/specifications/fast-vs-deep"
+    },
+    {
+      "source": "/mcp-integration/overview",
+      "destination": "/architect-agent/mcp-setup"
+    },
+    {
+      "source": "/mcp-integration/setup",
+      "destination": "/architect-agent/mcp-setup"
+    },
+    {
+      "source": "/mcp-integration/usage",
+      "destination": "/architect-agent/mcp-setup"
+    }
+  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Start here",
+        "groups": [
+          {
+            "group": "Documentation",
+            "pages": [
+              "overview",
+              "for-agents"
+            ]
+          },
+          {
+            "group": "API essentials",
+            "pages": [
+              "api-reference/overview",
+              "api-reference/authentication",
+              "api-reference/errors"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Coding Agent",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "coding-agent/overview",
+              "coding-agent/quickstart",
+              "coding-agent/plans-and-credits"
+            ]
+          },
+          {
+            "group": "Workspace",
+            "pages": [
+              "coding-agent/workspace",
+              "coding-agent/projects/creating-a-project",
+              "coding-agent/projects/importing-repos",
+              "coding-agent/projects/github-integration"
+            ]
+          },
+          {
+            "group": "Plan",
+            "pages": [
+              "coding-agent/specifications/fast-vs-deep",
+              "coding-agent/specifications/understanding-specs"
+            ]
+          },
+          {
+            "group": "Build",
+            "pages": [
+              "coding-agent/building/build-modes",
+              "coding-agent/building/pro-mode",
+              "coding-agent/building/sessions-and-parallel-agents"
+            ]
+          },
+          {
+            "group": "Verify",
+            "pages": [
+              "coding-agent/building/acceptance-criteria"
+            ]
+          },
+          {
+            "group": "Ship",
+            "pages": [
+              "coding-agent/building/pull-requests",
+              "coding-agent/building/preview-and-hosting",
+              "coding-agent/building/custom-domains"
+            ]
+          },
+          {
+            "group": "Track and collaborate",
+            "pages": [
+              "coding-agent/building/progress-tracking",
+              "coding-agent/building/collaboration"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "coding-agent/integrations/overview",
+              "coding-agent/integrations/oauth",
+              "coding-agent/integrations/skills",
+              "coding-agent/integrations/mcp-servers",
+              "coding-agent/integrations/api-keys",
+              "coding-agent/integrations/env-vars"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "cli/overview",
+              "cli/commands",
+              "cli/existing-repos"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Browser Agents",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "browser-agents/overview",
+              "browser-agents/quickstart"
+            ]
+          },
+          {
+            "group": "API reference",
+            "pages": [
+              "browser-agents/api/run-task",
+              "browser-agents/api/task-status",
+              "browser-agents/api/stream-task",
+              "browser-agents/api/live-browser",
+              "browser-agents/api/list-tasks",
+              "browser-agents/api/queue-status",
+              "browser-agents/api/capacity"
+            ]
+          },
+          {
+            "group": "SDKs",
+            "pages": [
+              "browser-agents/sdks/overview",
+              "browser-agents/sdks/python",
+              "browser-agents/sdks/node"
+            ]
+          },
+          {
+            "group": "Migrations",
+            "pages": [
+              "browser-agents/migrate-from-browser-use"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Architect",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "architect-agent/overview",
+              "architect-agent/quickstart",
+              "architect-agent/inputs-and-outputs"
+            ]
+          },
+          {
+            "group": "API reference",
+            "pages": [
+              "architect-agent/api/fast-spec",
+              "architect-agent/api/deep-spec",
+              "architect-agent/api/spec-status",
+              "architect-agent/api/list-specs",
+              "architect-agent/api/find-specs",
+              "architect-agent/api/credits-balance"
+            ]
+          },
+          {
+            "group": "Proposals",
+            "pages": [
+              "architect-agent/proposals",
+              "architect-agent/api/upload-proposal",
+              "architect-agent/api/list-proposals",
+              "architect-agent/api/get-proposal",
+              "architect-agent/api/vet-proposal",
+              "architect-agent/api/list-vetted-proposals",
+              "architect-agent/api/get-vetted-proposal"
+            ]
+          },
+          {
+            "group": "SDKs",
+            "pages": [
+              "architect-agent/sdks/overview",
+              "architect-agent/sdks/python",
+              "architect-agent/sdks/node"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "MCP",
+        "groups": [
+          {
+            "group": "Connect and use",
+            "pages": [
+              "architect-agent/mcp-setup",
+              "mcp/tools",
+              "browser-agents/mcp-tool"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "pages": [
+          "changelog"
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Create a project",
+          "href": "https://pre.dev",
+          "icon": "plus"
+        },
+        {
+          "anchor": "Dashboard",
+          "href": "https://pre.dev/projects",
+          "icon": "grid-2"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://pre.dev/blog",
+          "icon": "newspaper"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://discord.com/invite/ejVTRJ6WXS",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/images/logo-light.png",
+    "dark": "/images/logo-dark.png"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "pre.dev",
+        "href": "https://pre.dev"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Start building",
+      "href": "https://pre.dev"
+    },
+    "logoHeight": "32px"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/99516177/",
+      "x": "https://x.com/predotdev",
+      "youtube": "https://www.youtube.com/@predotdev",
+      "instagram": "https://www.instagram.com/predev.ai/",
+      "discord": "https://discord.gg/ejVTRJ6WXS"
+    }
+  }
 }

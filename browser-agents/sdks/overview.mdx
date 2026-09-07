@@ -1,33 +1,28 @@
 ---
 title: "Browser Agents SDKs"
-description: "Official Python and Node SDKs for pre.dev Browser Agents — fully-typed clients with sync, async, and SSE streaming built in."
+description: "Run, retrieve, list, and stream browser work with the official predev-api packages."
 ---
 
-The same `predev-api` package that wraps the Architect endpoints also ships the Browser Agents client. One install, one key, both surfaces.
+Browser Agents uses the same **`predev-api`** packages as the Architect API.
 
-## Official SDKs
+| Operation | Node | Python |
+| --- | --- | --- |
+| Run tasks | `browserAgent(tasks, options)` | `browser_agent(tasks, ...)` |
+| Submit asynchronously | `{ async: true }` | `run_async=True` |
+| Stream a new submission | `{ stream: true }` → async generator | `stream=True` → iterator |
+| Retrieve a run | `getBrowserAgent(id, options)` | `get_browser_agent(id, include_events=False)` |
+| List runs | `listBrowserAgents(params)` | `list_browser_agents(...)` |
+| Read account queue | `browserAgentStatus()` | `browser_agent_status()` |
+
+Node returns objects and Python returns dictionaries. Both expose typed browser gate exceptions. The Python SDK is blocking even when submitting a server-side async job.
 
 <CardGroup cols={2}>
-  <Card title="Python SDK" icon="python" href="/browser-agents/sdks/python">
-    `pip install predev-api` — synchronous, async, and streaming task runs with a single method.
+  <Card title="Node.js" icon="node-js" href="/browser-agents/sdks/node">
+    Promises, async generators, and current TypeScript field coverage.
   </Card>
-  <Card title="Node SDK" icon="node-js" href="/browser-agents/sdks/node">
-    `npm install predev-api` — fully-typed TypeScript client with async generators for SSE streams.
+  <Card title="Python" icon="python" href="/browser-agents/sdks/python">
+    Dictionary results, bounded polling, and streaming iterators.
   </Card>
 </CardGroup>
 
-## Features
-
-Both SDKs expose the full Browser Agents surface:
-
-- **Run tasks** — submit one or thousands of tasks in a single call, with `concurrency` control
-- **Sync mode** — waits for every task to complete and returns the full result
-- **Async mode** — submit and return immediately with a batch id you can poll
-- **Streaming mode** — live SSE stream of `task_event`, `task_result`, `done`, and `error` frames
-- **Status polling** — fetch a task submission by id, optionally with the full per-step event timeline (screenshots, plans, actions, validations)
-- **Typed results** — structured `data` validated against your JSON Schema `output`
-- **Error handling** — typed exceptions for auth, rate limits, and API errors
-
-<Card title="Get your API key" icon="key" href="https://pre.dev/projects/key" horizontal>
-  Grab a key, set it as `PREDEV_API_KEY`, then follow either SDK page.
-</Card>
+Use direct REST for `Idempotency-Key`, [existing-run SSE](/browser-agents/api/stream-task), [live browser URLs](/browser-agents/api/live-browser), or [service capacity](/browser-agents/api/capacity). Current SDK method signatures do not expose these operations or arbitrary headers.

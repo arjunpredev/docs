@@ -1,98 +1,50 @@
 ---
 title: "Coding Agent"
-description: "Describe an app. pre.dev plans it, builds it autonomously for hours, and ships real pull requests to your GitHub."
+description: "Build and maintain software in the web workspace or your local terminal."
 ---
 
-The **Coding Agent** is pre.dev's flagship. Point it at a prompt, a template, or an existing GitHub repo — it plans the architecture first, then builds against that plan autonomously, verifying each task, opening real PRs, and deploying a live preview. You stay in the loop as a reviewer, not a typist.
+import { Workflow } from "/snippets/workflow.jsx";
 
-<Card title="Build your first project" icon="play" href="/coding-agent/quickstart" horizontal>
-  Sign up, describe an app, hit **Build on Autopilot**. Minutes to a deployed product.
-</Card>
+Describe a change, give the agent the project context it needs, and review the code and evidence it produces. pre.dev supports new apps, existing repositories, planning, implementation, and browser verification.
 
-## How it works
+The default **Auto** mode lets the agent answer a question, make a direct change, or plan a larger task. Switch to **Plan** when you want to shape requirements and architecture before implementation.
 
-<CardGroup cols={3}>
-  <Card title="1. Plan" icon="compass" href="/coding-agent/specifications/fast-vs-deep">
-    One prompt → a full structured spec: stack, milestones, user stories, acceptance criteria. Fast Spec in ~1 minute, Deep Spec in ~3–5.
-  </Card>
-  <Card title="2. Build" icon="hammer" href="/coding-agent/building/build-modes">
-    Agents work the roadmap in isolated sandboxes — for hours if the roadmap calls for it. Each task verifies itself (types, lint, tests, browser) before it ships.
-  </Card>
-  <Card title="3. Ship" icon="rocket" href="/coding-agent/building/pull-requests">
-    Real PRs land on feature branches in your GitHub. A live preview runs the whole time; hosting and custom domains are built in.
-  </Card>
-</CardGroup>
+<Workflow
+  label="From request to reviewed software"
+  steps={[
+    { title: "Describe the outcome", description: "Name the behavior, relevant context, and constraints." },
+    { title: "Shape the approach", description: "Use Auto, or review a specification in Plan mode." },
+    { title: "Build and check", description: "Implement a concrete change and inspect the checks that ran." },
+    { title: "Review and ship", description: "Read the diff, try the preview, then merge or deploy." }
+  ]}
+  note="Auto can also answer a question without changing code. Start with Plan when you want to settle requirements first."
+/>
 
-## Built for long-horizon work
+## Make the first request useful
 
-Most coding agents are great for twenty minutes. pre.dev is built for the build that takes all day:
+Give the agent an outcome it can implement and you can verify:
 
-<CardGroup cols={2}>
-  <Card title="Effort levels" icon="gauge-high" href="/coding-agent/building/build-modes">
-    Dial how deep each sprint goes with `/effort` — **low** for a fast direct pass, **medium** for a task-list loop, **high** for the full research → code → verify pipeline. Or leave it on **auto** (the default).
-  </Card>
-  <Card title="Your models, per phase" icon="microchip" href="/coding-agent/building/build-modes">
-    Pin a different model to each phase of the work — chat, research, coding, acceptance — with `/model`, or flip on Pro Mode for the strongest model everywhere.
-  </Card>
-  <Card title="Sessions: fork & merge" icon="code-branch" href="/coding-agent/workspace">
-    Every session is an isolated branch of your project. Fork to try something risky, work several in parallel, merge back what works. Context persists across all of them.
-  </Card>
-  <Card title="Parallel agents" icon="layer-group" href="/coding-agent/building/sessions-and-parallel-agents">
-    Big sprints fan out to multiple agents at once. Watch each branch's objective, progress, live diffs, and conclusion in real time.
-  </Card>
-</CardGroup>
+```text
+Add assignee and status filters to the issue board.
+Keep the existing card layout. Filters should work together,
+and an empty result should offer a way to clear them.
+```
 
-## What you get
+For existing code, include what happens today and what should change. For a new app, start with one working flow before expanding the scope.
+
+## Choose your workspace
+
+| Surface | Best starting point |
+| --- | --- |
+| Web | Create a project, import GitHub code, review plans, and use hosted previews |
+| CLI | Work directly in a local checkout and review changes with your usual Git tools |
+| Architect API or MCP | Generate specifications for another development workflow |
+
+The web and CLI share project records, planning artifacts, and account settings where supported. Local files and hosted checkouts still need their normal Git synchronization.
 
 <CardGroup cols={2}>
-  <Card title="Working integrations, not stubs" icon="plug">
-    Stripe, Supabase, Clerk, OpenAI, Linear, Slack — any service you've connected. Real keys, real endpoints, real data. No `YOUR_API_KEY` placeholders.
-  </Card>
-  <Card title="Verified code, not vibes" icon="shield-check">
-    Every PR passes types, lint, tests, and browser verification — with before/after screenshots as evidence — before it's opened.
-  </Card>
-  <Card title="Progress you can watch" icon="eye">
-    Live timeline of the agent's work — its streaming thoughts, which file it's editing, which test just passed, which PR just opened.
-  </Card>
-  <Card title="Your choice of control" icon="sliders" href="/coding-agent/building/build-modes">
-    Pick a **sprint mode** — Autopilot for the whole roadmap, Next Task to review each PR, custom sprints for anything else, or plain chat — and an **effort level** for how deep each sprint goes.
-  </Card>
-</CardGroup>
-
-Work from the **web workspace** — a terminal-style chat with live Plan, Code, and Preview views — or from the **[pre.dev CLI](/cli/overview)** with the same slash commands and controls. See [The Workspace](/coding-agent/workspace).
-
-## Extend what the agent can do
-
-Agents are only as capable as the services they can reach. Connect your stack once — every project inherits it.
-
-<CardGroup cols={2}>
-  <Card title="OAuth Connectors" icon="plug" href="/coding-agent/integrations/oauth">
-    Sign in once (GitHub, Linear, Slack, Notion, etc.) so the agent can read and write on your behalf.
-  </Card>
-  <Card title="API Keys & Secrets" icon="key" href="/coding-agent/integrations/api-keys">
-    Store provider keys (Stripe, OpenAI, Twilio) once and inject them into every build.
-  </Card>
-  <Card title="MCP Servers" icon="server" href="/coding-agent/integrations/mcp-servers">
-    Attach any MCP server to expand the tool set the agent can call at build time.
-  </Card>
-  <Card title="Agent Skills" icon="wand-magic-sparkles" href="/coding-agent/integrations/skills">
-    Custom instructions injected into every prompt — your conventions, your constraints, your voice.
-  </Card>
-</CardGroup>
-
-## Who it's for
-
-<CardGroup cols={2}>
-  <Card title="Founders & PMs" icon="lightbulb">
-    Ship without writing code. Stay focused on product direction while the agent handles implementation.
-  </Card>
-  <Card title="Solo developers" icon="user">
-    Compress weeks of boilerplate into hours. Spend your time on the parts that actually need you.
-  </Card>
-  <Card title="Teams" icon="users">
-    Queue work as specs and review PRs — the agent handles the rote 70%, you focus on the 30% that matters.
-  </Card>
-  <Card title="Agencies" icon="building">
-    Standardize delivery across client projects. Consistent stacks, consistent quality, faster turnaround.
-  </Card>
+  <Card title="Build your first project" icon="play" href="/coding-agent/quickstart">A short web workflow from prompt to review.</Card>
+  <Card title="Use your terminal" icon="terminal" href="/cli/overview">Install the CLI and start in a local repository.</Card>
+  <Card title="Auto, Plan, and effort" icon="sliders" href="/coding-agent/building/build-modes">Choose how the agent approaches the work.</Card>
+  <Card title="Workspace guide" icon="table-columns" href="/coding-agent/workspace">Find code, plans, previews, and project setup.</Card>
 </CardGroup>

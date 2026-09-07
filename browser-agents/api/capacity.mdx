@@ -1,0 +1,16 @@
+---
+title: "Get service capacity"
+openapi: "/api-reference/openapi.json GET /browser-agent-capacity"
+description: "Read advisory service queue statistics; use account queue status to size your own submissions."
+---
+
+```bash
+curl --fail-with-body https://api.pre.dev/browser-agent-capacity \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+This endpoint returns service-level queue and execution statistics. Fields include `totalActive`, `maxSandboxes`, `pending`, `claimed`, `running`, `failed`, `utilization` (percentage), and `oldestQueuedAgeMs`.
+
+The response is an advisory operational snapshot, not an admission guarantee or a forecast. Additional diagnostic fields may be returned. **Use [`GET /browser-agent-status`](/browser-agents/api/queue-status) and its `cap` field for your account's current limit**; the service snapshot's `perUserCap` is a legacy field.
+
+There is no dedicated method in the current SDKs or product MCP tools; call the endpoint with direct HTTP when needed.

@@ -1,95 +1,32 @@
 ---
-title: "Pull Requests"
-description: "How pre.dev agents deliver code through reviewable PRs."
+title: "Pull requests and merges"
+description: "Review session changes and choose how they enter your repository."
 ---
 
-Every task completed by a build agent produces a pull request. The AI never pushes directly to main — you always have the opportunity to review, request changes, or reject code before it's merged.
+Connect the project to GitHub to use hosted branch and pull-request workflows. A session's work can be reviewed as a diff and integrated through the session controls or a requested PR workflow.
 
-## PR Workflow
+## Request a reviewable change
 
-```
-Task assigned → Agent builds in sandbox → Verification passes → Feature branch created → PR opened
-```
+State the target branch and review behavior in the task:
 
-### What Each PR Contains
-
-```diff
- # predev/dtc-913 → main · 631a912 · PR #1
- # feat(Setup): Write concise design aesthetic/rules
- # workspace/package.json (+251)
-
-+ "private": true,
-  "name": "mobile",
-  "sideEffects": false,
-  "scripts": {
-+   "build": "react-router build",
-    "clean": "node scripts/clean.js",
-+   "dev": "react-router dev",
-    "test": "vitest run",
+```text
+Implement CSV export on a feature branch. Run the relevant checks
+and open a pull request against main. Leave the PR open for review.
+Include the behavior change, verification, and any known limitations.
 ```
 
-- **Feature branch** — Named after the task (e.g., `predev/setup-user-auth`)
-- **Implementation code** — All files created or modified for the task
-- **Tests** — Unit tests covering the new functionality
-- **Diff summary** — Clear view of what changed and why
-- **Verification status** — All acceptance criteria results
+Review the code, check results, and preview evidence. Request corrections in the relevant session so the agent works against the right branch and context.
 
-## Branch Strategy
+## Session Merge
 
-pre.dev follows a clean branch strategy:
+The web session **Merge** action can create a GitHub PR and automatically merge it when the change is clean. It is an integration action, so inspect the session before confirming it.
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Your production branch — agents never push here |
-| `predev/*` | Feature branches for each completed task |
+If conflicts occur, use the offered resolution workflow or resolve them in GitHub, then verify the result. The PR URL and session status show the outcome. Repository permissions and branch rules can prevent a merge.
 
-Each task gets its own feature branch. You can merge them individually or batch them.
+## Keep the checkout current
 
-## Reviewing PRs
+When changes land outside pre.dev, use the available **Refresh from GitHub** action to synchronize the hosted code. Check the selected branch and any local changes before refreshing or starting another build.
 
-When reviewing agent-generated PRs:
+Direct agent work, sprint workflows, and session merges do not all use identical commit behavior. Specify restrictions that matter to the task and enforce branch protection in the repository where appropriate.
 
-1. **Check the diff** — Verify the implementation matches what you expected
-2. **Review acceptance results** — All automated checks should show PASSED
-3. **Test locally** (optional) — Pull the branch and run it yourself
-4. **Merge or request changes** — If something's off, the agent can iterate
-
-## Merge Strategies
-
-You control how PRs are merged:
-
-- **Merge immediately** — For tasks you're confident about
-- **Batch merge** — Let several PRs accumulate, review them together, merge in order
-- **Cherry-pick** — Merge only specific PRs while skipping or reworking others
-
-## Code Quality
-
-<Check>
-  Because every PR passes [acceptance verification](/coding-agent/building/acceptance-criteria) before it's opened, you're reviewing **verified, working code** — not hoping it compiles.
-</Check>
-
-- Types compile cleanly
-- Linting rules pass
-- Tests pass
-- UI renders correctly (for frontend tasks)
-
-## PR History
-
-Your project's PR history serves as a detailed log of how the codebase was built:
-
-- Each PR maps to a specific task in the spec
-- PRs are opened in milestone order
-- The commit history tells the story of the project's construction
-
-This makes it easy to understand why any piece of code exists — trace it back to the task and user story in the spec.
-
-## What's next?
-
-<CardGroup cols={2}>
-  <Card title="Preview & Hosting" icon="globe" href="/coding-agent/building/preview-and-hosting">
-    Your merged work, live at your project's pre.dev URL.
-  </Card>
-  <Card title="Roadmap & Tracking" icon="map" href="/coding-agent/building/progress-tracking">
-    Watch milestones complete as PRs land.
-  </Card>
-</CardGroup>
+See [GitHub connections](/coding-agent/projects/github-integration), [parallel sessions](/coding-agent/building/sessions-and-parallel-agents), and [verification](/coding-agent/building/acceptance-criteria).

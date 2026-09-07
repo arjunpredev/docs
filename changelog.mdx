@@ -131,7 +131,7 @@ try {
 New typed exceptions: `SubscriptionRequiredError`,
 `InsufficientCreditsError`, `QueueFullError`, `BatchTooLargeError`. All
 non-breaking — existing `instanceof PredevAPIError` checks still match.
-See the [Node SDK error-handling docs](/browser-agents/sdks/node#error-handling).
+See the [Node SDK error-handling docs](/browser-agents/sdks/node#billing-and-queue-errors).
 
 #### Python SDK — `predev-api==1.1.0`
 
@@ -148,4 +148,4 @@ except SubscriptionRequiredError as e:
 ```
 
 New exceptions mirror the Node SDK with `action_url` field. See the
-[Python SDK error-handling docs](/browser-agents/sdks/python#error-handling).
+[Python SDK error-handling docs](/browser-agents/sdks/python#billing-and-queue-errors).

@@ -1,0 +1,48 @@
+---
+title: "Authentication"
+description: "Authenticate REST, SDK, and MCP clients with the right account or organization."
+---
+
+Create or retrieve your pre.dev API key at [pre.dev/projects/key](https://pre.dev/projects/key). Keep the key in your application's secret configuration and send it from your server or local development environment.
+
+```bash
+curl --fail-with-body https://api.pre.dev/browser-agent-status \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+## Supported headers
+
+| Interface | Recommended | Also accepted |
+| --- | --- | --- |
+| REST | `Authorization: Bearer <key>` | `x-api-key: <key>` |
+| MCP | Browser OAuth for interactive clients | `Authorization: Bearer <key>`, `x-api-key`, or `predev-api-key` |
+
+The `predev-api-key` header is specific to MCP. Use Bearer authentication to share one convention across both interfaces.
+
+## Account and organization context
+
+A personal key acts in the personal account. An organization key selects the organization's context for specifications and credit usage. Browser history is scoped to the authenticated caller. Use the same account or organization when submitting work and retrieving it.
+
+Authentication and feature access are separate checks. Architect REST endpoints and the product MCP server require a key accepted for an active solo subscription or an organization. Eligible accounts may then use a limited specification trial. Browser REST endpoints also admit valid free accounts; task submission applies its own trial, credit, and queue checks.
+
+A valid free account can therefore reach the Browser Agents REST API while an Architect or MCP call returns `401`. See [plans and credits](/coding-agent/plans-and-credits) and inspect the response message for the required action.
+
+## SDK setup
+
+<CodeGroup>
+```typescript Node.js
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+```
+```python Python
+import os
+from predev_api import PredevAPI
+
+client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
+```
+</CodeGroup>
+
+## MCP OAuth
+
+Add `https://api.pre.dev/mcp` to your client's remote HTTP servers, then use the client's authentication flow. The browser asks you to sign in and select the account or organization. [MCP setup](/architect-agent/mcp-setup) includes client configuration and troubleshooting.

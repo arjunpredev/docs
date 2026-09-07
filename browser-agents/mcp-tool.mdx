@@ -1,118 +1,84 @@
 ---
-title: "MCP Setup (Browser Agents)"
-description: "Install the pre.dev MCP server — your coding agent gets browser automation as a native tool."
+title: "Browser tasks with MCP"
+description: "Run browser tasks from your assistant, then retrieve structured results and execution evidence."
 ---
 
-<Note>
-  **One pre.dev MCP server, all the tools.** Install it once and your agent gets `browser_agent` (browser automation) plus `fast_spec` / `deep_spec` (the [Architect API](/architect-agent/overview)) in one shot.
-</Note>
+Connect the [pre.dev MCP server](/architect-agent/mcp-setup) once. It provides `browser_agent`, `browser_agent_get`, and `browser_agent_list` alongside the specification tools.
 
-## Quick Start
+## Extract structured data
 
-<Steps>
-  <Step title="Have a pre.dev account">
-    Setup uses browser OAuth — your first MCP call opens pre.dev to sign in and authorize. No API key needed for editor use.
-  </Step>
-  <Step title="Install the MCP server">
-    <Tabs>
-      <Tab title="Claude Code">
-        Run this in your terminal:
+Call `browser_agent` with these arguments:
 
-        ```bash
-        claude mcp add --transport http predev https://api.pre.dev/mcp
-        ```
+```json
+{
+  "tasks": [{
+    "url": "https://example.com",
+    "instruction": "Extract the main page heading.",
+    "output": {
+      "type": "object",
+      "properties": { "heading": { "type": "string" } },
+      "required": ["heading"]
+    },
+    "mode": "extract",
+    "maxSteps": 10,
+    "maxDurationSeconds": 120
+  }]
+}
+```
 
-        Your browser opens to authorize — sign into pre.dev (if not already) and pick which account or organization to connect.
+The tool returns a text summary and run ID. Call `browser_agent_get` with that ID to get the complete `structuredContent`, including `results[i].data`.
 
-        <Info>
-          See the [Claude Code MCP docs](https://docs.claude.com/en/docs/claude-code/mcp) for MCP basics.
-        </Info>
-      </Tab>
-      <Tab title="Cursor — One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
+## Run a longer workflow
 
-        Click the button above — Cursor installs the pre.dev server. On first tool use, a browser tab opens to authorize.
-      </Tab>
-      
-    </Tabs>
-  </Step>
-  <Step title="Try it">
-    Ask your agent:
+For a multi-step workflow, use `mode: "agent"`, give a concrete completion condition, and submit asynchronously:
 
-    ```
-    Use pre.dev browser_agent to extract the top 10 stories from
-    news.ycombinator.com with title, url, and points.
-    ```
+```json
+{
+  "tasks": [{
+    "url": "https://news.ycombinator.com/newest",
+    "instruction": "Open the next page using More, then collect the first five story titles and links.",
+    "successCondition": "The next page has been opened and five stories from that page have been collected.",
+    "output": {
+      "type": "object",
+      "properties": {
+        "stories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string" }
+            },
+            "required": ["title", "url"]
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      },
+      "required": ["stories"]
+    },
+    "mode": "agent",
+    "maxSteps": 20,
+    "maxDurationSeconds": 180
+  }],
+  "async": true
+}
+```
 
-    <Check>
-      Your agent calls the `browser_agent` tool and returns structured JSON.
-    </Check>
-  </Step>
-</Steps>
+Save the ID from the returned text, then call `browser_agent_get` every few seconds. Stop when batch `status` becomes `completed` or `failed`, and inspect each task's uppercase status. A completed batch does not mean every task succeeded.
 
-## Example prompts
+## Inspect evidence
 
-<Tabs>
-  <Tab title="Scrape structured data">
-    ```
-    Use pre.dev browser_agent to extract the top 10 products from
-    https://www.producthunt.com with name, tagline, and upvote count.
-    Return a JSON array.
-    ```
-  </Tab>
-  <Tab title="Multi-step flow">
-    ```
-    Use pre.dev browser_agent: go to https://news.ycombinator.com/newest,
-    click "More" twice to load 90 stories, then extract all titles and points.
-    ```
-  </Tab>
-  <Tab title="Bulk enrichment">
-    ```
-    Use pre.dev browser_agent to process these 50 company URLs. For each:
-    extract the company name, tagline, and link to their pricing page.
-    Run with concurrency 10.
-    ```
-  </Tab>
-  <Tab title="Authed SaaS scrape">
-    ```
-    Use pre.dev browser_agent to log into https://app.example.com with the
-    credentials in `input` (email + password), then extract the list of
-    projects from the dashboard.
-    ```
-  </Tab>
-</Tabs>
+```json
+{ "id": "507f1f77bcf86cd799439011", "includeEvents": true }
+```
 
-## Live event streaming
+This returns task timelines and any available screenshots. During synchronous execution, clients with logging support can also receive `notifications/message`. These are MCP notification envelopes, not REST SSE frames; heavy event data may be shortened.
 
-Every step of a task emits an MCP `notifications/message` frame. The `taskIndex` field ties each event to a specific task in the batch. Your agent sees:
+## History and limits
 
-- `navigation` — the agent loaded a URL
-- `plan` — the agent decided what to do next
-- `action` — a click, type, or scroll executed
-- `screenshot` — a screenshot was captured
-- `done` — the task completed
+Use `browser_agent_list` with `limit`, `skip`, and optionally `status: "processing"` or `"completed"`. Its structured response has `total` and `batches`; use `browser_agent_get` for each run's full data.
 
-Event shapes are identical to the REST SSE stream — see [Run a Task → SSE frames](/browser-agents/api/run-task#stream-stream-true).
+The same credit, batch-size, and account in-flight gates apply as in REST. `concurrency` allows `1`–`20` tasks within a run, default `5`. Retrieve [queue status](/browser-agents/api/queue-status) through REST when you need the current account limit.
 
-## Auth
-
-In editors, auth is browser OAuth — you sign in once and pick the account or org to connect. For programmatic MCP clients, an API key from [pre.dev/projects/key](https://pre.dev/projects/key) also works as a `predev-api-key` header.
-
-## Troubleshooting
-
-<AccordionGroup>
-  <Accordion title="Tool not found" icon="magnifying-glass">
-    - Restart your client after adding the MCP config
-    - Verify the URL is exactly `https://api.pre.dev/mcp`
-    - Check JSON syntax in your config file
-    - Confirm your API key is valid at [pre.dev/projects/key](https://pre.dev/projects/key)
-  </Accordion>
-  <Accordion title="Authentication failed" icon="triangle-exclamation">
-    - Make sure the `Authorization` header starts with `Bearer ` (with the space)
-    - Solo accounts: use your personal key. Enterprise: use the org key from your org settings
-    - Check your subscription is active
-  </Accordion>
-  <Accordion title="Legacy tool names" icon="clock-rotate-left">
-    `browser_task`, `browser_task_list`, `browser_task_get` still work as aliases — old integrations continue working without changes.
-  </Accordion>
-</AccordionGroup>
+The MCP tool does not expose REST's idempotency header or a cancellation operation. Closing the client does not establish that browser work stopped. See the [complete tool reference](/mcp/tools) for every field and the older `browser_task` aliases.

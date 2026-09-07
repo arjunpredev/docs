@@ -1,34 +1,32 @@
 ---
-title: "Agent Skills"
-description: "Custom instructions injected into the agent prompt for every project."
+title: "Agent skills"
+description: "Save reusable instructions at personal, project, or organization scope."
 ---
 
-Agent Skills are your own instructions that get injected into the agent's prompt on every build. Think of them as the rules you'd give a senior engineer joining your team — code style, preferred libraries, architectural patterns, things to avoid.
+Skills provide reusable instructions to the Coding Agent, such as a testing convention, style guide, or repository workflow.
 
-## Examples
+```text
+Use the repository's existing component library.
+For behavior changes, run the relevant test suite and report its result.
+Record any verification that could not be completed.
+```
 
-- "Always use Tailwind. Never write inline styles."
-- "Use Zod for all schema validation. Never use Joi or Yup."
-- "Prefer server components in Next.js unless a client hook is explicitly required."
-- "All database queries go through Prisma. No raw SQL."
-- "Tests must use Vitest, not Jest."
+## Add a skill
 
-## Creating a skill
+Open **Project setup → Skills** for a project, or **Agent Skills** in [workspace Integrations](https://pre.dev/projects/integrations). Add a name and instructions, save, and enable the entry.
 
-1. Open **[Integrations → Agent Skills](https://pre.dev/projects/integrations)**
-2. Click **Add Skill**
-3. Give it a name and write the instructions (they're injected into the agent's prompt)
-4. Toggle it on
+| Where you configure it | Scope |
+| --- | --- |
+| Personal workspace | Reusable personal default |
+| Personal project | Project-specific entry; a matching name overrides the personal default |
+| Organization or team project | Organization-wide entry |
 
-From that moment on, every project the Coding Agent works on respects the rule.
+Choose a distinct name when the instruction should supplement an inherited entry. Reuse its name when you intend a personal project to override it.
 
-## When to use a skill vs. a project-level instruction
+## Edit or disable
 
-- **Skill** = applies to *every* project you build, forever. "I always use Tailwind."
-- **Project-level instruction** = applies to one project only. "This project needs to be WCAG AA compliant."
+Use the entry controls to edit, toggle, or remove a skill. Apply changes before starting the work that should use them; do not assume a running task has reloaded its instructions.
 
-Skills are your persistent preferences. Project instructions are per-build context.
+In the CLI, `/skills` lists personal entries. Enter toggles an entry, `d` removes it, and `o` opens the web app for creation and configuration. Use the web to manage project-specific or organization entries.
 
-## Toggling and editing
-
-Skills have an on/off toggle on the Integrations page. Turn a skill off for one experimental build, turn it back on afterwards. Edits to a skill take effect on the next task the agent picks up.
+Skills guide behavior. Review the actual output and checks for the task, especially when a requirement must be enforced by a test or repository policy.

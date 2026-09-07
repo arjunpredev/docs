@@ -1,0 +1,31 @@
+---
+title: "Watch the live browser"
+openapi: "/api-reference/openapi.json GET /browser-agent/{id}/ws"
+description: "Get an authenticated WebSocket URL for available browser frames in a run you own."
+---
+
+Request the live-view URL using your API key and an existing run ID:
+
+```bash
+curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID/ws" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+The response is `{ "url": "wss://…" }`. Connect to that URL exactly as returned; it includes the authorization needed for the live view. Treat it as a credential-bearing URL and keep it out of public logs.
+
+## Frames
+
+Where live capture is available, JSON messages with `type: "frame"` contain:
+
+| Field | Meaning |
+| --- | --- |
+| `taskIndex` | Zero-based index within the run |
+| `b64` | Base64-encoded JPEG image |
+| `w`, `h` | Capture metadata dimensions, when available |
+| `ts` | Unix timestamp in milliseconds |
+
+Filter for `type: "frame"` before reading those fields. For a preview image, use `data:image/jpeg;base64,` followed by `b64` as the image source.
+
+Frames are a live visual feed, not a durable recording, task-control channel, or completion signal. Some execution paths do not produce live frames. Use [SSE or polling](/browser-agents/api/stream-task) for authoritative task state and `includeEvents=true` for available screenshot history.
+
+`404` can mean the run is inaccessible or live streaming is unavailable. A returned URL does not guarantee that a frame will arrive. Current SDKs and MCP tools do not have a wrapper for this endpoint.

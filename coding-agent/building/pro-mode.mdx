@@ -1,53 +1,23 @@
 ---
-title: "Pro Mode & Model Selection"
-description: "Pin every phase to the strongest model, or pick models per phase."
+title: "Model selection"
+description: "Choose a model for all phases or set different models for each phase."
 ---
 
-Pro Mode is the quality dial turned all the way up: toggling `/pro` pins **every phase** of the agent's work — chat, research, coding, and acceptance — to the Pro model, **Claude Opus 4.8**.
+Use `/model` to open the model picker. The live catalog shows the choices available to your account; model availability and defaults can change.
 
-## What it changes
+| Phase | Work it controls |
+| --- | --- |
+| Chat | Conversation and direct agent work |
+| Research | Investigation in workflows with a research phase |
+| Coding | Implementation in workflows with a coding phase |
+| Acceptance | Verification in workflows with an acceptance phase |
 
-Every sprint runs in phases, and each phase normally uses the default model (GLM 5.2) unless you've overridden it. Pro Mode overrides all of them at once:
+Choose one model for all phases or set a phase separately. In clients that support model command arguments, `/model all <model>` applies one model throughout and `/model reset` restores automatic choices. Use the picker to select a valid model identifier.
 
-| | Standard | Pro Mode |
-|---|----------|----------|
-| Chat | GLM 5.2 (or your override) | Claude Opus 4.8 |
-| Research | GLM 5.2 (or your override) | Claude Opus 4.8 |
-| Coding | GLM 5.2 (or your override) | Claude Opus 4.8 |
-| Acceptance | GLM 5.2 (or your override) | Claude Opus 4.8 |
-
-Toggle it off with `/pro` again and your previous per-phase settings apply.
-
-## Credits
-
-Pro Mode uses **more credits** per sprint — the Pro model costs more per token than the default. Check your remaining balance anytime with `/balance`, and see [pricing](https://pre.dev/pricing) for plan differences.
-
-<Tip>
-  A common workflow: iterate in standard mode while shaping a feature, then flip on Pro Mode for the final production pass. You can toggle between sprints without losing any project state.
-</Tip>
-
-## Per-phase control with /model
-
-If all-Opus is more than you need, `/model` gives you the same power with precision — pin a strong model to just the phase that matters:
-
-```
-/model coding sonnet-4.6
-/model acceptance opus-4.8
-```
-
-The full catalog:
-
-| Model | Notes |
-|-------|-------|
-| **GLM 5.2** | The default |
-| **Kimi K2.6** / **K2.7** | Strong open-weight alternatives |
-| **MiniMax M3** | Open-weight alternative |
-| **Claude Sonnet 4.6** | High quality, balanced cost |
-| **Claude Opus 4.8** | The Pro model |
-| **GPT 5.5** | OpenAI's flagship |
-
-Set a phase back to **Default** to return it to GLM 5.2.
+Model settings persist with the project. A phase selection only matters when that phase runs; [effort](/coding-agent/building/build-modes) determines the sprint workflow.
 
 <Note>
-  For the full picture — sprint modes, effort levels, and how the model picker fits in — see [Build Modes & Effort](/coding-agent/building/build-modes).
+  `/pro` has been retired. Use `/model` for model selection. The **Pro subscription** is a billing plan and is separate from these controls.
 </Note>
+
+For availability and credit allowances, see [plans and credits](/coding-agent/plans-and-credits).

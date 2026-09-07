@@ -1,0 +1,46 @@
+---
+title: "Review proposals against a spec"
+description: "Upload a proposal, compare it with a completed specification, and retrieve the assessment."
+---
+
+import { Workflow } from "/snippets/workflow.jsx";
+
+The proposal API compares a vendor or implementation proposal with a generated specification. It returns a recommendation, alignment and confidence scores, strengths, concerns, gaps, and suggested changes.
+
+## Workflow
+
+<Workflow
+  label="Prepare a specification and proposal, compare them, and review the assessment"
+  steps={[
+    { title: "Prepare the spec", description: "Generate a specification and wait for completed status." },
+    { title: "Add the proposal", description: "Upload a file or provide proposal text." },
+    { title: "Run the comparison", description: "Submit the spec ID and proposal to vet-proposal." },
+    { title: "Review the assessment", description: "Read gaps and recommendations alongside their scores." }
+  ]}
+/>
+
+1. Generate a [Fast Spec](/architect-agent/api/fast-spec) or [Deep Spec](/architect-agent/api/deep-spec) and wait for completion.
+2. [Upload a proposal](/architect-agent/api/upload-proposal) with `proposalName` and a file or text, or provide them directly to `/vet-proposal`.
+3. [Vet the proposal](/architect-agent/api/vet-proposal) using the specification ID and proposal content or an existing `proposalId`.
+4. Review the generated assessment; use [list assessments](/architect-agent/api/list-vetted-proposals) or [get assessment](/architect-agent/api/get-vetted-proposal) to retrieve it later.
+
+## Cost and retries
+
+Vetting charges **100 credits per call** before subsequent proposal lookup, content validation, and analysis. Verify your IDs and required content before submitting. There is no documented idempotency key or async mode for this operation; do not automatically retry a timeout, because another call can charge again.
+
+Uploading and retrieving a proposal do not themselves run the paid comparison. These operations use direct REST; there are no proposal methods in the official SDKs or product MCP tools.
+
+## Assessment fields
+
+| Field | Meaning |
+| --- | --- |
+| `shouldAccept` | Generated recommendation |
+| `acceptanceConfidence` | Confidence score, 0–100 |
+| `overallAlignment` | Alignment score, 0–100 |
+| `strengths` | Positive findings |
+| `weaknesses` | Concerns |
+| `criticalGaps` | Missing requirements |
+| `recommendations` | Suggested improvements |
+| `executiveSummary` | Short explanation of the assessment |
+
+Use the scores with their supporting explanations when reviewing a proposal. They are generated assessments, not a guarantee of delivery or suitability.

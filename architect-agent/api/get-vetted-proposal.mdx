@@ -1,0 +1,14 @@
+---
+title: "Get a proposal assessment"
+openapi: "/api-reference/openapi.json GET /get-vetted-proposal/{vettedProposalId}"
+description: "Retrieve one stored proposal comparison and its recommendations."
+---
+
+```bash
+curl --fail-with-body "https://api.pre.dev/get-vetted-proposal/$VETTED_PROPOSAL_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+Use the assessment's `_id` returned by vetting or listing. The response is the assessment object itself. It includes the associated `specId` and `proposalId`, plus the [assessment fields](/architect-agent/proposals#assessment-fields).
+
+A malformed ID returns `400`, denied access `403`, and an unknown assessment `404`.

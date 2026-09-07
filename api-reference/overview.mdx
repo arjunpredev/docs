@@ -1,0 +1,52 @@
+---
+title: "API overview"
+description: "The public REST API for specifications, browser automation, proposal review, and credit balances."
+---
+
+All public REST endpoints use **`https://api.pre.dev`** as their base URL. Paths are mounted at the root: use `/browser-agent`, not `/api/v1/browser-agents`.
+
+Get a key at [pre.dev/projects/key](https://pre.dev/projects/key), then send `Authorization: Bearer $PREDEV_API_KEY`. Read [authentication](/api-reference/authentication) and [errors](/api-reference/errors) before building an integration.
+
+## Specifications
+
+| Method | Path | Reference |
+| --- | --- | --- |
+| POST | `/fast-spec` | [Generate a Fast Spec](/architect-agent/api/fast-spec) |
+| POST | `/deep-spec` | [Generate a Deep Spec](/architect-agent/api/deep-spec) |
+| GET | `/spec-status/{specId}` | [Status and full artifacts](/architect-agent/api/spec-status) |
+| GET | `/list-specs` | [List specifications](/architect-agent/api/list-specs) |
+| GET | `/find-specs` | [Search specifications](/architect-agent/api/find-specs) |
+| GET | `/credits-balance` | [Credit balance](/architect-agent/api/credits-balance) |
+
+## Browser Agents
+
+| Method | Path | Reference |
+| --- | --- | --- |
+| POST | `/browser-agent` | [Submit tasks](/browser-agents/api/run-task) |
+| GET | `/browser-agent/{id}` | [Status and results](/browser-agents/api/task-status) |
+| GET | `/browser-agent/{id}/stream` | [Watch an existing run with SSE](/browser-agents/api/stream-task) |
+| GET | `/browser-agent/{id}/ws` | [Get a live browser WebSocket URL](/browser-agents/api/live-browser) |
+| GET | `/list-browser-agents` | [List runs](/browser-agents/api/list-tasks) |
+| GET | `/browser-agent-status` | [Your queue and in-flight limit](/browser-agents/api/queue-status) |
+| GET | `/browser-agent-capacity` | [Service capacity](/browser-agents/api/capacity) |
+
+## Proposals
+
+Upload a proposal, compare it with a generated specification, and retrieve the assessment. Start with the [proposal workflow](/architect-agent/proposals).
+
+| Method | Path | Reference |
+| --- | --- | --- |
+| POST | `/upload-proposal` | [Upload a proposal](/architect-agent/api/upload-proposal) |
+| GET | `/list-proposals` | [List proposals](/architect-agent/api/list-proposals) |
+| GET | `/get-proposal/{proposalId}` | [Retrieve a proposal](/architect-agent/api/get-proposal) |
+| POST | `/vet-proposal` | [Review a proposal against a spec](/architect-agent/api/vet-proposal) |
+| GET | `/list-vetted-proposals` | [List assessments for a spec](/architect-agent/api/list-vetted-proposals) |
+| GET | `/get-vetted-proposal/{vettedProposalId}` | [Retrieve an assessment](/architect-agent/api/get-vetted-proposal) |
+
+## SDKs and MCP
+
+The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including proposal review, live browser URLs, existing-run SSE, and browser idempotency keys.
+
+The [MCP server](/architect-agent/mcp-setup) exposes seven primary tools and three deprecated browser aliases. MCP uses JSON-RPC over HTTP; its parameter names and result envelopes differ from REST. See the [tool reference](/mcp/tools).
+
+Download the complete [OpenAPI 3.1 schema](/api-reference/openapi.json) for code generation or agent ingestion.

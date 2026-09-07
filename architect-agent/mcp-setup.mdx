@@ -1,224 +1,96 @@
 ---
-title: "MCP Setup (Architect API)"
-description: "Install the pre.dev MCP server into Cursor, Claude Code, VS Code, or Windsurf so your agent can call fast_spec and deep_spec."
+title: "Connect the MCP server"
+description: "Use pre.dev's specification and browser tools from Claude Code, Cursor, or another remote MCP client."
 ---
 
-<Note>
-  The pre.dev MCP server gives any AI coding agent production-ready planning: full specs, architecture, and sequenced roadmaps, generated before a line of code is written.
-</Note>
+import { ProtocolTrace } from "/snippets/protocol-trace.jsx";
 
-## Quick Start
+The pre.dev product MCP server is **`https://api.pre.dev/mcp`**. One connection exposes [seven primary tools](/mcp/tools) for specifications and browser automation.
 
-<Steps>
-  <Step title="Sign in to pre.dev">
-    <Card title="pre.dev account" icon="user" href="https://pre.dev">
-      Make sure you're signed in. The MCP install will open a browser tab to ask which account (solo or enterprise organization) to authorize.
-    </Card>
-  </Step>
-  <Step title="Install the MCP Server">
-    <Tabs>
-      <Tab title="Claude Code">
-        Run this in your terminal:
-
-        ```bash
-        claude mcp add --transport http predev https://api.pre.dev/mcp
-        ```
-
-        A browser window opens — sign into pre.dev (if not already), pick which account or organization to authorize, and click **Approve**. Claude Code completes the handshake automatically.
-
-        <Info>
-          For troubleshooting, see the [Claude Code MCP documentation](https://docs.claude.com/en/docs/claude-code/mcp).
-        </Info>
-      </Tab>
-      <Tab title="VS Code">
-        Run this in your terminal:
-
-        ```bash
-        code --add-mcp "{\"name\":\"predev\",\"url\":\"https://api.pre.dev/mcp\"}"
-        ```
-
-        Restart VS Code. On first tool use, VS Code opens a browser tab to authorize — pick which account or organization to connect.
-
-        <Info>
-          For troubleshooting, see the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
-        </Info>
-      </Tab>
-      <Tab title="Cursor - One-Click">
-        [![Add to Cursor](/images/addtocursor.png)](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9)
-
-        Click the button to install. On first tool use Cursor opens a browser tab to authorize — pick which pre.dev account or organization to connect.
-      </Tab>
-    </Tabs>
-  </Step>
-  <Step title="Test the Integration">
-    Open your AI coding agent and try this command:
-
-    ```
-    Use pre.dev to generate a spec for a task management app
-    ```
-
-    <Check>
-      If successful, you'll receive a comprehensive project specification!
-    </Check>
-  </Step>
-</Steps>
-
-## Why your agent needs it
-
-Coding agents drift on complex, multi-file projects when they plan as they go. The pre.dev MCP server front-loads the plan, so your agent builds against real architecture instead of improvising:
-
-- **Complete system designs** — database schemas, API contracts, component hierarchies
-- **Sequenced roadmaps** — milestones and stories your agent can execute in order
-- **Technology decisions** — auth, state management, and API choices made up front
-- **Shared context** — the same spec works across every tool that speaks MCP
-
-## Available Tools
-
-<CardGroup cols={2}>
-  <Card title="fast_spec" icon="bolt">
-    **Cost:** ~5-10 credits (variable) | **Speed:** ~1 minute
-
-    Quick project specifications perfect for rapid prototyping and MVP planning.
-
-    ```
-    Use pre.dev fast_spec to generate a spec for:
-    A social media app with real-time messaging,
-    photo sharing, and user profiles
-    ```
-  </Card>
-  <Card title="deep_spec" icon="microscope">
-    **Cost:** ~10-50 credits (variable) | **Speed:** ~3-5 minutes
-
-    Comprehensive, detailed specifications ideal for enterprise projects and complex systems.
-
-    ```
-    Use pre.dev deep_spec to generate a detailed spec for:
-    An enterprise CRM with AI-powered lead scoring,
-    automated workflows, and advanced analytics
-    ```
-  </Card>
-</CardGroup>
-
-## Advanced Features
-
-<AccordionGroup>
-  <Accordion title="Context Integration" icon="link">
-    Build on existing work by referencing previous specs or projects:
-
-    ```
-    Use pre.dev deep_spec to add payment processing 
-    to this existing project: [existing_context_id]
-    ```
-
-    The MCP will automatically:
-
-    - Fetch your existing context
-    - Validate permissions
-    - Generate new specs that build on your previous work
-  </Accordion>
-  <Accordion title="Documentation Scraping & Archives" icon="book">
-    Automatically scrape and archive external documentation alongside spec generation.
-
-    Simply reference documentation URLs in your request:
-
-    ```
-    Use pre.dev deep_spec to generate a spec for a payment system 
-    with Stripe integration. Reference https://stripe.com/docs/api
-    ```
-
-    **What you get:**
-
-    - ✅ **Accurate Specs:** AI uses the documentation to generate precise integration specifications
-    - ✅ **Documentation Archives:** Downloadable ZIP files containing all scraped documentation
-    - ✅ **Organized by Platform:** Each documentation source gets its own well-structured archive
-    - ✅ **Parallel Processing:** Documentation scraping runs simultaneously with spec generation (no slowdown)
-    - ✅ **Graceful Fallback:** Spec generation completes even if documentation scraping fails
-
-    **Enterprise users** can view and download documentation archives from the API Usage Logs in their dashboard.
-
-    **Example with multiple docs:**
-
-    ```
-    Use pre.dev deep_spec to generate a healthcare platform spec 
-    with HL7 FHIR integration and HIPAA compliance. 
-    Reference https://docs.hl7.org and https://www.hhs.gov/hipaa
-    ```
-
-    You'll receive separate archives for HL7 and HIPAA documentation alongside your spec.
-  </Accordion>
-</AccordionGroup>
-
-## Cost Management
-
-<Info>
-  **Check Your Usage:** Visit [pre.dev/projects/key](https://pre.dev/projects/key) to view remaining credits, usage history, and upgrade options.
-</Info>
-
-<Warning>
-  **Out of Credits?**
-
-  If you run out of credits, you'll see this message:
-
-  ```
-  ❌ Insufficient Credits Available
-  You have insufficient credits to generate a spec.
-  ```
-
-  Visit [pre.dev/projects/key](https://pre.dev/projects/key) to upgrade your plan or purchase additional credits.
-</Warning>
-
-## Common Use Cases
+## Connect your client
 
 <Tabs>
-  <Tab title="Rapid Prototyping">
-    Perfect for MVPs and quick validation:
+  <Tab title="Claude Code">
+    Register the remote HTTP server:
 
+    ```bash
+    claude mcp add --transport http predev https://api.pre.dev/mcp
     ```
-    Use pre.dev fast_spec to generate a spec for: 
-    MVP of a food delivery app with restaurant listings, 
-    order tracking, and payment integration
-    ```
+
+    In Claude Code, run `/mcp`, select predev, and follow the browser authentication flow. Sign in to pre.dev and select the account or organization to connect. See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp) for client-specific settings.
   </Tab>
-  <Tab title="Enterprise Planning">
-    Detailed specs for complex systems:
+  <Tab title="Cursor">
+    Add this to your Cursor MCP configuration, then use the server's authentication control:
 
+    ```json
+    {
+      "mcpServers": {
+        "predev": {
+          "url": "https://api.pre.dev/mcp"
+        }
+      }
+    }
     ```
-    Use pre.dev deep_spec to generate a detailed spec for: 
-    Enterprise data analytics platform with real-time 
-    dashboards, multi-tenant architecture, and role-based access
-    ```
+
+    You can also [add pre.dev to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=predev&config=eyJ1cmwiOiJodHRwczovL2FwaS5wcmUuZGV2L21jcCJ9). The client opens a browser when authentication is needed.
   </Tab>
-  <Tab title="Feature Addition">
-    Extend existing projects:
+  <Tab title="Other clients">
+    Add a remote server with **Streamable HTTP** transport and URL `https://api.pre.dev/mcp`. Use browser OAuth if your client supports it.
 
-    ```
-    Use pre.dev deep_spec to add user authentication 
-    and authorization to this existing e-commerce project
-    ```
-  </Tab>
-  <Tab title="Technical Documentation">
-    Generate comprehensive documentation:
-
-    ```
-    Use pre.dev deep_spec to generate technical documentation for: 
-    Microservices architecture with Docker, Kubernetes, 
-    and service mesh
-    ```
+    For a programmatic client, send one of the [supported authentication headers](/api-reference/authentication), for example `Authorization: Bearer <key>`. Obtain the key at [pre.dev/projects/key](https://pre.dev/projects/key). No pre.dev npm MCP server package is required.
   </Tab>
 </Tabs>
 
+## Try a tool
+
+Ask your assistant:
+
+```text
+Use pre.dev fast_spec to plan a team task manager with projects,
+assignees, due dates, and organization-scoped access. Retrieve the
+completed specification and show me its milestones.
+```
+
+Or try [browser automation](/browser-agents/mcp-tool):
+
+```text
+Use pre.dev browser_agent to read https://example.com and extract
+its main heading. Fetch the complete structured result afterward.
+```
+
+Tool execution uses your account's credits and access. Connecting a server does not change your plan. See [authentication eligibility](/api-reference/authentication) if a free account can use browser REST but cannot authenticate to MCP.
+
+## Connection lifecycle
+
+The client authenticates, initializes the connection, discovers tools, and calls one. Progress notifications can arrive before the tool result.
+
+<ProtocolTrace kind="mcp" />
+
+Use a standard MCP client library to handle JSON-RPC initialization and response streams. For Streamable HTTP, requests should accept both `application/json` and `text/event-stream`.
+
+## Transport details
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /mcp` | Current Streamable HTTP transport; stateless requests |
+| `GET /mcp/info` | Public metadata and tool inventory |
+| `GET /mcp` | Returns `405 Method Not Allowed`; this is expected |
+| `GET /mcp/sse` | Deprecated legacy SSE connection |
+| `POST /mcp/messages?sessionId=…` | Message endpoint for a legacy SSE session |
+
+The server advertises protocol versions `2024-11-05`, `2025-03-26`, `2025-06-18`, and `2025-11-25`. Let the client negotiate a supported version. An unsupported `MCP-Protocol-Version` header returns `400`.
+
+The current transport does not create a persistent MCP session ID or provide a server-initiated GET stream. Notifications arrive on the active POST response. Legacy clients must use the separate `/mcp/sse` endpoint.
+
 ## Troubleshooting
 
-<AccordionGroup>
-  <Accordion title="Authentication Failed" icon="triangle-exclamation">
-    - Re-run `claude mcp add` (or the Cursor one-click) to redo the browser authorization
-    - Make sure you're signed into the right pre.dev account in your browser before the consent page loads
-    - If you're an enterprise admin, pick the correct organization on the consent page — each org has its own credit pool
-    - Check that your subscription is active at [pre.dev/projects/key](https://pre.dev/projects/key)
-  </Accordion>
-  <Accordion title="Tool Not Found" icon="magnifying-glass">
-    - Restart your editor after adding the MCP config
-    - Verify the URL: `https://api.pre.dev/mcp`
-    - Check JSON syntax in configuration
-  </Accordion>
-</AccordionGroup>
+| Symptom | What to check |
+| --- | --- |
+| Opening `/mcp` in a browser returns `405` | Open [service metadata](https://api.pre.dev/mcp/info); configure the MCP client to POST |
+| Authentication fails | Reauthenticate in the client; check the selected account, key, and plan |
+| Tools are missing | Restart or refresh the client, then rediscover `tools/list` |
+| A spec tool returns before the spec is ready | Save its ID and poll `get_spec` |
+| A browser result contains only a summary | Call `browser_agent_get` for full data |
+| Progress is missing | Logging support varies by client; progress notifications require a `progressToken` |
+
+For exact arguments and return formats, use the [MCP tool reference](/mcp/tools). To attach a third-party server **to the pre.dev Coding Agent**, use [external MCP servers](/coding-agent/integrations/mcp-servers).

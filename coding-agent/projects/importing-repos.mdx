@@ -1,82 +1,32 @@
 ---
-title: "Importing Repos"
-description: "Reverse-engineer existing codebases and continue building with pre.dev."
+title: "Import a repository"
+description: "Understand an existing GitHub codebase and build on its conventions."
 ---
 
-pre.dev can import existing GitHub repositories, understand their architecture, and generate new specs that integrate with your established codebase.
+Import connects a GitHub repository to a hosted pre.dev project. For code already on your machine, you can also [use the CLI directly](/cli/existing-repos).
 
-```text
-# Import Repository
+<Steps>
+  <Step title="Choose the repository">
+    Select **Import**, then choose an accessible repository or supply its URL. Connect the GitHub account that can access private repositories. Organization access depends on the permissions granted in GitHub.
+  </Step>
+  <Step title="Map the codebase">
+    Let pre.dev analyze the code, dependencies, and structure. Use `/reverse` to refresh the architecture after significant changes. The output depends on the code and configuration available to the agent.
+  </Step>
+  <Step title="Configure the runtime">
+    Review the installation and start commands, and fill required environment variables in **Project setup → Env Vars**. An imported repository may need project-specific services or setup before its preview runs.
+  </Step>
+  <Step title="Request a focused change">
+    Describe the desired behavior and the conventions to preserve.
 
-> Search repositories...
+    ```text
+    Add a wishlist to the existing shop. Reuse the current auth,
+    database access layer, and component library. Include an empty
+    state and verify that one user cannot read another user's list.
+    ```
+  </Step>
+  <Step title="Review the changes">
+    Inspect the diff and reported checks, test the preview if available, and use the project's Git workflow to merge and deploy.
+  </Step>
+</Steps>
 
-  stripe-sync        private   Updated today
-  nexus-api          private   Updated 2d ago
-  quantum-ui         public    Updated today
-  forge-cli          private   Updated 1w ago
-  pulse-analytics    private   Updated 3d ago
-  terraform-aws      public    Updated today
-```
-
-## How It Works
-
-1. **Connect your repo** — Provide the GitHub repository URL or select from your connected repos
-2. **Analysis** — pre.dev scans the codebase to understand:
-   - Tech stack and framework
-   - Project structure and patterns
-   - Existing features and components
-   - Database schema (if detectable)
-   - API routes and contracts
-3. **Spec generation** — Describe what you want to add, and pre.dev generates specs that fit within the existing architecture
-4. **Build** — Agents implement new features following the patterns established in your codebase
-
-## What Gets Analyzed
-
-| Aspect | What pre.dev Detects |
-|--------|---------------------|
-| **Framework** | React, Vue, Angular, Next.js, Express, Django, Rails, etc. |
-| **Language** | TypeScript, JavaScript, Python, Go, Rust, and more |
-| **Structure** | Folder organization, module patterns, component hierarchy |
-| **Patterns** | State management approach, API layer design, auth implementation |
-| **Dependencies** | Package ecosystem, third-party integrations |
-| **Configuration** | Build tools, linting rules, test setup |
-
-## Use Cases
-
-### Adding Features to Existing Apps
-
-```
-Import my e-commerce repo and add:
-- A wishlist feature with sharing via link
-- Product recommendations based on browsing history
-- A loyalty points system
-```
-
-pre.dev generates specs that use your existing database schema, component library, and API patterns.
-
-### Refactoring
-
-```
-Import my monolith and generate a plan to:
-- Extract the payment processing into a microservice
-- Add proper error handling across all API endpoints
-- Migrate from REST to GraphQL for the frontend queries
-```
-
-### Onboarding to Unfamiliar Codebases
-
-Import a repo you didn't write and let pre.dev explain its architecture, then generate specs for changes you need to make.
-
-## Requirements
-
-- The repository must be accessible (public or connected via GitHub OAuth)
-- Supported languages and frameworks are detected automatically
-- Large monorepos may take longer to analyze
-
-## After Import
-
-Once imported, your project works exactly like any other pre.dev project:
-- View and edit the generated spec
-- Use any [build mode](/coding-agent/building/build-modes)
-- Agents write code that follows your existing patterns
-- PRs are opened against your repo
+For multiple connected GitHub accounts, check the account selected in **Project setup → Connections**. A project can pin one account or inherit its workspace default. See [GitHub integration](/coding-agent/projects/github-integration).

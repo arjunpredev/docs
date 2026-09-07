@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "pre.dev Architect API",
-    "description": "Generate comprehensive software specifications for coding agents. The Architect API helps you create detailed project specifications that AI coding agents can understand and implement.",
+    "title": "pre.dev API",
+    "description": "Public REST API for software specifications, browser automation, proposal assessment, and credit balance. Base URL: https://api.pre.dev. MCP is documented separately at https://docs.pre.dev/mcp/tools.",
     "version": "1.1.0",
     "contact": {
       "name": "pre.dev Support",
@@ -23,22 +23,20 @@
   "security": [
     {
       "apiKeyAuth": []
+    },
+    {
+      "xApiKey": []
     }
   ],
   "paths": {
     "/fast-spec": {
       "post": {
-        "summary": "Generate Fast Spec",
-        "description": "Generate a comprehensive project specification quickly. Perfect for MVPs and prototypes with balanced depth and speed. Cost: Variable (~5-10 credits based on complexity). Processing time: ~1 minute.",
         "operationId": "generateFastSpec",
         "tags": [
-          "Spec Generation"
+          "Specifications"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
+        "summary": "Generate a fast spec",
+        "description": "Supply JSON text or one multipart file. Use async=true for durable ID-based polling. Duplicate submissions create separate jobs; no idempotency key is supported.",
         "requestBody": {
           "required": true,
           "content": {
@@ -46,27 +44,9 @@
               "schema": {
                 "$ref": "#/components/schemas/SpecRequest"
               },
-              "examples": {
-                "newProject": {
-                  "summary": "New Project",
-                  "value": {
-                    "input": "Build a SaaS project management tool with team collaboration, real-time updates, task tracking, and time logging"
-                  }
-                },
-                "featureAddition": {
-                  "summary": "Feature Addition",
-                  "value": {
-                    "input": "Add a calendar view and Gantt chart visualization",
-                    "currentContext": "Existing task management system with list and board views, user auth, and basic team features"
-                  }
-                },
-                "asyncRequest": {
-                  "summary": "Async Request",
-                  "value": {
-                    "input": "Build a comprehensive e-commerce platform with inventory management",
-                    "async": true
-                  }
-                }
+              "example": {
+                "input": "Build a team task manager with projects, assignees, and due dates.",
+                "async": true
               }
             },
             "multipart/form-data": {
@@ -78,24 +58,59 @@
         },
         "responses": {
           "200": {
-            "description": "Specification generated successfully",
+            "description": "Full result for synchronous requests; specId and pending status for asynchronous requests.",
             "content": {
               "application/json": {
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/SpecResponse"
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/SpecResponse"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "completed"
+                              ]
+                            }
+                          }
+                        }
+                      ]
                     },
                     {
                       "$ref": "#/components/schemas/AsyncResponse"
                     }
                   ]
+                },
+                "examples": {
+                  "submitted": {
+                    "summary": "Async submission",
+                    "value": {
+                      "specId": "507f1f77bcf86cd799439011",
+                      "status": "pending"
+                    }
+                  },
+                  "completed": {
+                    "summary": "Synchronous completion (illustrative)",
+                    "value": {
+                      "_id": "507f1f77bcf86cd799439011",
+                      "endpoint": "fast_spec",
+                      "status": "completed",
+                      "success": true,
+                      "progress": 100,
+                      "codingAgentSpecMarkdown": "# Task manager\n\nProjects, assignments, and due dates."
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request - Invalid input parameters",
+            "description": "Invalid request.",
             "content": {
               "application/json": {
                 "schema": {
@@ -105,170 +120,27 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key",
+            "description": "Missing, invalid, or ineligible authentication.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Unauthorized",
-                  "message": "Invalid or missing Authorization header"
                 }
               }
             }
           },
           "402": {
-            "description": "Payment Required - Insufficient credits",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InsufficientCreditsError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests - Rate limit exceeded",
+            "description": "Insufficient balance or a billing gate.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/deep-spec": {
-      "post": {
-        "summary": "Generate Deep Spec",
-        "description": "Generate an ultra-detailed, enterprise-grade project specification. Best for complex systems, enterprise applications, and critical projects. Cost: Variable (~10-50 credits based on complexity). Processing time: ~3-5 minutes.",
-        "operationId": "generateDeepSpec",
-        "tags": [
-          "Spec Generation"
-        ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SpecRequest"
-              },
-              "examples": {
-                "enterpriseProject": {
-                  "summary": "Enterprise Healthcare Platform",
-                  "value": {
-                    "input": "Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system"
-                  }
-                },
-                "complexFeature": {
-                  "summary": "Complex Feature Addition",
-                  "value": {
-                    "input": "Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
-                    "currentContext": "Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices"
-                  }
-                },
-                "asyncProcessing": {
-                  "summary": "Async Processing",
-                  "value": {
-                    "input": "Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
-                    "async": true
-                  }
-                }
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/FileUploadRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Specification generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/SpecResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/AsyncResponse"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Unauthorized",
-                  "message": "Invalid or missing Authorization header"
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "Payment Required - Insufficient credits",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InsufficientCreditsError"
                 }
               }
             }
           },
           "403": {
-            "description": "Forbidden - Subscription required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Subscription required",
-                  "message": "Deep Spec requires Solo Premium or Enterprise subscription"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too Many Requests - Rate limit exceeded",
+            "description": "Access or trial eligibility denied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -278,7 +150,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -287,69 +159,231 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/fast-spec \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"input\": \"Build a team task manager with projects, assignees, and due dates.\",\n  \"async\": true\n}'"
+          }
+        ]
       }
     },
-    "/spec-status/{specId}": {
-      "get": {
-        "summary": "Get Spec Status",
-        "description": "Check the status of an asynchronous specification processing request. Use this endpoint to poll for completion when you make an async request (async: true).",
-        "operationId": "getSpecStatus",
+    "/deep-spec": {
+      "post": {
+        "operationId": "generateDeepSpec",
         "tags": [
-          "Status"
+          "Specifications"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "specId",
-            "in": "path",
-            "required": true,
-            "description": "The unique ID returned from an async spec generation request",
-            "schema": {
-              "type": "string",
-              "example": "507f1f77bcf86cd799439011"
+        "summary": "Generate a deep spec",
+        "description": "Supply JSON text or one multipart file. Use async=true for durable ID-based polling. Duplicate submissions create separate jobs; no idempotency key is supported.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpecRequest"
+              },
+              "example": {
+                "input": "Build a team task manager with projects, assignees, and due dates.",
+                "async": true
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadRequest"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Status retrieved successfully",
+            "description": "Full result for synchronous requests; specId and pending status for asynchronous requests.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StatusResponse"
+                  "oneOf": [
+                    {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/SpecResponse"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "completed"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "$ref": "#/components/schemas/AsyncResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "submitted": {
+                    "summary": "Async submission",
+                    "value": {
+                      "specId": "507f1f77bcf86cd799439011",
+                      "status": "pending"
+                    }
+                  },
+                  "completed": {
+                    "summary": "Synchronous completion (illustrative)",
+                    "value": {
+                      "_id": "507f1f77bcf86cd799439011",
+                      "endpoint": "deep_spec",
+                      "status": "completed",
+                      "success": true,
+                      "progress": 100,
+                      "codingAgentSpecMarkdown": "# Task manager\n\nProjects, assignments, and due dates."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key",
+            "description": "Missing, invalid, or ineligible authentication.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Unauthorized",
-                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient balance or a billing gate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/deep-spec \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"input\": \"Build a team task manager with projects, assignees, and due dates.\",\n  \"async\": true\n}'"
+          }
+        ]
+      }
+    },
+    "/spec-status/{specId}": {
+      "get": {
+        "operationId": "getSpecStatus",
+        "tags": [
+          "Specifications"
+        ],
+        "summary": "Get a spec",
+        "description": "Poll until status is completed or failed. Includes available artifacts; progress alone is not a completion signal.",
+        "parameters": [
+          {
+            "name": "specId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current spec record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "404": {
-            "description": "Not Found - Spec ID not found",
+            "description": "Record unavailable.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Request not found",
-                  "message": "No request found with ID: 507f1f77bcf86cd799439011"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -359,62 +393,50 @@
     },
     "/list-specs": {
       "get": {
-        "summary": "List Specs",
-        "description": "List all specifications with pagination and filtering. Perfect for displaying user spec history, recent specs, or filtered views. This endpoint is free and does not consume credits.",
         "operationId": "listSpecs",
         "tags": [
-          "Spec Management"
+          "Specifications"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
+        "summary": "List specs",
+        "description": "Newest first. Summary records omit Markdown, JSON, graphs, and credit details. Unrecognized status or endpoint filters are ignored.",
         "parameters": [
           {
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Number of results per page (1-100)",
             "schema": {
               "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
               "default": 20,
-              "example": 20
+              "minimum": 1,
+              "maximum": 100
             }
           },
           {
             "name": "skip",
             "in": "query",
             "required": false,
-            "description": "Number of records to skip for pagination",
             "schema": {
               "type": "integer",
-              "minimum": 0,
               "default": 0,
-              "example": 0
+              "minimum": 0
             }
           },
           {
             "name": "endpoint",
             "in": "query",
             "required": false,
-            "description": "Filter by endpoint type",
             "schema": {
               "type": "string",
               "enum": [
                 "fast_spec",
                 "deep_spec"
-              ],
-              "example": "fast_spec"
+              ]
             }
           },
           {
             "name": "status",
             "in": "query",
             "required": false,
-            "description": "Filter by processing status",
             "schema": {
               "type": "string",
               "enum": [
@@ -422,64 +444,53 @@
                 "processing",
                 "completed",
                 "failed"
-              ],
-              "example": "completed"
+              ]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Specs retrieved successfully",
+            "description": "Paginated spec summaries.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListSpecsResponse"
-                },
-                "examples": {
-                  "recentSpecs": {
-                    "summary": "Recent Specs",
-                    "value": {
-                      "specs": [
-                        {
-                          "_id": "507f1f77bcf86cd799439011",
-                          "created": "2024-01-15T14:30:00.000Z",
-                          "endpoint": "fast_spec",
-                          "input": "Build a SaaS project management tool with team collaboration",
-                          "status": "completed",
-                          "success": true,
-                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7",
-                          "executionTime": 38500
-                        }
-                      ],
-                      "total": 42,
-                      "hasMore": true
-                    }
-                  },
-                  "filteredSpecs": {
-                    "summary": "Completed Fast Specs",
-                    "value": {
-                      "specs": [
-                        {
-                          "_id": "507f1f77bcf86cd799439012",
-                          "created": "2024-01-15T12:15:00.000Z",
-                          "endpoint": "fast_spec",
-                          "input": "Add real-time notifications",
-                          "status": "completed",
-                          "success": true,
-                          "executionTime": 35200
-                        }
-                      ],
-                      "total": 15,
-                      "hasMore": false
-                    }
-                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key",
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -493,72 +504,60 @@
     },
     "/find-specs": {
       "get": {
-        "summary": "Find Specs (Search)",
-        "description": "Search for specifications using regex patterns. Perfect for finding specs by keywords, patterns, or complex search criteria. Case-insensitive search. This endpoint is free and does not consume credits.",
         "operationId": "findSpecs",
         "tags": [
-          "Spec Management"
+          "Specifications"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
+        "summary": "Search specs",
+        "description": "Newest first. Summary records omit Markdown, JSON, graphs, and credit details. Unrecognized status or endpoint filters are ignored.",
         "parameters": [
           {
             "name": "query",
             "in": "query",
             "required": true,
-            "description": "REQUIRED - Regex pattern to search (case-insensitive)",
             "schema": {
               "type": "string",
-              "example": "payment"
-            }
+              "minLength": 1
+            },
+            "description": "Case-insensitive regular expression matched against spec input. Invalid syntax returns 500."
           },
           {
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Number of results per page (1-100)",
             "schema": {
               "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
               "default": 20,
-              "example": 20
+              "minimum": 1,
+              "maximum": 100
             }
           },
           {
             "name": "skip",
             "in": "query",
             "required": false,
-            "description": "Number of records to skip for pagination",
             "schema": {
               "type": "integer",
-              "minimum": 0,
               "default": 0,
-              "example": 0
+              "minimum": 0
             }
           },
           {
             "name": "endpoint",
             "in": "query",
             "required": false,
-            "description": "Filter by endpoint type",
             "schema": {
               "type": "string",
               "enum": [
                 "fast_spec",
                 "deep_spec"
-              ],
-              "example": "fast_spec"
+              ]
             }
           },
           {
             "name": "status",
             "in": "query",
             "required": false,
-            "description": "Filter by processing status",
             "schema": {
               "type": "string",
               "enum": [
@@ -566,78 +565,53 @@
                 "processing",
                 "completed",
                 "failed"
-              ],
-              "example": "completed"
+              ]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Search results retrieved successfully",
+            "description": "Paginated spec summaries.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListSpecsResponse"
-                },
-                "examples": {
-                  "keywordSearch": {
-                    "summary": "Search for 'payment'",
-                    "value": {
-                      "specs": [
-                        {
-                          "_id": "507f1f77bcf86cd799439011",
-                          "created": "2024-01-15T14:30:00.000Z",
-                          "endpoint": "fast_spec",
-                          "input": "Build a payment processing system with Stripe integration",
-                          "status": "completed",
-                          "success": true,
-                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
-                        }
-                      ],
-                      "total": 8,
-                      "hasMore": false
-                    }
-                  },
-                  "patternSearch": {
-                    "summary": "Search for specs starting with 'Build'",
-                    "value": {
-                      "specs": [
-                        {
-                          "_id": "507f1f77bcf86cd799439012",
-                          "created": "2024-01-15T12:00:00.000Z",
-                          "endpoint": "fast_spec",
-                          "input": "Build a real-time collaborative whiteboard",
-                          "status": "completed",
-                          "success": true,
-                          "humanSpecUrl": "https://api.pre.dev/s/a6hFJRV6",
-                          "codingAgentSpecUrl": "https://api.pre.dev/s/a6hFJRV7"
-                        }
-                      ],
-                      "total": 23,
-                      "hasMore": true
-                    }
-                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request - Missing required query parameter",
+            "description": "Invalid request.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Bad Request",
-                  "message": "Query parameter is required"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key",
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -651,70 +625,49 @@
     },
     "/credits-balance": {
       "get": {
-        "summary": "Get Credits Balance",
-        "description": "Get the remaining prototype credits balance for the authenticated API key holder. This endpoint is free and does not consume credits.",
         "operationId": "getCreditsBalance",
         "tags": [
           "Account"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
+        "summary": "Get credit balance",
+        "description": "Returns the effective account or organization balance. Fractional credits are possible.",
         "responses": {
           "200": {
-            "description": "Credits balance retrieved successfully",
+            "description": "Credit balance.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreditsBalanceResponse"
-                },
-                "example": {
-                  "success": true,
-                  "creditsRemaining": 450
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Unable to determine user or organization from API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Missing context",
-                  "message": "Unable to determine user or organization from API key"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key",
+            "description": "Missing, invalid, or ineligible authentication.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Unauthorized",
-                  "message": "Invalid or missing Authorization header"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Failed to retrieve credits balance",
-                  "message": "Internal server error"
                 }
               }
             }
@@ -726,11 +679,21 @@
       "post": {
         "operationId": "runTask",
         "tags": [
-          "Batches"
+          "Browser Agents"
         ],
-        "summary": "Run one or more browser tasks",
-        "description": "Run one or more browser-agent tasks. Tasks run in parallel (configurable concurrency). Default behavior is synchronous \u2014 the request waits for all tasks to complete and returns the full batch result. Set `async: true` to return immediately with a `batchId` you can poll. Set `stream: true` to receive Server-Sent Events (per-step events + final results).\n\nMax 1000 tasks per request. Per-user in-flight cap varies by plan (see GET /browser-agent-status). Rate limit: 600 requests/minute.",
-        "parameters": [],
+        "summary": "Run browser tasks",
+        "description": "Default: synchronous JSON. async=true returns an ID. stream=true takes precedence and returns SSE task_event, task_result, done (full result), or error. A matching retry key returns JSON even when stream=true. A disconnected client does not cancel execution.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional user-scoped 24-hour retry lookup. Reuse only for the same logical submission; concurrent first requests can still duplicate work."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -738,113 +701,169 @@
               "schema": {
                 "$ref": "#/components/schemas/BatchRequest"
               },
-              "examples": {
-                "singleTask": {
-                  "summary": "Single task \u2014 extract a heading",
-                  "value": {
-                    "tasks": [
-                      {
-                        "url": "https://example.com",
-                        "instruction": "Extract the page heading.",
-                        "output": {
-                          "type": "object",
-                          "properties": {
-                            "heading": {
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "heading"
-                          ]
+              "example": {
+                "tasks": [
+                  {
+                    "url": "https://example.com",
+                    "instruction": "Extract the main page heading.",
+                    "output": {
+                      "type": "object",
+                      "properties": {
+                        "heading": {
+                          "type": "string"
                         }
-                      }
-                    ]
-                  }
-                },
-                "multipleTasks": {
-                  "summary": "Multiple tasks with concurrency",
-                  "value": {
-                    "tasks": [
-                      {
-                        "url": "https://news.ycombinator.com",
-                        "instruction": "Extract the top 5 story titles."
                       },
-                      {
-                        "url": "https://www.reddit.com/r/programming",
-                        "instruction": "Extract the top 5 post titles."
-                      }
-                    ],
-                    "concurrency": 2
+                      "required": [
+                        "heading"
+                      ]
+                    },
+                    "mode": "extract",
+                    "maxSteps": 10,
+                    "maxDurationSeconds": 60
                   }
-                },
-                "asyncMode": {
-                  "summary": "Async \u2014 returns batchId immediately",
-                  "value": {
-                    "tasks": [
-                      {
-                        "url": "https://example.com",
-                        "instruction": "Extract the heading."
-                      }
-                    ],
-                    "async": true
-                  }
-                }
+                ],
+                "async": true
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Batch result (sync mode) or batch stub (async mode).",
+            "description": "Batch result, asynchronous ID, or SSE stream. Inspect Content-Type before parsing. A done batch can contain failed tasks; inspect each task status.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BatchResult"
+                },
+                "examples": {
+                  "submitted": {
+                    "summary": "Async submission",
+                    "value": {
+                      "id": "507f1f77bcf86cd799439011",
+                      "total": 1,
+                      "completed": 0,
+                      "results": [],
+                      "totalCreditsUsed": 0,
+                      "status": "processing"
+                    }
+                  },
+                  "completed": {
+                    "summary": "Completed run (illustrative)",
+                    "value": {
+                      "id": "507f1f77bcf86cd799439011",
+                      "total": 1,
+                      "completed": 1,
+                      "results": [
+                        {
+                          "url": "https://example.com",
+                          "status": "SUCCESS",
+                          "data": {
+                            "heading": "Example Domain"
+                          },
+                          "creditsUsed": 0.1
+                        }
+                      ],
+                      "totalCreditsUsed": 0.1,
+                      "status": "completed"
+                    }
+                  }
                 }
               },
               "text/event-stream": {
                 "schema": {
-                  "type": "string",
-                  "description": "SSE frames: `event: task_event | task_result | done | error`"
-                }
+                  "type": "string"
+                },
+                "example": "event: task_event\ndata: {\"taskIndex\":0,\"type\":\"navigation\",\"timestamp\":1788739200000,\"data\":{\"url\":\"https://example.com\"}}\n\nevent: task_result\ndata: {\"taskIndex\":0,\"status\":\"SUCCESS\",\"data\":{\"title\":\"Example Domain\"},\"creditsUsed\":0.1}\n\nevent: done\ndata: {\"id\":\"64b7f3e1c2a9d5e6f8a01234\",\"status\":\"completed\",\"total\":1,\"completed\":1,\"results\":[{\"status\":\"SUCCESS\",\"data\":{\"title\":\"Example Domain\"},\"creditsUsed\":0.1}],\"totalCreditsUsed\":0.1}\n\n"
               }
             }
           },
           "400": {
-            "description": "Missing or invalid `tasks` array, `tasks.length > 1000`, or a task without a `url`."
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Missing or invalid bearer token."
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "402": {
-            "description": "Insufficient credits. Top up at [pre.dev/billing](https://pre.dev/billing)."
+            "description": "Insufficient balance or a billing gate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "429": {
-            "description": "Per-user in-flight queue depth exceeded (cap varies by plan; see GET /browser-agent-status). Retry later or reduce concurrency."
+            "description": "Rate or inflight limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "503": {
-            "description": "Server at SSE capacity. Retry with `async: true` and poll."
+            "description": "Streaming capacity unavailable; retry later or use polling.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/browser-agent \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"tasks\": [\n    {\n      \"url\": \"https://example.com\",\n      \"instruction\": \"Extract the main page heading.\",\n      \"output\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"heading\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"heading\"\n        ]\n      },\n      \"mode\": \"extract\",\n      \"maxSteps\": 10,\n      \"maxDurationSeconds\": 60\n    }\n  ],\n  \"async\": true\n}'"
+          }
+        ]
       }
     },
     "/browser-agent/{id}": {
       "get": {
         "operationId": "getRun",
         "tags": [
-          "Batches"
+          "Browser Agents"
         ],
-        "summary": "Get a run by id",
-        "description": "Fetch a single run by id. Works for both in-progress and completed runs. Pending tasks are surfaced as stubs in `results` with `status: \"PENDING\"`. Pass `includeEvents=true` to include the full per-step event timeline for each task plus a top-level `liveEvents` array for tasks that are still running.",
+        "summary": "Get browser task status",
+        "description": "Use batch status for completion, then each task status for success. The completed counter includes placeholder slots.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
-            },
-            "description": "Run id (24-char Mongo ObjectId)."
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
           },
           {
             "name": "includeEvents",
@@ -853,29 +872,99 @@
             "schema": {
               "type": "boolean",
               "default": false
-            },
-            "description": "Include per-step event timelines. Payloads can be large \u2014 screenshots inflate them fast."
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Run result.",
+            "description": "Batch with available results and optional events.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BatchResult"
+                },
+                "examples": {
+                  "processing": {
+                    "summary": "Processing with placeholders",
+                    "value": {
+                      "id": "507f1f77bcf86cd799439011",
+                      "total": 1,
+                      "completed": 1,
+                      "results": [
+                        {
+                          "url": "https://example.com",
+                          "status": "RUNNING",
+                          "queuePosition": 0,
+                          "attempts": 1
+                        }
+                      ],
+                      "totalCreditsUsed": 0,
+                      "status": "processing"
+                    }
+                  },
+                  "completed": {
+                    "summary": "Completed run (illustrative)",
+                    "value": {
+                      "id": "507f1f77bcf86cd799439011",
+                      "total": 1,
+                      "completed": 1,
+                      "results": [
+                        {
+                          "url": "https://example.com",
+                          "status": "SUCCESS",
+                          "data": {
+                            "heading": "Example Domain"
+                          },
+                          "creditsUsed": 0.1
+                        }
+                      ],
+                      "totalCreditsUsed": 0.1,
+                      "status": "completed"
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Malformed run id."
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Missing or invalid bearer token."
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Run not found, or not owned by this API key."
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -884,10 +973,10 @@
       "get": {
         "operationId": "listRuns",
         "tags": [
-          "Batches"
+          "Browser Agents"
         ],
-        "summary": "List your runs",
-        "description": "Paginated list of batches this API key has run.",
+        "summary": "List browser runs",
+        "description": "Newest first; use the detail endpoint for complete task results.",
         "parameters": [
           {
             "name": "limit",
@@ -895,9 +984,9 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "default": 20,
               "minimum": 1,
-              "maximum": 100,
-              "default": 50
+              "maximum": 100
             }
           },
           {
@@ -906,8 +995,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "minimum": 0,
-              "default": 0
+              "default": 0,
+              "minimum": 0
             }
           },
           {
@@ -918,61 +1007,57 @@
               "type": "string",
               "enum": [
                 "processing",
-                "completed"
+                "completed",
+                "failed"
               ]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of runs owned by this API key.",
+            "description": "Paginated run summaries.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "batches": {
-                      "type": "array",
-                      "description": "Run summaries (field is named `batches` for backwards compatibility).",
-                      "items": {
-                        "$ref": "#/components/schemas/BatchResult"
-                      }
-                    },
-                    "total": {
-                      "type": "integer",
-                      "description": "Total matching runs, ignoring limit/skip."
-                    },
-                    "hasMore": {
-                      "type": "boolean",
-                      "description": "True when `skip + limit < total`."
-                    }
-                  }
+                  "$ref": "#/components/schemas/ListBatchesResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Missing or invalid bearer token."
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/browser-agent-status": {
       "get": {
-        "summary": "Your Queue Status",
         "operationId": "browserAgentStatus",
         "tags": [
           "Browser Agents"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "description": "Live snapshot of your own queue: running / claimed / pending counts and your plan's in-flight cap. Cheap to call; poll freely to throttle a submit loop.",
+        "summary": "Get account queue status",
+        "description": "Snapshot of your queue and current inflight cap; does not reserve capacity.",
         "responses": {
           "200": {
-            "description": "Queue snapshot",
+            "description": "Account queue snapshot.",
             "content": {
               "application/json": {
                 "schema": {
@@ -982,7 +1067,17 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -996,31 +1091,99 @@
     },
     "/browser-agent-capacity": {
       "get": {
-        "summary": "Global Capacity",
         "operationId": "browserAgentCapacity",
         "tags": [
           "Browser Agents"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "description": "Global queue and sandbox-pool statistics. Any valid API key can read it; useful before submitting a very large batch.",
+        "summary": "Get service capacity",
+        "description": "Advisory service diagnostics. Prefer /browser-agent-status for admission decisions.",
         "responses": {
           "200": {
-            "description": "Pool statistics",
+            "description": "Service capacity snapshot.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/BrowserCapacity"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/browser-agent/{id}/ws": {
+      "get": {
+        "operationId": "getLiveBrowser",
+        "tags": [
+          "Browser Agents"
+        ],
+        "summary": "Get a live browser URL",
+        "description": "Returns a credential-bearing WebSocket URL for live JPEG frames. Availability depends on the execution path. No browser input control or recorded playback.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connect to the returned WebSocket URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveBrowserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1034,45 +1197,646 @@
     },
     "/browser-agent/{id}/stream": {
       "get": {
-        "summary": "Stream a Running Task (SSE)",
         "operationId": "streamBrowserAgent",
         "tags": [
           "Browser Agents"
         ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "description": "Server-Sent Events stream for an in-progress batch: a `snapshot` event on connect, then live `task_event` / `task_result` events, then `done`. Accepts `apiKey` as a query parameter for EventSource clients. Closes when the batch completes or fails.",
+        "summary": "Watch an existing browser run",
+        "description": "SSE: snapshot, batch_meta, task_event, task_result, done, error. The done payload is status only, unlike POST streaming. Already finished runs emit snapshot then done. No replay cursor; reconnect for a fresh snapshot, or poll after interruption.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
             }
-          },
-          {
-            "name": "apiKey",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Alternative auth for EventSource clients that can't set headers"
           }
         ],
         "responses": {
           "200": {
-            "description": "text/event-stream of snapshot, task_event, task_result, done events"
+            "description": "SSE stream. Errors after headers arrive as error events, not new HTTP status codes.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "event: snapshot\ndata: {\"id\":\"64b7f3e1c2a9d5e6f8a01234\",\"status\":\"processing\",\"total\":1,\"completed\":1,\"results\":[{\"status\":\"PENDING\"}]}\n\nevent: batch_meta\ndata: {\"name\":\"Example lookup\",\"taskNames\":[\"Read title\"]}\n\nevent: task_result\ndata: {\"taskIndex\":0,\"status\":\"SUCCESS\",\"data\":{\"title\":\"Example Domain\"},\"creditsUsed\":0.1}\n\nevent: done\ndata: {\"status\":\"completed\"}\n\n"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Batch not found"
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "503": {
-            "description": "Server at SSE capacity \u2014 fall back to polling GET /browser-agent/{id}"
+            "description": "Streaming capacity unavailable; retry later or use polling.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "xApiKey": []
+          },
+          {
+            "streamQueryKey": []
+          }
+        ]
+      }
+    },
+    "/upload-proposal": {
+      "post": {
+        "operationId": "uploadProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Upload a proposal",
+        "description": "Store a proposal from text or one supported file. proposalName is required.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadProposalRequest"
+              },
+              "example": {
+                "proposalName": "Task manager implementation",
+                "text": "Projects, assignees, and due dates delivered in three milestones."
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadProposalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stored proposal ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadProposalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/upload-proposal \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"proposalName\": \"Task manager implementation\",\n  \"text\": \"Projects, assignees, and due dates delivered in three milestones.\"\n}'"
+          }
+        ]
+      }
+    },
+    "/list-proposals": {
+      "get": {
+        "operationId": "listProposals",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "List proposals",
+        "description": "Newest first in the caller context.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated proposals.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "proposals",
+                    "total",
+                    "hasMore"
+                  ],
+                  "properties": {
+                    "proposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Proposal"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "hasMore": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-proposal/{proposalId}": {
+      "get": {
+        "operationId": "getProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Get a proposal",
+        "description": "Retrieve a stored proposal by ID.",
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stored proposal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Proposal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vet-proposal": {
+      "post": {
+        "operationId": "vetProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Vet a proposal",
+        "description": "Compare an existing proposal, or upload and compare a new one, against a spec. Charges 100 credits before later proposal validation and lookup. Confirm inputs first; a failed request does not guarantee a refund. No async mode or idempotency key.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VetProposalRequest"
+              },
+              "example": {
+                "specId": "507f1f77bcf86cd799439011",
+                "proposalId": "507f1f77bcf86cd799439012"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/VetProposalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assessment and proposal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VetProposalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient balance or a billing gate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/vet-proposal \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"specId\": \"507f1f77bcf86cd799439011\",\n  \"proposalId\": \"507f1f77bcf86cd799439012\"\n}'"
+          }
+        ]
+      }
+    },
+    "/list-vetted-proposals": {
+      "get": {
+        "operationId": "listVettedProposals",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "List proposal assessments",
+        "description": "Newest first. Each assessment includes a compact proposal name/file summary when available.",
+        "parameters": [
+          {
+            "name": "specId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated assessments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "vettedProposals",
+                    "total",
+                    "hasMore"
+                  ],
+                  "properties": {
+                    "vettedProposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VettedProposalSummary"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "hasMore": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-vetted-proposal/{vettedProposalId}": {
+      "get": {
+        "operationId": "getVettedProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Get a proposal assessment",
+        "description": "Fetch a saved assessment record.",
+        "parameters": [
+          {
+            "name": "vettedProposalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "24-character record ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved assessment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VettedProposal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access or trial eligibility denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1083,9 +1847,20 @@
       "apiKeyAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "API Key",
-        "description": "API key for authentication. Get your API key from https://pre.dev/projects/key (Solo) or https://pre.dev/enterprise/dashboard?page=api (Enterprise). Use format: Bearer YOUR_API_KEY",
-        "x-default": "YOUR_API_KEY"
+        "bearerFormat": "API key",
+        "description": "Use a pre.dev API key from https://pre.dev/projects/key."
+      },
+      "xApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Alternative to Authorization: Bearer."
+      },
+      "streamQueryKey": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apiKey",
+        "description": "GET batch stream only. Prefer a header: URLs can be recorded in logs."
       }
     },
     "schemas": {
@@ -1097,13 +1872,12 @@
         "properties": {
           "input": {
             "type": "string",
-            "description": "Description of what you want to build or the feature you want to add",
-            "example": "Build a SaaS project management tool with team collaboration and real-time updates"
+            "description": "Project requirements. Include goals, users, constraints, and acceptance criteria.",
+            "minLength": 1
           },
           "currentContext": {
             "type": "string",
-            "description": "CRITICAL: Existing project/codebase context. When provided, generates feature addition spec. When omitted, generates full new project spec with setup, deployment, docs, maintenance",
-            "example": "Existing Next.js app with Supabase, has auth, task CRUD, team features"
+            "description": "Existing system or specification as text; this is not a spec ID."
           },
           "docURLs": {
             "type": "array",
@@ -1111,16 +1885,12 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Optional array of documentation URLs that Architect will reference when generating specifications. Each URL is automatically scraped and packaged into downloadable ZIP archives organized by platform",
-            "example": [
-              "https://docs.pre.dev",
-              "https://docs.stripe.com"
-            ]
+            "description": "Public documentation URLs; retrieval and downloadable archives are best effort."
           },
           "async": {
             "type": "boolean",
             "default": false,
-            "description": "If true, returns immediately with requestId for status polling. If false (default), waits for completion"
+            "description": "Return {specId, status: pending} immediately. Poll GET /spec-status/{specId}."
           }
         }
       },
@@ -1129,156 +1899,55 @@
         "properties": {
           "file": {
             "type": "string",
-            "format": "binary",
-            "description": "Optional file to be parsed as input (e.g., existing code, documentation, requirements). Can be used alone or combined with input text"
+            "description": "One PDF, DOC, DOCX, TXT, JPEG, or PNG file, at most 20 MiB. Send the matching MIME type.",
+            "format": "binary"
           },
           "input": {
             "type": "string",
-            "description": "Optional additional text description when using file upload. Can be empty string if using only file"
+            "description": "Requirements, used alone or with the file.",
+            "minLength": 1
+          },
+          "currentContext": {
+            "type": "string",
+            "description": "Existing system context as text."
           },
           "docURLs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "JSON stringified array of documentation URLs"
+            "type": "string",
+            "description": "JSON-encoded array of public documentation URLs.",
+            "example": "[\"https://example.com/docs\"]"
           },
           "async": {
             "type": "boolean",
             "default": false
           }
-        }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "file"
+            ]
+          },
+          {
+            "required": [
+              "input"
+            ]
+          }
+        ]
       },
       "SpecResponse": {
         "type": "object",
-        "properties": {
-          "endpoint": {
-            "type": "string",
-            "enum": [
-              "fast_spec",
-              "deep_spec"
-            ],
-            "description": "Which endpoint was used"
-          },
-          "input": {
-            "type": "string",
-            "description": "Original input text provided"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "completed"
-            ],
-            "description": "Completion status"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "Whether the request succeeded"
-          },
-          "humanSpecUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL where the human-readable spec is hosted (downloadable markdown)"
-          },
-          "totalHumanHours": {
-            "type": "number",
-            "description": "Estimated total hours for a human to implement the spec"
-          },
-          "architectureInfographicUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to a visual architecture infographic/diagram for the specification"
-          },
-          "codingAgentSpecUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL where the coding agent spec format is hosted (downloadable markdown)"
-          },
-          "codingAgentSpecJson": {
-            "$ref": "#/components/schemas/CodingAgentSpecJson",
-            "description": "Structured JSON spec optimized for AI coding assistants (excludes hours, personas, roles)"
-          },
-          "codingAgentSpecMarkdown": {
-            "type": "string",
-            "description": "Markdown spec optimized for AI coding assistants"
-          },
-          "humanSpecJson": {
-            "$ref": "#/components/schemas/HumanSpecJson",
-            "description": "Full structured JSON spec with hours, personas, and roles for human review"
-          },
-          "humanSpecMarkdown": {
-            "type": "string",
-            "description": "Full markdown spec with all details for human review"
-          },
-          "executionTime": {
-            "type": "integer",
-            "description": "Processing time in milliseconds"
-          },
-          "predevUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "pre.dev project URL where you can view and edit the spec"
-          },
-          "zippedDocsUrls": {
-            "type": "array",
-            "description": "Array of scraped documentation archives. Empty array if no docURLs provided or scraping fails. Each object contains platform identifier and download links",
-            "items": {
-              "$ref": "#/components/schemas/ZippedDocsUrl"
-            }
-          },
-          "creditsUsed": {
-            "type": "number",
-            "description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
-          },
-          "userFlowGraph": {
-            "$ref": "#/components/schemas/SpecGraph",
-            "description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
-          },
-          "architectureGraph": {
-            "$ref": "#/components/schemas/SpecGraph",
-            "description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
-          },
-          "enrichedTechStack": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
-            },
-            "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
-          }
-        }
-      },
-      "AsyncResponse": {
-        "type": "object",
         "required": [
-          "specId",
           "status"
         ],
         "properties": {
-          "specId": {
-            "type": "string",
-            "description": "Unique ID to poll for status (use with /spec-status/:specId)",
-            "example": "507f1f77bcf86cd799439011"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending"
-            ],
-            "description": "Initial status"
-          }
-        }
-      },
-      "StatusResponse": {
-        "type": "object",
-        "properties": {
           "_id": {
             "type": "string",
-            "description": "MongoDB ObjectId of the spec request"
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
           },
           "created": {
             "type": "string",
-            "format": "date-time",
-            "description": "ISO timestamp when the request was created"
+            "format": "date-time"
           },
           "endpoint": {
             "type": "string",
@@ -1299,121 +1968,336 @@
               "processing",
               "completed",
               "failed"
-            ],
-            "description": "Current status"
+            ]
           },
           "success": {
             "type": "boolean",
             "description": "Whether the request succeeded"
           },
           "uploadedFileShortUrl": {
-            "type": "string",
-            "description": "Short URL for uploaded file (if file was uploaded)"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Short URL for uploaded file (if file was uploaded)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "uploadedFileName": {
-            "type": "string",
-            "description": "Name of uploaded file (if file was uploaded)"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Name of uploaded file (if file was uploaded)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "humanSpecUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL where the human-readable spec is hosted (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL where the human-readable spec is hosted (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "totalHumanHours": {
-            "type": "number",
-            "description": "Estimated total hours for a human to implement the spec (only when completed)"
+            "anyOf": [
+              {
+                "type": "number",
+                "description": "Estimated total hours for a human to implement the spec (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "architectureInfographicUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "codingAgentSpecUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL where the coding agent spec format is hosted (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL where the coding agent spec format is hosted (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "codingAgentSpecJson": {
-            "$ref": "#/components/schemas/CodingAgentSpecJson",
-            "description": "Structured JSON spec optimized for AI coding assistants (only when completed)"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CodingAgentSpecJson",
+                "description": "Structured JSON spec optimized for AI coding assistants (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "codingAgentSpecMarkdown": {
-            "type": "string",
-            "description": "Markdown spec optimized for AI coding assistants (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Markdown spec optimized for AI coding assistants (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "humanSpecJson": {
-            "$ref": "#/components/schemas/HumanSpecJson",
-            "description": "Full structured JSON spec with hours, personas, and roles (only when completed)"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HumanSpecJson",
+                "description": "Full structured JSON spec with hours, personas, and roles (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "humanSpecMarkdown": {
-            "type": "string",
-            "description": "Full markdown spec with all details for human review (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Full markdown spec with all details for human review (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "executionTime": {
-            "type": "integer",
-            "description": "Processing time in milliseconds (only when completed or failed)"
+            "anyOf": [
+              {
+                "type": "integer",
+                "description": "Processing time in milliseconds (only when completed or failed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "predevUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "pre.dev project URL (only when completed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "pre.dev project URL (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "zippedDocsUrls": {
-            "type": "array",
-            "description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
-            "items": {
-              "$ref": "#/components/schemas/ZippedDocsUrl"
-            }
+            "anyOf": [
+              {
+                "type": "array",
+                "description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
+                "items": {
+                  "$ref": "#/components/schemas/ZippedDocsUrl"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "errorMessage": {
-            "type": "string",
-            "description": "Error description (only when failed)"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Error description (only when failed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "progress": {
-            "type": "number",
-            "description": "Completion percentage (0-100) while processing"
+            "anyOf": [
+              {
+                "type": "number",
+                "description": "Completion percentage (0-100) while processing"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "creditsUsed": {
-            "type": "number",
-            "description": "Total credits consumed by this spec generation. Available in real-time during processing and persisted on completion. Typical values: Fast spec ~5-10, Deep spec ~10-50."
+            "anyOf": [
+              {
+                "type": "number",
+                "description": "Measured credit usage; estimates are not fixed charges."
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "userFlowGraph": {
-            "$ref": "#/components/schemas/SpecGraph",
-            "description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpecGraph",
+                "description": "User flow graph with nodes representing user stories/flows and edges showing navigation paths (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "architectureGraph": {
-            "$ref": "#/components/schemas/SpecGraph",
-            "description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpecGraph",
+                "description": "System architecture graph with C1/C2 level nodes and their relationships (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "enrichedTechStack": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
-            },
-            "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SpecEnrichedTechStackItem"
+                },
+                "description": "Enriched tech stack with detailed reasons, descriptions, and alternatives for each technology (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "progressMessage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Human-readable progress description (e.g. 'Generating architecture...')"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currentContext": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Existing context supplied with generation."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "specSource": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Origin of the request, such as api or mcp."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "docURLs": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "Full specification/status record. Fields may be absent or null until available. Terminal status is completed or failed. executionTime is milliseconds."
+      },
+      "AsyncResponse": {
+        "type": "object",
+        "required": [
+          "specId",
+          "status"
+        ],
+        "properties": {
+          "specId": {
             "type": "string",
-            "description": "Human-readable progress description (e.g. 'Generating architecture...')"
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ]
           }
         }
+      },
+      "StatusResponse": {
+        "$ref": "#/components/schemas/SpecResponse"
       },
       "Error": {
         "type": "object",
         "required": [
-          "error",
-          "message"
+          "error"
         ],
         "properties": {
           "error": {
-            "type": "string",
-            "description": "Error type or code"
+            "type": "string"
           },
           "message": {
             "type": "string",
-            "description": "Human-readable error message"
+            "description": "Optional detail; not returned by every endpoint."
+          },
+          "code": {
+            "type": "string",
+            "description": "Machine-readable code when available."
+          },
+          "actionUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "requiresSubscription": {
+            "type": "boolean"
+          },
+          "trialsUsed": {
+            "type": "integer"
+          },
+          "maxTrials": {
+            "type": "integer"
           }
-        }
+        },
+        "additionalProperties": true
       },
       "InsufficientCreditsError": {
         "type": "object",
@@ -1424,17 +2308,14 @@
         ],
         "properties": {
           "error": {
-            "type": "string",
-            "example": "Insufficient credits"
+            "type": "string"
           },
           "message": {
-            "type": "string",
-            "example": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan."
+            "type": "string"
           },
           "generationsAvailable": {
-            "type": "integer",
-            "description": "Number of credits currently available",
-            "example": 0
+            "type": "number",
+            "description": "Legacy field name containing the remaining credit balance, not a count of spec runs."
           }
         }
       },
@@ -1448,20 +2329,16 @@
         "properties": {
           "specs": {
             "type": "array",
-            "description": "Array of spec objects matching the filters",
             "items": {
-              "$ref": "#/components/schemas/StatusResponse"
+              "$ref": "#/components/schemas/SpecSummary"
             }
           },
           "total": {
             "type": "integer",
-            "description": "Total number of specs matching the filters",
-            "example": 42
+            "minimum": 0
           },
           "hasMore": {
-            "type": "boolean",
-            "description": "Whether more pages are available",
-            "example": true
+            "type": "boolean"
           }
         }
       },
@@ -1942,15 +2819,19 @@
           },
           "type": {
             "type": "string",
-            "description": "Node type category. For architectureGraph: \"frontend\", \"api-services\", \"databases\", or \"external-services\". For userFlowGraph: \"flow\", \"role\", etc."
+            "description": "Node category; values depend on the graph."
           },
           "description": {
             "type": "string",
             "description": "Description of the node"
           },
           "level": {
-            "type": "number",
-            "description": "Graph depth level (1, 2, 3...) for userFlowGraph nodes. Not present on architectureGraph nodes."
+            "type": [
+              "number",
+              "string",
+              "null"
+            ],
+            "description": "Numeric flow depth or an architecture level such as C1 or C2, when available."
           },
           "hours": {
             "type": "number",
@@ -2086,33 +2967,62 @@
         "properties": {
           "url": {
             "type": "string",
-            "format": "uri",
-            "description": "Starting page URL the agent navigates to."
+            "description": "Starting URL.",
+            "format": "uri"
           },
           "instruction": {
             "type": "string",
-            "description": "Natural-language goal. What should the agent accomplish on this page?"
+            "description": "Goal and constraints for the task."
           },
           "input": {
             "type": "object",
+            "properties": {},
             "additionalProperties": {
               "type": "string"
             },
-            "description": "Form values, credentials, queries \u2014 any string inputs the agent should use during the task. Keys referenced from `instruction` (e.g. \"Search for {{query}}\") are interpolated before the run."
+            "description": "Named string inputs available to the runner."
           },
           "output": {
             "type": "object",
-            "description": "JSON Schema describing the shape of data to extract. When present, the agent's final output is validated against this schema before returning `SUCCESS`. If omitted, the agent returns unstructured text in `data`."
+            "properties": {},
+            "additionalProperties": true,
+            "description": "JSON Schema for extracted data. If omitted, the runner may infer a schema."
           },
           "successCondition": {
             "type": "string",
-            "description": "Optional natural-language assertion. Task is marked `SUCCESS` only if this condition holds at the end (e.g. \"the page shows a confirmation with an order number\")."
+            "description": "Natural-language completion check."
+          },
+          "mode": {
+            "type": "string",
+            "description": "auto chooses extraction when an output schema is provided; agent handles interaction.",
+            "enum": [
+              "auto",
+              "extract",
+              "agent"
+            ],
+            "default": "auto"
+          },
+          "maxSteps": {
+            "type": "integer",
+            "description": "Planning iteration budget. MCP accepts 1\u201350; use this range across clients. REST forwards the value without equivalent range validation.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "maxDurationSeconds": {
+            "type": "integer",
+            "description": "Wall-clock budget in seconds. MCP accepts 5\u2013600; use this range across clients. Defaults vary by execution path.",
+            "minimum": 5,
+            "maximum": 600
+          },
+          "maxIterations": {
+            "type": "integer",
+            "description": "Legacy alias of maxSteps. If both are supplied, maxIterations takes precedence.",
+            "deprecated": true
           },
           "timeoutMs": {
             "type": "integer",
-            "default": 240000,
-            "minimum": 5000,
-            "description": "Per-task max runtime in milliseconds. Default 240000 (4 min). When reached, the task status becomes `TIMEOUT` and is not billed."
+            "description": "Legacy millisecond budget. If both are supplied, timeoutMs takes precedence over maxDurationSeconds.",
+            "deprecated": true
           }
         }
       },
@@ -2128,23 +3038,28 @@
               "$ref": "#/components/schemas/Task"
             },
             "minItems": 1,
-            "maxItems": 1000
+            "description": "One or more tasks. Default server limit is 1,000, configurable by deployment; BATCH_TOO_LARGE reports the active limit."
           },
           "concurrency": {
             "type": "integer",
+            "description": "Requested parallelism; defaults to 5 and is clamped to 1\u201320. Account and service capacity may reduce effective parallelism.",
             "minimum": 1,
             "maximum": 20,
-            "description": "How many tasks to run in parallel. Default: 5."
+            "default": 5
           },
           "async": {
             "type": "boolean",
             "default": false,
-            "description": "If true, returns `{ id, status: 'processing' }` immediately \u2014 poll `GET /:id` for progress."
+            "description": "Return the batch ID immediately, then poll or attach to its stream."
           },
           "stream": {
             "type": "boolean",
             "default": false,
-            "description": "If true, returns an SSE stream with `task_event`, `task_result`, `done`, and `error` frames."
+            "description": "Return SSE; takes precedence over async."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Optional retry lookup key. Idempotency-Key header takes precedence. User-scoped lookup lasts 24 hours; concurrent first requests are not atomically deduplicated."
           }
         }
       },
@@ -2154,21 +3069,29 @@
           "url": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "instruction": {
             "type": "string"
           },
           "input": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
+            "properties": {},
+            "additionalProperties": true
+          },
+          "output": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": true
           },
           "status": {
             "type": "string",
-            "description": "Only `SUCCESS` is billed; every failure mode is free.",
+            "description": "PENDING and RUNNING are status placeholders; all other listed values are terminal task outcomes.",
             "enum": [
-              "SUCCESS",
               "PENDING",
+              "RUNNING",
+              "SUCCESS",
               "ERROR",
               "TIMEOUT",
               "BLOCKED",
@@ -2178,81 +3101,126 @@
             ]
           },
           "data": {
-            "description": "Extracted data, validated against the task's `output` schema. `null` when no `output` was specified or the task failed."
+            "description": "Extracted result; shape follows the requested or inferred schema. May be null or omitted."
           },
           "creditsUsed": {
             "type": "number",
-            "description": "Credits billed for this task. 1 credit = $0.10. Floor 0.1 for SUCCESS, scales up with task complexity. Zero for non-SUCCESS statuses."
+            "description": "Settled task charge: SUCCESS has a 0.1-credit floor; non-SUCCESS tasks have zero charge. Submission may reserve credits before settlement."
           },
           "durationMs": {
             "type": "integer",
-            "description": "Wall-clock runtime of the task."
+            "description": "Wall-clock task duration in milliseconds."
           },
           "error": {
-            "type": "string",
-            "description": "Failure reason, populated when `status` is not `SUCCESS`."
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attempts": {
+            "type": "integer"
+          },
+          "queuePosition": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "description": "Queue estimate; 0 when running."
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "events": {
             "type": "array",
-            "description": "Full per-step event timeline. Only present when the caller requested `includeEvents=true`.",
             "items": {
               "$ref": "#/components/schemas/RunnerEvent"
-            }
+            },
+            "description": "Available timeline when includeEvents=true."
           }
-        }
+        },
+        "additionalProperties": true
       },
       "RunnerEvent": {
         "type": "object",
-        "description": "One step in the agent's execution. Internal fields (sandbox provider, LLM model, token counts) are stripped before the event is returned.",
+        "required": [
+          "type",
+          "timestamp"
+        ],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "navigation",
-              "plan",
-              "action",
-              "screenshot",
-              "validation",
-              "done",
-              "error"
-            ]
+            "description": "Extensible event type, for example navigation, screenshot, plan, action, validation, waiting, done, or error."
+          },
+          "timestamp": {
+            "type": "number",
+            "description": "Unix timestamp in milliseconds."
+          },
+          "iteration": {
+            "type": "integer"
           },
           "data": {
-            "type": "object",
-            "description": "Event-specific payload. See the Get a Run docs for per-type field lists."
-          },
-          "ts": {
-            "type": "string",
-            "format": "date-time"
+            "description": "Event-specific payload. Screenshot data is not guaranteed to be a URL."
           }
-        }
+        },
+        "additionalProperties": true
       },
       "BatchResult": {
         "type": "object",
-        "description": "Run summary. The schema is named `BatchResult` for backwards compatibility with older clients.",
+        "required": [
+          "id",
+          "status",
+          "results"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "description": "Run id (24-char Mongo ObjectId)."
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "taskNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "total": {
-            "type": "integer",
-            "description": "Total tasks in the run."
+            "type": "integer"
           },
           "completed": {
             "type": "integer",
-            "description": "Number of tasks that have finished (any status)."
+            "description": "Counts result slots, including pending/running placeholders or nulls. Do not use this as the completion signal."
           },
           "results": {
             "type": "array",
-            "description": "Per-task results aligned by `taskIndex`. In-progress runs return PENDING stubs for tasks that haven't started; the stub has only `url`, `instruction`, `input`, and `status: \"PENDING\"`.",
             "items": {
-              "$ref": "#/components/schemas/TaskResult"
-            }
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TaskResult"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Ordered by task index. Slots can be null or partial until a result arrives."
           },
           "totalCreditsUsed": {
-            "type": "number",
-            "description": "Sum of credits billed across all tasks in the run."
+            "type": "number"
           },
           "status": {
             "type": "string",
@@ -2267,25 +3235,38 @@
             "format": "date-time"
           },
           "completedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Populated once `status !== \"processing\"`."
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "liveEvents": {
             "type": "array",
-            "description": "Only present when `includeEvents=true` on `GET /:id`. Per-task in-flight event streams for tasks that haven't yet finished. Aligned by index with `results`; completed tasks get an empty array.",
             "items": {
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/RunnerEvent"
               }
-            }
+            },
+            "description": "Per-task events when includeEvents=true and live events are available."
           },
           "error": {
-            "type": "string",
-            "description": "Set only when `status === \"failed\"`."
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
-        }
+        },
+        "additionalProperties": true
       },
       "BrowserAgentStatus": {
         "type": "object",
@@ -2294,24 +3275,705 @@
             "type": "string"
           },
           "running": {
-            "type": "integer",
-            "description": "Tasks executing right now"
+            "type": "integer"
           },
           "claimed": {
-            "type": "integer",
-            "description": "Tasks picked up, about to run"
+            "type": "integer"
           },
           "pending": {
-            "type": "integer",
-            "description": "Tasks waiting in your queue"
+            "type": "integer"
           },
           "total": {
             "type": "integer",
-            "description": "running + claimed + pending"
+            "description": "Current inflight count reported by the queue snapshot."
           },
           "cap": {
             "type": "integer",
-            "description": "Your plan's max in-flight tasks"
+            "description": "Current account inflight limit, resolved by tier. Treat this as a snapshot, not a reservation."
+          }
+        },
+        "additionalProperties": true
+      },
+      "SpecSummary": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "fast_spec",
+              "deep_spec"
+            ],
+            "description": "Which endpoint was used"
+          },
+          "input": {
+            "type": "string",
+            "description": "Original input text provided"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed"
+            ]
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request succeeded"
+          },
+          "uploadedFileShortUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Short URL for uploaded file (if file was uploaded)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "uploadedFileName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Name of uploaded file (if file was uploaded)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "executionTime": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "description": "Processing time in milliseconds (only when completed or failed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currentContext": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Existing context supplied with generation."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "specSource": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Origin of the request, such as api or mcp."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "errorMessage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Error description (only when failed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number",
+                "description": "Completion percentage (0-100) while processing"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "predevUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "pre.dev project URL (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "docURLs": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "zippedDocsUrls": {
+            "anyOf": [
+              {
+                "type": "array",
+                "description": "Array of scraped documentation archives (only when completed). Empty array if no docURLs provided or scraping fails",
+                "items": {
+                  "$ref": "#/components/schemas/ZippedDocsUrl"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "codingAgentSpecUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL where the coding agent spec format is hosted (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "humanSpecUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL where the human-readable spec is hosted (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "architectureInfographicUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to a visual architecture infographic/diagram for the specification (only when completed)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "Summary only. Use GET /spec-status/{specId} for Markdown, JSON, graphs, totalHumanHours, creditsUsed, and progressMessage."
+      },
+      "BrowserGateError": {
+        "type": "object",
+        "required": [
+          "error",
+          "code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "SUBSCRIPTION_REQUIRED",
+              "INSUFFICIENT_CREDITS",
+              "RATE_LIMITED",
+              "QUEUE_FULL",
+              "BATCH_TOO_LARGE"
+            ]
+          },
+          "actionUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "BatchSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "taskNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "completed": {
+            "type": "integer",
+            "description": "Count of stored task results in this history response."
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TaskResult"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Compact preview, not a complete result set. Use GET /browser-agent/{id} for details."
+          },
+          "totalCreditsUsed": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "completed",
+              "failed"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
+      "ListBatchesResponse": {
+        "type": "object",
+        "required": [
+          "batches",
+          "total",
+          "hasMore"
+        ],
+        "properties": {
+          "batches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "hasMore": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BrowserCapacity": {
+        "type": "object",
+        "properties": {
+          "totalActive": {
+            "type": "integer"
+          },
+          "maxSandboxes": {
+            "type": "integer"
+          },
+          "perUserCap": {
+            "type": "integer"
+          },
+          "pending": {
+            "type": "integer"
+          },
+          "running": {
+            "type": "integer"
+          },
+          "claimed": {
+            "type": "integer"
+          },
+          "failed": {
+            "type": "integer"
+          },
+          "oldestQueuedAgeMs": {
+            "type": "integer"
+          },
+          "utilization": {
+            "type": "number",
+            "description": "Reported utilization percentage."
+          }
+        },
+        "description": "Advisory service diagnostics. Fields may change; perUserCap is a legacy global value, not your account limit. Use GET /browser-agent-status for your cap.",
+        "additionalProperties": true
+      },
+      "LiveBrowserResponse": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Credential-bearing WebSocket URL. Keep private and use only for the requested batch.",
+            "format": "uri"
+          }
+        }
+      },
+      "ProposalFile": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "fileType": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "integer",
+            "description": "Bytes."
+          },
+          "uploadedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": true
+      },
+      "Proposal": {
+        "type": "object",
+        "required": [
+          "_id",
+          "proposalName"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "proposalName": {
+            "type": "string"
+          },
+          "proposalContent": {
+            "type": "string"
+          },
+          "proposalFile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProposalFile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Stored proposal. Additional metadata can be present.",
+        "additionalProperties": true
+      },
+      "UploadProposalRequest": {
+        "type": "object",
+        "required": [
+          "proposalName"
+        ],
+        "properties": {
+          "proposalName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "description": "Proposal content.",
+            "minLength": 1
+          },
+          "file": {
+            "type": "string",
+            "description": "PDF, DOC, DOCX, TXT, JPEG, or PNG, at most 20 MiB. Use multipart/form-data and the matching MIME type.",
+            "format": "binary"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "text"
+            ]
+          },
+          {
+            "required": [
+              "file"
+            ]
+          }
+        ]
+      },
+      "UploadProposalResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "proposalId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          }
+        }
+      },
+      "VetProposalRequest": {
+        "type": "object",
+        "required": [
+          "specId"
+        ],
+        "properties": {
+          "specId": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "Existing proposal ID. When supplied, file, text, and proposalName are ignored.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "proposalName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "file": {
+            "type": "string",
+            "description": "New proposal file, at most 20 MiB, with a supported MIME type.",
+            "format": "binary"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "proposalId"
+            ]
+          },
+          {
+            "required": [
+              "proposalName",
+              "text"
+            ]
+          },
+          {
+            "required": [
+              "proposalName",
+              "file"
+            ]
+          }
+        ]
+      },
+      "VettedProposal": {
+        "type": "object",
+        "required": [
+          "_id",
+          "specId",
+          "proposalId",
+          "shouldAccept"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "specId": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "24-character record ID.",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "shouldAccept": {
+            "type": "boolean"
+          },
+          "acceptanceConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "overallAlignment": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "strengths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "weaknesses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "criticalGaps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "executiveSummary": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": true
+      },
+      "VettedProposalSummary": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VettedProposal"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "proposal": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "proposalName": {
+                        "type": "string"
+                      },
+                      "proposalFile": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/ProposalFile"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "VetProposalResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "vettedProposal",
+          "proposal"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "vettedProposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VettedProposal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
           }
         }
       }
@@ -2319,24 +3981,16 @@
   },
   "tags": [
     {
-      "name": "Spec Generation",
-      "description": "Generate comprehensive software specifications for AI coding agents"
+      "name": "Specifications"
     },
     {
-      "name": "Status",
-      "description": "Check status of asynchronous specification processing"
+      "name": "Browser Agents"
     },
     {
-      "name": "Spec Management",
-      "description": "List and search existing specifications"
+      "name": "Proposals"
     },
     {
-      "name": "Account",
-      "description": "Manage user account and credits"
-    },
-    {
-      "name": "Batches",
-      "description": "Submit and retrieve browser-agent task batches"
+      "name": "Account"
     }
   ]
 }

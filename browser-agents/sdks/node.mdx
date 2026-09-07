@@ -1,290 +1,114 @@
 ---
-title: "Node SDK"
-description: "TypeScript / Node.js client for pre.dev Browser Agents — run tasks sync, async, or streamed."
+title: "Node.js browser SDK"
+description: "Submit browser tasks, poll results, and consume a live submission stream with TypeScript."
 icon: "node-js"
 ---
-
-The official TypeScript client for pre.dev. `predev-api` ships both the Architect and Browser Agents surfaces — one package, one key, full type support.
-
-## Installation
 
 ```bash
 npm install predev-api
 ```
 
-## Quick Start
+This guide targets published **1.1.0**. See [SDK setup](/architect-agent/sdks/node) for configuration and general errors.
+
+## Submit and poll
 
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-const predev = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
-
-const result = await predev.browserAgent([
-  {
-    url: 'https://example.com',
-    instruction: 'Extract the page heading.',
-    output: {
-      type: 'object',
-      properties: { heading: { type: 'string' } },
-      required: ['heading'],
-    },
+const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+const tasks = [{
+  url: 'https://example.com',
+  instruction: 'Extract the main page heading.',
+  output: {
+    type: 'object',
+    properties: { heading: { type: 'string' } },
+    required: ['heading'],
   },
-]);
+}];
+const job = await client.browserAgent(tasks, { async: true });
+console.log('Save this ID:', job.id);
+const deadline = Date.now() + 600_000;
 
-console.log(result.results[0].data);
-// → { heading: "Example Domain" }
-```
-
-## Authentication
-
-<Card title="Get your API key" icon="key" href="https://pre.dev/projects/key" horizontal>
-  Grab a key from the Browser Agents dashboard.
-</Card>
-
-```typescript
-const predev = new PredevAPI({ apiKey: 'YOUR_API_KEY' });
-```
-
-## API Methods
-
-### `browserAgent()`
-
-Submit one or more browser tasks. Overloaded based on `stream`:
-
-```typescript
-// Sync / async → Promise<BrowserAgentResponse>
-predev.browserAgent(tasks, { concurrency?: number; async?: boolean }): Promise<BrowserAgentResponse>;
-
-// Streaming → AsyncGenerator<BrowserAgentSSEMessage>
-predev.browserAgent(tasks, { concurrency?: number; stream: true }): AsyncGenerator<BrowserAgentSSEMessage>;
-```
-
-**Parameters:**
-- `tasks` **(required)**: `BrowserTask[]` — see [Task shape](#task-shape)
-- `options.concurrency` **(optional)**: `number` — parallel workers (1–20, default 5)
-- `options.async` **(optional)**: `boolean` — return immediately with a batch id; poll with `getBrowserAgent()`
-- `options.stream` **(optional)**: `true` — return an async generator of SSE frames instead
-
-### Task shape
-
-```typescript
-interface BrowserTask {
-  url: string;                           // required
-  instruction?: string;                  // natural-language goal
-  input?: Record<string, string>;        // string inputs the agent uses during the run
-  output?: Record<string, any>;          // JSON Schema for the data to extract
-}
-```
-
-### `getBrowserAgent()`
-
-Fetch the status and results of a task submission by id. Works for in-progress and completed submissions.
-
-```typescript
-const result = await predev.getBrowserAgent(id, { includeEvents?: boolean });
-```
-
-**Parameters:**
-- `id` **(required)**: `string` — id returned from `browserAgent(tasks, { async: true })` or from streaming
-- `options.includeEvents` **(optional)**: `boolean` — include the full per-step event timeline (navigation, plan, screenshot, action, validation). Payloads can be large.
-
-### `listBrowserAgents()`
-
-List your past and in-progress runs, newest first.
-
-```ts
-const { batches, total, hasMore } = await client.listBrowserAgents({
-  limit: 20,          // optional
-  skip: 0,            // optional
-  status: 'completed' // optional: 'processing' | 'completed'
-});
-```
-
-### `browserAgentStatus()`
-
-Your live queue snapshot — running / queued counts and your plan's
-in-flight cap. Poll it to throttle a large submit loop.
-
-```ts
-const q = await client.browserAgentStatus();
-// { userId, running, claimed, pending, total, cap }
-if (q.total < q.cap - 10) {
-  await client.browserAgent(nextChunk, { async: true });
-}
-```
-
-## Response Types
-
-```typescript
-interface BrowserAgentTaskResult {
-  url: string;
-  status:
-    | 'SUCCESS'
-    | 'PENDING'
-    | 'ERROR'
-    | 'TIMEOUT'
-    | 'BLOCKED'
-    | 'CAPTCHA_FAILED'
-    | 'LOOP'
-    | 'NO_TARGET';
-  data?: unknown;
-  creditsUsed: number;
-  durationMs: number;
-  error?: string;
-}
-
-interface BrowserAgentResponse {
-  id: string;
-  total: number;
-  completed: number;
-  results: BrowserAgentTaskResult[];
-  totalCreditsUsed: number;
-  status: 'processing' | 'completed' | 'failed';
-  createdAt?: string;
-  completedAt?: string;
-}
-```
-
-## Streaming Events
-
-```typescript
-type BrowserAgentEventType =
-  | 'navigation'    // agent loaded a URL
-  | 'screenshot'    // frame captured
-  | 'plan'          // agent reasoned about next steps
-  | 'action'        // click / type / scroll / extract
-  | 'validation'    // output schema or success condition checked
-  | 'done'          // task finished
-  | 'error';        // task errored
-
-interface BrowserAgentStreamEvent {
-  taskIndex: number;
-  type: BrowserAgentEventType;
-  timestamp: number;
-  iteration?: number;
-  data: any;
-}
-
-type BrowserAgentSSEMessage =
-  | { event: 'task_event';  data: BrowserAgentStreamEvent }
-  | { event: 'task_result'; data: BrowserAgentTaskResult & { taskIndex: number } }
-  | { event: 'done';        data: BrowserAgentResponse }
-  | { event: 'error';       data: { error: string } };
-```
-
-## Examples
-
-### Sync — wait for every task
-
-```typescript
-const result = await predev.browserAgent(
-  [
-    { url: 'https://news.ycombinator.com', instruction: 'Extract the top 5 story titles.' },
-    { url: 'https://www.reddit.com/r/programming', instruction: 'Extract the top 5 post titles.' },
-  ],
-  { concurrency: 2 },
-);
-
-for (const r of result.results) {
-  console.log(r.status, r.data);
-}
-```
-
-### Async — poll for completion
-
-```typescript
-const { id } = await predev.browserAgent(tasks, { async: true });
-
-while (true) {
-  const status = await predev.getBrowserAgent(id);
-  if (status.status === 'completed' || status.status === 'failed') {
-    console.log(status.results);
-    break;
+async function waitForRun() {
+  while (Date.now() < deadline) {
+    const run = await client.getBrowserAgent(job.id);
+    if (run.status === 'completed' || run.status === 'failed') return run;
+    await new Promise(resolve => setTimeout(resolve, 5_000));
   }
-  console.log(`${status.completed}/${status.total} done`);
-  await new Promise(r => setTimeout(r, 5000));
+  throw new Error('Polling deadline reached; retrieve the saved run later.');
+}
+
+const run = await waitForRun();
+for (const task of run.results) {
+  if (task?.status === 'SUCCESS') console.log(task.data);
+  else console.error(task?.error ?? 'No successful result');
 }
 ```
 
-### Streaming — live per-step events
+Use batch `status` to detect completion and inspect every task result. The current TypeScript declarations lag some REST fields, including running stubs and nullable result slots; guard missing values at runtime.
+
+## Method options
+
+| Method | Options |
+| --- | --- |
+| `browserAgent(tasks, options)` | `concurrency`, `stream`, `async` |
+| `getBrowserAgent(id, options)` | `includeEvents` |
+| `listBrowserAgents(params)` | `limit`, `skip`, `status` |
+| `browserAgentStatus()` | None |
+
+There is no client-wide timeout, retry, or arbitrary-header configuration. Published task types do not declare `mode`, `maxSteps`, or `maxDurationSeconds`; use [direct REST](/browser-agents/api/run-task) when your integration needs those controls without extending the package's types.
+
+## Stream a new submission
+
+Reuse `client` and `tasks` from the example above:
 
 ```typescript
-for await (const msg of predev.browserAgent(tasks, { stream: true })) {
-  if (msg.event === 'task_event') {
-    console.log(`[task ${msg.data.taskIndex}]`, msg.data.type);
-  } else if (msg.event === 'task_result') {
-    console.log(`[task ${msg.data.taskIndex}]`, msg.data.status, msg.data.data);
-  } else if (msg.event === 'done') {
-    console.log('batch done:', msg.data.id, msg.data.totalCreditsUsed, 'credits');
-  } else if (msg.event === 'error') {
-    console.error('error:', msg.data.error);
+let sawDone = false;
+for await (const message of client.browserAgent(tasks, { stream: true })) {
+  if (message.event === 'task_event') {
+    console.log(message.data.taskIndex, message.data.type);
+  } else if (message.event === 'done') {
+    sawDone = true;
+    console.log(message.data.status, message.data.totalCreditsUsed);
   }
 }
+if (!sawDone) throw new Error('The stream ended before a final result arrived.');
 ```
 
-### Full timeline for a past submission
+`stream: true` returns an async generator; synchronous and async-submission modes return a Promise. The stream example creates a **new run**. Streamed `error` frames raise exceptions. To attach to an existing run, use [direct HTTP SSE](/browser-agents/api/stream-task).
+
+## History and evidence
 
 ```typescript
-const result = await predev.getBrowserAgent(id, { includeEvents: true });
+const queue = await client.browserAgentStatus();
+console.log(queue.total, queue.cap);
 
-for (const task of result.results) {
-  console.log(task.status, task.url);
-  for (const event of (task as any).events ?? []) {
-    console.log('  -', event.type);
-  }
-}
+const page = await client.listBrowserAgents({ limit: 20, status: 'completed' });
+for (const summary of page.batches) console.log(summary.id, summary.totalCreditsUsed);
+
+const evidence = await client.getBrowserAgent(job.id, { includeEvents: true });
 ```
 
-## Error Handling
+Timelines can be large; omit `includeEvents` for routine polling. See [status and results](/browser-agents/api/task-status) for event shapes and per-task fields.
 
-The SDK throws typed exceptions for the most common gating cases. The two
-billing-gate exceptions carry an `actionUrl` — a deep link back to pre.dev
-that auto-opens the right modal (subscribe / buy credits) when the user
-lands there. Same exceptions fire on REST and SSE error paths.
+## Billing and queue errors
 
 ```typescript
-import {
-  PredevAPIError,
-  AuthenticationError,
-  RateLimitError,
-  SubscriptionRequiredError,
-  InsufficientCreditsError,
-  QueueFullError,
-  BatchTooLargeError,
-} from 'predev-api';
+import { InsufficientCreditsError, QueueFullError, PredevAPIError } from 'predev-api';
 
 try {
-  const result = await predev.browserAgent(tasks);
-} catch (err) {
-  if (err instanceof InsufficientCreditsError) {
-    // Subscription is fine, balance is too low — send the user to the credits modal.
-    if (err.actionUrl) window.open(err.actionUrl, '_blank');
-  } else if (err instanceof SubscriptionRequiredError) {
-    // Trial limit hit — send the user to the subscribe modal.
-    if (err.actionUrl) window.open(err.actionUrl, '_blank');
-  } else if (err instanceof AuthenticationError) {
-    // 401 — invalid or missing API key
-  } else if (err instanceof RateLimitError) {
-    // 429 RATE_LIMITED — back off and retry
-  } else if (err instanceof QueueFullError) {
-    // 429 QUEUE_FULL — wait for in-flight tasks to drain
-  } else if (err instanceof BatchTooLargeError) {
-    // 400 — split into smaller batches
-  } else if (err instanceof PredevAPIError) {
-    console.error(err.message);
+  await client.browserAgent(tasks, { async: true });
+} catch (error) {
+  if (error instanceof InsufficientCreditsError) {
+    console.error(error.message, error.actionUrl);
+  } else if (error instanceof QueueFullError) {
+    console.error('Wait for tasks to finish before submitting more work.');
+  } else if (error instanceof PredevAPIError) {
+    console.error(error.message);
+  } else {
+    throw error;
   }
 }
 ```
 
-| Exception | HTTP | `code` |
-|---|---|---|
-| `SubscriptionRequiredError` | 402 | `SUBSCRIPTION_REQUIRED` |
-| `InsufficientCreditsError` | 402 | `INSUFFICIENT_CREDITS` |
-| `RateLimitError` | 429 | `RATE_LIMITED` |
-| `QueueFullError` | 429 | `QUEUE_FULL` |
-| `BatchTooLargeError` | 400 | `BATCH_TOO_LARGE` |
-| `AuthenticationError` | 401 | — |
-| `PredevAPIError` | other | — |
-
-Mid-stream errors on the SSE stream throw the same typed exceptions — a
-`for await` loop wrapped in `try/catch` is enough.
+Use [direct REST](/browser-agents/api/run-task#idempotency) for an idempotency key; the SDK does not forward arbitrary options as headers or request fields.

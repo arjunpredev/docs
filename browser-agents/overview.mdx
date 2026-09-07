@@ -1,73 +1,66 @@
 ---
 title: "Browser Agents"
-description: "Browser automation for humans and AI. Navigate, interact, and extract data from any website."
-summary: "Browser Agents runs browser-driven tasks — scraping, multi-step flows, logins, form fills — via a single REST API or MCP tool."
-agent_hint: "When you need to navigate a web page, click, type, or extract structured data from a live site, call POST /browser-agent with a tasks array."
+description: "Run browser workflows and extract structured data through REST, SDKs, or MCP."
 ---
 
-**Browser Agents for humans + AI.** Give the agent a URL and an instruction — it drives a real browser, follows the flow, and returns structured JSON validated against your schema. No Playwright plumbing, no selector maintenance.
+import { Workflow } from "/snippets/workflow.jsx";
+
+Give Browser Agents a starting URL and a task. It navigates pages, interacts with forms and controls, and returns task outcomes with data and an optional execution timeline.
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="play" href="/browser-agents/quickstart">
-    Copy-paste examples in curl, TypeScript, Python, and MCP. Your first task in under a minute.
+  <Card title="Run your first task" icon="play" href="/browser-agents/quickstart">
+    Extract a page heading with curl, Python, or TypeScript.
   </Card>
-  <Card title="Get an API key" icon="key" href="https://pre.dev/projects/key">
-    Grab a key from [pre.dev/projects/key](https://pre.dev/projects/key) and set it as `PREDEV_API_KEY`.
+  <Card title="Use an MCP tool" icon="plug" href="/browser-agents/mcp-tool">
+    Give your assistant browser automation and structured results.
   </Card>
 </CardGroup>
 
-## What Browser Agents can do
+## Choose how the task runs
 
-<CardGroup cols={2}>
-  <Card title="Pull data off any site" icon="database">
-    - Scrape pricing, listings, and contacts into JSON
-    - Enrich CSVs with fresh web data
-    - Read authed dashboards (Linear, Notion, Stripe)
-  </Card>
-  <Card title="Automate anything clickable" icon="hand-pointer">
-    - Log in, navigate, fill forms
-    - Submit bulk forms from a CSV
-    - Step through multi-page flows end-to-end
-  </Card>
-  <Card title="Catch regressions before users do" icon="shield-check">
-    - Run critical flows on a schedule
-    - Verify checkout across plans
-    - Flag pricing, UI, or copy drift
-  </Card>
-  <Card title="Give your agent a real browser" icon="plug">
-    - Drop-in MCP for Claude Code & Cursor
-    - URL + instruction → typed JSON
-    - Replaces flaky Playwright code
-  </Card>
-</CardGroup>
+| Mode | Use it for | Supply |
+| --- | --- | --- |
+| `extract` | Read page content into a known shape | An `output` JSON Schema, optionally an instruction |
+| `agent` | Navigate, search, fill forms, or perform several steps | A clear instruction and success condition; optionally an output schema |
+| `auto` | Let the service choose the execution path | A URL and your goal or schema |
+
+Provide an explicit `output` when downstream code expects a particular structure. If it is omitted, the service may infer an output schema; do not assume a specific data shape or that every task returns text.
+
+## Request lifecycle
+
+<Workflow
+  label="Submit browser tasks and retrieve each outcome"
+  steps={[
+    { title: "Submit tasks", description: "Send URLs, instructions, and the output shape you need." },
+    { title: "Save the run ID", description: "After credit and queue checks, tasks can start or wait." },
+    { title: "Follow the run", description: "Poll the saved ID or stream available progress events." },
+    { title: "Read each outcome", description: "Check every task’s status before consuming its data." }
+  ]}
+  note="A completed run can include failed tasks. A rejected submission returns an error; inspect its code and next action before retrying."
+/>
+
+One request creates one **run**, also called a **batch** in response types. A run contains one or more tasks. Use its `id` to retrieve progress and results; each task has its own status and credit usage.
+
+The [status guide](/browser-agents/api/task-status#batch-and-task-states) includes an interactive example of queued, running, completed, and failed work.
+
+## Choose how to receive results
+
+| Interface | Behavior |
+| --- | --- |
+| [Synchronous request](/browser-agents/api/run-task) | Wait for the run and return JSON |
+| [Async request](/browser-agents/api/run-task#async) | Return the run ID, then poll or attach a stream |
+| [Submission stream](/browser-agents/api/run-task#streaming) | Live SSE events and a full final result |
+| [Existing-run stream](/browser-agents/api/stream-task) | Initial snapshot, live events, and terminal status |
+| [Live browser](/browser-agents/api/live-browser) | View available browser frames over WebSocket |
+
+Task counts, account in-flight limits, and per-run concurrency are different controls. Check [queue status](/browser-agents/api/queue-status) when submitting larger workloads.
+
+## Credits
+
+Successful tasks have a **0.1-credit minimum**; more complex tasks can cost more. Failed tasks settle at zero credits. Submission reserves or charges the task floor before execution, so you need available credits to start. Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
 
 ## Benchmark
 
-pre.dev Browser Agents passes **100 / 100** tasks in our public suite vs Browser Use Cloud's **93 / 100** — and it's **~2.8× cheaper AND ~4× faster**.
+Explore the [interactive benchmark report](https://pre.dev/browser-agents-benchmark.html) for task results, costs, timings, and execution traces. The [reproduction repository](https://github.com/predotdev/browser-agents-benchmark) includes task definitions and scoring rules.
 
-| Provider | Pass rate | $ / task | Total $ | Avg time / task |
-|---|---:|---:|---:|---:|
-| **pre.dev Browser Agents** | **100 / 100** | **$0.0143** | **$1.43** | **7.9 s** |
-| Browser Use Cloud | 93 / 100 | $0.0405 | $4.05 | 32.0 s |
-
-Same 100 tasks. Same JSON output schemas. Same uniform pass predicate. Numbers from the June 2026 benchmark run — the [interactive report](https://pre.dev/browser-agents-benchmark.html) always has the latest.
-
-- **[Interactive report](https://pre.dev/browser-agents-benchmark.html)** — radar chart, leaderboard, per-task drilldown with traces and screenshots.
-- **[Raw data + reproduction](https://github.com/predotdev/browser-agents-benchmark)** — clone, set two API keys, `bun run bench`.
-
-## Two ways to call it
-
-<CardGroup cols={2}>
-  <Card title="REST API" icon="code" href="/browser-agents/api/run-task">
-    `POST https://api.pre.dev/browser-agent` with a tasks array. Sync, async, or live SSE streams. Up to 1,000 tasks per request.
-  </Card>
-  <Card title="MCP Tool" icon="plug" href="/browser-agents/mcp-tool">
-    One-click install into Cursor, Claude Code, VS Code, or Windsurf. Your agent gets `browser_agent` as a tool — no orchestration code.
-  </Card>
-</CardGroup>
-
-## Next
-
-- [Quickstart](/browser-agents/quickstart) — runnable curl / TS / Python / MCP
-- [REST API reference](/browser-agents/api/run-task)
-- [MCP tool setup](/browser-agents/mcp-tool)
+Browser tasks do not expose persistent login profiles, reusable cookie sessions, or a recurring-schedule API. Schedule submissions in your own application and provide the inputs each task needs.

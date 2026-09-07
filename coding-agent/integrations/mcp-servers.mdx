@@ -1,35 +1,35 @@
 ---
-title: "External MCP Servers"
-description: "Connect external tool servers to extend what pre.dev can do."
+title: "External MCP servers"
+description: "Give the Coding Agent access to additional tools and data sources."
 ---
 
-MCP Servers let you plug any Model Context Protocol server into your Coding Agent. Whatever tools that server exposes, the agent can call — as if they were built into pre.dev.
+Connect an external MCP server when the agent needs tools from another service or your own system. To use **pre.dev's tools in another assistant**, follow [product MCP setup](/architect-agent/mcp-setup) instead.
 
-If you've already built an MCP server for Claude, Cursor, or VS Code, it works here with zero changes.
+## Add a server
 
-## When to use one
+1. Open **Project setup → MCP** or **MCP Servers** in [workspace Integrations](https://pre.dev/projects/integrations).
+2. Paste a remote URL, a supported command, or the server configuration.
+3. Include the authentication headers or environment values required by that server.
+4. Use **Test** to check the handshake and advertised tools.
+5. Save and enable the entry.
 
-- **Internal tooling** — your team has an MCP server that queries your staging database, triggers deploys, or exposes a private API
-- **Third-party MCP servers** — GitHub, Linear, Sentry, Grafana, Notion — any MCP-speaking service
-- **Custom automations** — any script you've wrapped as an MCP server (cron control, DNS changes, feature flag flips)
+Remote configuration example; replace the URL and credential with your server's values:
 
-## Connecting a server
+```json
+{
+  "url": "https://mcp.example.com/mcp",
+  "headers": {
+    "Authorization": "Bearer YOUR_SERVER_TOKEN"
+  }
+}
+```
 
-1. Open **[Integrations → MCP Servers](https://pre.dev/projects/integrations)**
-2. Click **Add MCP Server**
-3. Paste the server's JSON config — a remote server (`url` + `headers`) or a stdio server (`command`, `args`, `env`)
-4. Click **Test** — pre.dev handshakes with the server and lists its tools
-5. Save — the agent can now call those tools on any project
+Standard-input/output configurations use `command`, `args`, and `env`. The command runs in the agent's execution environment; a path on your own laptop is not automatically available there. Compatibility depends on transport, authentication, and runtime requirements. Test the actual configuration before relying on its tools.
 
-## What the agent sees
+## Scope and controls
 
-Once a server is connected, its tools show up in the agent's available toolset automatically. If your server exposes a `queryStaging` tool, the agent can reason about when to call it ("this task needs the latest customer count from staging → call `queryStaging`") and execute the call during a build.
+Personal projects inherit personal MCP entries and can override a matching name. Organization entries are shared across the organization. See [integration scope](/coding-agent/integrations/overview).
 
-## Toggling servers
+In the CLI, `/mcp` lists personal entries and supports toggling or removal. Press `o` to add or configure entries on the web. On the web, use `/integrations` to open Project setup.
 
-MCP servers can be toggled on and off from the Integrations page (and with `/mcp` in the workspace or CLI). Turn off servers whose tools would add noise; leave on the ones that earn their place.
-
-## Security
-
-- Connection configs stay server-side and are never embedded in project code
-- Your server's auth is respected — pre.dev forwards the headers you configured on every call
+Enable the servers needed for the task, and describe the operation you want the agent to perform. A successful connection test confirms tool discovery; individual calls can still fail because of provider permissions or service errors.

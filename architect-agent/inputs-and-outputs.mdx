@@ -1,0 +1,80 @@
+---
+title: "Inputs and outputs"
+description: "Provide context and files, then consume specifications, estimates, graphs, and documentation archives."
+---
+
+import { GraphExample } from "/snippets/spec-blueprint.jsx";
+
+Fast and Deep Spec share the same REST input fields and output formats. The [OpenAPI schema](/api-reference/openapi.json) defines their machine-readable shapes.
+
+## Describe a project or a change
+
+| Field | JSON request | Meaning |
+| --- | --- | --- |
+| `input` | Required, nonempty string | The project or feature to specify |
+| `currentContext` | Optional string | Existing stack, code structure, implemented behavior, and constraints |
+| `docURLs` | Optional array of strings | Documentation URLs to reference |
+| `async` | Optional boolean, default `false` | Return a `specId` for polling instead of waiting |
+
+`currentContext` is text, not a project lookup ID. Include the relevant context explicitly. The MCP equivalents are `executiveSummary` and `existingContext`; see the [field mapping](/for-agents#keep-names-distinct).
+
+## Upload a file
+
+Use `multipart/form-data` with one `file`. Supply the file, `input` text, or both. Accepted formats are PDF, DOC, DOCX, TXT, JPEG, and PNG, up to **20 MiB** (20 × 1,024 × 1,024 bytes).
+
+```bash
+curl --fail-with-body https://api.pre.dev/fast-spec \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -F 'file=@requirements.pdf;type=application/pdf' \
+  -F 'input=Turn these requirements into an implementation plan.' \
+  -F 'currentContext=Existing TypeScript app with PostgreSQL.' \
+  -F 'docURLs=["https://www.postgresql.org/docs/current/"]' \
+  -F 'async=true'
+```
+
+In multipart requests, encode `docURLs` as a **JSON string** and `async` as `true` or `false` text. Let your HTTP library set the multipart boundary. The file part must carry an accepted MIME type; renaming an unsupported file is not sufficient.
+
+The response may include `uploadedFileName` and `uploadedFileShortUrl`. File upload is a REST feature; MCP specification tools do not accept a `file` argument.
+
+## Choose the output for your reader
+
+| Output | Contains |
+| --- | --- |
+| `codingAgentSpecJson` | Title, executive summary, core functionality, stack, milestones, stories, acceptance criteria, and subtasks where generated |
+| `codingAgentSpecMarkdown` | The same implementation plan as Markdown |
+| `humanSpecJson` | Planning detail plus personas, roles, and hour estimates |
+| `humanSpecMarkdown` | Human-readable specification and estimates |
+| `codingAgentSpecUrl` / `humanSpecUrl` | Download links for the corresponding specification |
+| `totalHumanHours` | Estimated implementation effort; not a delivery commitment |
+
+Request [spec status](/architect-agent/api/spec-status) for full bodies. [List](/architect-agent/api/list-specs) and [search](/architect-agent/api/find-specs) return summaries and links, not full specification bodies or graphs.
+
+## Graphs and visual artifacts
+
+`userFlowGraph` and `architectureGraph` each contain `nodes` and `edges`. Use node `id` values to resolve an edge's `source` and `target`.
+
+```json
+{
+  "nodes": [
+    { "id": "web", "label": "Web app", "type": "container", "level": "C2" },
+    { "id": "api", "label": "API", "type": "container", "level": "C2" }
+  ],
+  "edges": [
+    { "source": "web", "target": "api", "description": "HTTPS requests" }
+  ]
+}
+```
+
+In this example, the web app sends HTTPS requests to the API. The edge points from the node named by `source` to the node named by `target`:
+
+<GraphExample />
+
+Node `level` can be a number, a string, or null: user-flow graphs can use numeric depth, while architecture graphs use levels such as `C1` and `C2`. `architectureInfographicUrl` is an optional rendered diagram. `enrichedTechStack` explains technology choices, uses, alternatives, and helpful links.
+
+## Documentation archives
+
+When reference documentation can be retrieved, `zippedDocsUrls` contains entries with `platform`, `masterZipShortUrl`, and `masterMarkdownShortUrl`. Archive generation is best effort; archives may be absent or empty even when the specification succeeds. Use the source documentation for details that need current verification.
+
+## Optional fields
+
+The returned fields depend on generation progress and available artifacts. Optional outputs may be absent or null; check them before rendering or downloading. Use `status` for lifecycle decisions, `progressMessage` for display, and `creditsUsed` for observed credit usage.

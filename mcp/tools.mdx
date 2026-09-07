@@ -1,0 +1,145 @@
+---
+title: "MCP tool reference"
+description: "The seven primary pre.dev tools, exact input names, result formats, and deprecated aliases."
+---
+
+Connect once at **`https://api.pre.dev/mcp`** to use specification generation and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
+
+Call **`tools/list`** after initialization for the live input schemas. `GET /mcp/info` is a human-readable service inventory; it is not the protocol's tool-discovery method.
+
+## Tool inventory
+
+| Tool | Purpose | Result |
+| --- | --- | --- |
+| `fast_spec` | Generate a concise specification | Text with artifact links or a `get_spec` handoff |
+| `deep_spec` | Generate a detailed specification | Text with artifact links or a `get_spec` handoff |
+| `get_spec` | Retrieve a specification and its status | Text and, on success, `structuredContent` |
+| `list_specs` | Paginated specification history | Text and, for a nonempty page, `structuredContent` |
+| `browser_agent` | Run browser tasks | Text summary or an async run ID |
+| `browser_agent_get` | Retrieve browser task results | JSON text and `structuredContent` |
+| `browser_agent_list` | Paginated browser history | Text and `structuredContent` |
+
+Generation and browser execution consume credits. Retrieval and listing do not launch new work. The server marks browser execution as potentially destructive because a task can click, submit forms, or change data on external sites.
+
+## fast_spec and deep_spec
+
+Both tools accept the same parameters:
+
+| Parameter | Required | Type | Meaning |
+| --- | --- | --- | --- |
+| `executiveSummary` | Yes | String, minimum 10 characters | What to specify |
+| `existingContext` | No | String | Existing code, stack, constraints, and architecture as text |
+| `docURLs` | No | Array of URL strings | Reference documentation |
+
+```json
+{
+  "executiveSummary": "Add CSV exports to the reporting dashboard.",
+  "existingContext": "An existing TypeScript app with a reports API and organization-scoped access.",
+  "docURLs": ["https://www.rfc-editor.org/rfc/rfc4180"]
+}
+```
+
+These MCP tools do **not** take REST's `input`, `currentContext`, `file`, or `async` fields. They may return before generation finishes. If the result provides a specification ID, call `get_spec` until its status is `completed` or `failed`.
+
+Generation results are text, not the REST `SpecResponse` JSON envelope. A progress notification reaching 100 does not replace a terminal status check.
+
+## get_spec
+
+```json
+{ "specId": "507f1f77bcf86cd799439011" }
+```
+
+`specId` is required. Use the ID returned by generation or listing. A successful `structuredContent` contains `specId` and `status`; it may also include `endpoint`, `created`, `executionTimeMs`, `progress`, `specUrl`, `predevUrl`, `output`, and `errorMessage`.
+
+`output` is specification Markdown, preferring the coding-agent variant. Status is `pending`, `processing`, `completed`, `failed`, or `unknown`. Optional values may be absent while generation is running.
+
+## list_specs
+
+| Parameter | Type | Default | Values |
+| --- | --- | --- | --- |
+| `limit` | Number | `20` | `1`–`100` |
+| `skip` | Number | `0` | Zero or greater |
+| `endpoint` | String | All | `fast_spec`, `deep_spec` |
+| `status` | String | All | `pending`, `processing`, `completed`, `failed` |
+
+For nonempty pages, `structuredContent` contains `specs`, `total`, `hasMore`, `skip`, and `limit`. Each entry uses **`specId`**, not REST's `_id`. Use `get_spec` for the full body. An empty page returns a text-only result.
+
+There is no `find_specs` MCP tool; use [REST search](/architect-agent/api/find-specs).
+
+## browser_agent
+
+| Parameter | Required | Type | Meaning |
+| --- | --- | --- | --- |
+| `tasks` | Yes | Nonempty array | One object per browser task |
+| `concurrency` | No | Number, `1`–`20` | Parallel task allowance within this run; default `5` |
+| `async` | No | Boolean | Return the run ID without waiting for results |
+
+Each task supports:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `url` | String, required | Starting URL |
+| `instruction` | String | Goal to accomplish |
+| `input` | Object of string values | Form fields or other task inputs |
+| `output` | JSON Schema | Expected output shape |
+| `successCondition` | String | Natural-language completion condition |
+| `mode` | `auto`, `extract`, `agent` | Automatic routing, schema extraction, or goal-driven navigation |
+| `maxSteps` | Integer, `1`–`50` | Planning-iteration budget |
+| `maxDurationSeconds` | Integer, `5`–`600` | Per-task execution budget in seconds |
+
+Limits apply to each task. Set explicit budgets for long flows; defaults can vary by task and execution mode. Your account's [in-flight limit](/browser-agents/api/queue-status) also applies to the whole submission.
+
+Synchronous execution returns a **text summary**, which truncates task data. Retrieve `browser_agent_get` for full structured results. Async execution returns the ID in text so you can poll it.
+
+The MCP tool has no `stream` or `idempotencyKey` input. It emits live notifications during synchronous execution when the client supports them. See [browser MCP examples](/browser-agents/mcp-tool).
+
+## browser_agent_get
+
+```json
+{ "id": "507f1f77bcf86cd799439011", "includeEvents": false }
+```
+
+`id` is required; `includeEvents` is optional and defaults to false. `structuredContent` contains the [browser run](/browser-agents/api/task-status), including individual task outcomes and extracted data. Set `includeEvents` to true to retrieve timelines and screenshots.
+
+## browser_agent_list
+
+| Parameter | Type | Default | Values |
+| --- | --- | --- | --- |
+| `limit` | Number | `20` | `1`–`100` |
+| `skip` | Number | `0` | Use a nonnegative offset |
+| `status` | String | All | `processing`, `completed` |
+
+The structured result contains `total` and `batches`. Each batch has `id`, `status`, `total`, `completed`, and `totalCreditsUsed`. Unlike REST listing, this tool does **not** return `hasMore`; compare your offset and page length with `total`.
+
+## Notifications and errors
+
+The server sends `notifications/message` with `params: { level, logger, data }`. Browser messages contain a task index and event details; large screenshot and DOM values can be elided. Specification messages report phases such as `start`, `generating`, and `packaging`.
+
+To receive `notifications/progress`, include a `progressToken` in the `tools/call` request's `_meta`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "browser_agent",
+    "arguments": {
+      "tasks": [{ "url": "https://example.com", "instruction": "Read the page heading." }]
+    },
+    "_meta": { "progressToken": "heading-run" }
+  }
+}
+```
+
+Browser failures return `isError: true` when the tool call itself fails. Specification tools can return an error in text without `isError`; inspect the content and retrieve the specification status where an ID is available. Disconnecting or cancelling notification delivery does not cancel the underlying browser run.
+
+## Deprecated aliases
+
+| Older name | Current name |
+| --- | --- |
+| `browser_task` | `browser_agent` |
+| `browser_task_get` | `browser_agent_get` |
+| `browser_task_list` | `browser_agent_list` |
+
+The aliases remain registered for compatibility. Use the current names in new integrations. Credits, proposal review, queue status, and live browser URL retrieval are available through REST rather than dedicated MCP tools.

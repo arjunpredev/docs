@@ -1,652 +1,110 @@
 ---
-title: "Node SDK"
-description: "TypeScript/Node.js client for the pre.dev Architect API - Generate comprehensive software specifications"
+title: "Node.js SDK"
+description: "Generate and retrieve specifications with the published predev-api TypeScript client."
 icon: "node-js"
 ---
-
-A TypeScript/Node.js client library for the pre.dev Architect API. Generate comprehensive software specifications using AI-powered analysis.
-
-## Features
-
-- **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
-- **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
-- **Async Spec**: Non-blocking async methods for long-running requests
-- **Status Tracking**: Check the status of async specification generation requests
-- **Credits Management**: Check your remaining credits balance
-- **Full TypeScript Support**: Complete type definitions for better IDE support
-- **Error Handling**: Custom exceptions for different error scenarios
-- **Modern ES Modules**: Uses ES6+ import/export syntax
-
-## Installation
-
-Install the pre.dev Node SDK using npm:
 
 ```bash
 npm install predev-api
 ```
 
-## Quick Start
+The package is ESM and supports Node.js 18+.
+
+## Generate and wait for a specification
 
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-// Initialize the predev client with your API key
-const predev = new PredevAPI({ apiKey: 'your_api_key_here' });
-
-// Generate a fast specification
-const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with team collaboration'
+const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+const job = await client.fastSpecAsync({
+  input: 'Build a team task manager with projects and assignees.',
+  currentContext: 'Use TypeScript and preserve organization-scoped access.',
 });
-
-console.log(result);
-```
-
-## Authentication
-
-The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev/projects/key):
-
-```typescript
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-```
-
-## API Methods
-
-### Synchronous Methods
-
-#### fastSpec()
-
-Generate a fast specification (~1 minute, ~5-10 credits).
-
-```typescript
-const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with real-time collaboration'
-});
-```
-
-**Parameters:**
-- `options.input` **(required)**: `string` - Description of what you want to build
-- `options.currentContext` **(optional)**: `string` - Existing project context
-- `options.docURLs` **(optional)**: `string[]` - Documentation URLs to reference
-
-**Returns:** `Promise<SpecResponse>` object with complete specification data
-
-#### deepSpec()
-
-Generate a deep specification (~3-5 minutes, ~10-50 credits).
-
-```typescript
-const result = await predev.deepSpec({
-  input: 'Build a healthcare platform with HIPAA compliance'
-});
-```
-
-**Parameters:** Same as `fastSpec()`
-
-**Returns:** `Promise<SpecResponse>` object with comprehensive specification data
-
-### Asynchronous Methods
-
-#### fastSpecAsync()
-
-Generate a fast specification asynchronously (returns immediately).
-
-```typescript
-const result = await predev.fastSpecAsync({
-  input: 'Build a comprehensive e-commerce platform'
-});
-// Returns: { specId: "spec_123", status: "pending" }
-```
-
-**Parameters:** Same as `fastSpec()`
-
-**Returns:** `Promise<AsyncResponse>` object with `specId` for polling
-
-#### deepSpecAsync()
-
-Generate a deep specification asynchronously (returns immediately).
-
-```typescript
-const result = await predev.deepSpecAsync({
-  input: 'Build a fintech platform with regulatory compliance'
-});
-// Returns: { specId: "spec_456", status: "pending" }
-```
-
-**Parameters:** Same as `fastSpec()`
-
-**Returns:** `Promise<AsyncResponse>` object with `specId` for polling
-
-### Status Checking
-
-#### getSpecStatus()
-
-Check the status of an async specification generation request.
-
-```typescript
-const status = await predev.getSpecStatus('spec_123');
-// Returns full SpecResponse with status: "pending" | "processing" | "completed" | "failed"
-```
-
-**Parameters:**
-- `specId` **(required)**: `string` - The specification ID from async methods
-
-**Returns:** `Promise<SpecResponse>` object with current status and data (when completed)
-
-### Credits Management
-
-#### getCreditsBalance()
-
-Get the remaining credits balance for your API key.
-
-```typescript
-const balance = await predev.getCreditsBalance();
-// Returns: { success: true, creditsRemaining: 450 }
-```
-
-**Parameters:** None
-
-**Returns:** `Promise<CreditsBalanceResponse>` object with credits remaining
-
-**Example:**
-
-```typescript
-const balance = await predev.getCreditsBalance();
-if (balance.creditsRemaining < 50) {
-  console.log(`Low credits: ${balance.creditsRemaining} remaining`);
-} else {
-  console.log(`Credits available: ${balance.creditsRemaining}`);
-}
-```
-
-### Listing and Searching Specs
-
-#### listSpecs()
-
-List all specs with optional filtering and pagination.
-
-```typescript
-// Get first 20 specs
-const result = await predev.listSpecs();
-
-// Get completed specs only
-const completed = await predev.listSpecs({ status: 'completed' });
-
-// Paginate: get specs 20-40
-const page2 = await predev.listSpecs({ skip: 20, limit: 20 });
-
-// Filter by endpoint type
-const fastSpecs = await predev.listSpecs({ endpoint: 'fast_spec' });
-```
-
-**Parameters:**
-- `params.limit` **(optional)**: `number` - Results per page (1-100, default: 20)
-- `params.skip` **(optional)**: `number` - Offset for pagination (default: 0)
-- `params.endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
-- `params.status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
-
-**Returns:** `Promise<ListSpecsResponse>` object with specs array and pagination metadata
-
-#### findSpecs()
-
-Search for specs using regex patterns.
-
-```typescript
-// Search for "payment" specs
-const paymentSpecs = await predev.findSpecs({ query: 'payment' });
-
-// Search for specs starting with "Build"
-const buildSpecs = await predev.findSpecs({ query: '^Build' });
-
-// Search: only completed specs mentioning "auth"
-const authSpecs = await predev.findSpecs({ 
-  query: 'auth', 
-  status: 'completed' 
-});
-
-// Complex regex: find SaaS or SASS projects
-const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
-```
-
-**Parameters:**
-
-- `params.query` **(required)**: `string` - Regex pattern (case-insensitive)
-- `params.limit` **(optional)**: `number` - Results per page (1-100, default: 20)
-- `params.skip` **(optional)**: `number` - Offset for pagination (default: 0)
-- `params.endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
-- `params.status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
-
-**Returns:** `Promise<ListSpecsResponse>` object with matching specs and pagination metadata
-
-**Regex Pattern Examples:**
-
-| Pattern | Matches |
-||---------|---------|
-| `payment` | "payment", "Payment", "make payment" |
-| `^Build` | Specs starting with "Build" |
-| `platform$` | Specs ending with "platform" |
-| `(API\|REST)` | Either "API" or "REST" |
-| `auth.*system` | "auth" then anything then "system" |
-| `\\d{3,}` | 3+ digits (budgets, quantities) |
-| `saas\|sass` | SaaS or SASS |
-
-## File Upload Support
-
-All `fastSpec`, `deepSpec`, `fastSpecAsync`, and `deepSpecAsync` methods support optional file uploads. This allows you to provide architecture documents, requirements files, design mockups, RFPs (Request for Proposals), or other context files to improve specification generation.
-
-### Browser/Web Environment
-
-```typescript
-// Using File input from HTML form
-const fileInput = document.querySelector('input[type="file"]');
-const file = fileInput.files[0];
-
-const result = await predev.fastSpec({
-  input: 'Generate specs based on this design document',
-  file: file // Pass the File object directly
-});
-```
-
-### Node.js Environment
-
-```typescript
-import fs from 'fs';
-
-// Method 1: Using file path (simplest)
-const result = await predev.fastSpec({
-  input: 'Build based on these requirements',
-  file: {
-    data: fs.readFileSync('requirements.pdf'),
-    name: 'requirements.pdf'
-  }
-});
-
-// Method 2: Using file object
-const fileContent = fs.readFileSync('architecture.doc');
-const result = await predev.deepSpec({
-  input: 'Create comprehensive specs',
-  file: {
-    data: fileContent,
-    name: 'architecture.doc'
-  }
-});
-```
-
-### Supported File Types
-
-- PDF documents (`*.pdf`)
-- Word documents (`*.doc`, `*.docx`)
-- Text files (`*.txt`)
-- Images (`*.jpg`, `*.png`, `*.jpeg`)
-
-### Response with File Upload
-
-When you upload a file, the response includes:
-
-```typescript
-{
-  uploadedFileName?: string;      // Name of the uploaded file
-  uploadedFileShortUrl?: string;  // URL to access the file
-  codingAgentSpecUrl?: string;    // Spec optimized for AI systems
-  humanSpecUrl?: string;          // Spec optimized for humans
-  // ... other fields
-}
-```
-
-## Response Types
-
-### AsyncResponse
-
-```typescript
-{
-  specId: string;      // Unique ID for polling (e.g., "spec_abc123")
-  status: "pending" | "processing" | "completed" | "failed";
-}
-```
-
-### SpecResponse
-
-```typescript
-interface SpecResponse {
-  // Basic info
-  _id?: string;                    // Internal ID
-  created?: string;                // ISO timestamp
-  endpoint: "fast_spec" | "deep_spec";
-  input: string;                   // Original input text
-  status: "pending" | "processing" | "completed" | "failed";
-  success: boolean;
-  uploadedFileShortUrl?: string;   // URL to input file
-  uploadedFileName?: string;       // Name of input file
-
-  // Output data (when completed)
-  humanSpecUrl?: string;           // URL to human-readable spec
-  humanSpecMarkdown?: string;      // Full markdown SOW for humans/clients
-  humanSpecJson?: HumanSpecJson;   // Full structured SOW JSON (hours/personas/roles)
-  totalHumanHours?: number;        // Estimated hours for human implementation
-  codingAgentSpecUrl?: string;         // URL to coding agent spec format
-  codingAgentSpecMarkdown?: string;    // Direct markdown SOW for AI tools
-  codingAgentSpecJson?: CodingAgentSpecJson; // Direct structured SOW JSON for AI tools
-  executionTime?: number;          // Processing time in milliseconds
-
-  // Integration URLs (when completed)
-  predevUrl?: string;              // Link to pre.dev project
-  architectureInfographicUrl?: string; // Rendered architecture infographic
-  zippedDocsUrls?: ZippedDocsUrl[];    // Downloadable doc bundles
-
-  // Structured graphs (when completed)
-  userFlowGraph?: SpecGraph;       // User flow nodes + edges
-  architectureGraph?: SpecGraph;   // System architecture nodes + edges
-  enrichedTechStack?: SpecEnrichedTechStackItem[]; // Tech choices with useFor/reason
-
-  // Billing
-  creditsUsed?: number;            // Credits consumed (live during processing)
-
-  // Error handling
-  errorMessage?: string;           // Error details if failed
-  progress?: number;               // Overall progress percentage (0-100)
-  progressMessage?: string;        // Detailed progress message (e.g., "Generating User Stories...")
-}
-
-interface CodingAgentSpecJson {
-  title?: string;
-  executiveSummary: string;
-  coreFunctionalities: SpecCoreFunctionality[];
-  techStack: SpecTechStackItem[];
-  techStackGrouped: Record<string, string[]>;
-  milestones: CodingAgentMilestone[];
-}
-
-interface CodingAgentMilestone {
-  milestoneNumber: number;
-  description: string;
-  stories: CodingAgentStory[];
-}
-
-interface CodingAgentStory {
-  id?: string;
-  title: string;
-  description?: string;
-  acceptanceCriteria?: string[];
-  complexity?: string;
-  subTasks: CodingAgentSubTask[];
-}
-
-interface CodingAgentSubTask {
-  id?: string;
-  description: string;
-  complexity: string; // "S" | "M" | "L" | "XL"
-}
-
-interface HumanSpecJson {
-  title?: string;
-  executiveSummary: string;
-  coreFunctionalities: SpecCoreFunctionality[];
-  personas: SpecPersona[];
-  techStack: SpecTechStackItem[];
-  techStackGrouped: Record<string, string[]>;
-  milestones: HumanSpecMilestone[];
-  totalHours: number;
-  roles: SpecRole[];
-}
-
-interface HumanSpecMilestone {
-  milestoneNumber: number;
-  description: string;
-  hours: number;
-  stories: HumanSpecStory[];
-}
-
-interface HumanSpecStory {
-  id?: string;
-  title: string;
-  description?: string;
-  acceptanceCriteria?: string[];
-  hours: number;
-  complexity?: string;
-  subTasks: HumanSpecSubTask[];
-}
-
-interface HumanSpecSubTask {
-  id?: string;
-  description: string;
-  hours: number;
-  complexity: string;
-  roles?: SpecRole[];
-}
-
-interface SpecPersona {
-  title: string;
-  description: string;
-  primaryGoals?: string[];
-  painPoints?: string[];
-  keyTasks?: string[];
-}
-
-interface SpecRole {
-  name: string;
-  shortHand: string;
-}
-
-interface SpecCoreFunctionality {
-  name: string;
-  description: string;
-  priority?: string; // "High" | "Medium" | "Low"
-}
-
-interface SpecTechStackItem {
-  name: string;
-  category: string;
-}
-```
-
-### ListSpecsResponse
-
-```typescript
-{
-  specs: SpecResponse[];  // Array of spec objects
-  total: number;          // Total count of matching specs
-  hasMore: boolean;       // Whether more results are available
-}
-```
-
-### CreditsBalanceResponse
-
-```typescript
-{
-  success: boolean;
-  creditsRemaining: number;
-}
-```
-
-## Examples
-
-### Generate Fast Spec
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with team collaboration',
-});
-
-console.log(`Specification URL: ${result.humanSpecUrl}`);
-```
-
-### Generate Deep Spec with Context
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-const result = await predev.deepSpec({
-  input: 'Add advanced analytics dashboard',
-  currentContext: 'Existing e-commerce platform with user auth and product catalog',
-});
-
-console.log(result.codingAgentSpecUrl);
-```
-### With Documentation URLs
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-const result = await predev.fastSpec({
-  input: 'Build a customer support ticketing system',
-  docURLs: ['https://docs.pre.dev', 'https://docs.stripe.com'],
-});
-```
-
-### Async Workflow with Polling
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-async function generateSpec() {
-  // Start async generation
-  const asyncResult = await predev.fastSpecAsync({
-    input: 'Build a social media platform',
-  });
-
-  console.log(`Spec ID: ${asyncResult.specId}`);
-
-  // Poll for completion
-  let status;
-  while (true) {
-    status = await predev.getSpecStatus(asyncResult.specId);
-    console.log(`Status: ${status.status}`);
-    
-    if (status.status === 'completed' || status.status === 'failed') {
-      break;
+console.log('Save this ID:', job.specId);
+const deadline = Date.now() + 600_000;
+
+async function waitForSpec() {
+  while (Date.now() < deadline) {
+    const spec = await client.getSpecStatus(job.specId);
+    if (spec.status === 'completed') return spec;
+    if (spec.status === 'failed') {
+      throw new Error(spec.errorMessage ?? 'Specification failed');
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 5_000));
   }
-
-  if (status.status === 'completed') {
-    console.log(`Specification URL: ${status.codingAgentSpecUrl}`);
-  }
+  throw new Error('Polling deadline reached; retrieve the saved spec ID later.');
 }
 
-generateSpec();
+const spec = await waitForSpec();
+console.log(spec.codingAgentSpecMarkdown);
 ```
 
-### List and Filter Specs
+## Method reference
+
+| Method | Parameters | Return |
+| --- | --- | --- |
+| `fastSpec(options)` | `input`, optional `currentContext`, `docURLs`, `file` | `Promise<SpecResponse>` |
+| `deepSpec(options)` | Same | `Promise<SpecResponse>` |
+| `fastSpecAsync(options)` | Same | `Promise<AsyncResponse>` |
+| `deepSpecAsync(options)` | Same | `Promise<AsyncResponse>` |
+| `getSpecStatus(specId)` | Specification ID | `Promise<SpecResponse>` |
+| `listSpecs(params)` | Optional `limit`, `skip`, `endpoint`, `status` | `Promise<ListSpecsResponse>` |
+| `findSpecs(params)` | Required `query`; same filters | `Promise<ListSpecsResponse>` |
+| `getCreditsBalance()` | None | `Promise<CreditsBalanceResponse>` |
+
+All methods use `https://api.pre.dev` by default. The constructor accepts `apiKey` and optional `baseUrl`; it has no timeout, retry, or custom-header option. Use direct HTTP when you need those controls. A polling deadline does not abort an in-flight SDK request.
+
+## History and credits
 
 ```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-// Get all completed specs
-const completed = await predev.listSpecs({ 
-  status: 'completed',
-  limit: 50 
-});
-
-console.log(`Total completed specs: ${completed.total}`);
-completed.specs.forEach(spec => {
-  console.log(`- ${spec.input} (${spec.endpoint})`);
-});
-```
-
-### Search Specs with Regex
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-// Find all payment-related specs
-const paymentSpecs = await predev.findSpecs({
-  query: 'payment|checkout|billing',
-  status: 'completed',
-  limit: 20
-});
-
-console.log(`Found ${paymentSpecs.total} payment-related specs`);
-```
-
-### Check Credits Balance
-
-```typescript
-import { PredevAPI } from 'predev-api';
-
-const predev = new PredevAPI({ apiKey: 'your_api_key' });
-
-// Get current credit balance
-const balance = await predev.getCreditsBalance();
-console.log(`Credits remaining: ${balance.creditsRemaining}`);
-
-// Check before making expensive request
-if (balance.creditsRemaining >= 50) {
-  const result = await predev.deepSpec({
-    input: 'Build an enterprise platform'
-  });
-  console.log(`Spec ready: ${result.codingAgentSpecUrl}`);
-} else {
-  console.log(`Insufficient credits. Need 50, have ${balance.creditsRemaining}`);
+const page = await client.findSpecs({ query: 'report|export', status: 'completed' });
+for (const summary of page.specs) {
+  console.log(summary._id, summary.input);
 }
+const balance = await client.getCreditsBalance();
+console.log(balance.creditsRemaining);
 ```
 
-## Error Handling
+List and search return summaries. Retrieve a specific ID for full bodies and graphs. Optional artifacts can be absent or null; see [inputs and outputs](/architect-agent/inputs-and-outputs).
 
-All SDK errors inherit from `PredevAPIError`. Typed subclasses map to HTTP status codes:
+## File uploads
 
-| Exception | HTTP | When |
-|---|---|---|
-| `AuthenticationError` | 401 | Missing or invalid API key |
-| `SubscriptionRequiredError` | 402 | Endpoint needs an active subscription |
-| `InsufficientCreditsError` | 402 | Not enough credits — top up at [pre.dev/projects/key](https://pre.dev/projects/key) |
-| `BatchTooLargeError` | 400 | Request exceeds size limits |
-| `QueueFullError` | 429 | Per-user in-flight queue is full — retry later |
-| `RateLimitError` | 429 | Too many requests — back off and retry |
-| `PredevAPIError` | other | Any other API error (has `.statusCode`) |
+Pass a **Blob with an accepted MIME type**. SDK 1.1.0 encodes its `{ data: Buffer, name }` alternative as `application/octet-stream`, which the API's file filter does not accept.
 
 ```typescript
-import {
-  PredevAPI,
-  AuthenticationError,
-  InsufficientCreditsError,
-  RateLimitError,
-  PredevAPIError,
-} from 'predev-api';
+import { readFile } from 'node:fs/promises';
 
-const predev = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+const bytes = await readFile('requirements.pdf');
+const upload = await client.fastSpecAsync({
+  input: 'Create an implementation plan from these requirements.',
+  file: new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }),
+  docURLs: ['https://www.postgresql.org/docs/current/'],
+});
+console.log(upload.specId);
+```
+
+The SDK serializes `docURLs` correctly for multipart requests. It generates a filename for Blob uploads; use direct multipart HTTP if preserving the original filename matters. See [accepted formats and limits](/architect-agent/inputs-and-outputs#upload-a-file).
+
+## Errors
+
+```typescript
+import { AuthenticationError, RateLimitError, PredevAPIError } from 'predev-api';
 
 try {
-  const spec = await predev.fastSpec({ input: 'Build a task management app' });
-} catch (err) {
-  if (err instanceof AuthenticationError) {
-    console.error('Check your API key at pre.dev/projects/key');
-  } else if (err instanceof InsufficientCreditsError) {
-    console.error('Out of credits:', err.message);
-  } else if (err instanceof RateLimitError) {
-    console.error('Rate limited - retry with backoff');
-  } else if (err instanceof PredevAPIError) {
-    console.error(`API error (${err.statusCode}):`, err.message);
+  await client.listSpecs({ limit: 20 });
+} catch (error) {
+  if (error instanceof AuthenticationError) {
+    console.error('Check the API key and account access at pre.dev/projects/key.');
+  } else if (error instanceof RateLimitError) {
+    console.error('Back off before retrying.');
+  } else if (error instanceof PredevAPIError) {
+    console.error(error.message);
   } else {
-    throw err;
+    throw error;
   }
 }
 ```
 
-## Documentation
+The base exception has no `statusCode` property. Browser gate errors have additional typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`.
 
-For more information about the Pre.dev Architect API, visit:
-
-- [API Documentation](https://docs.pre.dev/)
-- [pre.dev Website](https://pre.dev/)
-- [npm Package](https://www.npmjs.com/package/predev-api)
-
-## Support
-
-For issues, questions, or contributions:
-
-- [GitHub Repository](https://github.com/predotdev/predev-api)
-- [Discord Community](https://discord.com/invite/ejVTRJ6WXS)
+Continue with the [Browser Agents Node guide](/browser-agents/sdks/node), [npm package](https://www.npmjs.com/package/predev-api), or [SDK source](https://github.com/predotdev/predev-api).
