@@ -16,7 +16,7 @@ Check the HTTP status before parsing a success response. Successful HTTP deliver
 | `404` | Resource missing or inaccessible | Check the returned ID and the caller |
 | `429` | Rate limit or browser in-flight limit reached | Back off; inspect your [queue](/browser-agents/api/queue-status) |
 | `500` | Server-side failure | Inspect whether work was accepted before resubmitting |
-| `503` | Streaming capacity unavailable | Fall back to async submission and polling |
+| `503` | Streaming capacity or website verification unavailable | Inspect `code`; retry DNS verification later, or use async submission for streaming capacity |
 
 General API errors usually include `error` and may include `message`. Browser submission gates use a machine-readable `code`:
 
@@ -29,11 +29,18 @@ General API errors usually include `error` and may include `message`. Browser su
 
 | Browser code | HTTP | Handling |
 | --- | --- | --- |
+| `INVALID_TASK` | `400` | Correct the task object, instructions, or output schema |
+| `INVALID_URL` | `400` | Provide a full HTTP(S) website URL |
+| `MISSING_INSTRUCTION` | `400` | Add instructions or a non-empty output schema |
+| `URL_UNREACHABLE` | `400` | Fix the domain; no DNS address was found |
+| `URL_CHECK_UNAVAILABLE` | `503` | Retry later; no tasks were started or charged |
 | `BATCH_TOO_LARGE` | `400` | Split the batch |
 | `SUBSCRIPTION_REQUIRED` | `402` | Follow `actionUrl` to review plans |
 | `INSUFFICIENT_CREDITS` | `402` | Follow `actionUrl` to add credits |
 | `QUEUE_FULL` | `429` | Wait for tasks to finish or submit fewer tasks |
 | `RATE_LIMITED` | `429` | Retry with exponential backoff and jitter |
+
+Input validation errors may include a zero-based `taskIndex` and a `field`. Validation rejects the whole batch before charging or starting work. Invalid tasks and explicit permanent URL/DNS failures are not retried in another sandbox; transient execution failures can still be retried.
 
 These codes belong to Browser Agents. Do not assume an Architect `402` has a browser gate code.
 
