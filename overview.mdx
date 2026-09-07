@@ -1,42 +1,35 @@
 ---
-title: "What is pre.dev?"
-description: "The coding agent built for long-horizon tasks: it plans before it codes, remembers across sessions, and runs autonomously for hours."
+title: "pre.dev documentation"
+sidebarTitle: "Introduction"
+description: "Build software, generate specifications, and run browser tasks."
 ---
 
-pre.dev is the coding agent for work that outlasts a single prompt. Before it writes any code, it plans — a full architecture, spec, and roadmap — then builds against that plan autonomously for hours, verifying each task before moving to the next and shipping real pull requests to your GitHub. Sessions persist, fork, and merge, so tomorrow's work builds on today's instead of starting over.
+import { ProductPaths } from "/snippets/product-paths.jsx";
 
-## Why plan first
+Use the [Coding Agent](/coding-agent/quickstart) to implement a change, the [Architect API](/architect-agent/quickstart) to plan one, or [Browser Agents](/browser-agents/quickstart) to work with a website.
 
-- **Long-horizon work needs a map.** An agent that improvises for hours drifts. pre.dev's spec — stack, milestones, user stories, acceptance criteria — is the contract every sprint builds and verifies against.
-- **Memory across sessions.** The plan, the codebase, and everything the agent has learned about your project persist. Fork a session to try something, merge back what works.
-- **Autonomy you can steer.** Run the whole roadmap on autopilot, review one task at a time, or dial effort per sprint — from a fast direct pass to the full research → code → verify pipeline.
+<ProductPaths />
 
-## What's on this site
+## Choose your interface
 
-- **[Coding Agent](/coding-agent/overview)** <span style={{ display: 'inline-block', padding: '2px 8px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', borderRadius: '4px', background: 'linear-gradient(90deg, #f59e0b, #ef4444)', color: '#fff', verticalAlign: 'middle', marginLeft: '4px' }}>Flagship</span> The full loop — plan, build, verify, ship. Use it from the web workspace or the CLI.
-- **[Browser Agents](/browser-agents/overview)** — fast, cheap, sandboxed browser automation for humans and AI. One REST call or MCP tool: scrape authed dashboards, fill forms, run multi-step flows, extract structured JSON.
-- **[Architect API](/architect-agent/overview)** — the planning brain as a standalone REST API and MCP server. Drop `fast_spec` / `deep_spec` into Cursor, Claude Code, or your own tooling.
-- **[CLI](/cli/overview)** — the same agent, workspace, and slash commands in your terminal.
+| Work from | Use | Start with |
+| --- | --- | --- |
+| A browser | The web workspace for code, plans, and previews | [Build your first project](/coding-agent/quickstart) |
+| A local repository | The CLI and your existing Git workflow | [Install the CLI](/cli/overview) |
+| Your application | REST or an SDK for specifications and browser tasks | [API overview](/api-reference/overview) |
+| Another AI assistant | The product MCP server | [Connect MCP](/architect-agent/mcp-setup) |
 
-## Find your way around
+The public API exposes planning and browser operations. For code implementation, start in the web workspace or CLI.
+
+## Build an integration
 
 <CardGroup cols={2}>
-  <Card title="Coding Agent" icon="rocket" href="/coding-agent/overview">
-    **Ship entire applications from a prompt.** Real PRs, verified acceptance criteria, live preview and hosting, autonomous multi-hour builds.
+  <Card title="Get an API key" icon="key" href="/api-reference/authentication">
+    Choose your account, authenticate a request, and check access.
   </Card>
-  <Card title="Quickstart" icon="play" href="/coding-agent/quickstart">
-    Sign up, describe an app, hit **Build on Autopilot**. Minutes to a deployed product.
-  </Card>
-  <Card title="CLI" icon="terminal" href="/cli/overview">
-    The web workspace's chat, slash commands, effort and model controls — in your terminal, on your machine.
-  </Card>
-  <Card title="Browser Agents" icon="browser" href="/browser-agents/overview">
-    **Browser automation that behaves like an API.** Sync, async, or SSE-streamed. Structured data out, not raw HTML.
-  </Card>
-  <Card title="Architect API" icon="compass" href="/architect-agent/overview">
-    One `POST /fast-spec` or `/deep-spec` returns a full structured plan — tech stack, milestones, user stories, granular subtasks. REST + MCP.
-  </Card>
-  <Card title="Plans & Credits" icon="coins" href="/coding-agent/plans-and-credits">
-    What credits pay for, what each plan includes, and what happens when you run out mid-build.
+  <Card title="Handle results and errors" icon="code" href="/api-reference/errors">
+    Recognize terminal states, recover from failures, and retry safely.
   </Card>
 </CardGroup>
+
+Giving these docs to a coding assistant? Start with the [guide for agents](/for-agents) and the [OpenAPI schema](/api-reference/openapi.json). For account access and usage, see [plans and credits](/coding-agent/plans-and-credits).

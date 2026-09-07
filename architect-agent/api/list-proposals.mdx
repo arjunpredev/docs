@@ -1,0 +1,14 @@
+---
+title: "List proposals"
+openapi: "/api-reference/openapi.json GET /list-proposals"
+description: "List uploaded proposals with offset pagination."
+---
+
+```bash
+curl --fail-with-body 'https://api.pre.dev/list-proposals?limit=20&skip=0' \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+The response contains `proposals`, `total`, and `hasMore`. Proposals are sorted by creation time, newest first. `limit` defaults to `20` and is capped at `100`; use positive limits and a nonnegative `skip`.
+
+Listing is scoped to the authenticated user. Entries include `_id`, `proposalName`, `proposalContent`, timestamps, and optional file metadata. Use `_id` as `proposalId` in other proposal requests.

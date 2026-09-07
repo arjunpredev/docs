@@ -1,0 +1,17 @@
+---
+title: "List proposal assessments"
+openapi: "/api-reference/openapi.json GET /list-vetted-proposals"
+description: "List stored assessments for a specification you can access."
+---
+
+```bash
+curl --fail-with-body --get https://api.pre.dev/list-vetted-proposals \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  --data-urlencode "specId=$SPEC_ID" \
+  --data-urlencode 'limit=20' \
+  --data-urlencode 'skip=0'
+```
+
+`specId` is required. The response contains `vettedProposals`, `total`, and `hasMore`. `limit` defaults to `20` and is capped at `100`; use a positive limit and nonnegative offset. An empty result is an empty array.
+
+Missing/invalid specification IDs return `400`, inaccessible specifications `403`, and unknown specifications `404`. Use an assessment's `_id` to [retrieve it directly](/architect-agent/api/get-vetted-proposal).

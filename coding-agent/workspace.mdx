@@ -1,101 +1,55 @@
 ---
-title: "The Workspace"
-description: "A terminal-style chat plus live views of your plan, code, and running app."
+title: "The workspace"
+description: "Navigate agent chat, planning artifacts, code, preview, and project settings."
 ---
 
-Every pre.dev project opens into the workspace: a terminal-style chat where you talk to the agent, surrounded by live views of everything it produces — the plan, the architecture, the spec, the code, and the running app.
+The project workspace brings the agent conversation, code, and project artifacts into one place. Use the session tabs to switch workstreams and the view menu to inspect the current project.
 
-<Frame caption="The workspace: terminal chat with the agent, session tabs, and live build progress">
-  <img src="/images/product/workspace-terminal.jpg" alt="The workspace: terminal chat with the agent, session tabs, and live build progress" />
-</Frame>
+## Views
 
-## The Agent chat
+| View | Shortcut | What it shows |
+| --- | --- | --- |
+| Agent | Cmd/Ctrl + 1 | Chat, tool activity, and the current run |
+| Plan → Roadmap | Cmd/Ctrl + 2 | Available milestones, stories, and timeline |
+| Plan → Architecture | Cmd/Ctrl + 3 | Available system and user-flow graphs |
+| Plan → Spec | Cmd/Ctrl + 4 | Available specification documents |
+| Code | Cmd/Ctrl + 5 | Source files and Git information |
 
-The Agent view is where the work happens. Type what you want in plain language — a feature, a bug report, a question about the codebase — and the agent takes it from there.
+Planning views appear when their artifacts exist. A direct build can have working code before it has a roadmap or architecture graph. Open the preview from the workspace's preview controls when a development server is available.
 
-<CardGroup cols={3}>
-  <Card title="Tool cards" icon="wrench">
-    Every action the agent takes — searching, editing files, running commands — appears as a card in the feed. Click any card to expand the full detail: search results, file diffs, command output.
-  </Card>
-  <Card title="Thoughts" icon="brain">
-    While the agent reasons, a live ticker streams its thinking. Finished reasoning collapses into a "Thoughts" disclosure you can expand later.
-  </Card>
-  <Card title="Slash commands" icon="terminal">
-    Type `/` in an empty composer to open the command palette. Filter by typing, navigate with arrow keys, execute with Enter.
-  </Card>
-</CardGroup>
+## Chat controls
 
-## View tabs
+Type `/` to see commands supported by the current client.
 
-The view switcher (top of the workspace) moves between live views of your project. Each has a keyboard shortcut:
+| Command | Action |
+| --- | --- |
+| `/auto` | Let the agent choose whether to answer, build, or plan |
+| `/plan` | Shape the plan before implementation |
+| `/model` | Choose models for chat, research, coding, and acceptance |
+| `/effort` | Set sprint effort to auto, low, medium, or high |
+| `/balance` | View remaining credits |
+| `/sprint <feature>` | Start a dedicated sprint |
+| `/fork <prompt>` | Start another session for a task |
+| `/integrations` | Open Project setup |
+| `/reverse` | Analyze an existing codebase |
+| `/kanban`, `/roadmap`, `/arch` | Open project planning views |
+| `/share` | Open sharing controls |
 
-<Frame caption="Switch views from the header, or with ⌘1–⌘5">
-  <img src="/images/product/view-switcher.jpg" alt="Switch views from the header, or with ⌘1–⌘5" />
-</Frame>
+The [CLI command reference](/cli/commands) lists terminal-specific commands and keys. The web and CLI palettes have different capabilities.
 
-| View | Shortcut | What you see |
-|------|----------|-------------|
-| **Agent** | `⌘1` | The chat — talk to the agent, watch it work |
-| **Plan → Roadmap** | `⌘2` | Milestones and timeline, with real-time build progress |
-| **Plan → Architecture** | `⌘3` | Interactive system architecture graph |
-| **Plan → Spec** | `⌘4` | The full project specification documents |
-| **Code** | `⌘5` | The live codebase with git status and history |
+## Project setup
 
-<Tip>
-  The Plan tabs and Code update in real time as the agent builds — you can watch files appear in the Code view while a sprint runs. The running app itself lives behind the **Preview** button.
-</Tip>
+Open `/integrations`, use the prompt bar's **+** menu, or use **Environment** from Code. The **Project setup** dialog has four tabs:
 
-Two buttons sit alongside the views:
+- **Connections**: choose a workspace account for each provider.
+- **Skills**: configure the agent's reusable instructions.
+- **MCP**: connect additional tools and data sources.
+- **Env Vars**: configure the application's environment.
 
-- **Env vars** — manage your project's environment variables and API keys. See [Environment Variables](/coding-agent/integrations/env-vars).
-- **Preview** — open the running app. See [Preview & Hosting](/coding-agent/building/preview-and-hosting).
+[Integrations](/coding-agent/integrations/overview) explains workspace defaults and project overrides.
 
-## Slash commands
+## Sessions and sharing
 
-Type `/` in the chat composer to open the palette:
+A session has its own conversation and branch of work. The active session determines what you are inspecting. Presence indicators help collaborators see which session others are viewing.
 
-<Frame caption="The slash palette: build controls without leaving the composer">
-  <img src="/images/product/slash-commands.jpg" alt="The slash palette: build controls without leaving the composer" />
-</Frame>
-
-| Command | What it does |
-|---------|-------------|
-| `/pro` | Toggle Pro Mode — pin every phase to the Pro model |
-| `/model` | Choose models per phase (chat / research / coding / acceptance) |
-| `/balance` | Show your remaining credit balance |
-| `/effort` | Set the sprint effort level (auto / low / medium / high) |
-| `/sprint <feature>` | Launch a custom sprint in a new session |
-| `/fork <prompt>` | Spin a prompt off into a new isolated session |
-| `/reverse` | Map an existing codebase with reverse engineering |
-| `/kanban` | Jump to the Kanban board |
-| `/roadmap` | Jump to the Roadmap / Gantt |
-| `/arch` | Jump to the Architecture graph |
-
-A few more (`/skills`, `/mcp`, `/integrations`, `/share`, `/clear`, `/help`) appear in the palette marked "soon" — skills, MCP servers, and integrations are managed from the Integrations page until they go live in the composer.
-
-Two commands are two-level: `/effort ` lists the levels inline, and `/model ` walks you through phase, then model — all without leaving the composer.
-
-<Note>
-  The same workspace concepts — the agent chat, slash commands, effort and model settings — work identically in the pre.dev CLI. See the [CLI overview](/cli/overview).
-</Note>
-
-## Sessions
-
-The tab bar above the chat holds your sessions — isolated branches of the project you can work on in parallel and merge back. See [Sessions & Parallel Agents](/coding-agent/building/sessions-and-parallel-agents).
-
-## What's next?
-
-<CardGroup cols={2}>
-  <Card title="Build Modes & Effort" icon="play" href="/coding-agent/building/build-modes">
-    Choose what to build next and how deep each sprint goes.
-  </Card>
-  <Card title="Sessions & Parallel Agents" icon="code-branch" href="/coding-agent/building/sessions-and-parallel-agents">
-    Fork isolated sessions and fan work out to parallel agents.
-  </Card>
-  <Card title="Roadmap & Tracking" icon="chart-line" href="/coding-agent/building/progress-tracking">
-    Monitor build progress from the roadmap view.
-  </Card>
-  <Card title="Integrations" icon="plug" href="/coding-agent/integrations/overview">
-    Connect API keys, OAuth services, MCP servers, and skills.
-  </Card>
-</CardGroup>
+Use **Share** to manage collaborators and preview access. Public preview access does not grant permission to edit the project. See [sessions](/coding-agent/building/sessions-and-parallel-agents) and [collaboration](/coding-agent/building/collaboration).

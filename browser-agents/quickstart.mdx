@@ -1,29 +1,27 @@
 ---
-title: "Quickstart"
-description: "Four copy-paste examples: curl, TypeScript, Python, MCP."
-agent_hint: "Pick your language block, replace $PREDEV_API_KEY, run."
+title: "Browser Agents quickstart"
+description: "Extract a page heading, inspect the result, and choose a response mode."
 ---
 
-<Card title="Get your API key" icon="key" href="https://pre.dev/projects/key" horizontal>
-  Sign in once at [pre.dev/projects/key](https://pre.dev/projects/key) and copy your key. Set it as `PREDEV_API_KEY` before running any of the examples below.
-</Card>
+Extract the main heading from a page and read it as structured data. This example uses `https://example.com` and an output schema with one required field: `heading`.
 
-Every example below:
-- uses your `PREDEV_API_KEY` env var
-- hits the live API at `https://api.pre.dev`
-- extracts the H1 from `example.com` as the simplest possible task
+## Before you start
 
-## 1. curl
+Get a key from [pre.dev/projects/key](https://pre.dev/projects/key) and store it as `PREDEV_API_KEY`. You need available credits to submit a task; see [authentication and account access](/api-reference/authentication).
 
-```bash
-export PREDEV_API_KEY=...   # from pre.dev/projects/key
-curl -X POST https://api.pre.dev/browser-agent \
+## Run the task
+
+Choose curl, Node.js, or Python. The default request waits for the result.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/browser-agent \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "tasks": [{
       "url": "https://example.com",
-      "instruction": "Extract the heading.",
+      "instruction": "Extract the main page heading.",
       "output": {
         "type": "object",
         "properties": { "heading": { "type": "string" } },
@@ -32,116 +30,92 @@ curl -X POST https://api.pre.dev/browser-agent \
     }]
   }'
 ```
-
-## 2. TypeScript
-
-```ts
+```typescript Node.js
+// npm install predev-api
 import { PredevAPI } from 'predev-api';
 
 const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
-
-const result = await client.browserAgent([
-  {
-    url: 'https://example.com',
-    instruction: 'Extract the heading.',
-    output: {
-      type: 'object',
-      properties: { heading: { type: 'string' } },
-      required: ['heading'],
-    },
+const run = await client.browserAgent([{
+  url: 'https://example.com',
+  instruction: 'Extract the main page heading.',
+  output: {
+    type: 'object',
+    properties: { heading: { type: 'string' } },
+    required: ['heading'],
   },
-]);
-console.log(result.results[0].data); // { heading: 'Example Domain' }
+}]);
+const task = run.results[0];
+if (!task || task.status !== 'SUCCESS') {
+  throw new Error(task?.error ?? 'The task did not succeed');
+}
+console.log(task.data);
 ```
-
-## 3. Python
-
-```python
+```python Python
+# pip install predev-api
 import os
 from predev_api import PredevAPI
 
 client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
-
-result = client.browser_agent([
-    {
-        "url": "https://example.com",
-        "instruction": "Extract the heading.",
-        "output": {
-            "type": "object",
-            "properties": {"heading": {"type": "string"}},
-            "required": ["heading"],
-        },
-    }
-])
-print(result["results"][0]["data"])  # {'heading': 'Example Domain'}
+run = client.browser_agent([{
+    "url": "https://example.com",
+    "instruction": "Extract the main page heading.",
+    "output": {
+        "type": "object",
+        "properties": {"heading": {"type": "string"}},
+        "required": ["heading"],
+    },
+}])
+task = run["results"][0]
+if not task or task["status"] != "SUCCESS":
+    raise RuntimeError((task or {}).get("error", "The task did not succeed"))
+print(task["data"])
 ```
+</CodeGroup>
 
-## 4. MCP (Claude Code, Cursor)
+## Read the response
 
-Add pre.dev as an MCP server. For Claude Code:
+A successful task has `status: "SUCCESS"` and, for this example, data shaped like `{ "heading": "Example Domain" }`. The run also has an `id`, lowercase batch `status`, `results`, and `totalCreditsUsed`.
 
-```bash
-claude mcp add --transport http predev https://api.pre.dev/mcp
-```
-
-For Cursor and other editors, add the HTTP server to your MCP config:
+An illustrative response excerpt:
 
 ```json
 {
-  "mcpServers": {
-    "predev": {
-      "url": "https://api.pre.dev/mcp"
+  "id": "507f1f77bcf86cd799439011",
+  "status": "completed",
+  "results": [
+    {
+      "status": "SUCCESS",
+      "data": { "heading": "Example Domain" }
     }
-  }
+  ]
 }
 ```
 
-On first use a browser tab opens — sign in to pre.dev to authorize.
-Then your agent gets a `browser_agent` tool it can call directly.
-Example prompt to the agent:
+A batch marked `completed` can contain failed tasks. Check `results[0].status` before reading `results[0].data`; the SDK examples above include this check. Explore the [run and task states](/browser-agents/api/task-status#batch-and-task-states) for failure cases.
 
-> Use the `browser_agent` tool to extract the product title and price
-> from https://www.apple.com/iphone-17-pro/ and return
-> the JSON.
+## Use async for longer work
 
-Full MCP reference: [MCP Tool](/browser-agents/mcp-tool)
-
-## What happens under the hood
-
-1. Your POST lands and your tasks are queued.
-2. Each task is dispatched to an isolated, sandboxed browser.
-3. An AI planner drives the browser through navigation, actions, and
-   extraction.
-4. The result streams back as structured JSON, validated against your
-   `output` schema.
-5. Billed per successful task. Failed tasks are free.
-
-## Streaming + async modes
-
-The quickstart uses sync mode (one HTTP request, one JSON response).
-For long-running task sets, flip to async:
+Add `"async": true` to the REST request body, `{ async: true }` to Node options, or `run_async=True` to the Python call. Set `BATCH_ID` to the actual `id` returned by your request, then poll:
 
 ```bash
-# Async: returns immediately with batchId, poll for progress
-curl -X POST https://api.pre.dev/browser-agent \
-  -H "Authorization: Bearer $PREDEV_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{ "async": true, "tasks": [...] }'
-# → { "id": "69df...", "status": "processing" }
-
-# Poll for the run
-curl https://api.pre.dev/browser-agent/$BATCH_ID \
+curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Or Server-Sent Events for live per-step updates:
+Stop when batch `status` becomes `completed` or `failed`. You can also [watch an existing run with SSE](/browser-agents/api/stream-task) or submit with `stream: true` for a [submission stream](/browser-agents/api/run-task#streaming).
 
-```bash
-curl -N -X POST https://api.pre.dev/browser-agent \
-  -H "Authorization: Bearer $PREDEV_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{ "stream": true, "tasks": [...] }'
-# → event: task_event ... \n event: task_result ... \n event: done
+## Use MCP
+
+Follow [MCP setup](/architect-agent/mcp-setup), then ask your assistant:
+
+```text
+Use pre.dev browser_agent to extract the main heading from
+https://example.com into an object with a heading string.
+Retrieve the full result using browser_agent_get.
 ```
 
-Full wire format: [Run a Task](/browser-agents/api/run-task)
+## Make it your own
+
+Replace the URL and instruction, then describe the data your application needs in `output`. For a workflow with several actions, make the desired end state explicit.
+
+Continue with [task modes and limits](/browser-agents/api/run-task), [streaming results](/browser-agents/api/stream-task), or [safe retries](/api-reference/errors#retry-submissions).

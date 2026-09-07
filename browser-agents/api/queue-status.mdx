@@ -1,63 +1,29 @@
 ---
-title: "Queue Status & Capacity"
-description: "GET /browser-agent-status and GET /browser-agent-capacity — watch your in-flight work and the global pool."
+title: "Get your queue status"
+openapi: "/api-reference/openapi.json GET /browser-agent-status"
+description: "Inspect pending and running tasks and the in-flight ceiling for your account."
 ---
 
-Two lightweight read endpoints for operating at volume.
-
-## GET /browser-agent-status
-
-Your own live queue: how many tasks you have running and queued, and your
-plan's in-flight cap. Free to call, cheap on our side — poll it as often as
-you like.
-
 ```bash
-curl https://api.pre.dev/browser-agent-status \
+curl --fail-with-body https://api.pre.dev/browser-agent-status \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-```json
-{
-  "userId": "...",
-  "running": 12,
-  "claimed": 3,
-  "pending": 40,
-  "total": 55,
-  "cap": 100
-}
-```
+| Field | Meaning |
+| --- | --- |
+| `pending` | Tasks waiting to start |
+| `claimed` | Tasks assigned for execution |
+| `running` | Tasks running |
+| `total` | Pending + claimed + running tasks counted by this snapshot |
+| `cap` | Your account's current in-flight ceiling |
+| `userId` | Authenticated caller identifier |
 
-| Field | Description |
-|---|---|
-| `running` | Tasks executing right now |
-| `claimed` | Tasks picked up, about to run |
-| `pending` | Tasks waiting in your queue |
-| `total` | running + claimed + pending |
-| `cap` | Your plan's max in-flight tasks — submits beyond this return `429 QUEUE_FULL` |
+## Size a submission
 
-Use it to throttle your own submit loop: stay under `cap` and you'll never
-see `QUEUE_FULL`.
+A request's task count must fit your available in-flight capacity as well as the service's batch-size limit. Lowering `concurrency` does not reduce how many submitted tasks count against the cap.
 
-Also available in the SDKs as `browserAgentStatus()` (TypeScript) and
-`browser_agent_status()` (Python).
+For example, a snapshot with `cap: 25` and `total: 20` suggests room for five tasks. Submit a small batch, then wait for capacity to free before sending the next one. Treat the snapshot as advisory: it is not a reservation, and the submission gate can still return `QUEUE_FULL`.
 
-## GET /browser-agent-capacity
+The cap depends on the plan and service configuration. Read `cap` rather than hard-coding a number or assuming the 1,000-task request ceiling is your account limit.
 
-Global pool state — useful for deciding whether now is a good time to
-submit a large set of tasks. Any valid API key can read it.
-
-```bash
-curl https://api.pre.dev/browser-agent-capacity \
-  -H "Authorization: Bearer $PREDEV_API_KEY"
-```
-
-Returns current queue and sandbox-pool statistics.
-
-<CardGroup cols={2}>
-  <Card title="Run tasks" icon="play" href="/browser-agents/api/run-task">
-    POST /browser-agent — sync, async, or streaming.
-  </Card>
-  <Card title="List runs" icon="list" href="/browser-agents/api/list-tasks">
-    GET /list-browser-agents — history with pagination.
-  </Card>
-</CardGroup>
+Node: `client.browserAgentStatus()`. Python: `client.browser_agent_status()` returns a dictionary. [Service capacity](/browser-agents/api/capacity) is a separate endpoint and does not replace your account's cap.

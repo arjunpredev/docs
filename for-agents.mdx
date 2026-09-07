@@ -1,0 +1,71 @@
+---
+title: "Guide for agents"
+description: "Select the right pre.dev interface, use exact field names, and handle long-running work reliably."
+---
+
+Use this page when implementing a pre.dev integration or choosing a pre.dev tool for a user's task.
+
+## Read the contract
+
+| Resource | Use it for |
+| --- | --- |
+| [Documentation index](https://docs.pre.dev/llms.txt) | Discover pages without loading the whole site |
+| [All documentation](https://docs.pre.dev/llms-full.txt) | Full-text ingestion when you need the entire reference |
+| [This page as Markdown](https://docs.pre.dev/for-agents.md) | Read a single page; append `.md` to other page URLs too |
+| [OpenAPI schema](/api-reference/openapi.json) | REST methods, paths, request bodies, and response schemas |
+| [MCP tools](/mcp/tools) | Tool parameters and return formats; discover the live schemas with `tools/list` |
+| [MCP service metadata](https://api.pre.dev/mcp/info) | Transport and protocol information without authentication |
+
+The documentation site's **Ask AI / MCP** features search documentation. To execute product tools, connect to **`https://api.pre.dev/mcp`** using the [product MCP setup](/architect-agent/mcp-setup).
+
+## Select an interface
+
+| Task | REST | MCP |
+| --- | --- | --- |
+| Generate a concise specification | `POST /fast-spec` | `fast_spec` |
+| Generate a detailed specification | `POST /deep-spec` | `deep_spec` |
+| Retrieve a specification | `GET /spec-status/{specId}` | `get_spec` |
+| Browse specification history | `GET /list-specs` | `list_specs` |
+| Search specification input | `GET /find-specs` | Use REST |
+| Run browser tasks | `POST /browser-agent` | `browser_agent` |
+| Retrieve a browser run | `GET /browser-agent/{id}` | `browser_agent_get` |
+| Browse browser history | `GET /list-browser-agents` | `browser_agent_list` |
+| Review a proposal | [Proposal REST endpoints](/architect-agent/proposals) | Use REST |
+| Check available credits | `GET /credits-balance` | Use REST |
+
+Both official SDKs are named **`predev-api`**. Python imports use `from predev_api import PredevAPI`; Node imports use `import { PredevAPI } from 'predev-api'`. The Python SDK uses blocking HTTP calls, including its server-side async submission methods.
+
+## Keep names distinct
+
+| Meaning | REST | MCP | Python SDK |
+| --- | --- | --- | --- |
+| What to specify | `input` | `executiveSummary` (at least 10 characters) | `input_text` |
+| Existing codebase context | `currentContext` | `existingContext` | `current_context` |
+| Reference documentation | `docURLs` | `docURLs` | `doc_urls` |
+| Specification polling ID | `specId` from submission; `_id` on retrieval | `specId` | `result["specId"]` |
+| Browser run ID | `id` | `id` | `result["id"]` |
+| Submit browser work asynchronously | `async: true` | `async: true` | `run_async=True` |
+
+Pass existing context as **text describing the codebase**. It is not an ID that automatically loads another project.
+
+## Handle work that takes time
+
+1. For REST specifications, submit with `async: true`, save `specId`, and poll the status endpoint at a bounded interval, such as every five seconds.
+2. Stop polling specifications on `completed` or `failed`. On success, consume `codingAgentSpecMarkdown` or `codingAgentSpecJson`; use the human variants for review and estimates.
+3. For browser work, always send a `tasks` array. Save the returned `id`, then poll or [stream the existing run](/browser-agents/api/stream-task).
+4. Browser **batch** status is lowercase (`processing`, `completed`, `failed`). Individual **task** statuses are uppercase. A completed batch can contain failed tasks; inspect each task's `status` and `error`.
+5. Use batch `status` to detect completion. Results may contain `PENDING`/`RUNNING` entries or `null` slots. Do not infer completion from array length or the `completed` count alone.
+6. Request `includeEvents=true` when you need evidence or debugging. Timelines can contain large screenshots; omit them for routine polling.
+
+## Submit deliberately
+
+- Browser tasks can interact with external sites. State the action and success condition clearly, and use the task's `output` JSON Schema when your code depends on a specific data shape.
+- Check [queue capacity](/browser-agents/api/queue-status) before submitting a large batch. The default 1,000-task request ceiling and your account's in-flight limit are different limits.
+- REST browser submissions accept `Idempotency-Key` for retries within 24 hours. Use one key per logical submission. This is a lookup, not an atomic guarantee for simultaneous first submissions. This option is not exposed by the current MCP tool or SDK method signatures.
+- A timeout or disconnected stream does not prove the task stopped. Retrieve the existing run before submitting work again. Stream EOF is not a success signal.
+- Handle HTTP errors and stream `error` frames. [Errors and retries](/api-reference/errors) explains billing, queue, and rate-limit responses.
+- Some MCP tools return text without `structuredContent`, and some specification failures return text without `isError`. Read the tool result and confirm specification status with `get_spec`.
+
+## Current integration boundaries
+
+The public REST API has no general coding-session, deployment, cancellation, webhook-registration, or recurring-schedule endpoint. Build with the [Coding Agent](/coding-agent/overview) or [CLI](/cli/overview), and schedule API calls in your own application when needed. Browser tasks do not expose a reusable login-session or cookie-profile API.

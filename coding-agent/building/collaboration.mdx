@@ -1,77 +1,32 @@
 ---
 title: "Collaboration"
-description: "Invite team members and control project access."
+description: "Invite collaborators and manage preview access separately from project editing."
 ---
 
-pre.dev projects support role-based collaboration, letting you invite team members with different permission levels and control who can view or modify your work.
+Open **Share** in the web workspace to invite collaborators, manage their roles, and configure access to the deployed preview. `/share` opens these controls in the web client.
 
-## Inviting Collaborators
+## Invite and manage collaborators
 
-1. Open your project dashboard
-2. Go to the **Share** menu
-3. Enter the collaborator's email address
-4. Click invite
+Enter an email and send the invitation. The current Share flow invites new collaborators as **Viewers**. The owner can then use **Make Admin** or **Make Viewer** to change their role.
 
-New collaborators join as **Viewers**. Once they've joined, the project owner can promote them with **Make Admin**.
+| Role | Project access |
+| --- | --- |
+| Owner | Manage the project and collaborator roles |
+| Admin | Edit the project and manage permitted Viewer collaborators |
+| Viewer | View the project with read-only permissions |
 
-The collaborator receives an email invitation with a link to access the project.
+Only the owner can assign Admin access. Admins cannot manage the owner or other admins. The interface exposes the actions available to your role.
 
-## Roles
+## Preview privacy
 
-pre.dev uses three permission levels:
+The **Public preview access** toggle controls access to the deployed application. Making the preview public lets people open its shared URL; it does not make them project editors.
 
-| Role | Permissions |
-|------|------------|
-| **Owner** | Full control — edit project, manage all collaborators, invite admins, change privacy settings, delete project |
-| **Admin** | Edit project, invite and manage Viewer collaborators |
-| **Viewer** | Read-only access to project specs, builds, and code |
+For private previews, open the app through the authorized workspace flow. A raw copied preview URL may lack the access grant needed to identify you. Application-level login and permissions are separate from this preview access setting.
 
-### Permission Rules
+A custom domain requires a public preview and an existing deployment. See [custom domains](/coding-agent/building/custom-domains).
 
-- Only the **Owner** can invite or assign the Admin role
-- **Admins** can invite Viewers and remove Viewers
-- **Admins** cannot manage other Admins or the Owner
-- **Viewers** cannot invite or manage anyone
+## Work in parallel
 
-<Note>
-  The project creator is always the Owner. Ownership cannot be transferred or reassigned through the collaborator management interface.
-</Note>
+Use [separate sessions](/coding-agent/building/sessions-and-parallel-agents) for distinct workstreams. Presence indicators show which session collaborators are viewing. Review each session before using Merge; that action can automatically merge a clean PR.
 
-## Managing Collaborators
-
-From the Share menu, you can:
-
-- **Change roles** — Use **Make Admin** / **Make Viewer** next to a collaborator to change their permission level (subject to the permission rules above)
-- **Remove collaborators** — Click the remove button to revoke access immediately
-
-## Working in Parallel
-
-Collaboration isn't just access control — collaborators can build at the same time. Each person can work in their own **session**: an isolated branch of the project with its own agent, chat thread, and sandbox. When a session's work is ready, merge it back into Main. Presence avatars on the session tabs show who's viewing what, so you always know where your teammates are.
-
-See [Sessions & Parallel Agents](/coding-agent/building/sessions-and-parallel-agents) for the full workflow.
-
-## Project Privacy
-
-Projects can be set to **public** or **private**:
-
-- **Public** — Anyone with the link can view the deployed app preview
-- **Private** — Only the owner and invited collaborators can access the project
-
-To change privacy settings:
-1. Open the project dashboard
-2. Toggle the privacy setting in the Share menu
-
-<Warning>
-  Making a project private automatically rescinds any enterprise organization invitations associated with that project.
-</Warning>
-
-## Enterprise Collaboration
-
-Enterprise organization members can be invited to projects as a group:
-
-- An Owner or Admin invites the enterprise organization to a project
-- All members of that organization gain access
-- Enterprise invitations are tracked separately from individual collaborator invitations
-- If the project is made private, enterprise invitations are automatically revoked
-
-Enterprise collaboration is available on Enterprise tier plans. See your organization settings for details.
+Team projects use organization-scoped connections and configuration. Review [integration scope](/coding-agent/integrations/overview) before changing a setting shared with other projects.

@@ -1,0 +1,14 @@
+---
+title: "Get a proposal"
+openapi: "/api-reference/openapi.json GET /get-proposal/{proposalId}"
+description: "Retrieve an uploaded proposal by its ID."
+---
+
+Use the `proposalId` from upload or `_id` from listing:
+
+```bash
+curl --fail-with-body "https://api.pre.dev/get-proposal/$PROPOSAL_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+The response is the proposal object itself, not a `{ proposal: … }` envelope. It can include `proposalName`, `proposalContent`, `proposalFile`, `createdAt`, and `updatedAt`. A malformed ID returns `400`; an unknown ID returns `404`.

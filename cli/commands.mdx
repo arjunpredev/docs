@@ -1,80 +1,65 @@
 ---
-title: "CLI Commands"
-description: "Every slash command in the pre.dev CLI, grouped by what it does."
+title: "CLI commands"
+description: "Supported terminal commands, launch flags, and integration controls."
 ---
 
-Type `/` in the chat input to open the command palette. Keep typing to filter, use ↑/↓ to move, Enter to run, Esc to dismiss. Commands that take arguments (like `/sprint` and `/fork`) keep the composer open so you can type the rest.
+Type `/` to open the command palette. Use the arrow keys to select, Enter to run, and Escape to dismiss. Commands with arguments keep the composer open for the rest of the request.
 
-## Building
+## Work and models
 
-| Command | Description |
-|---------|-------------|
-| `/sprint <feature>` | Launch a custom sprint in a new session — builds the feature you describe |
-| `/effort` | Set the sprint effort level (auto / low / medium / high) |
-| `/model` | Choose models per phase (chat / research / coding / acceptance) |
-| `/pro` | Toggle pro mode — pin every phase to Claude Opus |
+| Command | Action |
+| --- | --- |
+| `/auto` | Let the agent answer, build, or plan as needed |
+| `/plan` | Work on the plan; returns to Auto when the plan is produced |
+| `/sprint <feature>` | Launch a dedicated sprint in another session |
+| `/fork <prompt>` | Start a task in an isolated session |
+| `/effort` | Choose auto, low, medium, or high sprint effort |
+| `/model` | Open model selection for all phases or individual phases |
 
-### /sprint example
+A message prefixed with `>>` also forks a task. Separate sessions use separate Git worktrees. Review their changes and integration result, particularly when tasks modify related files.
 
-```
-/sprint add CSV export to the reports page with a progress toast
-```
-
-The sprint opens as a new tab in the fleet bar and builds in an isolated session while you keep chatting in main. Your `/effort` and `/model` settings apply and persist per project.
-
-## Sessions
-
-| Command | Description |
-|---------|-------------|
-| `/fork <prompt>` | Spin a prompt off into a new isolated session |
-
-### /fork example
-
-```
-/fork write integration tests for the billing webhooks
+```text
+/fork add tests for the invoice date formatter
 ```
 
-The fork runs in parallel in its own tab — you stay in your current session. Prefixing any message with `>>` does the same thing:
+## Project and conversation
 
-```
->> upgrade eslint and fix any new violations
-```
+| Command | Action |
+| --- | --- |
+| `/reverse` | Analyze an existing codebase and produce architecture context |
+| `/kanban` | Open the Kanban view |
+| `/roadmap` | Open the roadmap view |
+| `/arch` | Open the architecture view |
+| `/clear` | Clear the visible chat feed; preserve stored history |
+| `/help` | Show commands and keybindings |
+| `/login` | Sign in or switch accounts through the browser |
 
-Forked sessions work in isolated git worktrees, so parallel sessions never trample each other's changes. Open sessions persist: quit the CLI and relaunch, and your tabs come back.
+Escape returns from project views to chat. Views require the corresponding project data.
 
-## Project
+## Integrations and billing
 
-| Command | Description |
-|---------|-------------|
-| `/reverse` | Map the existing codebase — runs reverse engineering |
-| `/arch` | Open the Architecture graph view |
-| `/kanban` | Open the Kanban board |
-| `/roadmap` | Open the Roadmap / Gantt view |
+| Command | Action |
+| --- | --- |
+| `/integrations` | View personal workspace connections, MCP servers, and skills |
+| `/skills` | View, toggle, or remove personal skill entries |
+| `/mcp` | View, toggle, or remove personal MCP entries |
+| `/balance` | Show remaining credits |
+| `/topup` | Open credit purchasing in the browser |
+| `/upgrade` | Open plan selection in the browser |
 
-`/kanban`, `/roadmap`, and `/arch` render right in the terminal — press Esc to return to chat. They show the same project data as the web workspace.
+In the Skills and MCP panels, use Enter to toggle, `d` to remove, and `o` to open the web app to add or configure entries. Connecting OAuth accounts also happens in the web app.
 
-`/reverse` runs in the background (typically a few minutes) and you can keep chatting while it maps your codebase into the architecture graph. See [Work on an Existing Repo](/cli/existing-repos) for the full flow.
-
-## Setup
-
-| Command | Description |
-|---------|-------------|
-| `/login` | Log in to pre.dev (or switch accounts) via your browser |
-| `/skills` | Manage agent skills — toggle, add, remove |
-| `/mcp` | Manage MCP servers — toggle, add, remove |
-| `/balance` | Show your remaining credit balance |
-| `/topup` | Buy more credits — opens billing in your browser; a run stopped by the credit wall resumes automatically after you top up |
-| `/upgrade` | Upgrade your plan — opens the plan picker in your browser |
+These CLI panels show personal entries. Use [Project setup](/coding-agent/integrations/overview) on the web for project-scoped entries, team connections, and provider account selection.
 
 <Note>
-  Skills and MCP servers are account-level — anything you configure in the CLI applies across your projects, in the CLI and on the web. OAuth integrations are managed from the web workspace. See [Integrations](/coding-agent/integrations/overview).
+  `/pro` is retired. `/init` and `/share` may appear in the shared command metadata, but the current CLI does not implement their handlers. Use the web Share menu for collaboration.
 </Note>
 
 ## Launch flags
 
-Flags you can pass to `predev` itself:
-
-| Flag | Description |
-|------|-------------|
-| `predev "<prompt>"` | Start with an opening prompt instead of an empty chat |
-| `predev --new` (or `-n`) | Create a fresh project for this directory, even if one already exists |
+| Invocation | Effect |
+| --- | --- |
+| `predev "<prompt>"` | Start with an opening prompt |
+| `predev --new` or `predev -n` | Create a fresh project for this directory |
+| `predev --version` or `predev -v` | Print the installed version and exit |
+| `predev --help` or `predev -h` | Print launch help and exit |

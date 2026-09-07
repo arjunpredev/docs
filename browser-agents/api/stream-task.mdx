@@ -1,70 +1,43 @@
 ---
-title: "Stream a Running Task"
-description: "GET /browser-agent/{id}/stream — Server-Sent Events for a task run that's already in progress."
+title: "Stream an existing run"
+openapi: "/api-reference/openapi.json GET /browser-agent/{id}/stream"
+description: "Attach to an existing browser run with an initial snapshot, live SSE updates, and terminal status."
 ---
 
-Attach a live Server-Sent Events stream to an in-progress run. You get an
-immediate snapshot, then per-step events as they happen. The stream closes
-itself when the run completes or fails.
+import { ProtocolTrace } from "/snippets/protocol-trace.jsx";
 
-Use this when you submitted with `async: true` and want live progress without
-polling. If you want streaming from the moment of submission, pass
-`stream: true` on [`POST /browser-agent`](/browser-agents/api/run-task) instead.
-
-## Endpoint
-
-```
-GET https://api.pre.dev/browser-agent/{id}/stream
-```
-
-## Auth
-
-Standard header auth works, and because `EventSource` in browsers can't set
-custom headers, an `apiKey` query param is also accepted:
+Submit with `async: true`, save the run ID, then attach to this endpoint. This lets your application recover results even if the stream disconnects.
 
 ```bash
-# Header auth
-curl -N https://api.pre.dev/browser-agent/$BATCH_ID/stream \
+curl --fail-with-body -N "https://api.pre.dev/browser-agent/$BATCH_ID/stream" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
-
-# Query-param auth (for EventSource)
-curl -N "https://api.pre.dev/browser-agent/$BATCH_ID/stream?apiKey=$PREDEV_API_KEY"
 ```
 
-## Events
+## Event contract
 
 | Event | Payload | When |
-|---|---|---|
-| `snapshot` | Full result so far (with events) | Immediately on connect |
-| `task_event` | One execution step (navigation, action, extraction) | Live, per step |
-| `task_result` | A task's final result | As each task finishes |
-| `done` | Final state | The run completed or failed, then the stream closes |
+| --- | --- | --- |
+| `snapshot` | Full run result with available timelines | On connection |
+| `batch_meta` | `{ name, taskNames }` | Display names become available |
+| `task_event` | `{ taskIndex, type, timestamp, iteration?, data }` | A task emits an event |
+| `task_result` | `{ taskIndex, ...taskResult }` | A task finishes |
+| `done` | `{ status: "completed" }` or `{ status: "failed" }` | The batch reaches a terminal state |
+| `error` | `{ error }` | The stream cannot continue |
+
+The existing-run stream's **`done` contains status only**. Fetch [the run](/browser-agents/api/task-status) after `done` for final data and credit usage. This differs from the [submission stream](/browser-agents/api/run-task#streaming), whose `done` contains the full batch.
+
+<ProtocolTrace kind="browser" />
+
+## Reconnect and recover
+
+An already-terminal run emits `snapshot`, then `done`, then closes. Keepalive lines start with `:` and are not JSON events. Closing the stream does not cancel the run.
+
+The stream has no event-ID replay contract. After a disconnect, fetch a fresh result or reconnect for a new snapshot; do not assume that every transient event will be replayed. Treat EOF without `done` as an interrupted stream and check status.
+
+The API also accepts `apiKey` as a query parameter for EventSource clients. Prefer header authentication with a streaming HTTP client to keep API keys out of URLs.
 
 ## Errors
 
-| Status | Meaning |
-|---|---|
-| `404` | Run not found (or not yours) |
-| `400` | Invalid id |
-| `503` | Server at SSE capacity — fall back to polling [`GET /browser-agent/{id}`](/browser-agents/api/task-status) |
+Before streaming begins, invalid IDs return `400`, authentication failures `401`, inaccessible runs `404`, and stream capacity limits `503`. For `503`, poll [run status](/browser-agents/api/task-status). Once headers are sent, handle SSE `error` frames as failures even with HTTP `200`.
 
-## Example
-
-```ts
-const res = await fetch(
-  `https://api.pre.dev/browser-agent/${batchId}/stream`,
-  { headers: { Authorization: `Bearer ${process.env.PREDEV_API_KEY}` } }
-);
-
-const reader = res.body!.getReader();
-const decoder = new TextDecoder();
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break;
-  process.stdout.write(decoder.decode(value));
-}
-```
-
-<Card title="Poll instead" icon="rotate" href="/browser-agents/api/task-status">
-  GET /browser-agent/:id — simple polling with optional event timeline.
-</Card>
+The SDKs stream **submission** responses; use direct HTTP for this existing-run endpoint.

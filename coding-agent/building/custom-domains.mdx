@@ -1,111 +1,39 @@
 ---
-title: "Custom Domains"
-description: "Point your own domain to your pre.dev deployed app."
+title: "Custom domains"
+description: "Connect a hostname to a deployed, public pre.dev app."
 ---
 
-Custom domains let you serve your pre.dev deployed application from your own domain (e.g., `app.yourcompany.com`) instead of the default `.pre.dev` URL.
+A custom domain requires an existing deployment and **Public preview access** enabled in **Share**. The current interface supports one custom domain per project.
 
-## Prerequisites
+<Steps>
+  <Step title="Add the hostname">
+    In the project's Share controls, open **Custom Domain** and enter a hostname such as `app.example.com`. Copy the exact DNS target shown after adding it.
+  </Step>
+  <Step title="Configure DNS">
+    At your DNS provider, add the record shown in the interface. For a subdomain, this is normally a CNAME:
 
-Before adding a custom domain, your project must meet two requirements:
+    | Type | Host | Target |
+    | --- | --- | --- |
+    | CNAME | `app` or `app.example.com`, as your provider requires | The exact target shown by pre.dev |
 
-1. **Deployed** — Your app must have a live deployment with a `.pre.dev` URL
-2. **Public** — Your app preview must be set to public (toggle this in the Share menu)
-
-## Step 1 — Add Your Domain
-
-1. Open your project dashboard
-2. Navigate to the **Custom Domain** section
-3. Enter your domain (e.g., `app.example.com`)
-4. Click **Add**
-
-You'll receive a **CNAME target** — this is your project's deployment URL that you need to point your domain to.
-
-## Step 2 — Configure DNS
-
-Add a CNAME record at your DNS provider pointing to the deployment URL:
-
-| Record Type | Host/Name | Value/Target |
-|-------------|-----------|--------------|
-| `CNAME` | `app.example.com` | `your-project.pre.dev` |
-
-<Note>
-  The exact steps vary by DNS provider (Cloudflare, Namecheap, GoDaddy, Route 53, etc.). Look for "Add DNS Record" or "Manage DNS" in your provider's dashboard.
-</Note>
-
-### Common DNS Provider Examples
-
-**Cloudflare:**
-1. Go to your domain's DNS settings
-2. Click **Add record**
-3. Type: `CNAME`, Name: your subdomain, Target: your CNAME target
-4. Set proxy status to **DNS only** (gray cloud) for initial setup
-
-**Namecheap:**
-1. Go to Domain List → Manage → Advanced DNS
-2. Click **Add New Record**
-3. Type: `CNAME`, Host: your subdomain, Value: your CNAME target
-
-**GoDaddy:**
-1. Go to My Products → DNS → Manage
-2. Click **Add** under Records
-3. Type: `CNAME`, Name: your subdomain, Value: your CNAME target
-
-## Step 3 — Verify
-
-1. Return to the Custom Domain section in your project dashboard
-2. Click **Verify Connection**
-3. pre.dev checks that your CNAME record is pointing correctly
-4. Once verified, an SSL certificate is automatically provisioned
-
-After verification, your app is accessible at both your custom domain and the original `.pre.dev` URL. Both HTTP and WebSocket traffic are supported.
-
-<Tip>
-  When your domain is verified, pre.dev automatically notifies the build agent to update CORS settings if needed, so both URLs work simultaneously without issues.
-</Tip>
-
-## How It Works
-
-- pre.dev routes your custom domain to your deployed app
-- SSL certificates are automatically provisioned and managed
-- Traffic is routed to the same deployment as your `.pre.dev` URL
-- The app's `PREDEV_DEPLOYMENT_URL` environment variable is updated to reflect your custom domain
-
-## Limitations
-
-- **One custom domain per project** — To add a different domain, remove the existing one first
-- **Subdomains work best** — `app.example.com` maps cleanly with a CNAME; bare domains like `example.com` need a DNS provider that supports CNAME flattening / ALIAS records at the apex
-- **No `pre.dev` subdomains** — You cannot add `*.pre.dev` as a custom domain
-
-## Removing a Domain
-
-1. Click the **trash icon** next to your domain in the Custom Domain section
-2. Confirm removal
-3. The routing rule and SSL certificate are cleaned up automatically
-4. Your app reverts to being accessible only at the `.pre.dev` URL
-
-<Warning>
-  After removing a custom domain, you should also remove the CNAME record from your DNS provider to avoid pointing to a stale target.
-</Warning>
+    Use a hostname as the target, without an `https://` prefix or a path. For an apex domain, follow your provider's supported alias or flattening configuration and the records shown by pre.dev.
+  </Step>
+  <Step title="Verify the connection">
+    Return to pre.dev and click **Verify Connection**. Once verification and hostname setup succeed, the domain becomes active. Allow time for DNS and certificate provisioning before checking HTTPS.
+  </Step>
+  <Step title="Check the application">
+    Open the domain and exercise key flows. Review allowed origins, login callback URLs, cookies, and any provider configuration that depends on the hostname. The agent can help update application settings after domain activation.
+  </Step>
+</Steps>
 
 ## Troubleshooting
 
-### DNS not resolving
+| Symptom | What to check |
+| --- | --- |
+| Cannot add a domain | The project has a deployment, preview is public, and no domain is already configured |
+| DNS verification fails | The hostname resolves to the exact target shown; the DNS change may still be propagating |
+| Verify is unavailable | Wait for the current operation indicated by the interface |
+| HTTPS is not ready | Check hostname status and certificate provisioning; do not repeatedly remove a valid DNS record |
+| App loads but login or API calls fail | Check callback URLs, allowed origins, cookies, and runtime configuration |
 
-DNS changes can take **up to 48 hours** to propagate, though most providers update within minutes. If verification fails:
-
-- Wait a few minutes and click **Verify Connection** again
-- Use a DNS lookup tool (like `dig` or [dnschecker.org](https://dnschecker.org)) to check if your CNAME record is live
-- Confirm you're using a CNAME record, not an A record
-
-### CNAME points to wrong target
-
-The error "CNAME points to X, expected Y" means your DNS record exists but points to the wrong destination. Update the CNAME value to match the target shown in the pre.dev dashboard.
-
-### Verification button disabled
-
-The Verify Connection button is disabled while another agent operation is running. Wait for the current operation to finish, then retry.
-
-### SSL certificate not provisioning
-
-SSL certificates are provisioned automatically after DNS verification. This typically takes 1-2 minutes. If your site shows a certificate warning after 10+ minutes, try removing and re-adding the domain.
+Use the domain's remove control to detach it. Remove the corresponding DNS record at your provider when it is no longer needed. The original deployment URL remains the fallback hosting address.

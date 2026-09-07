@@ -1,145 +1,44 @@
 ---
-title: "Build Modes & Effort"
-description: "Control what agents build next, how deep each sprint goes, and which models do the work."
+title: "Auto, Plan, and effort"
+description: "Choose the agent's intent, sprint scope, and depth of work."
 ---
 
-Building on pre.dev has two independent axes, plus a model picker:
+Three controls answer different questions: **Auto or Plan** sets the intent of your conversation, **sprints** define a unit of work, and **effort** controls how deeply a sprint approaches it. [Model selection](/coding-agent/building/pro-mode) chooses the models used for that work.
 
-1. **Sprint mode** — *what* to build next: the next roadmap task, the whole roadmap on autopilot, or a custom task you describe.
-2. **Effort level** — *how deep* each sprint goes: a fast direct pass, a task-list loop, or the full research → code → verify pipeline.
-3. **Model picker** — *which model* runs each phase of the work.
+## Auto and Plan
 
-## Sprint mode: what to build
+| Mode | Behavior | Command |
+| --- | --- | --- |
+| Auto | The agent can answer, ask for context, implement directly, or plan first | `/auto` |
+| Plan | Messages shape requirements, user flows, roadmap, and architecture | `/plan` |
 
-<Tabs>
-  <Tab title="Build Next Task">
-    Agents build **one roadmap task at a time**, then wait for your review before proceeding.
+Auto is the default. Plan mode returns to Auto when the plan is produced. Selecting Plan does not itself start a build: send the requirements you want to develop, review the artifacts, then request implementation.
 
-    <Steps>
-      <Step title="Task assigned">
-        The next incomplete task from your roadmap is assigned to the coding agent
-      </Step>
-      <Step title="Agent builds">
-        The agent implements the task in a secure sandbox
-      </Step>
-      <Step title="Verification">
-        Acceptance criteria are verified (types, lint, tests, browser)
-      </Step>
-      <Step title="You review">
-        Review the result, give feedback, then continue to the next task
-      </Step>
-    </Steps>
+## Choose a unit of work
 
-    <Tip>
-      **Best for:** learning how pre.dev works, sensitive codebases, and teaching the agent your preferences by reviewing early tasks.
-    </Tip>
-  </Tab>
-  <Tab title="Build on Autopilot">
-    Agents work through the **entire roadmap autonomously**, building task after task until everything is done, credits run out, or you stop it.
+For a small change, describe it in chat. Use a dedicated sprint for a defined feature:
 
-    - Tasks follow the milestone order in your roadmap
-    - Each task goes through acceptance verification before the next starts
-    - Steer a running autopilot anytime by sending feedback in chat
-    - The roadmap view shows real-time progress
+```text
+/sprint add CSV export to the reports page with a progress indicator
+```
 
-    <Tip>
-      **Best for:** projects where you trust the spec and want maximum speed, overnight builds, and well-defined projects with clear requirements.
-    </Tip>
-  </Tab>
-  <Tab title="Custom sprint">
-    Describe **any task** — a feature, a fix, a refactor — and the agent runs it through a full sprint, independent of the roadmap.
+`/fork <prompt>` starts another task in a separate session. In projects with a roadmap, **Build Next Task** works on the next unit of planned work and **Build on Autopilot** continues through the roadmap. Availability depends on the project's plan and active work.
 
-    Launch one by asking in chat ("build me a dark mode toggle") or with the slash command:
+Follow the session that owns the run. Parallel work, queuing, and admission limits depend on the client and account; submitting another message is not a guarantee that it starts immediately.
 
-    ```
-    /sprint add CSV export to the reports page
-    ```
+## Sprint effort
 
-    If a sprint is already running, the new one is queued and starts automatically when the current one finishes.
+Set effort with `/effort` before launching the sprint.
 
-    <Tip>
-      **Best for:** work that isn't on the roadmap yet — urgent fixes, experiments, or features you thought of mid-build.
-    </Tip>
-  </Tab>
-  <Tab title="Chat">
-    Just **talk to the agent**. Ask questions about the spec or the codebase, request explanations, or have it make small edits directly — no sprint needed.
+| Setting | Approach |
+| --- | --- |
+| `auto` | Choose an approach for the task |
+| `low` | A direct implementation loop for focused changes |
+| `medium` | A direct loop organized around a task list |
+| `high` | A separate research, coding, and acceptance workflow |
 
-    <Tip>
-      **Best for:** one-line fixes, debugging, asking the agent to explain code, and quick adjustments that don't warrant a full sprint.
-    </Tip>
-  </Tab>
-</Tabs>
+Higher effort can involve more model work and credits. Effort controls the workflow; it does not promise a particular duration or result. A direct chat change does not necessarily run the full high-effort pipeline.
 
-### Choosing a sprint mode
+## Review the outcome
 
-| Scenario | Recommended |
-|----------|-------------|
-| First time using pre.dev | Build Next Task |
-| Small MVP you want fast | Build on Autopilot |
-| Complex production app | Build Next Task (at least for the first milestone) |
-| Feature that isn't on the roadmap | Custom sprint |
-| Overnight build | Build on Autopilot |
-| Quick question or one-line fix | Chat |
-
-You can switch modes at any time: validate the first few tasks one at a time, flip to Autopilot once the agent has your patterns down, and drop into chat whenever you need a quick change.
-
-## Effort level: how deep each sprint goes
-
-Set the effort level with `/effort`:
-
-| Level | Name | How it works |
-|-------|------|--------------|
-| `auto` | Auto | Routes each sprint automatically based on the task (recommended) |
-| `low` | **Vibe** | Fast direct loop, minimal ceremony — great for quick iterations |
-| `medium` | **Todo** | Direct loop with a task list — the agent plans its steps, then works through them |
-| `high` | **Build** | The full research → code → verify pipeline |
-
-**When each is right:**
-
-- **Vibe (low)** — UI tweaks, copy changes, small features where speed matters more than process.
-- **Todo (medium)** — multi-step features that benefit from a visible task list but don't need a research phase.
-- **Build (high)** — complex features, integrations, and anything where you want the agent to research the codebase first and verify acceptance criteria at the end.
-- **Auto** — let pre.dev pick per sprint. Good default if you don't want to think about it.
-
-<Note>
-  Effort applies per sprint: the setting at launch time governs how deep that sprint goes. Higher effort uses more [credits](/coding-agent/plans-and-credits) — the research and verification phases are extra model work.
-</Note>
-
-## Model picker: which models do the work
-
-Every sprint moves through phases, and you can pin a different model to each with `/model`:
-
-| Phase | What it covers |
-|-------|----------------|
-| **Chat** | Interactive chat turns — the main ad-hoc loop |
-| **Research** | Exploring the codebase and requirements before coding |
-| **Coding** | Writing the implementation |
-| **Acceptance** | Verifying the result against acceptance criteria |
-
-Available models:
-
-| Model | Notes |
-|-------|-------|
-| **GLM 5.2** | The default — fast and cost-effective |
-| **Kimi K2.6** / **K2.7** | Strong open-weight alternatives |
-| **MiniMax M3** | Open-weight alternative |
-| **Claude Sonnet 4.6** | High quality, balanced cost |
-| **Claude Opus 4.8** | The Pro model — maximum quality |
-| **GPT 5.5** | OpenAI's flagship |
-
-Typing `/model` walks you through it: pick a phase, then pick a model. Set a phase back to **Default** to return it to GLM 5.2.
-
-### Pro Mode
-
-`/pro` is the one-toggle shortcut: it pins **every phase** to the Pro model (Claude Opus 4.8) for maximum quality. Pro Mode uses more credits per sprint, so a common pattern is to iterate in standard mode and flip on Pro for final production passes. See [Pro Mode & Model Selection](/coding-agent/building/pro-mode) for details, and [pricing](https://pre.dev/pricing) for plan differences.
-
-## What's next?
-
-<CardGroup cols={2}>
-  <Card title="Verification" icon="badge-check" href="/coding-agent/building/acceptance-criteria">
-    How every task is verified before it counts as done.
-  </Card>
-  <Card title="Roadmap & Tracking" icon="chart-line" href="/coding-agent/building/progress-tracking">
-    Watch build progress in real time from the roadmap.
-  </Card>
-</CardGroup>
+State the checks you need in the request: for example, type checking, a specific test suite, or a browser journey. Read the actual [verification evidence](/coding-agent/building/acceptance-criteria) and inspect the diff before shipping.

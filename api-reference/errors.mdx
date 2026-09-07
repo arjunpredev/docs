@@ -1,0 +1,58 @@
+---
+title: "Errors and retries"
+description: "Handle HTTP failures, browser task outcomes, stream errors, and safe retries."
+---
+
+Check the HTTP status before parsing a success response. Successful HTTP delivery and successful task execution are separate: a browser batch can return HTTP `200` with individual task failures, and a specification status request can return HTTP `200` with `status: "failed"`.
+
+## HTTP errors
+
+| HTTP | Meaning | Next step |
+| --- | --- | --- |
+| `400` | Missing input, invalid ID, or an oversized browser batch | Correct the request |
+| `401` | Missing/invalid credentials, or the account cannot authenticate for this interface | Check the key and [account access](/api-reference/authentication) |
+| `402` | Insufficient credits or a browser subscription requirement | Read the message and any `actionUrl` |
+| `403` | Access denied or specification trial exhausted | Check account context and plan eligibility |
+| `404` | Resource missing or inaccessible | Check the returned ID and the caller |
+| `429` | Rate limit or browser in-flight limit reached | Back off; inspect your [queue](/browser-agents/api/queue-status) |
+| `500` | Server-side failure | Inspect whether work was accepted before resubmitting |
+| `503` | Streaming capacity unavailable | Fall back to async submission and polling |
+
+General API errors usually include `error` and may include `message`. Browser submission gates use a machine-readable `code`:
+
+```json
+{
+  "error": "The submission would exceed your in-flight task limit.",
+  "code": "QUEUE_FULL"
+}
+```
+
+| Browser code | HTTP | Handling |
+| --- | --- | --- |
+| `BATCH_TOO_LARGE` | `400` | Split the batch |
+| `SUBSCRIPTION_REQUIRED` | `402` | Follow `actionUrl` to review plans |
+| `INSUFFICIENT_CREDITS` | `402` | Follow `actionUrl` to add credits |
+| `QUEUE_FULL` | `429` | Wait for tasks to finish or submit fewer tasks |
+| `RATE_LIMITED` | `429` | Retry with exponential backoff and jitter |
+
+These codes belong to Browser Agents. Do not assume an Architect `402` has a browser gate code.
+
+## Streaming failures
+
+Once SSE response headers have been sent, a failure arrives as an `event: error` frame, even though the HTTP status is `200`. The browser SDKs raise an exception for these frames. A disconnected stream or EOF without `done` does not establish success; fetch the run by its saved ID.
+
+The existing-run stream's `done` payload contains only the batch status. Fetch the final result after it. The submission stream's `done` payload contains the full batch. See [streaming](/browser-agents/api/stream-task).
+
+## Retry submissions
+
+For REST browser requests, send a stable **`Idempotency-Key`** header. If a run with the same caller/key already exists from the last 24 hours, the API returns that run as JSON instead of creating a new one—even if the retry requested streaming. Keep the payload the same and use a new key for intentional new work. The API does not compare payloads for you.
+
+Do not rely on this lookup as a lock for simultaneous duplicate requests. Serialize retries of the same logical submission.
+
+Specification generation has no documented idempotency key. If a request times out, check history before generating again. A retry can create another specification and consume more credits.
+
+## SDK exceptions
+
+Both SDKs provide `AuthenticationError`, `RateLimitError`, and `PredevAPIError`. Browser gate codes also map to `SubscriptionRequiredError`, `InsufficientCreditsError`, `QueueFullError`, and `BatchTooLargeError`. Billing exceptions may include `actionUrl` in Node or `action_url` in Python.
+
+The Node base exception exposes `message`; Python exceptions can be read with `str(error)`. Neither SDK exposes a `statusCode` / `status_code` property on its base exception. Use direct HTTP when your application needs the original status, headers, and full response body.

@@ -1,100 +1,54 @@
 ---
 title: "pre.dev CLI"
-description: "The pre.dev agent in your terminal, working directly on your local repo."
+description: "Use the coding agent in a local project directory."
 ---
 
-The `predev` CLI brings the full pre.dev agent to your terminal. Run it in any project directory and you get the same agent chat and slash commands as the web workspace — except the agent reads and edits the files in that folder directly.
+The `predev` CLI reads and edits files in your working directory. It connects that directory to a pre.dev project for conversation history and planning artifacts.
+
+## Install and launch
+
+The installer supports macOS and Linux on ARM64 and x64. It requires `curl` and Python 3.
 
 ```bash
 curl -fsSL https://pre.dev/install | bash
 ```
 
-Works on macOS and Linux (Apple Silicon, ARM64, and x64). The installer puts everything under `~/.predev`, adds `predev` to your PATH, and keeps itself up to date — you never run the installer again.
+It installs under `~/.predev`, adds `predev` to your shell path, and launches the CLI in an interactive terminal. For installation without launching:
+
+```bash
+curl -fsSL https://pre.dev/install | PREDEV_NO_AUTORUN=1 bash
+```
+
+Then run it from your repository:
+
+```bash
+cd my-project
+predev
+```
+
+If your shell has not picked up the PATH change, open a new terminal or run `~/.predev/bin/predev`.
 
 ## First run
 
-<Steps>
-  <Step title="Install">
-    ```bash
-    cd my-project
-    curl -fsSL https://pre.dev/install | bash
-    ```
-    The installer launches `predev` for you as soon as it finishes — one command and you're in the agent. It also adds `predev` to your PATH for next time (set `PREDEV_NO_AUTORUN=1` to skip the auto-launch, e.g. in provisioning scripts).
-  </Step>
-  <Step title="Run predev in a project directory">
-    ```bash
-    cd my-project
-    predev
-    ```
-    The current directory becomes the agent's workspace. You can also pass an opening prompt directly: `predev "add dark mode to the settings page"`.
-  </Step>
-  <Step title="Log in via your browser">
-    On first launch the CLI opens your browser to pre.dev. Sign in (or pick your account), approve, and return to the terminal — the CLI picks up your session automatically. Your credential is stored locally in `~/.predev/auth.json`; you won't need to log in again on that machine. Run `/login` anytime to switch accounts.
-  </Step>
-  <Step title="Pick up your project">
-    The CLI links each directory to a pre.dev project. The first launch in a folder creates one; every launch after that resumes it — chat history, sessions, and settings included. Pass `--new` to start a fresh project for the same folder.
+Sign in through the browser when prompted, then return to the terminal. The CLI stores its credential in `~/.predev/auth.json`; `/login` signs in again or switches accounts.
 
-    If the folder already contains code, the CLI detects it and offers to reverse-engineer the codebase into your project's architecture before you start. See [Work on an Existing Repo](/cli/existing-repos).
-  </Step>
-</Steps>
+The CLI resolves a project for the directory and resumes it on subsequent launches. Use `predev --new` to create a fresh project association. An existing codebase can be mapped with `/reverse` before you request changes.
 
-## What you can do
+```bash
+predev "add an empty state to the reports page"
+predev --version
+predev --help
+```
 
-Everything runs through the chat input. Type `/` to open the command palette — see the full [command reference](/cli/commands).
+## Work in the terminal
+
+Auto mode is the default. Use `/plan` for planning, `/sprint <feature>` for a dedicated sprint, and `/fork <task>` for a separate session. `/kanban`, `/roadmap`, and `/arch` open project views in the terminal.
+
+Review file changes with `git status` and `git diff`. Shared project records do not automatically synchronize all local files with a hosted checkout; use the normal Git workflow for the repository.
+
+The launcher checks for updates in the background and verifies downloaded releases. A background update can take effect on a later launch; `predev --version` reports the installed version in use.
 
 <CardGroup cols={2}>
-  <Card title="Chat on local code" icon="terminal">
-    Ask questions, request changes, debug — the agent reads and edits the files in your working directory.
-  </Card>
-  <Card title="Run sprints" icon="rocket">
-    `/sprint <feature>` builds a feature end to end in a parallel session while you keep working.
-  </Card>
-  <Card title="Fork parallel sessions" icon="code-branch">
-    `/fork <task>` spins a task off into an isolated session — run several at once from the fleet bar.
-  </Card>
-  <Card title="Reverse-engineer a repo" icon="magnifying-glass">
-    `/reverse` maps an existing codebase into your project's architecture graph.
-  </Card>
-  <Card title="Project views in the terminal" icon="table-columns">
-    `/kanban`, `/roadmap`, and `/arch` render the Kanban board, roadmap, and architecture graph right in your terminal.
-  </Card>
-  <Card title="Credits and models" icon="sliders">
-    `/balance` shows remaining credits; `/model`, `/effort`, and `/pro` control which models do the work. If you run out mid-task, the CLI opens your billing page — top up and it resumes the interrupted work automatically.
-  </Card>
-</CardGroup>
-
-## CLI or web?
-
-Both clients share the same projects, sessions, and data — you can start in one and continue in the other.
-
-| Use the CLI when... | Use the web when... |
-|---------------------|---------------------|
-| You're working on a repo that already lives on your machine | You're starting a brand-new project from an idea |
-| You want the agent editing local files you review with git | You want a hosted preview you can click through as it builds |
-| You live in the terminal and want everything in one place | You're collaborating with teammates in a shared workspace |
-| You're adopting pre.dev into an existing codebase | You're managing specs, milestones, and builds visually |
-
-<Note>
-  The CLI and web stay in sync. A sprint started in the terminal shows up in the web workspace, and if a run is live from the web, the CLI reflects it instead of starting a competing run.
-</Note>
-
-## Staying up to date
-
-The install one-liner is a one-time bootstrap. After that, the `predev` launcher checks for new releases in the background and installs them automatically — every launch runs the newest installed version. New versions land in `~/.predev/versions/` and downloads are checksum-verified.
-
-## Next steps
-
-<CardGroup cols={2}>
-  <Card title="Command reference" icon="list" href="/cli/commands">
-    Every slash command, grouped by what it does.
-  </Card>
-  <Card title="Work on an existing repo" icon="folder-open" href="/cli/existing-repos">
-    Point pre.dev at a codebase you already have.
-  </Card>
-  <Card title="Coding Agent" icon="robot" href="/coding-agent/overview">
-    How pre.dev's agents plan, build, and verify.
-  </Card>
-  <Card title="Integrations" icon="plug" href="/coding-agent/integrations/overview">
-    MCP servers, skills, and OAuth services — all manageable from the CLI.
-  </Card>
+  <Card title="Command reference" icon="list" href="/cli/commands">Commands, launch flags, and integration controls.</Card>
+  <Card title="Use an existing repo" icon="folder-open" href="/cli/existing-repos">Map the architecture and review local changes.</Card>
 </CardGroup>

@@ -1,219 +1,67 @@
 ---
-title: "Task Status"
-api: "GET https://api.pre.dev/browser-agent/{id}"
-openapi: "GET /browser-agent/{id}"
-description: "Fetch the status and results of a browser-agent task submission by id. Works for in-progress and completed submissions. Opt into the full per-step event timeline with includeEvents=true."
+title: "Get run status and results"
+openapi: "/api-reference/openapi.json GET /browser-agent/{id}"
+description: "Retrieve a browser run, individual task outcomes, retry counts, and optional execution timelines."
 ---
 
-Fetch one run by id. Use this to poll an async submission, review a historical run, or pull the full per-step event timeline for debugging.
+import { LifecycleExplorer } from "/snippets/lifecycle.jsx";
 
-## Overview
-
-- **Method:** `GET`
-- **Path:** `/browser-agent/{id}`
-- **Auth:** same `Authorization: Bearer YOUR_API_KEY` as [Run a Task](/browser-agents/api/run-task)
-- **Scope:** you can only fetch runs created with your own API key.
-
-## Path Parameters
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `id` | `string` | ✅ | Run id returned by [`POST /browser-agent`](/browser-agents/api/run-task) (a 24-char Mongo ObjectId). |
-
-## Query Parameters
-
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `includeEvents` | `boolean` | `false` | When `true`, includes the full per-step event timeline on each `TaskResult` (see [`events`](#event-timeline)) and adds a top-level `liveEvents` field for tasks that are still running. Payloads can be large — screenshots inflate them fast. |
-
-## Response
-
-Returns the same `BatchResult` shape produced by `POST /browser-agent`. See [Run a Task → Response Schemas](/browser-agents/api/run-task#response-schemas) for the field-by-field breakdown.
-
-### In-progress runs
-
-While `status === "processing"`:
-
-- `results[i]` holds a completed task when task `i` has finished, otherwise a **synthesized pending stub** with `{ url, instruction, input, status: "PENDING" }` so your UI can always render the task row.
-- `completed` counts how many tasks have a real result (not stubs).
-- When `includeEvents=true`, `liveEvents[i]` holds the in-flight event stream for each still-running task. Completed tasks get `liveEvents[i] = []`.
-
-### Completed runs
-
-When `status === "completed"` (or `"failed"`):
-
-- Every `results[i]` is a real `TaskResult`.
-- `liveEvents` is omitted (all timelines live on `results[i].events` when `includeEvents=true`).
-- `completedAt` is populated.
-
-## Example — polling an async run
+Use the `id` returned by [task submission](/browser-agents/api/run-task). A run is also called a batch in the API and SDK types.
 
 ```bash
-curl https://api.pre.dev/browser-agent/65f8a9d2c1e4b5a6f7e8d9c0 \
+curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-```json
-{
-  "id": "65f8a9d2c1e4b5a6f7e8d9c0",
-  "total": 3,
-  "completed": 2,
-  "results": [
-    {
-      "url": "https://example.com",
-      "instruction": "Extract the heading.",
-      "status": "SUCCESS",
-      "data": { "heading": "Example Domain" },
-      "creditsUsed": 0.11,
-      "durationMs": 4820
-    },
-    {
-      "url": "https://news.ycombinator.com",
-      "instruction": "Extract the top 5 story titles.",
-      "status": "SUCCESS",
-      "data": { "stories": ["...", "..."] },
-      "creditsUsed": 0.18,
-      "durationMs": 8132
-    },
-    {
-      "url": "https://www.reddit.com/r/programming",
-      "instruction": "Extract the top 5 post titles.",
-      "status": "PENDING"
-    }
-  ],
-  "totalCreditsUsed": 0.29,
-  "status": "processing",
-  "createdAt": "2026-04-16T18:22:10.224Z"
-}
-```
+## Batch and task states
 
-## Example — full timeline for one task
+Batch `status` is `processing`, `completed`, or `failed`. Stop polling on either terminal state. A completed batch may contain unsuccessful tasks.
+
+<LifecycleExplorer kind="browser" />
+
+| Task status | Meaning |
+| --- | --- |
+| `PENDING` | Waiting to run |
+| `RUNNING` | Execution has started |
+| `SUCCESS` | The task succeeded |
+| `BLOCKED` | The site blocked the task |
+| `CAPTCHA_FAILED` | A challenge could not be completed |
+| `TIMEOUT` | The execution budget expired |
+| `LOOP` | Repeated actions prevented progress |
+| `NO_TARGET` | The requested target or usable result was not found |
+| `ERROR` | Another execution failure; read `error` |
+
+## In-progress results
+
+`results` is aligned to task order. An entry can be a terminal result, a `PENDING`/`RUNNING` stub, or null when task details are unavailable. Pending entries need not include `data`, `durationMs`, or `creditsUsed`.
+
+The detail response counts result slots in `completed`, including synthesized entries. **Use `status`, not `completed === total` or array length, to decide whether the run is finished.**
+
+Additional fields can include:
+
+| Field | Meaning |
+| --- | --- |
+| `name` / `taskNames` | Generated display names, when available |
+| `results[i].attempts` | Execution attempts; greater than one indicates a retry |
+| `results[i].queuePosition` | Advisory position for pending work; zero for running work, or null if unavailable |
+| `results[i].instruction`, `input`, `output` | Original task inputs when available |
+| `totalCreditsUsed` | Sum of reported task credit usage |
+
+Inspect task `status` before using `data`. Treat display names, queue position, and timestamps as optional.
+
+## Event timeline
+
+Set `includeEvents=true` when you need execution evidence:
 
 ```bash
-curl "https://api.pre.dev/browser-agent/65f8a9d2c1e4b5a6f7e8d9c0?includeEvents=true" \
+curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID?includeEvents=true" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Each `TaskResult` now carries an `events` array, and while any task is still running `liveEvents` is populated too.
+`results[i].events` contains available task events. `liveEvents[i]` can contain events for unfinished tasks; completed slots can be empty arrays. These fields can remain present after batch completion.
 
-```json
-{
-  "id": "65f8a9d2c1e4b5a6f7e8d9c0",
-  "total": 1,
-  "completed": 1,
-  "status": "completed",
-  "results": [
-    {
-      "url": "https://example.com",
-      "status": "SUCCESS",
-      "data": { "heading": "Example Domain" },
-      "creditsUsed": 0.11,
-      "durationMs": 4820,
-      "events": [
-        { "type": "navigation", "data": { "url": "https://example.com" } },
-        { "type": "plan",       "data": { "reasoning": "The heading is the <h1>..." } },
-        { "type": "screenshot", "data": { "url": "https://cdn.pre.dev/screenshots/..." } },
-        { "type": "action",     "data": { "action": "extract", "selector": "h1" } },
-        { "type": "validation", "data": { "passed": true } },
-        { "type": "done",       "data": { "status": "SUCCESS" } }
-      ]
-    }
-  ]
-}
-```
+An event uses `{ type, timestamp, iteration?, data }`, where `timestamp` is Unix time in milliseconds. Types include `navigation`, `plan`, `action`, `screenshot`, `validation`, `done`, `error`, and lifecycle events. Accept unfamiliar event types and inspect their payloads instead of assuming a closed list.
 
-### Event timeline
+Screenshot payloads can contain inline image data rather than a URL. Events vary by execution path and are not guaranteed for every step. Timelines can be large, so omit them from routine status checks. The [existing-run stream](/browser-agents/api/stream-task) provides a snapshot followed by live updates.
 
-The `events` array records every step the agent took. Each event is `{ type, data, ts? }`. Event types you'll see:
-
-| Type | When | Notable `data` fields |
-|---|---|---|
-| `navigation` | Agent loaded a URL | `url` |
-| `plan` | Agent reasoned about next steps | `reasoning`, `steps` |
-| `action` | Agent performed an interaction | `action` (`click`/`type`/`scroll`/`extract`), `selector` |
-| `screenshot` | Frame captured | `url` (CDN link) |
-| `validation` | Output schema / success condition checked | `passed`, `errors` |
-| `done` | Task finished | `status` |
-| `error` | Task errored | `message` |
-
-<Note>
-Internal fields (sandbox provider, LLM model, token counts) are stripped from events before they're returned. You only see what your task did, not how we ran it.
-</Note>
-
-## Status Codes
-
-| Code | Meaning |
-|---|---|
-| `200` | Run found. Body is the `BatchResult`. |
-| `400` | Malformed run id. |
-| `401` | Missing or invalid bearer token. |
-| `404` | Run not found, or not owned by this API key. |
-
-## Polling Patterns
-
-### Python — poll until done
-
-```python
-import time
-import requests
-
-API_KEY = "YOUR_API_KEY"
-BASE = "https://api.pre.dev/browser-agent"
-HDR = {"Authorization": f"Bearer {API_KEY}"}
-
-
-def wait_for_run(run_id: str, *, include_events: bool = False, poll_every: float = 5.0, timeout_s: float = 1800):
-    deadline = time.time() + timeout_s
-    while True:
-        params = {"includeEvents": "true"} if include_events else None
-        r = requests.get(f"{BASE}/{run_id}", headers=HDR, params=params)
-        r.raise_for_status()
-        run = r.json()
-        if run["status"] in ("completed", "failed"):
-            return run
-        print(f"{run['completed']}/{run['total']} done")
-        if time.time() > deadline:
-            raise TimeoutError(f"run {run_id} still processing after {timeout_s}s")
-        time.sleep(poll_every)
-
-
-run = wait_for_run("65f8a9d2c1e4b5a6f7e8d9c0")
-for r in run["results"]:
-    print(r["status"], r.get("data"))
-```
-
-### Node.js — poll with exponential backoff
-
-```javascript
-const API_KEY = process.env.PREDEV_API_KEY;
-const BASE = "https://api.pre.dev/browser-agent";
-
-async function waitForRun(id, { includeEvents = false, maxMs = 30 * 60_000 } = {}) {
-  const deadline = Date.now() + maxMs;
-  let delay = 1000;
-
-  while (Date.now() < deadline) {
-    const url = `${BASE}/${id}${includeEvents ? "?includeEvents=true" : ""}`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${API_KEY}` } });
-    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-
-    const run = await res.json();
-    if (run.status === "completed" || run.status === "failed") return run;
-
-    await new Promise((r) => setTimeout(r, delay));
-    delay = Math.min(delay * 1.5, 15_000);
-  }
-  throw new Error(`timed out waiting for run ${id}`);
-}
-
-const run = await waitForRun("65f8a9d2c1e4b5a6f7e8d9c0");
-console.log(run.results.map((r) => r.data));
-```
-
-<Tip>
-For interactive UIs use `stream: true` on the initial [Run a Task](/browser-agents/api/run-task) request to skip polling entirely. Use `GET /browser-agent/:id?includeEvents=true` only to reconstruct timelines for historical runs.
-</Tip>
-
-<Card title="Next: List Tasks" icon="arrow-right" href="/browser-agents/api/list-tasks">
-  Paginate over every task submission your API key has created, filter by status.
-</Card>
+A malformed ID returns `400`. An unknown or inaccessible run returns `404`.

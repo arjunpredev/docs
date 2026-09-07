@@ -1,0 +1,21 @@
+---
+title: "Upload a proposal"
+openapi: "/api-reference/openapi.json POST /upload-proposal"
+description: "Store proposal text or a document for later comparison with a specification."
+---
+
+Provide `proposalName` and at least one of `text` or `file`. Text-only requests can use JSON; files use multipart form data.
+
+```bash
+curl --fail-with-body https://api.pre.dev/upload-proposal \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "proposalName": "Reporting dashboard implementation",
+    "text": "We propose organization-scoped reports, CSV export, and audit logging delivered in three milestones."
+  }'
+```
+
+The HTTP `200` response contains `success: true` and `proposalId`. Save that ID to [retrieve](/architect-agent/api/get-proposal) or [vet](/architect-agent/api/vet-proposal) the proposal.
+
+For file uploads, use the same [formats and 20 MiB limit](/architect-agent/inputs-and-outputs#upload-a-file) as specification uploads. Missing `proposalName`, or missing both file and text, returns `400`.
