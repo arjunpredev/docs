@@ -778,7 +778,7 @@
             }
           },
           "400": {
-            "description": "Invalid request.",
+            "description": "Invalid task input, malformed or unresolvable URL, missing instructions/output schema, or oversized batch. No work is started.",
             "content": {
               "application/json": {
                 "schema": {
@@ -828,7 +828,7 @@
             }
           },
           "503": {
-            "description": "Streaming capacity unavailable; retry later or use polling.",
+            "description": "Streaming capacity unavailable, or temporary DNS verification failure (URL_CHECK_UNAVAILABLE). No tasks start when input verification fails.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2967,7 +2967,7 @@
         "properties": {
           "url": {
             "type": "string",
-            "description": "Starting URL.",
+            "description": "Full starting HTTP(S) URL. Domains must resolve to at least one IPv4 or IPv6 address.",
             "format": "uri"
           },
           "instruction": {
@@ -2986,7 +2986,8 @@
             "type": "object",
             "properties": {},
             "additionalProperties": true,
-            "description": "JSON Schema for extracted data. If omitted, the runner may infer a schema."
+            "description": "JSON Schema for extracted data. If omitted, the runner may infer a schema.",
+            "minProperties": 1
           },
           "successCondition": {
             "type": "string",
@@ -3004,13 +3005,13 @@
           },
           "maxSteps": {
             "type": "integer",
-            "description": "Planning iteration budget. MCP accepts 1\u201350; use this range across clients. REST forwards the value without equivalent range validation.",
+            "description": "Planning iteration budget. MCP accepts 1–50; use this range across clients. REST forwards the value without equivalent range validation.",
             "minimum": 1,
             "maximum": 50
           },
           "maxDurationSeconds": {
             "type": "integer",
-            "description": "Wall-clock budget in seconds. MCP accepts 5\u2013600; use this range across clients. Defaults vary by execution path.",
+            "description": "Wall-clock budget in seconds. MCP accepts 5–600; use this range across clients. Defaults vary by execution path.",
             "minimum": 5,
             "maximum": 600
           },
@@ -3024,7 +3025,26 @@
             "description": "Legacy millisecond budget. If both are supplied, timeoutMs takes precedence over maxDurationSeconds.",
             "deprecated": true
           }
-        }
+        },
+        "description": "A full HTTP(S) URL and either nonblank instructions or a non-empty output schema are required. The entire batch is validated before billing or queueing.",
+        "anyOf": [
+          {
+            "required": [
+              "instruction"
+            ],
+            "properties": {
+              "instruction": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            }
+          },
+          {
+            "required": [
+              "output"
+            ]
+          }
+        ]
       },
       "BatchRequest": {
         "type": "object",
@@ -3042,7 +3062,7 @@
           },
           "concurrency": {
             "type": "integer",
-            "description": "Requested parallelism; defaults to 5 and is clamped to 1\u201320. Account and service capacity may reduce effective parallelism.",
+            "description": "Requested parallelism; defaults to 5 and is clamped to 1–20. Account and service capacity may reduce effective parallelism.",
             "minimum": 1,
             "maximum": 20,
             "default": 5

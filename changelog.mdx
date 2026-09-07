@@ -7,6 +7,14 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-09-07
+
+### Reject unusable browser tasks before starting work
+
+- The dashboard now keeps Run disabled until each task has a valid website URL and instructions or an output schema, with inline guidance and consistent URL normalization for drafts and CSV rows.
+- The backend checks task input and DNS before charging or queueing, so empty tasks and nonexistent domains do not consume sandbox time. Output-schema-only extraction remains supported.
+- Permanent task and URL failures no longer get another sandbox attempt. Failed runner outcomes display as failed in the run details.
+
 ## 2026-07-15
 
 ### Act from your inbox, and a much snappier app

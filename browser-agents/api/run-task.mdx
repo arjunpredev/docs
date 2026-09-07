@@ -8,7 +8,7 @@ Always pass a `tasks` array, including for a single task. Each request creates o
 
 ## Task controls
 
-Every task needs `url`. Add an `instruction`, string-valued `input`, and an `output` JSON Schema as needed. Choose `mode: "extract"` for schema-oriented reads or `mode: "agent"` for goal-driven navigation; `auto` lets the service choose.
+Every task needs a full HTTP(S) `url` and either a nonblank `instruction` or a non-empty `output` JSON Schema object. String-valued `input` is optional and does not replace instructions. Choose `mode: "extract"` for schema-oriented reads or `mode: "agent"` for goal-driven navigation; `auto` lets the service choose.
 
 `maxSteps` and `maxDurationSeconds` set per-task budgets. For compatibility with MCP, use `1`–`50` steps and `5`–`600` seconds. REST also accepts the older `maxIterations` and `timeoutMs` names; those take precedence if both forms are sent. Do not send both forms in new code. Defaults vary with the task and execution path, so set an explicit budget when your workflow depends on one.
 
@@ -32,6 +32,14 @@ Every task needs `url`. Add an `instruction`, string-valued `input`, and an `out
 ```
 
 When `output` is omitted, schema inference may be attempted. Supply your own schema for a predictable contract; a successful task does not always have `data`.
+
+## Input validation
+
+The service validates the entire batch before charging credits, creating a run, or queueing browser work. Malformed URLs, missing instructions without an output schema, and domains with no DNS address return an actionable error with a `code`, a zero-based `taskIndex`, and a `field` when applicable.
+
+DNS verification has a five-second request budget. Temporary DNS failures return `503` with `URL_CHECK_UNAVAILABLE`; retry the submission later. No tasks are started when verification fails. This check verifies the hostname, not page availability: authenticated pages and bot-protected sites remain eligible for browser execution.
+
+The dashboard applies the same task and URL format checks before enabling Run. CSV instructions are checked after row-variable interpolation. Output-schema-only extraction remains supported through the API and MCP.
 
 ## Synchronous
 
@@ -73,7 +81,7 @@ curl --fail-with-body -N https://api.pre.dev/browser-agent \
 | `task_event` | `{ taskIndex, type, timestamp, iteration?, data }` |
 | `task_result` | `{ taskIndex, ...taskResult }` |
 | `done` | Full `BatchResult` |
-| `error` | `{ error, code?, actionUrl? }` |
+| `error` | `{ error, code?, actionUrl?, taskIndex?, field? }` |
 
 Lines beginning with `:` are keepalive comments. The task index is zero-based. Individual task `done` events inside `task_event` do not finish the batch; wait for the outer SSE `done` event and inspect all task statuses.
 
