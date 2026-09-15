@@ -1,0 +1,174 @@
+---
+title: "Tools and structured output"
+description: "Tool calling and JSON-schema output pass through to OpenRouter unchanged."
+---
+
+`tools`, `tool_choice`, `parallel_tool_calls`, `response_format`, and `structured_outputs` are forwarded as-is. Model support for each is OpenRouter's; check the model's row in [`GET /v1/models`](/ai-gateway/api/models) and the [OpenRouter docs](https://openrouter.ai/docs).
+
+## Tool calling
+
+<CodeGroup>
+```typescript Node.js
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [{
+  type: 'function',
+  function: {
+    name: 'get_weather',
+    description: 'Current weather for a city',
+    parameters: {
+      type: 'object',
+      properties: { city: { type: 'string' } },
+      required: ['city'],
+    },
+  },
+}];
+
+const first = await client.chat.completions.create({
+  model: 'anthropic/claude-sonnet-5',
+  messages: [{ role: 'user', content: 'What is the weather in Lisbon?' }],
+  tools,
+  tool_choice: 'auto',
+});
+const call = first.choices[0].message.tool_calls?.[0];
+if (call?.type === 'function') {
+  const args = JSON.parse(call.function.arguments);
+  const weather = { city: args.city, tempC: 24 }; // your implementation
+  const second = await client.chat.completions.create({
+    model: 'anthropic/claude-sonnet-5',
+    messages: [
+      { role: 'user', content: 'What is the weather in Lisbon?' },
+      first.choices[0].message,
+      { role: 'tool', tool_call_id: call.id, content: JSON.stringify(weather) },
+    ],
+    tools,
+  });
+  console.log(second.choices[0].message.content);
+}
+```
+```python Python
+import json
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+tools = [{
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "description": "Current weather for a city",
+        "parameters": {
+            "type": "object",
+            "properties": {"city": {"type": "string"}},
+            "required": ["city"],
+        },
+    },
+}]
+
+messages = [{"role": "user", "content": "What is the weather in Lisbon?"}]
+first = client.chat.completions.create(
+    model="anthropic/claude-sonnet-5", messages=messages, tools=tools, tool_choice="auto"
+)
+call = (first.choices[0].message.tool_calls or [None])[0]
+if call:
+    args = json.loads(call.function.arguments)
+    weather = {"city": args["city"], "tempC": 24}  # your implementation
+    messages.append(first.choices[0].message)
+    messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(weather)})
+    second = client.chat.completions.create(
+        model="anthropic/claude-sonnet-5", messages=messages, tools=tools
+    )
+    print(second.choices[0].message.content)
+```
+</CodeGroup>
+
+Set `parallel_tool_calls: false` to force one call per turn on models that would otherwise emit several.
+
+## Structured output
+
+Use `response_format` with a JSON schema. The gateway forwards it; OpenRouter enforces it on models that support structured outputs.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/chat/completions \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/gpt-5.6-luna",
+    "messages": [{ "role": "user", "content": "Extract: Ada Lovelace, born 1815, London." }],
+    "response_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "person",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "born": { "type": "integer" },
+            "city": { "type": "string" }
+          },
+          "required": ["name", "born", "city"],
+          "additionalProperties": false
+        }
+      }
+    }
+  }'
+```
+```typescript Node.js
+const completion = await client.chat.completions.create({
+  model: 'openai/gpt-5.6-luna',
+  messages: [{ role: 'user', content: 'Extract: Ada Lovelace, born 1815, London.' }],
+  response_format: {
+    type: 'json_schema',
+    json_schema: {
+      name: 'person',
+      strict: true,
+      schema: {
+        type: 'object',
+        properties: { name: { type: 'string' }, born: { type: 'integer' }, city: { type: 'string' } },
+        required: ['name', 'born', 'city'],
+        additionalProperties: false,
+      },
+    },
+  },
+});
+const person = JSON.parse(completion.choices[0].message.content!);
+```
+```python Python
+completion = client.chat.completions.create(
+    model="openai/gpt-5.6-luna",
+    messages=[{"role": "user", "content": "Extract: Ada Lovelace, born 1815, London."}],
+    response_format={
+        "type": "json_schema",
+        "json_schema": {
+            "name": "person",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": {"name": {"type": "string"}, "born": {"type": "integer"}, "city": {"type": "string"}},
+                "required": ["name", "born", "city"],
+                "additionalProperties": False,
+            },
+        },
+    },
+)
+person = json.loads(completion.choices[0].message.content)
+```
+</CodeGroup>
+
+Add the `response-healing` plugin to repair near-valid JSON from models without native schema support:
+
+```json
+{
+  "model": "deepseek/deepseek-v4.1-flash",
+  "plugins": [{ "id": "response-healing" }],
+  "response_format": { "type": "json_object" },
+  "messages": [{ "role": "user", "content": "Return {\"ok\": true} as JSON." }]
+}
+```
+
+Plugin semantics and any plugin cost are OpenRouter's; costs are included in `usage.cost` and therefore in the credits charged.

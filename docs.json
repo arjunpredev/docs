@@ -410,6 +410,45 @@
         ]
       },
       {
+        "tab": "AI Gateway",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "ai-gateway/overview",
+              "ai-gateway/quickstart",
+              "ai-gateway/api-key",
+              "ai-gateway/pricing"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "ai-gateway/models",
+              "ai-gateway/streaming",
+              "ai-gateway/tools-and-structured-output",
+              "ai-gateway/multimodal",
+              "ai-gateway/routing-and-fallbacks",
+              "ai-gateway/from-a-predev-app"
+            ]
+          },
+          {
+            "group": "API reference",
+            "pages": [
+              "ai-gateway/api/chat-completions",
+              "ai-gateway/api/messages",
+              "ai-gateway/api/embeddings",
+              "ai-gateway/api/images-and-video",
+              "ai-gateway/api/audio",
+              "ai-gateway/api/files",
+              "ai-gateway/api/models",
+              "ai-gateway/api/usage",
+              "ai-gateway/api/errors"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Architect",
         "groups": [
           {

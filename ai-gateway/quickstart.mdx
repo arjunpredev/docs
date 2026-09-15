@@ -1,0 +1,125 @@
+---
+title: "AI Gateway quickstart"
+description: "Send a chat completion through api.pre.dev/v1 with curl or a stock SDK."
+---
+
+Send one chat completion to `deepseek/deepseek-v4.1-flash` and read the credits it charged.
+
+## Before you start
+
+Copy your key from the dashboard under **Integrations → API Keys** and store it as `PREDEV_API_KEY`. Keys look like `pdk_…`. A free workspace can make 5 credits of gateway calls; after that, calls need a subscription or credits. See [API key](/ai-gateway/api-key) and [pricing](/ai-gateway/pricing).
+
+## Send a request
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl --fail-with-body https://api.pre.dev/v1/chat/completions \
+      -H "Authorization: Bearer $PREDEV_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "deepseek/deepseek-v4.1-flash",
+        "messages": [{ "role": "user", "content": "Say hello in five words." }]
+      }'
+    ```
+  </Tab>
+  <Tab title="Node.js">
+    Install the stock SDK with `npm install openai`, then set `baseURL`:
+
+    ```typescript
+    import OpenAI from 'openai';
+
+    const client = new OpenAI({
+      baseURL: 'https://api.pre.dev/v1',
+      apiKey: process.env.PREDEV_API_KEY!,
+    });
+
+    const completion = await client.chat.completions.create({
+      model: 'deepseek/deepseek-v4.1-flash',
+      messages: [{ role: 'user', content: 'Say hello in five words.' }],
+    });
+    console.log(completion.choices[0].message.content);
+    ```
+  </Tab>
+  <Tab title="Python">
+    Install the stock SDK with `pip install openai`, then set `base_url`:
+
+    ```python
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://api.pre.dev/v1",
+        api_key=os.environ["PREDEV_API_KEY"],
+    )
+
+    completion = client.chat.completions.create(
+        model="deepseek/deepseek-v4.1-flash",
+        messages=[{"role": "user", "content": "Say hello in five words."}],
+    )
+    print(completion.choices[0].message.content)
+    ```
+  </Tab>
+  <Tab title="Vercel AI SDK">
+    Install `ai` and `@ai-sdk/openai`, then create a provider with the gateway URL:
+
+    ```typescript
+    import { createOpenAI } from '@ai-sdk/openai';
+    import { generateText } from 'ai';
+
+    const predev = createOpenAI({
+      baseURL: 'https://api.pre.dev/v1',
+      apiKey: process.env.PREDEV_API_KEY!,
+    });
+
+    const { text } = await generateText({
+      model: predev('deepseek/deepseek-v4.1-flash'),
+      prompt: 'Say hello in five words.',
+    });
+    console.log(text);
+    ```
+  </Tab>
+  <Tab title="Anthropic SDK">
+    The gateway serves the Anthropic Messages shape at `/v1/messages`. The Anthropic SDK appends `/v1/messages` itself, so its base URL is `https://api.pre.dev` **without** `/v1`. Use your pre.dev key as the API key:
+
+    ```typescript
+    import Anthropic from '@anthropic-ai/sdk';
+
+    const client = new Anthropic({
+      baseURL: 'https://api.pre.dev',
+      apiKey: process.env.PREDEV_API_KEY!,
+    });
+
+    const message = await client.messages.create({
+      model: 'anthropic/claude-sonnet-5',
+      max_tokens: 256,
+      messages: [{ role: 'user', content: 'Say hello in five words.' }],
+    });
+    console.log(message.content);
+    ```
+
+    Model ids stay in OpenRouter form (`anthropic/claude-sonnet-5`), not Anthropic's native names. See [Messages](/ai-gateway/api/messages).
+  </Tab>
+</Tabs>
+
+## Read the response
+
+The body is OpenRouter's chat completion response, unchanged. Three headers come from the gateway:
+
+| Header | Meaning |
+| --- | --- |
+| `x-predev-request-id` | Gateway request id, `pdr_…`; quote it in support requests |
+| `x-predev-credits-charged` | Credits charged for this call |
+| `x-predev-credits-remaining` | Workspace balance after the call; omitted on unlimited plans |
+
+Add `-i` to the curl command to print them. In the SDKs, use the raw-response helpers (`client.chat.completions.with_raw_response` in Python, `.withResponse()` in Node) when you need headers.
+
+## Swap the model
+
+<Warning>
+**Reasoning models spend your `max_tokens` thinking.** OpenRouter enables reasoning by default on models that support it (Claude, DeepSeek, Gemini and others). With a small `max_tokens` the reply can come back as `content: null` with `finish_reason: "length"` because the whole budget went to reasoning tokens — which are still billed. For chat, summarise or classify features either pass `reasoning: { "enabled": false }` (or `{ "effort": "low" }`) or give `max_tokens` at least 1024.
+</Warning>
+
+Change `model` to any id from [`GET /v1/models`](/ai-gateway/api/models), for example `anthropic/claude-sonnet-5`, `google/gemini-3.8-flash`, or `openai/gpt-5.6-luna`. An invalid id returns OpenRouter's own 4xx error unchanged.
+
+Continue with [streaming](/ai-gateway/streaming), [tools and structured output](/ai-gateway/tools-and-structured-output), or [routing and fallbacks](/ai-gateway/routing-and-fallbacks).

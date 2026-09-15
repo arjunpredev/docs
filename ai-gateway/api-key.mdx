@@ -1,0 +1,45 @@
+---
+title: "API key"
+description: "One key per workspace authenticates the AI Gateway and every other api.pre.dev endpoint."
+---
+
+Each workspace, a personal account or a team, has one fixed pre.dev API key. Open the dashboard and go to **Integrations → API Keys**; the card is present in both personal and team workspaces. Keys look like `pdk_…`.
+
+## Send the key
+
+| Header | Example |
+| --- | --- |
+| `Authorization` (recommended) | `Authorization: Bearer pdk_…` |
+| `x-api-key` | `x-api-key: pdk_…` |
+
+```bash
+curl --fail-with-body https://api.pre.dev/v1/usage \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+The OpenAI SDKs send `Authorization: Bearer`; the Anthropic SDK sends `x-api-key`. Both are accepted, so no header configuration is needed beyond `baseURL` and the key.
+
+The same key works for all other `api.pre.dev` endpoints: [specification generation](/architect-agent/overview), [browser agents](/browser-agents/overview), media, and [MCP](/architect-agent/mcp-setup). See [authentication](/api-reference/authentication) for the account rules those interfaces apply.
+
+## Rotate
+
+Rotate from the same **Integrations → API Keys** card. The old key stays valid for 15 minutes after rotation, so a deployed app can pick up the new value without a gap. Update the value in your secret store, then confirm a request with the new key succeeds before the window closes.
+
+## Projects built on pre.dev
+
+Every project built on pre.dev has the workspace key injected into its sandbox and deploy environment automatically:
+
+| Variable | Value |
+| --- | --- |
+| `PREDEV_API_KEY` | The workspace's key |
+| `PREDEV_API_URL` | `https://api.pre.dev` |
+
+Nothing to paste. Read [from a pre.dev app](/ai-gateway/from-a-predev-app) for the build-agent workflow and the server-side rule.
+
+## Keep it server-side
+
+The key spends the workspace's credits. Call the gateway from a server, an edge function, or a local development environment, and never ship it to the browser or a mobile bundle. A single-page app should call its own backend route, which forwards to the gateway.
+
+## Attribute usage to a project
+
+Send `x-predev-project-id: <projectId>` on any gateway call to attribute its usage to one of the workspace's projects. Ids for projects the workspace does not own are ignored. The [usage endpoint](/ai-gateway/api/usage) reports the result.

@@ -1,0 +1,71 @@
+---
+title: "Files"
+description: "Upload, list, fetch, and delete files scoped to your workspace."
+---
+
+The files endpoints proxy OpenRouter's files API. Files are scoped to the workspace that uploaded them; another workspace's file id returns `404`.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/v1/files` | Upload, `multipart/form-data` |
+| GET | `/v1/files` | List the workspace's files |
+| GET | `/v1/files/{id}` | File metadata |
+| GET | `/v1/files/{id}/content` | Download the bytes |
+| DELETE | `/v1/files/{id}` | Delete |
+
+## Upload
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/files \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -F "purpose=user_data" \
+  -F "file=@contract.pdf"
+```
+```typescript Node.js
+import fs from 'node:fs';
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const file = await client.files.create({
+  file: fs.createReadStream('contract.pdf'),
+  purpose: 'user_data',
+});
+console.log(file.id);
+```
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+with open("contract.pdf", "rb") as handle:
+    uploaded = client.files.create(file=handle, purpose="user_data")
+print(uploaded.id)
+```
+</CodeGroup>
+
+The multipart fields and the response body are OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs) for accepted purposes and size limits.
+
+## List, fetch, download, delete
+
+```bash
+curl --fail-with-body https://api.pre.dev/v1/files \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+
+curl --fail-with-body "https://api.pre.dev/v1/files/$FILE_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+
+curl --fail-with-body "https://api.pre.dev/v1/files/$FILE_ID/content" \
+  -H "Authorization: Bearer $PREDEV_API_KEY" -o contract.pdf
+
+curl --fail-with-body -X DELETE "https://api.pre.dev/v1/files/$FILE_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+In the SDKs these are `client.files.list()`, `client.files.retrieve(id)`, `client.files.content(id)`, and `client.files.delete(id)` (Node `client.files.del(id)` on older versions).
+
+## Use a file in a request
+
+Reference the uploaded file from a chat message the way OpenRouter documents, and add the `file-parser` plugin so models without native document input can read it. See [multimodal](/ai-gateway/multimodal).

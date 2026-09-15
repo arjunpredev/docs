@@ -1,0 +1,83 @@
+---
+title: "Audio"
+description: "POST /v1/audio/speech for text to speech and POST /v1/audio/transcriptions for speech to text."
+---
+
+Both endpoints proxy OpenRouter's audio endpoints with the same bodies and responses. Speech and transcription models appear in the main [catalog](/ai-gateway/api/models); pick an id whose row lists the audio modality.
+
+## Text to speech
+
+`POST /v1/audio/speech` takes a JSON body and returns audio bytes.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/audio/speech \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\": \"$SPEECH_MODEL\", \"input\": \"Your build is ready.\", \"voice\": \"alloy\"}" \
+  -o ready.mp3
+```
+```typescript Node.js
+import fs from 'node:fs/promises';
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const speech = await client.audio.speech.create({
+  model: process.env.SPEECH_MODEL!,
+  input: 'Your build is ready.',
+  voice: 'alloy',
+});
+await fs.writeFile('ready.mp3', Buffer.from(await speech.arrayBuffer()));
+```
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+with client.audio.speech.with_streaming_response.create(
+    model=os.environ["SPEECH_MODEL"],
+    input="Your build is ready.",
+    voice="alloy",
+) as speech:
+    speech.stream_to_file("ready.mp3")
+```
+</CodeGroup>
+
+## Transcription
+
+`POST /v1/audio/transcriptions` is `multipart/form-data` with a `file` part and a `model` field.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/audio/transcriptions \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -F "model=$TRANSCRIBE_MODEL" \
+  -F "file=@meeting.m4a"
+```
+```typescript Node.js
+import fs from 'node:fs';
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const transcript = await client.audio.transcriptions.create({
+  model: process.env.TRANSCRIBE_MODEL!,
+  file: fs.createReadStream('meeting.m4a'),
+});
+console.log(transcript.text);
+```
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+with open("meeting.m4a", "rb") as audio:
+    transcript = client.audio.transcriptions.create(model=os.environ["TRANSCRIBE_MODEL"], file=audio)
+print(transcript.text)
+```
+</CodeGroup>
+
+Set `SPEECH_MODEL` and `TRANSCRIBE_MODEL` to ids from the catalog. Voices, formats, and other fields are OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs). Both calls return the usual `x-predev-*` headers and are billed from `usage.cost`.

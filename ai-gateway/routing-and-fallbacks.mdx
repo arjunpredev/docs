@@ -1,0 +1,79 @@
+---
+title: "Routing and fallbacks"
+description: "Fallback models, provider preferences, reasoning, plugins, and other OpenRouter controls."
+---
+
+All routing controls are OpenRouter's and pass through the gateway unchanged. This page lists them and how they interact with billing; semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+
+## Fallback models
+
+Send `models` instead of a single `model`. OpenRouter tries each in order and the response reports which one answered.
+
+```json
+{
+  "models": ["anthropic/claude-sonnet-5", "openai/gpt-5.6-luna", "deepseek/deepseek-v4.1-flash"],
+  "route": "fallback",
+  "messages": [{ "role": "user", "content": "Summarize the plot of Dune in two sentences." }]
+}
+```
+
+You pay for the model that actually served the call, at its own price. Read `model` in the response, or the `by_model` rows in [usage](/ai-gateway/api/usage), to see where traffic landed.
+
+## Provider preferences
+
+The `provider` object controls which upstream providers serve a model:
+
+| Key | Purpose |
+| --- | --- |
+| `order` | Providers to try first |
+| `sort` | Sort candidates by `price`, `throughput`, or `latency` |
+| `ignore`, `only` | Exclude or restrict providers |
+| `max_price` | Per-token price ceiling |
+| `data_collection` | Allow or deny providers that retain data |
+
+```json
+{
+  "model": "deepseek/deepseek-v4.1-flash",
+  "provider": { "sort": "throughput", "data_collection": "deny" },
+  "messages": [{ "role": "user", "content": "ping" }]
+}
+```
+
+`usage.cost` reflects the chosen provider's price, so `max_price` bounds your credit spend per token. The `:nitro` variant is shorthand for throughput sorting.
+
+## Reasoning
+
+`reasoning` (an object) and `reasoning_effort` (a string) request thinking on models that support it. Reasoning tokens are output tokens for billing.
+
+```json
+{
+  "model": "anthropic/claude-sonnet-5",
+  "reasoning": { "effort": "medium" },
+  "messages": [{ "role": "user", "content": "Is 9973 prime? Show your reasoning briefly." }]
+}
+```
+
+## Plugins and web search
+
+`plugins` accepts `web`, `file-parser`, `response-healing`, and `context-compression`. `web_search_options` tunes the web plugin. Plugin costs are included in `usage.cost`.
+
+```json
+{
+  "model": "openai/gpt-5.6-luna",
+  "plugins": [{ "id": "web" }],
+  "web_search_options": { "search_context_size": "low" },
+  "messages": [{ "role": "user", "content": "What changed in the latest Node.js LTS release?" }]
+}
+```
+
+## Other pass-through fields
+
+| Field | Purpose |
+| --- | --- |
+| `transforms` | Prompt transforms such as middle-out compression |
+| `prediction` | Predicted outputs |
+| `verbosity` | Response length hint |
+| `session_id` | Group related requests upstream |
+| `user` | End-user identifier; the gateway prefixes it with a workspace hash |
+
+If you send `user`, keep it stable per end user so abuse reports can be attributed. The gateway sets it when absent.

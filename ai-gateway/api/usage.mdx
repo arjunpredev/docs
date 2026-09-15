@@ -1,0 +1,84 @@
+---
+title: "Usage"
+description: "GET /v1/usage for per-model totals, GET /v1/generation for one call, and the x-predev headers."
+---
+
+## Per-call headers
+
+Every inference response carries:
+
+| Header | Meaning |
+| --- | --- |
+| `x-predev-request-id` | `pdr_…`; quote it when contacting support |
+| `x-predev-credits-charged` | Credits charged for this call |
+| `x-predev-credits-remaining` | Workspace balance after the call; omitted on unlimited plans |
+
+Send `x-predev-project-id: <projectId>` on a request to attribute it to one of the workspace's projects. Ids of projects the workspace does not own are ignored.
+
+## GET /v1/usage
+
+Returns totals for the last `days` days (1–90, default 30), broken down by model and path.
+
+```bash
+curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+```json
+{
+  "workspace": "ws_7f3a9c",
+  "project": null,
+  "credits_remaining": 412.5,
+  "tier": "pro",
+  "since": "2026-08-16T00:00:00.000Z",
+  "totals": { "requests": 1840, "credits": 87.5, "usd": 6.13 },
+  "by_model": [
+    {
+      "model": "deepseek/deepseek-v4.1-flash",
+      "path": "/v1/chat/completions",
+      "requests": 1702,
+      "credits": 41.2,
+      "usd": 2.88,
+      "prompt_tokens": 9120000,
+      "completion_tokens": 1410000,
+      "errors": 3
+    },
+    {
+      "model": "anthropic/claude-sonnet-5",
+      "path": "/v1/messages",
+      "requests": 138,
+      "credits": 46.3,
+      "usd": 3.25,
+      "prompt_tokens": 610000,
+      "completion_tokens": 92000,
+      "errors": 0
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `workspace` | The workspace the key belongs to |
+| `project` | Project the totals are attributed to, or `null` |
+| `credits_remaining` | Current balance; `null` on unlimited plans |
+| `tier` | Plan tier |
+| `since` | Start of the window |
+| `totals.requests`, `totals.credits`, `totals.usd` | Window totals |
+| `by_model[].model`, `path` | One row per model and endpoint |
+| `by_model[].requests`, `credits`, `usd` | Volume and spend for that row |
+| `by_model[].prompt_tokens`, `completion_tokens` | Token totals |
+| `by_model[].errors` | Requests that returned an error |
+
+The usage read is not charged.
+
+## GET /v1/generation
+
+Returns OpenRouter's generation metadata for one call, by the `id` from the response body (`gen-…`). Only generations this workspace made are visible.
+
+```bash
+curl --fail-with-body "https://api.pre.dev/v1/generation?id=gen-1757900000-abc123" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+The body is OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs) for its fields. Use it to inspect the provider, latency, and native token counts behind a specific charge.
