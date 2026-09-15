@@ -3,7 +3,7 @@ title: "Multimodal"
 description: "Images, files, audio, and video through the same key and credits."
 ---
 
-Everything OpenRouter accepts as input or produces as output is available through the gateway. Request and response shapes are OpenRouter's; this page shows where each modality lives.
+Images, documents, audio, and video are all available through the gateway with the same key and credits. Request and response shapes are the standard OpenAI-compatible ones; this page shows where each modality lives.
 
 | Need | Endpoint | Reference |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ completion = client.chat.completions.create(
 
 ## Documents
 
-Attach a PDF or other document as OpenRouter documents and add the `file-parser` plugin so any model can read it:
+Attach a PDF or other document as a `file` content part and add the `file-parser` plugin so any model can read it:
 
 ```json
 {

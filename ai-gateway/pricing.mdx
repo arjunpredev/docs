@@ -1,27 +1,23 @@
 ---
 title: "Pricing"
-description: "How gateway calls convert OpenRouter cost into pre.dev credits, and what the trial allows."
+description: "How gateway calls are charged in pre.dev credits, and what the trial allows."
 ---
 
 Gateway calls are paid with the same pre.dev credits as coding, planning, and browser tasks. **1 credit = $0.10.**
 
-## Formula
+## How a call is priced
 
-The price of a call is OpenRouter's reported cost for that call, `usage.cost`, which is the real billed dollars for whichever upstream served it, plus a 30% margin on price:
+Each call is charged in credits based on the model's metered cost for that call. The metered cost is reported in dollars as `usage.cost` on every inference response, and the credits charged are reported in the `x-predev-credits-charged` header.
 
-```text
-credits = cost_usd ÷ 0.7 ÷ 0.10        (≈ cost_usd × 14.29)
-```
+The credit price per model is listed on [`GET /v1/models`](/ai-gateway/api/models): each row carries a `predev` object with `credits_per_m_input` and `credits_per_m_output`, and, where the model has them, `credits_per_m_cache_read`, `credits_per_m_cache_write`, `credits_per_image`, and `credits_per_request`. Read those numbers rather than deriving prices yourself; they are what the charge is computed from.
 
-Worked example: a model listed at $2 per million input tokens and $10 per million output tokens costs **28.6 credits per million input tokens** and **142.9 credits per million output tokens**.
-
-The model catalog does the arithmetic for you. Each row of [`GET /v1/models`](/ai-gateway/api/models) carries a `predev` object with `credits_per_m_input`, `credits_per_m_output`, and, where the model has them, `credits_per_m_cache_read`, `credits_per_m_cache_write`, `credits_per_image`, and `credits_per_request`.
+Worked example: a model whose row lists `credits_per_m_input: 28.6` and `credits_per_m_output: 142.9` costs 0.286 credits for 10,000 input tokens plus 0.286 credits for 2,000 output tokens, so a call of that size settles at about 0.57 credits.
 
 ## What is included
 
 - Plugin costs, such as web search, are part of `usage.cost` and therefore of the charge.
-- With `models` fallbacks or `provider` preferences, you pay for whichever upstream actually served the call.
-- Streams settle at the final chunk. If your client disconnects mid-stream, the call is still charged for what the upstream generated.
+- With `models` fallbacks or `provider` preferences, you pay the price of the model and provider that actually served the call.
+- Streams settle at the final chunk. If your client disconnects mid-stream, the call is still charged for what the model generated.
 - Video jobs are charged when a status poll reports completion. See [images and video](/ai-gateway/api/images-and-video).
 - Catalog reads (`/v1/models`, `/v1/providers`, and the per-modality model lists) are free and not rate-limited.
 
@@ -33,7 +29,7 @@ A free workspace can make **5 credits** of gateway calls in total. After that, e
 
 ## Out of credits
 
-A workspace with no credits gets `402` with code `insufficient_credits` before anything is sent upstream, so nothing is generated and nothing is charged. The error body includes `credits_remaining`, `estimated_credits`, and a `topup_url`. See [errors](/ai-gateway/api/errors).
+A workspace with no credits gets `402` with code `insufficient_credits` before anything is sent to the model, so nothing is generated and nothing is charged. The error body includes `credits_remaining`, `estimated_credits`, and a `topup_url`. See [errors](/ai-gateway/api/errors).
 
 Turn on auto-recharge in dashboard billing to keep a deployed app running when the balance would otherwise reach zero.
 

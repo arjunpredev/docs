@@ -3,7 +3,7 @@ title: "Audio"
 description: "POST /v1/audio/speech for text to speech and POST /v1/audio/transcriptions for speech to text."
 ---
 
-Both endpoints proxy OpenRouter's audio endpoints with the same bodies and responses. Speech and transcription models appear in the main [catalog](/ai-gateway/api/models); pick an id whose row lists the audio modality.
+Both endpoints take the OpenAI-compatible speech and transcription request bodies and return the matching responses. Speech and transcription models appear in the main [catalog](/ai-gateway/api/models); pick an id whose row lists the audio modality.
 
 ## Text to speech
 
@@ -80,4 +80,4 @@ print(transcript.text)
 ```
 </CodeGroup>
 
-Set `SPEECH_MODEL` and `TRANSCRIBE_MODEL` to ids from the catalog. Voices, formats, and other fields are OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs). Both calls return the usual `x-predev-*` headers and are billed from `usage.cost`.
+Set `SPEECH_MODEL` and `TRANSCRIBE_MODEL` to ids from the catalog. Available voices, formats, and other fields depend on the model; check its catalog row. Both calls return the usual `x-predev-*` headers and are billed from `usage.cost`.

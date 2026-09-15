@@ -3,7 +3,7 @@ title: "Images and video"
 description: "POST /v1/images for image generation; POST /v1/videos with polling for video jobs."
 ---
 
-Both endpoints proxy OpenRouter's image and video generation with the same request and response bodies. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
+Both endpoints take a `model` and a `prompt` and return generated media. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
 
 ## Images
 
@@ -47,6 +47,6 @@ curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID/content" \
   -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
 ```
 
-The job is charged when a status poll reports completion, not at submission. Poll until the status is terminal before reading `/content`; the status values and body fields are OpenRouter's, described in the [OpenRouter docs](https://openrouter.ai/docs).
+The job is charged when a status poll reports completion, not at submission. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
 
 Jobs belong to the workspace that created them; another workspace's job id returns `404`.

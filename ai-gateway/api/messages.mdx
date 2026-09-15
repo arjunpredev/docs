@@ -3,9 +3,9 @@ title: "Messages"
 description: "POST /v1/messages in the Anthropic Messages shape, for the Anthropic SDK."
 ---
 
-`POST https://api.pre.dev/v1/messages` accepts the Anthropic Messages request body and returns the Anthropic response, proxied through OpenRouter's `/api/v1/messages`. Use it with the Anthropic SDK: set the client's `baseURL` to `https://api.pre.dev` (no `/v1` — the SDK appends `/v1/messages` itself) and pass the pre.dev key as the API key. The SDK's `x-api-key` header is accepted.
+`POST https://api.pre.dev/v1/messages` accepts the Anthropic Messages request body and returns the Anthropic response. Use it with the Anthropic SDK: set the client's `baseURL` to `https://api.pre.dev` (no `/v1` — the SDK appends `/v1/messages` itself) and pass the pre.dev key as the API key. The SDK's `x-api-key` header is accepted.
 
-Model ids remain OpenRouter ids, so `anthropic/claude-sonnet-5` rather than a native Anthropic model name. Any model OpenRouter serves through this shape works, not only Anthropic's.
+Model ids are the catalog ids exactly as listed by [`GET /v1/models`](/ai-gateway/api/models), so `anthropic/claude-sonnet-5` rather than a native Anthropic model name. Any chat model in the catalog works through this shape, not only Anthropic's.
 
 <CodeGroup>
 ```bash curl
@@ -54,12 +54,12 @@ print(message.content)
 
 ## Streaming
 
-Set `stream: true`, or use `client.messages.stream()` in the SDKs, for Anthropic-style server-sent events. Credits settle when the stream ends; a disconnect still charges what the upstream generated. See [streaming](/ai-gateway/streaming).
+Set `stream: true`, or use `client.messages.stream()` in the SDKs, for Anthropic-style server-sent events. Credits settle when the stream ends; a disconnect still charges what the model generated. See [streaming](/ai-gateway/streaming).
 
 ## Tools, system prompts, and images
 
-Use the Anthropic `system`, `tools`, and content-block formats. The gateway forwards them; OpenRouter translates for non-Anthropic models. Semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+Use the Anthropic `system`, `tools`, and content-block formats. The gateway forwards them to Anthropic models as-is and translates them for models from other labs.
 
 ## Headers and billing
 
-The same `x-predev-request-id`, `x-predev-credits-charged`, and `x-predev-credits-remaining` headers are returned, and `x-predev-project-id` attributes usage. The charge is `usage.cost ÷ 0.7 ÷ 0.10` credits, as on [pricing](/ai-gateway/pricing).
+The same `x-predev-request-id`, `x-predev-credits-charged`, and `x-predev-credits-remaining` headers are returned, and `x-predev-project-id` attributes usage. The charge is computed from `usage.cost`, the model's metered cost for the call, as on [pricing](/ai-gateway/pricing).

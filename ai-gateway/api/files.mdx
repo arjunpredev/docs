@@ -3,7 +3,7 @@ title: "Files"
 description: "Upload, list, fetch, and delete files scoped to your workspace."
 ---
 
-The files endpoints proxy OpenRouter's files API. Files are scoped to the workspace that uploaded them; another workspace's file id returns `404`.
+The files endpoints store documents for reuse across chat requests. Files are scoped to the workspace that uploaded them; another workspace's file id returns `404`.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ print(uploaded.id)
 ```
 </CodeGroup>
 
-The multipart fields and the response body are OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs) for accepted purposes and size limits.
+The upload takes the bytes in a `file` part and a `purpose` string (`user_data` for documents you will reference from chat messages) and returns the stored file object, including the `id` used in later requests.
 
 ## List, fetch, download, delete
 
@@ -68,4 +68,4 @@ In the SDKs these are `client.files.list()`, `client.files.retrieve(id)`, `clien
 
 ## Use a file in a request
 
-Reference the uploaded file from a chat message the way OpenRouter documents, and add the `file-parser` plugin so models without native document input can read it. See [multimodal](/ai-gateway/multimodal).
+Reference the uploaded file from a chat message as a `file` content part, and add the `file-parser` plugin so models without native document input can read it. See [multimodal](/ai-gateway/multimodal).

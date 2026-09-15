@@ -1,9 +1,9 @@
 ---
 title: "Chat completions"
-description: "POST /v1/chat/completions, /v1/completions, and /v1/responses, proxied to OpenRouter."
+description: "POST /v1/chat/completions, /v1/completions, and /v1/responses in the OpenAI-compatible shape."
 ---
 
-`POST https://api.pre.dev/v1/chat/completions` takes the same request body and returns the same response as OpenRouter's `/api/v1/chat/completions`. `POST /v1/completions` (text completions) and `POST /v1/responses` (Responses API shape) are proxied the same way.
+`POST https://api.pre.dev/v1/chat/completions` takes the OpenAI-compatible chat completion request body and returns the chat completion response. `POST /v1/completions` (text completions) and `POST /v1/responses` (Responses API shape) work the same way with their own bodies.
 
 <CodeGroup>
 ```bash curl
@@ -61,7 +61,7 @@ print("credits:", raw.headers.get("x-predev-credits-charged"))
 
 | Field | Notes |
 | --- | --- |
-| `model` | Exact OpenRouter id, with optional `:free`, `:nitro`, `:online`, `:batch` variant |
+| `model` | The model id exactly as listed by `GET /v1/models`, with optional `:free`, `:nitro`, `:online`, `:batch` variant |
 | `messages` | OpenAI chat messages, including image and file content parts |
 | `models`, `route`, `provider`, `transforms` | [Routing and fallbacks](/ai-gateway/routing-and-fallbacks) |
 | `reasoning`, `reasoning_effort` | Reasoning controls |
@@ -71,11 +71,11 @@ print("credits:", raw.headers.get("x-predev-credits-charged"))
 | `stream`, `stream_options` | [Streaming](/ai-gateway/streaming); the gateway sets `stream_options.include_usage` |
 | `user` | Set or prefixed with a workspace hash by the gateway |
 
-Every other OpenRouter field (`temperature`, `max_tokens`, `stop`, and so on) passes through unchanged. Field semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+Every other standard field (`temperature`, `max_tokens`, `stop`, and so on) is forwarded to the model unchanged. Advanced options such as `models`, `provider`, `reasoning`, and `plugins` are on [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
 
 ## Response
 
-The body is OpenRouter's. `usage.cost` is the dollar cost the charge was computed from; `model` is the model that served the call.
+The body is the standard chat completion response. `usage.cost` is the model's metered cost for the call in dollars, which the charge was computed from; `model` is the model that served the call.
 
 ```json
 {
@@ -103,4 +103,4 @@ Send `x-predev-project-id: <projectId>` to attribute the call to a project. See 
 
 ## Errors
 
-Gateway errors (`401`, `402`, `429`, `503`) use the OpenAI error shape with a `predev` object; OpenRouter's own 4xx errors, such as an unknown model id, pass through with their original status. See [errors](/ai-gateway/api/errors).
+Gateway errors (`401`, `402`, `429`, `503`) use the OpenAI error shape with a `predev` object; provider errors, such as an unknown model id, are returned with their original status and message. See [errors](/ai-gateway/api/errors).

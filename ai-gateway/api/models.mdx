@@ -1,13 +1,13 @@
 ---
 title: "Model catalog"
-description: "Read-only catalog endpoints with credit prices, mirrored from OpenRouter every 15 minutes."
+description: "Read-only catalog endpoints with credit prices, refreshed every 15 minutes."
 ---
 
-The catalog is a mirror of OpenRouter's model and provider lists with pre.dev credit prices added. Reads are free, not rate-limited, and do not need credits.
+The catalog lists every model and provider the gateway serves, with pre.dev credit prices added. Reads are free, not rate-limited, and do not need credits.
 
 | Method | Path | Returns |
 | --- | --- | --- |
-| GET | `/v1/models` | All models, OpenRouter's row plus `predev` |
+| GET | `/v1/models` | All models, each row with a `predev` price object |
 | GET | `/v1/models/count` | Number of models |
 | GET | `/v1/models/{author}/{slug}/endpoints` | The provider endpoints behind one model |
 | GET | `/v1/embeddings/models` | Embedding models |
@@ -22,7 +22,7 @@ curl --fail-with-body -i https://api.pre.dev/v1/models \
 
 ## The `predev` object
 
-Each model row carries prices already converted with the [pricing formula](/ai-gateway/pricing):
+Each model row carries its prices in credits (see [pricing](/ai-gateway/pricing)):
 
 | Field | Unit | Present when |
 | --- | --- | --- |
@@ -48,11 +48,11 @@ Each model row carries prices already converted with the [pricing formula](/ai-g
 }
 ```
 
-The numbers above illustrate the conversion; read the live row for current prices. Every other field in the row is OpenRouter's and is described in the [OpenRouter docs](https://openrouter.ai/docs).
+The numbers above are illustrative; read the live row for current prices. The other fields in the row (`name`, `context_length`, dollar `pricing`, supported modalities and parameters, and so on) describe the model itself.
 
 ## Freshness
 
-`x-predev-catalog-age` on every catalog response is the number of seconds since the mirror last refreshed from OpenRouter. The mirror refreshes every 15 minutes, so a model OpenRouter added a moment ago can be callable before it appears in the list. Calling a model id that is not in the mirror still works if OpenRouter serves it.
+`x-predev-catalog-age` on every catalog response is the number of seconds since the catalog last refreshed. The catalog refreshes every 15 minutes, so a newly released model can be callable before it appears in the list. Calling a model id that is not yet listed still works if the gateway serves it.
 
 ## Endpoints for one model
 
@@ -61,4 +61,4 @@ curl --fail-with-body https://api.pre.dev/v1/models/deepseek/deepseek-v4.1-flash
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Use this with `provider` preferences to pin or exclude specific upstreams. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Use this with `provider` preferences to pin or exclude specific providers. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).

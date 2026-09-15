@@ -1,13 +1,13 @@
 ---
 title: "Routing and fallbacks"
-description: "Fallback models, provider preferences, reasoning, plugins, and other OpenRouter controls."
+description: "Fallback models, provider preferences, reasoning, plugins, and other advanced options."
 ---
 
-All routing controls are OpenRouter's and pass through the gateway unchanged. This page lists them and how they interact with billing; semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+These are advanced options the pre.dev AI API supports on top of the standard chat completion fields. This page lists them and how they interact with billing.
 
 ## Fallback models
 
-Send `models` instead of a single `model`. OpenRouter tries each in order and the response reports which one answered.
+Send `models` instead of a single `model`. The gateway tries each in order and the response reports which one answered.
 
 ```json
 {
@@ -21,7 +21,7 @@ You pay for the model that actually served the call, at its own price. Read `mod
 
 ## Provider preferences
 
-The `provider` object controls which upstream providers serve a model:
+The `provider` object controls which providers serve a model:
 
 | Key | Purpose |
 | --- | --- |
@@ -73,7 +73,7 @@ The `provider` object controls which upstream providers serve a model:
 | `transforms` | Prompt transforms such as middle-out compression |
 | `prediction` | Predicted outputs |
 | `verbosity` | Response length hint |
-| `session_id` | Group related requests upstream |
+| `session_id` | Group related requests under one session |
 | `user` | End-user identifier; the gateway prefixes it with a workspace hash |
 
 If you send `user`, keep it stable per end user so abuse reports can be attributed. The gateway sets it when absent.
