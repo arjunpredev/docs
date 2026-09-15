@@ -1,9 +1,9 @@
 ---
 title: "Errors"
-description: "Gateway error codes in the OpenAI error shape, plus pass-through of OpenRouter errors."
+description: "Gateway error codes in the OpenAI error shape, plus pass-through of provider errors."
 ---
 
-Errors raised by the gateway use the OpenAI error shape with an extra `predev` object. Errors raised by OpenRouter, for example an invalid model id, pass through unchanged with their original status and body.
+Errors raised by the gateway use the OpenAI error shape with an extra `predev` object. Provider errors, for example an invalid model id, are returned with their original status and message.
 
 ```json
 {
@@ -32,7 +32,7 @@ Errors raised by the gateway use the OpenAI error shape with an extra `predev` o
 | `rate_limit_exceeded` | `429` | More than the per-minute request limit (600, or 30 on trial) | | Wait `Retry-After` seconds, then retry |
 | `balance_unavailable` | `503` | The balance check could not complete | | Wait `Retry-After` seconds, then retry |
 | `not_found` | `404` | Unknown path, or a file, job, or generation that belongs to another workspace | | Check the path and id |
-| `upstream_unavailable` | `502` | OpenRouter did not answer | | Retry with backoff; consider `models` fallbacks |
+| `upstream_unavailable` | `502` | The model provider did not answer | | Retry with backoff; consider `models` fallbacks |
 
 ### `subscription_required`
 
@@ -69,7 +69,7 @@ The response also sets `Retry-After`. Catalog reads are not rate-limited.
 
 ## Pass-through errors
 
-OpenRouter's own 4xx responses keep their status and body. An unknown model id, a malformed request, or a model that rejects a parameter all arrive as OpenRouter returns them. Check the model id against [`GET /v1/models`](/ai-gateway/api/models) first.
+Provider 4xx responses keep their status and body. An unknown model id, a malformed request, or a model that rejects a parameter all arrive with the provider's original status and message. Check the model id against [`GET /v1/models`](/ai-gateway/api/models) first.
 
 ## Handling in the SDKs
 

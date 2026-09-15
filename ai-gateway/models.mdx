@@ -1,9 +1,9 @@
 ---
 title: "Models"
-description: "Use any OpenRouter model id and read credit prices from the catalog."
+description: "Use any model id from the pre.dev catalog and read credit prices from it."
 ---
 
-The gateway serves every model OpenRouter serves, under its exact OpenRouter id. There is no pre.dev catalog to learn: if OpenRouter lists it, `model: "<author>/<slug>"` works here.
+The gateway serves hundreds of models from every major lab. Use the model id exactly as listed by [`GET /v1/models`](/ai-gateway/api/models): if the catalog lists it, `model: "<author>/<slug>"` works here.
 
 | Example id | Author |
 | --- | --- |
@@ -12,7 +12,7 @@ The gateway serves every model OpenRouter serves, under its exact OpenRouter id.
 | `google/gemini-3.8-flash` | Google |
 | `openai/gpt-5.6-luna` | OpenAI |
 
-Variants pass through unchanged: `deepseek/deepseek-v4.1-flash:free`, `anthropic/claude-sonnet-5:nitro`, `google/gemini-3.8-flash:online`, `openai/gpt-5.6-luna:batch`. Their meaning is defined by [OpenRouter](https://openrouter.ai/docs).
+Variant suffixes are accepted: `deepseek/deepseek-v4.1-flash:free`, `anthropic/claude-sonnet-5:nitro`, `google/gemini-3.8-flash:online`, `openai/gpt-5.6-luna:batch`. `:free` variants are rate-limited and may train on prompts; `:nitro` is shorthand for throughput-sorted provider routing and `:online` for the web search plugin. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
 
 ## List models with prices
 
@@ -21,7 +21,7 @@ curl --fail-with-body https://api.pre.dev/v1/models \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Each row is OpenRouter's model row plus a `predev` object with prices already converted to credits:
+Each row describes the model (`id`, `name`, `context_length`, dollar `pricing`, and so on) and carries a `predev` object with its prices in credits:
 
 ```json
 {
@@ -45,7 +45,7 @@ Each row is OpenRouter's model row plus a `predev` object with prices already co
 | `credits_per_image` | The model prices image inputs |
 | `credits_per_request` | The model has a per-request price |
 
-The catalog is a mirror of OpenRouter refreshed every 15 minutes. The `x-predev-catalog-age` response header reports seconds since the last refresh. Catalog reads are free and not rate-limited.
+The catalog refreshes every 15 minutes. The `x-predev-catalog-age` response header reports seconds since the last refresh. Catalog reads are free and not rate-limited.
 
 Other catalog endpoints: `/v1/models/count`, `/v1/models/{author}/{slug}/endpoints` for the providers behind one model, `/v1/embeddings/models`, `/v1/images/models`, `/v1/videos/models`, and `/v1/providers`. See the [catalog reference](/ai-gateway/api/models).
 
@@ -82,6 +82,6 @@ print(cheapest["id"], cheapest["predev"])
 
 ## Invalid ids
 
-An id OpenRouter does not recognize returns OpenRouter's own 4xx error with its original status; the gateway does not rewrite it. See [errors](/ai-gateway/api/errors).
+An id the catalog does not recognize returns the provider's error with its original status and message; the gateway does not rewrite it. See [errors](/ai-gateway/api/errors).
 
 Send several ids in `models` to fall back automatically. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).

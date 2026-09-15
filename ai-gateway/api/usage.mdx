@@ -74,11 +74,11 @@ The usage read is not charged.
 
 ## GET /v1/generation
 
-Returns OpenRouter's generation metadata for one call, by the `id` from the response body (`gen-…`). Only generations this workspace made are visible.
+Returns the generation metadata for one call, by the `id` from the response body (`gen-…`). Only generations this workspace made are visible.
 
 ```bash
 curl --fail-with-body "https://api.pre.dev/v1/generation?id=gen-1757900000-abc123" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-The body is OpenRouter's; see the [OpenRouter docs](https://openrouter.ai/docs) for its fields. Use it to inspect the provider, latency, and native token counts behind a specific charge.
+The body reports the model and provider that served the call, latency, native token counts, and the metered cost behind a specific charge.

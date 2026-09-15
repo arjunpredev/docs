@@ -3,7 +3,7 @@ title: "Streaming"
 description: "Stream chat completions over SSE and read the settled cost from the final chunk."
 ---
 
-Set `stream: true` and the gateway returns OpenRouter's `text/event-stream` response unchanged. The stock SDKs handle the stream for you.
+Set `stream: true` and the gateway returns a `text/event-stream` response in the standard chat completion chunk format. The stock SDKs handle the stream for you.
 
 <CodeGroup>
 ```bash curl
@@ -64,7 +64,7 @@ for await (const part of result.textStream) process.stdout.write(part);
 
 ## The final chunk carries the cost
 
-On streaming chat completions the gateway sets `stream_options.include_usage`, so the last data chunk before `[DONE]` has a `usage` object with OpenRouter's `cost` in dollars:
+On streaming chat completions the gateway sets `stream_options.include_usage`, so the last data chunk before `[DONE]` has a `usage` object with the model's metered `cost` for the call in dollars:
 
 ```text
 data: {"id":"gen-…","choices":[],"usage":{"prompt_tokens":12,"completion_tokens":31,"total_tokens":43,"cost":0.0000276}}
@@ -72,12 +72,12 @@ data: {"id":"gen-…","choices":[],"usage":{"prompt_tokens":12,"completion_token
 data: [DONE]
 ```
 
-You do not need to set `stream_options` yourself, and setting it does no harm. The credits for a stream settle at this final chunk; `credits = cost ÷ 0.7 ÷ 0.10` as on [pricing](/ai-gateway/pricing).
+You do not need to set `stream_options` yourself, and setting it does no harm. The credits for a stream settle at this final chunk, based on that metered cost as described on [pricing](/ai-gateway/pricing).
 
 ## Disconnects
 
-Closing the connection mid-stream does not cancel generation at the upstream. The call is still charged for what the upstream generated. Keep `max_tokens` bounded on user-facing streams.
+Closing the connection mid-stream does not cancel generation at the model. The call is still charged for what the model generated. Keep `max_tokens` bounded on user-facing streams.
 
 ## Other streaming paths
 
-`POST /v1/completions`, `POST /v1/responses`, and `POST /v1/messages` stream exactly as OpenRouter documents them. The Anthropic SDK's `client.messages.stream()` works against `/v1/messages`; see [Messages](/ai-gateway/api/messages).
+`POST /v1/completions`, `POST /v1/responses`, and `POST /v1/messages` stream in their own native event formats (text completion chunks, Responses API events, and Anthropic-style events respectively). The Anthropic SDK's `client.messages.stream()` works against `/v1/messages`; see [Messages](/ai-gateway/api/messages).

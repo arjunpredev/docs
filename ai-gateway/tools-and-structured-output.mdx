@@ -1,9 +1,9 @@
 ---
 title: "Tools and structured output"
-description: "Tool calling and JSON-schema output pass through to OpenRouter unchanged."
+description: "Tool calling and JSON-schema output with the standard OpenAI-compatible fields."
 ---
 
-`tools`, `tool_choice`, `parallel_tool_calls`, `response_format`, and `structured_outputs` are forwarded as-is. Model support for each is OpenRouter's; check the model's row in [`GET /v1/models`](/ai-gateway/api/models) and the [OpenRouter docs](https://openrouter.ai/docs).
+`tools`, `tool_choice`, `parallel_tool_calls`, `response_format`, and `structured_outputs` are forwarded to the model as-is. Support for each varies by model; check the model's row in [`GET /v1/models`](/ai-gateway/api/models) before relying on it.
 
 ## Tool calling
 
@@ -89,7 +89,7 @@ Set `parallel_tool_calls: false` to force one call per turn on models that would
 
 ## Structured output
 
-Use `response_format` with a JSON schema. The gateway forwards it; OpenRouter enforces it on models that support structured outputs.
+Use `response_format` with a JSON schema. The gateway forwards it, and the schema is enforced on models that support structured outputs.
 
 <CodeGroup>
 ```bash curl
@@ -171,4 +171,4 @@ Add the `response-healing` plugin to repair near-valid JSON from models without 
 }
 ```
 
-Plugin semantics and any plugin cost are OpenRouter's; costs are included in `usage.cost` and therefore in the credits charged.
+Any plugin cost is part of the model's metered cost for the call, so it is included in `usage.cost` and therefore in the credits charged.
