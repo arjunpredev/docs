@@ -1,0 +1,83 @@
+---
+title: "Streaming"
+description: "Stream chat completions over SSE and read the settled cost from the final chunk."
+---
+
+Set `stream: true` and the gateway returns OpenRouter's `text/event-stream` response unchanged. The stock SDKs handle the stream for you.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body -N https://api.pre.dev/v1/chat/completions \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "google/gemini-3.8-flash",
+    "stream": true,
+    "messages": [{ "role": "user", "content": "Count from one to ten." }]
+  }'
+```
+```typescript Node.js
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const stream = await client.chat.completions.create({
+  model: 'google/gemini-3.8-flash',
+  stream: true,
+  messages: [{ role: 'user', content: 'Count from one to ten.' }],
+});
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content ?? '');
+  if (chunk.usage) console.log('\ncost usd:', (chunk.usage as any).cost);
+}
+```
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+stream = client.chat.completions.create(
+    model="google/gemini-3.8-flash",
+    stream=True,
+    messages=[{"role": "user", "content": "Count from one to ten."}],
+)
+for chunk in stream:
+    if chunk.choices and chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+    if chunk.usage:
+        print("\ncost usd:", chunk.usage.model_dump().get("cost"))
+```
+```typescript Vercel AI SDK
+import { createOpenAI } from '@ai-sdk/openai';
+import { streamText } from 'ai';
+
+const predev = createOpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const result = streamText({
+  model: predev('google/gemini-3.8-flash'),
+  prompt: 'Count from one to ten.',
+});
+for await (const part of result.textStream) process.stdout.write(part);
+```
+</CodeGroup>
+
+## The final chunk carries the cost
+
+On streaming chat completions the gateway sets `stream_options.include_usage`, so the last data chunk before `[DONE]` has a `usage` object with OpenRouter's `cost` in dollars:
+
+```text
+data: {"id":"gen-…","choices":[],"usage":{"prompt_tokens":12,"completion_tokens":31,"total_tokens":43,"cost":0.0000276}}
+
+data: [DONE]
+```
+
+You do not need to set `stream_options` yourself, and setting it does no harm. The credits for a stream settle at this final chunk; `credits = cost ÷ 0.7 ÷ 0.10` as on [pricing](/ai-gateway/pricing).
+
+## Disconnects
+
+Closing the connection mid-stream does not cancel generation at the upstream. The call is still charged for what the upstream generated. Keep `max_tokens` bounded on user-facing streams.
+
+## Other streaming paths
+
+`POST /v1/completions`, `POST /v1/responses`, and `POST /v1/messages` stream exactly as OpenRouter documents them. The Anthropic SDK's `client.messages.stream()` works against `/v1/messages`; see [Messages](/ai-gateway/api/messages).

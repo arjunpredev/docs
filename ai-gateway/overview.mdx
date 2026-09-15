@@ -1,0 +1,72 @@
+---
+title: "AI Gateway"
+description: "Call any OpenRouter model through api.pre.dev/v1 with your pre.dev key and credits."
+---
+
+The pre.dev AI Gateway is a transparent, metered proxy in front of [OpenRouter](https://openrouter.ai/docs). Point an OpenAI-compatible client at **`https://api.pre.dev/v1`**, send your pre.dev API key, and use any model OpenRouter serves under its exact OpenRouter id. Calls are paid with pre.dev credits.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="play" href="/ai-gateway/quickstart">
+    First request with curl, the OpenAI SDK, the Vercel AI SDK, or the Anthropic SDK.
+  </Card>
+  <Card title="API key" icon="key" href="/ai-gateway/api-key">
+    Where the key lives, which headers carry it, and how it reaches your deployed app.
+  </Card>
+  <Card title="Pricing" icon="coins" href="/ai-gateway/pricing">
+    Credits per call, the trial allowance, and what happens when credits run out.
+  </Card>
+  <Card title="Models" icon="list" href="/ai-gateway/models">
+    Browse the catalog with credit prices attached.
+  </Card>
+</CardGroup>
+
+## What you send
+
+Model ids are OpenRouter ids, for example `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, or `openai/gpt-5.6-luna`. There are no pre.dev-specific model names. Variants such as `:free`, `:nitro`, `:online`, and `:batch` pass through.
+
+Every OpenRouter request field passes through unchanged. The gateway does not re-document their semantics; read the [OpenRouter docs](https://openrouter.ai/docs) for each one.
+
+| Field | Purpose |
+| --- | --- |
+| `models`, `route` | Fallback model list and routing |
+| `provider` | Provider preferences: `order`, `sort`, `ignore`, `only`, `max_price`, `data_collection` |
+| `transforms` | Prompt transforms |
+| `reasoning`, `reasoning_effort` | Reasoning controls |
+| `plugins` | `web`, `file-parser`, `response-healing`, `context-compression` |
+| `web_search_options` | Web search settings |
+| `response_format`, `structured_outputs` | JSON and schema-constrained output |
+| `tools`, `tool_choice`, `parallel_tool_calls` | Tool calling |
+| `prediction`, `verbosity`, `session_id` | Predicted outputs, verbosity, session grouping |
+| `stream` | Server-sent event streaming |
+
+## What the gateway changes
+
+The gateway edits four things and nothing else:
+
+1. Swaps in pre.dev's upstream OpenRouter key.
+2. Sets `stream_options.include_usage` on streaming chat completions, so the final chunk carries `usage.cost`.
+3. Sets, or prefixes, the `user` field with a workspace hash for abuse attribution.
+4. Adds attribution headers.
+
+Request bodies and response bodies are otherwise the same as OpenRouter's `/api/v1/...` endpoints.
+
+## Endpoints
+
+| Method | Path | Reference |
+| --- | --- | --- |
+| POST | `/v1/chat/completions`, `/v1/completions`, `/v1/responses` | [Chat completions](/ai-gateway/api/chat-completions) |
+| POST | `/v1/messages` | [Messages](/ai-gateway/api/messages) |
+| POST | `/v1/embeddings`, `/v1/rerank` | [Embeddings and rerank](/ai-gateway/api/embeddings) |
+| POST, GET | `/v1/images`, `/v1/videos`, `/v1/videos/{jobId}`, `/v1/videos/{jobId}/content` | [Images and video](/ai-gateway/api/images-and-video) |
+| POST | `/v1/audio/speech`, `/v1/audio/transcriptions` | [Audio](/ai-gateway/api/audio) |
+| POST, GET, DELETE | `/v1/files`, `/v1/files/{id}`, `/v1/files/{id}/content` | [Files](/ai-gateway/api/files) |
+| GET | `/v1/models`, `/v1/models/count`, `/v1/models/{author}/{slug}/endpoints`, `/v1/embeddings/models`, `/v1/images/models`, `/v1/videos/models`, `/v1/providers` | [Model catalog](/ai-gateway/api/models) |
+| GET | `/v1/usage`, `/v1/generation` | [Usage](/ai-gateway/api/usage) |
+
+## Response headers
+
+Every inference call returns `x-predev-request-id` (`pdr_…`), `x-predev-credits-charged`, and `x-predev-credits-remaining` (omitted on unlimited plans). Send `x-predev-project-id` to attribute usage to one of your projects. See [usage](/ai-gateway/api/usage).
+
+## Billing in one line
+
+1 credit = $0.10. A call costs OpenRouter's reported `usage.cost` plus a 30% margin on price: `credits = cost_usd ÷ 0.7 ÷ 0.10`. Catalog reads are free. Details and the trial rule are on [pricing](/ai-gateway/pricing).

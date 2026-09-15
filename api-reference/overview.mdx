@@ -43,6 +43,10 @@ Upload a proposal, compare it with a generated specification, and retrieve the a
 | GET | `/list-vetted-proposals` | [List assessments for a spec](/architect-agent/api/list-vetted-proposals) |
 | GET | `/get-vetted-proposal/{vettedProposalId}` | [Retrieve an assessment](/architect-agent/api/get-vetted-proposal) |
 
+## AI Gateway
+
+The [AI Gateway](/ai-gateway/overview) is the one API mounted under a prefix: **`https://api.pre.dev/v1`** proxies every OpenRouter endpoint (`/v1/chat/completions`, `/v1/messages`, `/v1/embeddings`, media, files, and a priced model catalog) with the same key and credits. Point the stock OpenAI, Vercel AI, or Anthropic SDK at that base URL; see the [quickstart](/ai-gateway/quickstart) and [pricing](/ai-gateway/pricing).
+
 ## SDKs and MCP
 
 The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including proposal review, live browser URLs, existing-run SSE, and browser idempotency keys.

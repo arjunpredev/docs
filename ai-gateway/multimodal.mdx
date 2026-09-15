@@ -1,0 +1,90 @@
+---
+title: "Multimodal"
+description: "Images, files, audio, and video through the same key and credits."
+---
+
+Everything OpenRouter accepts as input or produces as output is available through the gateway. Request and response shapes are OpenRouter's; this page shows where each modality lives.
+
+| Need | Endpoint | Reference |
+| --- | --- | --- |
+| Image or file input to a chat model | `POST /v1/chat/completions` with content parts | below |
+| Parse an uploaded document | `plugins: [{ "id": "file-parser" }]` | below |
+| Generate an image | `POST /v1/images` | [Images and video](/ai-gateway/api/images-and-video) |
+| Generate a video | `POST /v1/videos`, then poll | [Images and video](/ai-gateway/api/images-and-video) |
+| Text to speech | `POST /v1/audio/speech` | [Audio](/ai-gateway/api/audio) |
+| Transcribe audio | `POST /v1/audio/transcriptions` | [Audio](/ai-gateway/api/audio) |
+| Upload and reuse a file | `POST /v1/files` | [Files](/ai-gateway/api/files) |
+
+## Image input
+
+Send an `image_url` content part. Models that price image inputs show `credits_per_image` in the [catalog](/ai-gateway/api/models).
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/chat/completions \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "google/gemini-3.8-flash",
+    "messages": [{
+      "role": "user",
+      "content": [
+        { "type": "text", "text": "What is in this picture?" },
+        { "type": "image_url", "image_url": { "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg" } }
+      ]
+    }]
+  }'
+```
+```typescript Node.js
+const completion = await client.chat.completions.create({
+  model: 'google/gemini-3.8-flash',
+  messages: [{
+    role: 'user',
+    content: [
+      { type: 'text', text: 'What is in this picture?' },
+      { type: 'image_url', image_url: { url: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg' } },
+    ],
+  }],
+});
+```
+```python Python
+completion = client.chat.completions.create(
+    model="google/gemini-3.8-flash",
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "What is in this picture?"},
+            {"type": "image_url", "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"}},
+        ],
+    }],
+)
+```
+</CodeGroup>
+
+## Documents
+
+Attach a PDF or other document as OpenRouter documents and add the `file-parser` plugin so any model can read it:
+
+```json
+{
+  "model": "anthropic/claude-sonnet-5",
+  "plugins": [{ "id": "file-parser" }],
+  "messages": [{
+    "role": "user",
+    "content": [
+      { "type": "text", "text": "Summarize this contract in five bullets." },
+      { "type": "file", "file": { "filename": "contract.pdf", "file_data": "data:application/pdf;base64,JVBERi0xLjQK..." } }
+    ]
+  }]
+}
+```
+
+Upload once with [`POST /v1/files`](/ai-gateway/api/files) when the same document is used across many calls. Files are scoped to the workspace that uploaded them.
+
+## Web search
+
+Add `plugins: [{ "id": "web" }]`, or use a model's `:online` variant, and tune with `web_search_options`. Search cost is part of `usage.cost`. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+
+## Generated media
+
+Image, video, and speech models are listed by `/v1/images/models`, `/v1/videos/models`, and the main catalog. Video is asynchronous: submit, poll `GET /v1/videos/{jobId}`, then download from `/content`; the job is charged when a poll reports completion. See [images and video](/ai-gateway/api/images-and-video) and [audio](/ai-gateway/api/audio).

@@ -1,0 +1,52 @@
+---
+title: "Images and video"
+description: "POST /v1/images for image generation; POST /v1/videos with polling for video jobs."
+---
+
+Both endpoints proxy OpenRouter's image and video generation with the same request and response bodies. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
+
+## Images
+
+`POST /v1/images` returns generated images synchronously and is charged when the response is returned.
+
+```bash
+MODEL=$(curl -s https://api.pre.dev/v1/images/models \
+  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
+
+curl --fail-with-body https://api.pre.dev/v1/images \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\": \"$MODEL\", \"prompt\": \"A lighthouse at dawn, watercolor\"}"
+```
+
+Use `credits_per_image` from the model row to estimate cost; the actual charge follows `usage.cost` like every other call.
+
+## Video
+
+Video generation is asynchronous:
+
+1. `POST /v1/videos` submits the job and returns a job id.
+2. `GET /v1/videos/{jobId}` reports status.
+3. `GET /v1/videos/{jobId}/content` returns the finished video.
+
+```bash
+MODEL=$(curl -s https://api.pre.dev/v1/videos/models \
+  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
+
+JOB_ID=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\": \"$MODEL\", \"prompt\": \"A paper boat drifting down a rain gutter\"}" | jq -r '.id')
+
+# poll until the status is terminal
+curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+
+# then download
+curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID/content" \
+  -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
+```
+
+The job is charged when a status poll reports completion, not at submission. Poll until the status is terminal before reading `/content`; the status values and body fields are OpenRouter's, described in the [OpenRouter docs](https://openrouter.ai/docs).
+
+Jobs belong to the workspace that created them; another workspace's job id returns `404`.

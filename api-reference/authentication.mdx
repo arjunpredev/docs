@@ -19,6 +19,8 @@ curl --fail-with-body https://api.pre.dev/browser-agent-status \
 
 The `predev-api-key` header is specific to MCP. Use Bearer authentication to share one convention across both interfaces.
 
+The same key authenticates the [AI Gateway](/ai-gateway/overview) at `https://api.pre.dev/v1`. OpenAI-compatible SDKs send it as a Bearer token and the Anthropic SDK sends it as `x-api-key`; both are accepted. The key is also shown in the dashboard under **Integrations → API Keys**, and projects built on pre.dev receive it as `PREDEV_API_KEY` automatically. See [API key](/ai-gateway/api-key).
+
 ## Account and organization context
 
 A personal key acts in the personal account. An organization key selects the organization's context for specifications and credit usage. Browser history is scoped to the authenticated caller. Use the same account or organization when submitting work and retrieving it.

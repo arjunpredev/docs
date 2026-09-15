@@ -1,0 +1,44 @@
+---
+title: "Pricing"
+description: "How gateway calls convert OpenRouter cost into pre.dev credits, and what the trial allows."
+---
+
+Gateway calls are paid with the same pre.dev credits as coding, planning, and browser tasks. **1 credit = $0.10.**
+
+## Formula
+
+The price of a call is OpenRouter's reported cost for that call, `usage.cost`, which is the real billed dollars for whichever upstream served it, plus a 30% margin on price:
+
+```text
+credits = cost_usd ÷ 0.7 ÷ 0.10        (≈ cost_usd × 14.29)
+```
+
+Worked example: a model listed at $2 per million input tokens and $10 per million output tokens costs **28.6 credits per million input tokens** and **142.9 credits per million output tokens**.
+
+The model catalog does the arithmetic for you. Each row of [`GET /v1/models`](/ai-gateway/api/models) carries a `predev` object with `credits_per_m_input`, `credits_per_m_output`, and, where the model has them, `credits_per_m_cache_read`, `credits_per_m_cache_write`, `credits_per_image`, and `credits_per_request`.
+
+## What is included
+
+- Plugin costs, such as web search, are part of `usage.cost` and therefore of the charge.
+- With `models` fallbacks or `provider` preferences, you pay for whichever upstream actually served the call.
+- Streams settle at the final chunk. If your client disconnects mid-stream, the call is still charged for what the upstream generated.
+- Video jobs are charged when a status poll reports completion. See [images and video](/ai-gateway/api/images-and-video).
+- Catalog reads (`/v1/models`, `/v1/providers`, and the per-modality model lists) are free and not rate-limited.
+
+Each inference response reports the charge in `x-predev-credits-charged` and the balance in `x-predev-credits-remaining`. [`GET /v1/usage`](/ai-gateway/api/usage) breaks the last 1–90 days down by model and path.
+
+## Trial
+
+A free workspace can make **5 credits** of gateway calls in total. After that, every call returns `402` with code `subscription_required` until the workspace subscribes. Trial workspaces are also limited to 30 requests per minute.
+
+## Out of credits
+
+A workspace with no credits gets `402` with code `insufficient_credits` before anything is sent upstream, so nothing is generated and nothing is charged. The error body includes `credits_remaining`, `estimated_credits`, and a `topup_url`. See [errors](/ai-gateway/api/errors).
+
+Turn on auto-recharge in dashboard billing to keep a deployed app running when the balance would otherwise reach zero.
+
+## Rate limit
+
+Requests are limited per workspace per minute: 600 by default, 30 on trial. A `429` carries a `Retry-After` header. Catalog reads do not count.
+
+See [plans and credits](/coding-agent/plans-and-credits) for plan allowances.

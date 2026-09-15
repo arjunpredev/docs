@@ -1,0 +1,93 @@
+---
+title: "Errors"
+description: "Gateway error codes in the OpenAI error shape, plus pass-through of OpenRouter errors."
+---
+
+Errors raised by the gateway use the OpenAI error shape with an extra `predev` object. Errors raised by OpenRouter, for example an invalid model id, pass through unchanged with their original status and body.
+
+```json
+{
+  "error": {
+    "message": "Your workspace has no credits left. Add credits to continue.",
+    "type": "insufficient_credits",
+    "code": "insufficient_credits",
+    "param": null,
+    "predev": {
+      "credits_remaining": 0,
+      "estimated_credits": 1.4,
+      "topup_url": "https://pre.dev/billing"
+    }
+  }
+}
+```
+
+## Codes
+
+| Code | HTTP | Cause | `predev` fields | Handling |
+| --- | --- | --- | --- | --- |
+| `missing_api_key` | `401` | No `Authorization` or `x-api-key` header | | Send the key; see [API key](/ai-gateway/api-key) |
+| `invalid_api_key` | `401` | Key unknown, or rotated more than 15 minutes ago | | Copy the current key from Integrations → API Keys |
+| `insufficient_credits` | `402` | Workspace balance is zero; nothing was sent upstream | `credits_remaining`, `estimated_credits`, `topup_url` | Add credits or enable auto-recharge |
+| `subscription_required` | `402` | Trial allowance of 5 credits used up | `trial_credits_used`, `topup_url` | Subscribe |
+| `rate_limit_exceeded` | `429` | More than the per-minute request limit (600, or 30 on trial) | | Wait `Retry-After` seconds, then retry |
+| `balance_unavailable` | `503` | The balance check could not complete | | Wait `Retry-After` seconds, then retry |
+| `not_found` | `404` | Unknown path, or a file, job, or generation that belongs to another workspace | | Check the path and id |
+| `upstream_unavailable` | `502` | OpenRouter did not answer | | Retry with backoff; consider `models` fallbacks |
+
+### `subscription_required`
+
+```json
+{
+  "error": {
+    "message": "The free trial covers 5 credits of gateway calls. Subscribe to keep going.",
+    "type": "subscription_required",
+    "code": "subscription_required",
+    "param": null,
+    "predev": {
+      "trial_credits_used": 5,
+      "topup_url": "https://pre.dev/billing"
+    }
+  }
+}
+```
+
+### `rate_limit_exceeded`
+
+```json
+{
+  "error": {
+    "message": "Rate limit exceeded for this workspace. Retry after 12 seconds.",
+    "type": "rate_limit_exceeded",
+    "code": "rate_limit_exceeded",
+    "param": null,
+    "predev": {}
+  }
+}
+```
+
+The response also sets `Retry-After`. Catalog reads are not rate-limited.
+
+## Pass-through errors
+
+OpenRouter's own 4xx responses keep their status and body. An unknown model id, a malformed request, or a model that rejects a parameter all arrive as OpenRouter returns them. Check the model id against [`GET /v1/models`](/ai-gateway/api/models) first.
+
+## Handling in the SDKs
+
+The OpenAI and Anthropic SDKs raise their usual typed exceptions by status: `AuthenticationError` (401), `RateLimitError` (429), `NotFoundError` (404), and `APIStatusError` with the original `status` for 402, 502, and 503. Read `error.code` from the body to distinguish `insufficient_credits` from `subscription_required`, and `x-predev-request-id` from the response headers when reporting a problem.
+
+```typescript
+import OpenAI from 'openai';
+
+try {
+  await client.chat.completions.create({ model: 'anthropic/claude-sonnet-5', messages });
+} catch (error) {
+  if (error instanceof OpenAI.APIError) {
+    const code = (error.error as any)?.code;
+    if (code === 'insufficient_credits') redirectTo((error.error as any).predev.topup_url);
+    else if (error.status === 429) scheduleRetry(Number(error.headers?.get('retry-after') ?? 5));
+    else throw error;
+  }
+}
+```
+
+Streams that fail after headers are sent end early; the settled charge covers what the upstream generated. See [streaming](/ai-gateway/streaming).

@@ -1,0 +1,79 @@
+---
+title: "From a pre.dev app"
+description: "Projects built on pre.dev have the gateway key pre-set; ask the build agent to add an AI feature."
+---
+
+Every project built on pre.dev gets the workspace's API key injected into its sandbox and deploy environment automatically. There is nothing to paste and nothing to rotate by hand.
+
+| Variable | Value |
+| --- | --- |
+| `PREDEV_API_KEY` | The workspace key, `pdk_…` |
+| `PREDEV_API_URL` | `https://api.pre.dev` |
+
+Build the gateway URL as `${PREDEV_API_URL}/v1`.
+
+## Ask the build agent
+
+Tell the coding agent what you want, for example **"add an AI feature"**, "add a summarize button that uses a fast model", or "let users chat with their documents". The agent reads the model catalog for you, picks an id, and wires a server-side call using the variables above. Ask it to list models with prices if you want to choose.
+
+Everything the agent adds is ordinary code you can read and change. The credits a deployed feature spends come from the same workspace balance; turn on auto-recharge in billing so a live app does not stop at zero. See [pricing](/ai-gateway/pricing).
+
+## Server-side only
+
+The key spends the workspace's credits, so it must never reach the browser. A single-page app calls its own backend route, and the route calls the gateway. The build agent follows this rule; keep it when you edit by hand.
+
+<CodeGroup>
+```typescript Node.js server route
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: `${process.env.PREDEV_API_URL}/v1`,
+  apiKey: process.env.PREDEV_API_KEY!,
+  defaultHeaders: { 'x-predev-project-id': process.env.PREDEV_PROJECT_ID ?? '' },
+});
+
+// POST /api/summarize  { text: string }
+export async function summarize(text: string) {
+  const completion = await client.chat.completions.create({
+    model: 'deepseek/deepseek-v4.1-flash',
+    messages: [
+      { role: 'system', content: 'Summarize the user text in three bullets.' },
+      { role: 'user', content: text },
+    ],
+  });
+  return completion.choices[0].message.content;
+}
+```
+```python Python server route
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=f"{os.environ['PREDEV_API_URL']}/v1",
+    api_key=os.environ["PREDEV_API_KEY"],
+    default_headers={"x-predev-project-id": os.environ.get("PREDEV_PROJECT_ID", "")},
+)
+
+
+# POST /api/summarize  {"text": "..."}
+def summarize(text: str) -> str:
+    completion = client.chat.completions.create(
+        model="deepseek/deepseek-v4.1-flash",
+        messages=[
+            {"role": "system", "content": "Summarize the user text in three bullets."},
+            {"role": "user", "content": text},
+        ],
+    )
+    return completion.choices[0].message.content
+```
+</CodeGroup>
+
+The browser calls `POST /api/summarize`; only the server holds the key. Validate and rate-limit that route as you would any endpoint that spends money.
+
+## Attribute usage to the project
+
+Send `x-predev-project-id: <projectId>` on each gateway call, as the examples above do, and the call is attributed to that project. Only the workspace's own projects count; other ids are ignored. [`GET /v1/usage`](/ai-gateway/api/usage) reports the attributed totals.
+
+## Local development
+
+Outside the sandbox, copy the key from **Integrations → API Keys** into your local environment as `PREDEV_API_KEY` and set `PREDEV_API_URL=https://api.pre.dev`. See [API key](/ai-gateway/api-key) and [environment variables](/coding-agent/integrations/env-vars).

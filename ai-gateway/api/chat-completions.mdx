@@ -1,0 +1,106 @@
+---
+title: "Chat completions"
+description: "POST /v1/chat/completions, /v1/completions, and /v1/responses, proxied to OpenRouter."
+---
+
+`POST https://api.pre.dev/v1/chat/completions` takes the same request body and returns the same response as OpenRouter's `/api/v1/chat/completions`. `POST /v1/completions` (text completions) and `POST /v1/responses` (Responses API shape) are proxied the same way.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body -i https://api.pre.dev/v1/chat/completions \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "anthropic/claude-sonnet-5",
+    "max_tokens": 200,
+    "messages": [
+      { "role": "system", "content": "Answer in one sentence." },
+      { "role": "user", "content": "Why is the sky blue?" }
+    ]
+  }'
+```
+```typescript Node.js
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const { data: completion, response } = await client.chat.completions
+  .create({
+    model: 'anthropic/claude-sonnet-5',
+    max_tokens: 200,
+    messages: [
+      { role: 'system', content: 'Answer in one sentence.' },
+      { role: 'user', content: 'Why is the sky blue?' },
+    ],
+  })
+  .withResponse();
+console.log(completion.choices[0].message.content);
+console.log('credits:', response.headers.get('x-predev-credits-charged'));
+```
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+raw = client.chat.completions.with_raw_response.create(
+    model="anthropic/claude-sonnet-5",
+    max_tokens=200,
+    messages=[
+        {"role": "system", "content": "Answer in one sentence."},
+        {"role": "user", "content": "Why is the sky blue?"},
+    ],
+)
+completion = raw.parse()
+print(completion.choices[0].message.content)
+print("credits:", raw.headers.get("x-predev-credits-charged"))
+```
+</CodeGroup>
+
+## Request
+
+| Field | Notes |
+| --- | --- |
+| `model` | Exact OpenRouter id, with optional `:free`, `:nitro`, `:online`, `:batch` variant |
+| `messages` | OpenAI chat messages, including image and file content parts |
+| `models`, `route`, `provider`, `transforms` | [Routing and fallbacks](/ai-gateway/routing-and-fallbacks) |
+| `reasoning`, `reasoning_effort` | Reasoning controls |
+| `plugins`, `web_search_options` | Plugins and web search |
+| `response_format`, `structured_outputs`, `tools`, `tool_choice`, `parallel_tool_calls` | [Tools and structured output](/ai-gateway/tools-and-structured-output) |
+| `prediction`, `verbosity`, `session_id` | Passed through |
+| `stream`, `stream_options` | [Streaming](/ai-gateway/streaming); the gateway sets `stream_options.include_usage` |
+| `user` | Set or prefixed with a workspace hash by the gateway |
+
+Every other OpenRouter field (`temperature`, `max_tokens`, `stop`, and so on) passes through unchanged. Field semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+
+## Response
+
+The body is OpenRouter's. `usage.cost` is the dollar cost the charge was computed from; `model` is the model that served the call.
+
+```json
+{
+  "id": "gen-1757900000-abc123",
+  "object": "chat.completion",
+  "model": "anthropic/claude-sonnet-5",
+  "choices": [
+    {
+      "index": 0,
+      "message": { "role": "assistant", "content": "Sunlight scatters off air molecules, and blue light scatters most." },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": { "prompt_tokens": 21, "completion_tokens": 14, "total_tokens": 35, "cost": 0.000273 }
+}
+```
+
+| Header | Meaning |
+| --- | --- |
+| `x-predev-request-id` | `pdr_…`, the gateway's id for this call |
+| `x-predev-credits-charged` | Credits charged |
+| `x-predev-credits-remaining` | Balance after the call; omitted on unlimited plans |
+
+Send `x-predev-project-id: <projectId>` to attribute the call to a project. See [usage](/ai-gateway/api/usage).
+
+## Errors
+
+Gateway errors (`401`, `402`, `429`, `503`) use the OpenAI error shape with a `predev` object; OpenRouter's own 4xx errors, such as an unknown model id, pass through with their original status. See [errors](/ai-gateway/api/errors).

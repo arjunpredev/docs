@@ -1,0 +1,65 @@
+---
+title: "Messages"
+description: "POST /v1/messages in the Anthropic Messages shape, for the Anthropic SDK."
+---
+
+`POST https://api.pre.dev/v1/messages` accepts the Anthropic Messages request body and returns the Anthropic response, proxied through OpenRouter's `/api/v1/messages`. Use it with the Anthropic SDK: set the client's `baseURL` to `https://api.pre.dev` (no `/v1` — the SDK appends `/v1/messages` itself) and pass the pre.dev key as the API key. The SDK's `x-api-key` header is accepted.
+
+Model ids remain OpenRouter ids, so `anthropic/claude-sonnet-5` rather than a native Anthropic model name. Any model OpenRouter serves through this shape works, not only Anthropic's.
+
+<CodeGroup>
+```bash curl
+curl --fail-with-body https://api.pre.dev/v1/messages \
+  -H "x-api-key: $PREDEV_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "anthropic/claude-sonnet-5",
+    "max_tokens": 256,
+    "messages": [{ "role": "user", "content": "Give me a haiku about deploys." }]
+  }'
+```
+```typescript Node.js
+import Anthropic from '@anthropic-ai/sdk';
+
+const client = new Anthropic({
+  baseURL: 'https://api.pre.dev', // the Anthropic SDK appends /v1/messages itself — no /v1 here,
+  apiKey: process.env.PREDEV_API_KEY!,
+});
+
+const message = await client.messages.create({
+  model: 'anthropic/claude-sonnet-5',
+  max_tokens: 256,
+  messages: [{ role: 'user', content: 'Give me a haiku about deploys.' }],
+});
+console.log(message.content);
+```
+```python Python
+import os
+from anthropic import Anthropic
+
+client = Anthropic(
+    base_url="https://api.pre.dev",
+    api_key=os.environ["PREDEV_API_KEY"],
+)
+
+message = client.messages.create(
+    model="anthropic/claude-sonnet-5",
+    max_tokens=256,
+    messages=[{"role": "user", "content": "Give me a haiku about deploys."}],
+)
+print(message.content)
+```
+</CodeGroup>
+
+## Streaming
+
+Set `stream: true`, or use `client.messages.stream()` in the SDKs, for Anthropic-style server-sent events. Credits settle when the stream ends; a disconnect still charges what the upstream generated. See [streaming](/ai-gateway/streaming).
+
+## Tools, system prompts, and images
+
+Use the Anthropic `system`, `tools`, and content-block formats. The gateway forwards them; OpenRouter translates for non-Anthropic models. Semantics are in the [OpenRouter docs](https://openrouter.ai/docs).
+
+## Headers and billing
+
+The same `x-predev-request-id`, `x-predev-credits-charged`, and `x-predev-credits-remaining` headers are returned, and `x-predev-project-id` attributes usage. The charge is `usage.cost ÷ 0.7 ÷ 0.10` credits, as on [pricing](/ai-gateway/pricing).

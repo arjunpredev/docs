@@ -1,0 +1,73 @@
+---
+title: "Embeddings and rerank"
+description: "POST /v1/embeddings and POST /v1/rerank, with the embedding model list."
+---
+
+`POST https://api.pre.dev/v1/embeddings` takes OpenRouter's embeddings request and returns its response. `GET /v1/embeddings/models` lists embedding models with credit prices; it is free and not rate-limited.
+
+<CodeGroup>
+```bash curl
+MODEL=$(curl -s https://api.pre.dev/v1/embeddings/models \
+  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
+
+curl --fail-with-body https://api.pre.dev/v1/embeddings \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\": \"$MODEL\", \"input\": [\"pre.dev builds software from a spec\", \"credits pay for model calls\"]}"
+```
+```typescript Node.js
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
+
+const { data: models } = await client.models.list(); // /v1/models also lists embedding models
+const embeddingModel = models.find((m: any) => m.architecture?.output_modalities?.includes('embeddings'))?.id;
+
+const result = await client.embeddings.create({
+  model: embeddingModel!,
+  input: ['pre.dev builds software from a spec', 'credits pay for model calls'],
+});
+console.log(result.data[0].embedding.length, result.usage);
+```
+```python Python
+import os
+import requests
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+catalog = requests.get(
+    "https://api.pre.dev/v1/embeddings/models",
+    headers={"Authorization": f"Bearer {os.environ['PREDEV_API_KEY']}"},
+).json()["data"]
+
+result = client.embeddings.create(
+    model=catalog[0]["id"],
+    input=["pre.dev builds software from a spec", "credits pay for model calls"],
+)
+print(len(result.data[0].embedding), result.usage)
+```
+</CodeGroup>
+
+The response is OpenRouter's embeddings response: `data[].embedding`, `model`, and `usage`. Credits are computed from `usage.cost` and reported in `x-predev-credits-charged`.
+
+## Rerank
+
+`POST /v1/rerank` proxies OpenRouter's rerank endpoint. Send a `model`, a `query`, and `documents`; the response ranks the documents. Field details are in the [OpenRouter docs](https://openrouter.ai/docs).
+
+```bash
+curl --fail-with-body https://api.pre.dev/v1/rerank \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"model\": \"$RERANK_MODEL\",
+    \"query\": \"how are gateway calls billed\",
+    \"documents\": [
+      \"Credits are computed from usage.cost with a 30% margin.\",
+      \"Browser tasks have a 0.1-credit floor.\",
+      \"Catalog reads are free.\"
+    ]
+  }"
+```
+
+Set `RERANK_MODEL` to a rerank-capable id from the catalog. Rerank calls are billed like any other inference call.
