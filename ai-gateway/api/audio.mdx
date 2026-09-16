@@ -1,21 +1,21 @@
 ---
 title: "Audio"
-description: "POST /v1/audio/speech for text to speech and POST /v1/audio/transcriptions for speech to text."
+description: "POST /v1/audio/speech for text to speech and music, POST /v1/audio/transcriptions for speech to text."
 ---
 
 Both endpoints take the OpenAI-compatible speech and transcription request bodies and return the matching responses. Speech and transcription models appear in the main [catalog](/ai-gateway/api/models); pick an id whose row lists the audio modality.
 
 ## Text to speech
 
-`POST /v1/audio/speech` takes a JSON body and returns audio bytes.
+`POST /v1/audio/speech` takes the standard speech body and returns audio bytes. Speech models are `openai/gpt-audio-mini` (fast) and `openai/gpt-audio` (higher quality); voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer` and `verse`. The response is `audio/wav` (24 kHz mono); pass `response_format: "pcm16"` for the raw samples. `instructions` sets the delivery (default: read the text verbatim, warmly).
 
 <CodeGroup>
 ```bash curl
 curl --fail-with-body https://api.pre.dev/v1/audio/speech \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"model\": \"$SPEECH_MODEL\", \"input\": \"Your build is ready.\", \"voice\": \"alloy\"}" \
-  -o ready.mp3
+  -d '{"model": "openai/gpt-audio-mini", "input": "Your build is ready.", "voice": "alloy"}' \
+  -o ready.wav
 ```
 ```typescript Node.js
 import fs from 'node:fs/promises';
@@ -24,11 +24,11 @@ import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
 
 const speech = await client.audio.speech.create({
-  model: process.env.SPEECH_MODEL!,
+  model: 'openai/gpt-audio-mini',
   input: 'Your build is ready.',
   voice: 'alloy',
 });
-await fs.writeFile('ready.mp3', Buffer.from(await speech.arrayBuffer()));
+await fs.writeFile('ready.wav', Buffer.from(await speech.arrayBuffer()));
 ```
 ```python Python
 import os
@@ -37,13 +37,19 @@ from openai import OpenAI
 client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
 
 with client.audio.speech.with_streaming_response.create(
-    model=os.environ["SPEECH_MODEL"],
+    model="openai/gpt-audio-mini",
     input="Your build is ready.",
     voice="alloy",
 ) as speech:
-    speech.stream_to_file("ready.mp3")
+    speech.stream_to_file("ready.wav")
 ```
 </CodeGroup>
+
+In a web app, serve the bytes from your own route and point an `<audio>` element at it; the `Content-Type` header names the format. A model id that does not produce audio returns `400` with the list of ids that do.
+
+## Music
+
+The same endpoint composes music: send `model: "google/lyria-3-clip-preview"` (or `google/lyria-3-pro-preview`) with `input` set to the mood or style you want, for example `"upbeat lo-fi for a launch video"`. Music models answer with an MP3 (`audio/mpeg`); `voice` is ignored. The header `x-predev-audio-format` carries the format on every speech response.
 
 ## Transcription
 
@@ -80,4 +86,4 @@ print(transcript.text)
 ```
 </CodeGroup>
 
-Set `SPEECH_MODEL` and `TRANSCRIBE_MODEL` to ids from the catalog. Available voices, formats, and other fields depend on the model; check its catalog row. Both calls return the usual `x-predev-*` headers and are billed from `usage.cost`.
+Set `TRANSCRIBE_MODEL` to a transcription id from the catalog (`openai/whisper-large-v3` today). All three calls return the usual `x-predev-*` headers and are billed from `usage.cost`.
