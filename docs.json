@@ -449,6 +449,19 @@
         ]
       },
       {
+        "tab": "Payments",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "payments/overview",
+              "payments/from-a-predev-app",
+              "payments/webhooks"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Architect",
         "groups": [
           {

@@ -1,0 +1,92 @@
+---
+title: "From a pre.dev app"
+description: "The Stripe variables every pre.dev project has, and the two SDK options that use them."
+---
+
+Every project built on pre.dev has these set in its sandbox and deploy environment. There is nothing to paste.
+
+| Variable | Value |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | Your workspace's pre.dev key, tagged with the project. Only `api.pre.dev` accepts it. |
+| `STRIPE_API_HOST` | `api.pre.dev` (with `STRIPE_API_PROTOCOL`, and `STRIPE_API_PORT` when not the default) |
+| `STRIPE_PUBLISHABLE_KEY` | Publishable key for Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
+| `STRIPE_ACCOUNT_ID` | Your workspace's Stripe account, `acct_…`, needed by Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
+| `STRIPE_WEBHOOK_SECRET` | This project's signing secret for relayed events. See [webhooks](/payments/webhooks). |
+
+## Ask the build agent
+
+Tell the coding agent what you want, for example **"add a Pro plan at $9/month"**, "sell this as a one-time purchase", or "let customers manage their subscription". The agent creates the products and prices in code, wires Stripe Checkout, mounts the webhook handler, and tests the flow with a test card before handing it back.
+
+Everything the agent adds is ordinary Stripe code you can read and change.
+
+## Server side
+
+The Stripe SDK needs its host pointed at pre.dev. That is the only difference from any Stripe app.
+
+<CodeGroup>
+```typescript Node.js
+import Stripe from 'stripe';
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  host: process.env.STRIPE_API_HOST,
+  protocol: (process.env.STRIPE_API_PROTOCOL as 'https' | 'http') || 'https',
+  ...(process.env.STRIPE_API_PORT ? { port: Number(process.env.STRIPE_API_PORT) } : {}),
+});
+
+// POST /api/checkout  { priceId: string }
+export async function createCheckout(priceId: string, origin: string) {
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${origin}/billing?status=success`,
+    cancel_url: `${origin}/billing`,
+  });
+  return session.url;
+}
+```
+```python Python
+import os
+import stripe
+
+stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+stripe.api_base = (
+    f"{os.environ.get('STRIPE_API_PROTOCOL', 'https')}://{os.environ['STRIPE_API_HOST']}"
+    + (f":{os.environ['STRIPE_API_PORT']}" if os.environ.get("STRIPE_API_PORT") else "")
+)
+
+
+# POST /api/checkout  {"priceId": "..."}
+def create_checkout(price_id: str, origin: str) -> str:
+    session = stripe.checkout.Session.create(
+        mode="subscription",
+        line_items=[{"price": price_id, "quantity": 1}],
+        success_url=f"{origin}/billing?status=success",
+        cancel_url=f"{origin}/billing",
+    )
+    return session.url
+```
+</CodeGroup>
+
+Create products and prices in code and keep them idempotent, for example by looking a price up by `lookup_key` and creating it only when missing. There is no Stripe dashboard to click through while in test mode.
+
+## Browser side
+
+Stripe Checkout needs no browser code: redirect to `session.url`. If you use Stripe.js or Elements, initialise it with both public values:
+
+```ts
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
+  stripeAccount: import.meta.env.VITE_STRIPE_ACCOUNT_ID,
+});
+```
+
+Without `stripeAccount`, Elements cannot find your account.
+
+## Test cards
+
+Payments run in Stripe test mode while you build. Use card number `4242 4242 4242 4242` with any future expiry, any CVC, and any postal code. Stripe's other [test cards](https://docs.stripe.com/testing) work too, including the ones that decline.
+
+## Keep the key server side
+
+`STRIPE_SECRET_KEY` can create refunds and read customers. Call Stripe from a server route, never from the browser. The publishable key and account id are safe to ship to the client.
