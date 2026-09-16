@@ -47,6 +47,6 @@ curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID/content" \
   -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
 ```
 
-The job is charged when a status poll reports completion, not at submission. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
+The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
 
 Jobs belong to the workspace that created them; another workspace's job id returns `404`.
