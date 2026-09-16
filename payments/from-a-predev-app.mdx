@@ -71,7 +71,15 @@ Create products and prices in code and keep them idempotent, for example by look
 
 ## Browser side
 
-Stripe Checkout needs no browser code: redirect to `session.url`. If you use Stripe.js or Elements, initialise it with both public values:
+Stripe Checkout needs no browser code beyond sending the user to `session.url`. One rule: the pre.dev preview runs your app inside an iframe, and Stripe Checkout refuses to render inside a frame, so open it in a new tab when framed:
+
+```ts
+const { url } = await fetch('/api/checkout', { method: 'POST' }).then(r => r.json());
+if (window.self !== window.top) window.open(url, '_blank', 'noopener');
+else window.location.assign(url);
+```
+
+The build agent writes it this way. The same applies to the Billing Portal URL. If you use Stripe.js or Elements, initialise it with both public values:
 
 ```ts
 import { loadStripe } from '@stripe/stripe-js';
@@ -82,6 +90,10 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
 ```
 
 Without `stripeAccount`, Elements cannot find your account.
+
+## Activation on a new workspace
+
+The first time a workspace uses payments, pre.dev creates its test account. Stripe usually activates it in under a minute, occasionally a few. Until then a charge attempt returns HTTP 503 with code `payments_account_activating` and a `Retry-After` header. Nothing is misconfigured; retry shortly.
 
 ## Test cards
 
