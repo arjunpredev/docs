@@ -1,0 +1,88 @@
+---
+title: "Webhooks"
+description: "Stripe events are delivered to your app for you, including the live sandbox, signed with your project's own secret."
+---
+
+Stripe cannot reach a sandbox, so pre.dev receives every Stripe event for your workspace and relays it to your app. There is no endpoint to register and no signing secret to copy.
+
+## Where events arrive
+
+pre.dev posts each event to **`POST /api/stripe/webhook`** on your app, at the live sandbox URL while you build and at the deployed URL once deployed. Mount your handler on exactly that path.
+
+The request looks exactly like one from Stripe: a JSON event body and a `Stripe-Signature` header. Verify it with the Stripe SDK and `STRIPE_WEBHOOK_SECRET`, which is this project's own secret.
+
+<CodeGroup>
+```typescript Express
+import express from 'express';
+import { stripe } from './stripe';
+
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      req.headers['stripe-signature'] as string,
+      process.env.STRIPE_WEBHOOK_SECRET!,
+    );
+  } catch (err) {
+    return res.status(400).send('invalid signature');
+  }
+
+  switch (event.type) {
+    case 'checkout.session.completed':
+      // mark the order paid, grant access
+      break;
+    case 'customer.subscription.deleted':
+      // revoke access
+      break;
+    default:
+      // other events are normal; ignore what you do not handle
+  }
+  res.json({ received: true });
+});
+```
+```python Flask
+import os
+import stripe
+from flask import request, abort
+
+@app.post("/api/stripe/webhook")
+def stripe_webhook():
+    try:
+        event = stripe.Webhook.construct_event(
+            request.get_data(),
+            request.headers.get("Stripe-Signature", ""),
+            os.environ["STRIPE_WEBHOOK_SECRET"],
+        )
+    except Exception:
+        abort(400)
+
+    if event["type"] == "checkout.session.completed":
+        pass  # mark the order paid, grant access
+    return {"received": True}
+```
+</CodeGroup>
+
+The handler must read the **raw** request body. A JSON body parser that runs first changes the bytes and the signature check fails.
+
+## Which events
+
+Every event Stripe emits for your workspace's account is relayed. Handle the ones you need and return `2xx` for the rest. Typical ones for subscriptions are `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, and `customer.subscription.updated` or `deleted`.
+
+## Retries and pausing
+
+A delivery that fails with a timeout or a `5xx` is retried with backoff for about 45 minutes. A `4xx` other than `408` or `429` is not retried.
+
+If your app answers `404` at the webhook path three times in a row, deliveries to that project pause. They resume the next time the app makes a Stripe call through pre.dev, so mounting the route and reloading is enough.
+
+## Do not register an endpoint
+
+Calling `stripe.webhookEndpoints.create` through the built-in key returns a `400` that explains delivery is built in. Your own Stripe dashboard is not involved while in test mode.
+
+## Testing a flow end to end
+
+1. Start a Checkout session in your app and pay with `4242 4242 4242 4242`.
+2. Watch the server log for `checkout.session.completed` arriving at `/api/stripe/webhook`.
+3. Confirm your handler did its work, for example a row marked paid.
+
+The build agent does exactly this before it reports a payments feature done.

@@ -1,0 +1,43 @@
+---
+title: "Overview"
+description: "Payments are built into every pre.dev app: Stripe, already wired up, in test mode until you go live."
+---
+
+Every project built on pre.dev can take payments without creating a Stripe account, pasting keys, or registering webhooks. pre.dev Payments is powered by Stripe: your workspace gets a Stripe account behind pre.dev, the build agent uses the ordinary Stripe SDK, and pre.dev delivers Stripe's events to your app, including the live sandbox while you build.
+
+## What you get
+
+| | |
+| --- | --- |
+| **Nothing to set up** | The Stripe keys are already in your app's environment. Ask the build agent for "a $9/month plan" or "a checkout button" and it works. |
+| **Real Stripe** | Checkout, subscriptions, customers, invoices, refunds, the billing portal. Any Stripe API, any Stripe example, unchanged. |
+| **Webhooks that reach the sandbox** | Stripe events are relayed to your app's webhook route on the live sandbox and on the deployed app, signed with your project's own secret. |
+| **Test mode while building** | Pay with card `4242 4242 4242 4242`. No real money moves until you go live. |
+
+## How it works
+
+Your app talks to Stripe through `api.pre.dev` with the workspace's pre.dev key. pre.dev forwards each request to Stripe scoped to your workspace's connected account and forwards the response back. The Stripe SDK needs two options, which the build agent sets from environment variables that are already there:
+
+```ts
+import Stripe from 'stripe';
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  host: process.env.STRIPE_API_HOST,
+});
+```
+
+That is the whole integration. See [from a pre.dev app](/payments/from-a-predev-app) for the variables and [webhooks](/payments/webhooks) for event delivery.
+
+## Test mode and going live
+
+While you build, payments run in Stripe test mode on an account pre.dev created for your workspace. Checkout accepts Stripe's test cards and nothing is charged.
+
+Going live, which connects a Stripe account you own and switches your deployed app to real payments, is coming next. Until then the build agent will tell you plainly that payments are in test mode.
+
+## Bring your own Stripe account
+
+If you already have a Stripe account, paste your own `sk_…` key as `STRIPE_SECRET_KEY` in the project's [environment variables](/coding-agent/integrations/env-vars). pre.dev then drops its host override and your app talks to Stripe directly with your key. Webhooks for your own account are yours to register in the Stripe dashboard.
+
+## Not available through the built-in key
+
+Account management, application fees, and Stripe products that need a platform-level agreement (Radar, Sigma, Issuing, Treasury, Terminal) return a `403` with an explanation. Everything an app normally does to take money is available.
