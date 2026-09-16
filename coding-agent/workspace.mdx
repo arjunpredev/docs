@@ -17,6 +17,29 @@ The project workspace brings the agent conversation, code, and project artifacts
 
 Planning views appear when their artifacts exist. A direct build can have working code before it has a roadmap or architecture graph. Open the preview from the workspace's preview controls when a development server is available.
 
+## Inspect and edit code
+
+Code opens as a viewer for browsing generated files. Select a file in the tree,
+or search file names and contents. Content matches jump to the matching line.
+On mobile, use the folder button to open the file drawer.
+
+Use the toolbar to wrap long lines or copy the complete file. Large files open
+in plain text to stay responsive; choose **Syntax highlighting** to enable colors.
+Changes appear as unified diffs, with an optional split view on desktop.
+
+Choose **Edit** for a manual change. Undo, redo, find and replace, and **Reset file**
+are available while editing. Switching files keeps your drafts and undo history.
+Choose **Save changes** to save, and **Done** to return to viewing. Done does not
+save pending changes. If saving fails, the draft stays available so you can retry.
+
+| Editing shortcut | Action |
+| --- | --- |
+| Cmd/Ctrl + F | Find in the current file |
+| Cmd/Ctrl + Alt + F | Find and replace |
+| Cmd/Ctrl + S | Save changes |
+
+The editor supports basic changes without autocomplete, diagnostics, or code folding.
+
 ## Chat controls
 
 Type `/` to see commands supported by the current client.
