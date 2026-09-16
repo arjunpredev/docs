@@ -87,4 +87,4 @@ Add `plugins: [{ "id": "web" }]`, or use a model's `:online` variant, and tune w
 
 ## Generated media
 
-Image, video, and speech models are listed by `/v1/images/models`, `/v1/videos/models`, and the main catalog. Video is asynchronous: submit, poll `GET /v1/videos/{jobId}`, then download from `/content`; the job is charged when a poll reports completion. See [images and video](/ai-gateway/api/images-and-video) and [audio](/ai-gateway/api/audio).
+Image, video, and speech models are listed by `/v1/images/models`, `/v1/videos/models`, and the main catalog. Video is asynchronous: submit, poll `GET /v1/videos/{jobId}`, then download from `/content`; the job is charged once it finishes, whether you poll it to completion, download its content, or stop polling and let pre.dev settle it. See [images and video](/ai-gateway/api/images-and-video) and [audio](/ai-gateway/api/audio).
