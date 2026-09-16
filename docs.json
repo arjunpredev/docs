@@ -456,7 +456,8 @@
             "pages": [
               "payments/overview",
               "payments/from-a-predev-app",
-              "payments/webhooks"
+              "payments/webhooks",
+              "payments/go-live"
             ]
           }
         ]
