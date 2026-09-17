@@ -7,7 +7,7 @@ Every project takes payments in test mode from its first build. Going live is a 
 
 ## 1. Connect your Stripe account
 
-Open **Integrations → API Keys** and find the **Payments** card. Click **Go live**. Stripe walks you through your business details, a bank account for payouts, and identity verification. It takes about three minutes and Stripe saves your progress if you leave.
+Open **Integrations → Built-in** and find the **Payments** card. Click **Go live**. Stripe walks you through your business details, a bank account for payouts, and identity verification. It takes about three minutes and Stripe saves your progress if you leave.
 
 You own this Stripe account. pre.dev creates it for you and connects it as a platform, but the dashboard, the balance, the payouts, and the customers are yours at [dashboard.stripe.com](https://dashboard.stripe.com). If you ever leave pre.dev, the account and its history come with you.
 
@@ -15,7 +15,7 @@ When Stripe finishes verification the card shows **Live**. Verification is usual
 
 ## 2. Switch a project to live
 
-Open the project, then its **Connections** tab, and use the **Payments** card at the top to switch from **Test** to **Live**. The preview restarts so the browser-side Stripe key and account match. From then on:
+Open the project, then its **Built-in** tab, and use the **Payments** card at the top to switch from **Test** to **Live**. The preview restarts so the browser-side Stripe key and account match. From then on:
 
 - Checkout in that project charges real cards on your Stripe account.
 - Test cards are declined, as they are on any live Stripe account.
@@ -30,7 +30,7 @@ Test-mode products and prices do not exist in live mode; that is how Stripe work
 
 ## Fees
 
-Live payments carry Stripe's standard processing fees, paid by your account, plus the pre.dev platform fee shown on the Payments card. Test mode never charges anything.
+Live payments carry Stripe's standard processing fees, paid by your account, plus the pre.dev platform fee of 5% of each payment, shown on the Payments card. Test mode never charges anything.
 
 ## Bring your own Stripe account instead
 
