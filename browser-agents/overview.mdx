@@ -57,7 +57,7 @@ Task counts, account in-flight limits, and per-run concurrency are different con
 
 ## Credits
 
-Successful tasks have a **0.1-credit minimum**; more complex tasks can cost more. Failed tasks settle at zero credits. Submission reserves or charges the task floor before execution, so you need available credits to start. Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
+Every task is charged a **0.1-credit floor** when you submit it, so you need available credits to start. Successful tasks can cost more for more complex work. Failed tasks are charged the 0.1-credit floor and nothing more. Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
 
 ## Benchmark
 
