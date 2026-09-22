@@ -91,8 +91,8 @@ A submission stream does not provide the initial `snapshot` event or reliably ex
 
 - The default request ceiling is **1,000 tasks**. Your account's in-flight cap can be much smaller and counts every submitted task, including queued work.
 - `concurrency` defaults to **5** and is clamped to **1–20**. It controls parallelism within the run; it does not let you exceed your account limit.
-- Submission checks the credit floor of **0.1 credits per task**. Successful tasks settle at at least that floor, with usage increasing for more complex work. Failed tasks settle at zero and their prepaid floor is refunded.
-- Browser billing uses **$0.10 per credit**. Treat the returned `creditsUsed` and `totalCreditsUsed` as the recorded task charges, not a forecast or a reserved amount.
+- Submission charges a floor of **0.1 credits per task** before any task runs. Successful tasks settle at the floor or higher, with usage increasing for more complex work. Failed tasks are charged the 0.1-credit floor and nothing more. The floor is refunded only when a submission fails before its tasks are queued.
+- Browser billing uses **$0.10 per credit**. Each task's `creditsUsed` is its full charge, including the 0.1-credit floor a failed task keeps, and `totalCreditsUsed` is the sum for the run. Treat both fields as recorded charges, not a forecast or a reserved amount.
 - Free accounts have a limited browser trial budget in addition to the account credit balance. An exhausted trial returns `SUBSCRIPTION_REQUIRED`.
 
 Use [queue status](/browser-agents/api/queue-status) to size batches and [errors](/api-reference/errors) to handle `QUEUE_FULL`, `RATE_LIMITED`, and billing responses. Capacity snapshots are advisory; another submission can consume capacity before yours arrives.
