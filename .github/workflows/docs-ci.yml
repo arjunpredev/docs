@@ -16,8 +16,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      # `npm ci` was 26 s of a ~60 s job, and `mint validate` then fetched the
+      # 358 MB Mintlify client into ~/.mintlify on every run (9 s cold, 3 s
+      # warm). Cache both, keyed on the lockfile. On a miss, drop the Claude Agent
+      # SDK and Codex binaries (@mintlify/cli optional deps, 620 MB, used only
+      # by mint's AI commands, never by these checks) so the cache stays ~160 MB.
+      - id: deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.mintlify
+          key: docs-deps-${{ runner.os }}-node22-${{ hashFiles('package-lock.json') }}
+      - if: steps.deps.outputs.cache-hit != 'true'
+        run: |
+          npm ci --no-audit --no-fund
+          rm -rf node_modules/@anthropic-ai node_modules/@openai
       - name: Validate schemas, examples, navigation, and redirects
         run: npm run check
       - name: Compile and exercise Node guide examples with mocked HTTP
