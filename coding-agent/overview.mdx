@@ -7,17 +7,17 @@ import { Workflow } from "/snippets/workflow.jsx";
 
 Describe a change, give the agent the project context it needs, and review the code and evidence it produces. pre.dev supports new apps, existing repositories, planning, implementation, and browser verification.
 
-The default **Auto** mode lets the agent answer a question, make a direct change, or plan a larger task. Switch to **Plan** when you want to shape requirements and architecture before implementation.
+The agent decides how to handle each request: it can answer a question, make a direct change, or plan a larger task before it builds. Ask for a plan when you want to shape requirements and architecture first.
 
 <Workflow
   label="From request to reviewed software"
   steps={[
     { title: "Describe the outcome", description: "Name the behavior, relevant context, and constraints." },
-    { title: "Shape the approach", description: "Use Auto, or review a specification in Plan mode." },
+    { title: "Shape the approach", description: "The agent decides whether to plan first. Review any specification it produces." },
     { title: "Build and check", description: "Implement a concrete change and inspect the checks that ran." },
     { title: "Review and ship", description: "Read the diff, try the preview, then merge or deploy." }
   ]}
-  note="Auto can also answer a question without changing code. Start with Plan when you want to settle requirements first."
+  note="The agent can also answer a question without changing code. Ask for a plan first when you want to settle requirements."
 />
 
 ## Make the first request useful
@@ -45,6 +45,6 @@ The web and CLI share project records, planning artifacts, and account settings 
 <CardGroup cols={2}>
   <Card title="Build your first project" icon="play" href="/coding-agent/quickstart">A short web workflow from prompt to review.</Card>
   <Card title="Use your terminal" icon="terminal" href="/cli/overview">Install the CLI and start in a local repository.</Card>
-  <Card title="Auto, Plan, and effort" icon="sliders" href="/coding-agent/building/build-modes">Choose how the agent approaches the work.</Card>
+  <Card title="Sprints and effort" icon="sliders" href="/coding-agent/building/build-modes">Choose the scope and depth of the work.</Card>
   <Card title="Workspace guide" icon="table-columns" href="/coding-agent/workspace">Find code, plans, previews, and project setup.</Card>
 </CardGroup>

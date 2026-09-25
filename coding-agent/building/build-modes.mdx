@@ -1,18 +1,11 @@
 ---
-title: "Auto, Plan, and effort"
-description: "Choose the agent's intent, sprint scope, and depth of work."
+title: "Sprints and effort"
+description: "Choose sprint scope and depth of work."
 ---
 
-Three controls answer different questions: **Auto or Plan** sets the intent of your conversation, **sprints** define a unit of work, and **effort** controls how deeply a sprint approaches it. [Model selection](/coding-agent/building/pro-mode) chooses the models used for that work.
+There is no mode to pick before you send a request. The agent reads each message and decides whether to answer, ask for context, implement directly, or plan first. To shape requirements, user flows, and architecture first, ask for a plan in your message.
 
-## Auto and Plan
-
-| Mode | Behavior | Command |
-| --- | --- | --- |
-| Auto | The agent can answer, ask for context, implement directly, or plan first | `/auto` |
-| Plan | Messages shape requirements, user flows, roadmap, and architecture | `/plan` |
-
-Auto is the default. Plan mode returns to Auto when the plan is produced. Selecting Plan does not itself start a build: send the requirements you want to develop, review the artifacts, then request implementation.
+Two controls shape the work itself: **sprints** define a unit of work, and **effort** controls how deeply a sprint approaches it. [Model selection](/coding-agent/building/pro-mode) chooses the models used for that work.
 
 ## Choose a unit of work
 
