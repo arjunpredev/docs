@@ -60,7 +60,7 @@ from openai import OpenAI
 
 client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
 reply = client.chat.completions.create(
-    model="anthropic/claude-sonnet-5",
+    model="deepseek/deepseek-v4.1-flash",
     messages=[{"role": "user", "content": "Write a one-line welcome message."}],
 )
 print(reply.choices[0].message.content)

@@ -101,8 +101,7 @@ const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.e
 
 const { data: completion, response } = await client.chat.completions
   .create({
-    model: 'anthropic/claude-sonnet-5',
-    max_tokens: 200,
+    model: 'deepseek/deepseek-v4.1-flash',
     messages: [{ role: 'user', content: 'Write a one-line welcome message for a todo app.' }],
   })
   .withResponse();
@@ -118,8 +117,7 @@ from openai import OpenAI
 client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
 
 raw = client.chat.completions.with_raw_response.create(
-    model="anthropic/claude-sonnet-5",
-    max_tokens=200,
+    model="deepseek/deepseek-v4.1-flash",
     messages=[{"role": "user", "content": "Write a one-line welcome message for a todo app."}],
 )
 print(raw.parse().choices[0].message.content)

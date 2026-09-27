@@ -8,42 +8,30 @@ openapi: "/api-reference/ai-gateway.openapi.json POST /v1/embeddings"
 
 <CodeGroup>
 ```bash curl
-MODEL=$(curl -s https://api.pre.dev/v1/embeddings/models \
-  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
-
 curl --fail-with-body https://api.pre.dev/v1/embeddings \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"model\": \"$MODEL\", \"input\": [\"pre.dev builds software from a spec\", \"credits pay for model calls\"]}"
+  -d '{"model": "openai/text-embedding-3-small", "input": ["pre.dev builds software from a spec", "credits pay for model calls"]}'
 ```
 ```typescript Node.js
 import OpenAI from 'openai';
 
 const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY! });
 
-const { data: models } = await client.models.list(); // /v1/models also lists embedding models
-const embeddingModel = models.find((m: any) => m.architecture?.output_modalities?.includes('embeddings'))?.id;
-
 const result = await client.embeddings.create({
-  model: embeddingModel!,
+  model: 'openai/text-embedding-3-small',
   input: ['pre.dev builds software from a spec', 'credits pay for model calls'],
 });
 console.log(result.data[0].embedding.length, result.usage);
 ```
 ```python Python
 import os
-import requests
 from openai import OpenAI
 
 client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
 
-catalog = requests.get(
-    "https://api.pre.dev/v1/embeddings/models",
-    headers={"Authorization": f"Bearer {os.environ['PREDEV_API_KEY']}"},
-).json()["data"]
-
 result = client.embeddings.create(
-    model=catalog[0]["id"],
+    model="openai/text-embedding-3-small",
     input=["pre.dev builds software from a spec", "credits pay for model calls"],
 )
 print(len(result.data[0].embedding), result.usage)

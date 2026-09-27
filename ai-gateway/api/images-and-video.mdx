@@ -11,14 +11,13 @@ Both endpoints take a `model` and a `prompt` and return generated images or vide
 `POST /v1/images` returns generated images synchronously and is charged when the response is returned.
 
 ```bash
-MODEL=$(curl -s https://api.pre.dev/v1/images/models \
-  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
-
 curl --fail-with-body https://api.pre.dev/v1/images \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"model\": \"$MODEL\", \"prompt\": \"A lighthouse at dawn, watercolor\"}"
+  -d '{"model": "recraft/recraft-v4.1-flash", "prompt": "A lighthouse at dawn, watercolor", "n": 1, "aspect_ratio": "1:1"}'
 ```
+
+Pick another model from `GET /v1/images/models`; each row lists the parameters it accepts in `supported_parameters`, and some models edit an input image rather than start from a prompt.
 
 Use `credits_per_image` or the other `predev` prices in the model row to estimate cost; the actual charge follows the call's metered usage, like every other call.
 
@@ -31,13 +30,10 @@ Video generation is asynchronous:
 3. [`GET /v1/videos/{jobId}/content`](/ai-gateway/api/video-content) returns the finished video.
 
 ```bash
-MODEL=$(curl -s https://api.pre.dev/v1/videos/models \
-  -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
-
 POLL=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"model\": \"$MODEL\", \"prompt\": \"A paper boat drifting down a rain gutter\"}" | jq -r '.polling_url')
+  -d '{"model": "bytedance/seedance-2.0-mini", "prompt": "A paper boat drifting down a rain gutter", "duration": 4, "resolution": "480p"}' | jq -r '.polling_url')
 
 # poll until the status is terminal
 while :; do

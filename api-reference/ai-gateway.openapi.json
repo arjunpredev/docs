@@ -66,7 +66,7 @@
           "Chat"
         ],
         "summary": "Create a chat completion",
-        "description": "Runs a chat completion in the OpenAI format on any chat model in the catalog. Point an OpenAI SDK at `https://api.pre.dev/v1` and pass the pre.dev key.\n\nStandard fields such as `temperature`, `stop`, `seed`, `tools` and `response_format` work as in the OpenAI API. A `provider` object is removed before the request runs: choose a model, and use `models` for fallbacks.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
+        "description": "Runs a chat completion in the OpenAI format on any chat model in the catalog. Point an OpenAI SDK at `https://api.pre.dev/v1` and pass the pre.dev key.\n\nStandard fields such as `temperature`, `stop`, `seed`, `tools` and `response_format` work as in the OpenAI API. A `provider` object is removed before the request runs: choose a model, and use `models` for fallbacks.\n\nThe playground sends the default example, which does not stream; the Streaming example shows `stream: true`. With `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -83,16 +83,33 @@
                 "basic": {
                   "summary": "One question",
                   "value": {
-                    "model": "anthropic/claude-sonnet-5",
-                    "max_tokens": 200,
+                    "model": "deepseek/deepseek-v4.1-flash",
+                    "max_tokens": 100,
+                    "stream": false,
+                    "reasoning": {
+                      "enabled": false
+                    },
                     "messages": [
                       {
-                        "role": "system",
-                        "content": "Answer in one sentence."
-                      },
+                        "role": "user",
+                        "content": "Say hello in five words."
+                      }
+                    ]
+                  }
+                },
+                "streaming": {
+                  "summary": "Streaming",
+                  "value": {
+                    "model": "deepseek/deepseek-v4.1-flash",
+                    "max_tokens": 100,
+                    "stream": true,
+                    "reasoning": {
+                      "enabled": false
+                    },
+                    "messages": [
                       {
                         "role": "user",
-                        "content": "Why is the sky blue?"
+                        "content": "Say hello in five words."
                       }
                     ]
                   }
@@ -100,7 +117,11 @@
                 "json_output": {
                   "summary": "Structured JSON output",
                   "value": {
-                    "model": "openai/gpt-6-luna",
+                    "model": "deepseek/deepseek-v4.1-flash",
+                    "max_tokens": 200,
+                    "reasoning": {
+                      "enabled": false
+                    },
                     "messages": [
                       {
                         "role": "user",
@@ -134,15 +155,18 @@
                 "fallbacks": {
                   "summary": "Fallback models",
                   "value": {
+                    "model": "deepseek/deepseek-v4.1-flash",
                     "models": [
-                      "anthropic/claude-sonnet-5",
-                      "openai/gpt-6-luna",
-                      "deepseek/deepseek-v4.1-flash"
+                      "google/gemini-3.8-flash"
                     ],
+                    "max_tokens": 100,
+                    "reasoning": {
+                      "enabled": false
+                    },
                     "messages": [
                       {
                         "role": "user",
-                        "content": "Summarize the plot of Dune in two sentences."
+                        "content": "Say hello in five words."
                       }
                     ]
                   }
@@ -174,21 +198,21 @@
                   "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
                   "object": "chat.completion",
                   "created": 1790500000,
-                  "model": "anthropic/claude-sonnet-5",
+                  "model": "deepseek/deepseek-v4.1-flash",
                   "choices": [
                     {
                       "index": 0,
                       "message": {
                         "role": "assistant",
-                        "content": "Sunlight scatters off air molecules, and blue light scatters the most."
+                        "content": "Hello there, nice to meet you."
                       },
                       "finish_reason": "stop"
                     }
                   ],
                   "usage": {
-                    "prompt_tokens": 21,
-                    "completion_tokens": 14,
-                    "total_tokens": 35
+                    "prompt_tokens": 12,
+                    "completion_tokens": 8,
+                    "total_tokens": 20
                   },
                   "system_fingerprint": null
                 }
@@ -197,7 +221,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Sunlight scatters\"},\"finish_reason\":null}]}\n\n: processing\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"content\":\" off air molecules.\"},\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[],\"usage\":{\"prompt_tokens\":21,\"completion_tokens\":9,\"total_tokens\":30}}\n\ndata: [DONE]\n"
+                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Hello there,\"},\"finish_reason\":null}]}\n\n: processing\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"content\":\" nice to meet you.\"},\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":8,\"total_tokens\":20}}\n\ndata: [DONE]\n"
               }
             }
           },
@@ -209,6 +233,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -227,17 +254,17 @@
           {
             "lang": "cURL",
             "label": "cURL",
-            "source": "curl --fail-with-body https://api.pre.dev/v1/chat/completions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\":\"anthropic/claude-sonnet-5\",\"max_tokens\":200,\"messages\":[{\"role\":\"system\",\"content\":\"Answer in one sentence.\"},{\"role\":\"user\",\"content\":\"Why is the sky blue?\"}]}'"
+            "source": "curl --fail-with-body https://api.pre.dev/v1/chat/completions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\":\"deepseek/deepseek-v4.1-flash\",\"max_tokens\":100,\"stream\":false,\"reasoning\":{\"enabled\":false},\"messages\":[{\"role\":\"user\",\"content\":\"Say hello in five words.\"}]}'"
           },
           {
             "lang": "Python",
             "label": "Python (OpenAI SDK)",
-            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\ncompletion = client.chat.completions.create(\n    model=\"anthropic/claude-sonnet-5\",\n    max_tokens=200,\n    messages=[\n        {\"role\": \"system\", \"content\": \"Answer in one sentence.\"},\n        {\"role\": \"user\", \"content\": \"Why is the sky blue?\"},\n    ],\n)\nprint(completion.choices[0].message.content)"
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\ncompletion = client.chat.completions.create(\n    model=\"deepseek/deepseek-v4.1-flash\",\n    max_tokens=100,\n    extra_body={\"reasoning\": {\"enabled\": False}},\n    messages=[{\"role\": \"user\", \"content\": \"Say hello in five words.\"}],\n)\nprint(completion.choices[0].message.content)"
           },
           {
             "lang": "JavaScript",
             "label": "Node.js (OpenAI SDK)",
-            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst completion = await client.chat.completions.create({\n  model: 'anthropic/claude-sonnet-5',\n  max_tokens: 200,\n  messages: [\n    { role: 'system', content: 'Answer in one sentence.' },\n    { role: 'user', content: 'Why is the sky blue?' },\n  ],\n});\nconsole.log(completion.choices[0].message.content);"
+            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst completion = await client.chat.completions.create({\n  model: 'deepseek/deepseek-v4.1-flash',\n  max_tokens: 100,\n  reasoning: { enabled: false },\n  messages: [{ role: 'user', content: 'Say hello in five words.' }],\n});\nconsole.log(completion.choices[0].message.content);"
           }
         ]
       }
@@ -249,7 +276,7 @@
           "Chat"
         ],
         "summary": "Create a text completion",
-        "description": "Legacy text completion in the OpenAI format: a `prompt` string instead of `messages`. Prefer chat completions for new code.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
+        "description": "Legacy text completion in the OpenAI format: a `prompt` string instead of `messages`. Prefer chat completions for new code.\n\nThe playground sends the default example, which does not stream; the Streaming example shows `stream: true`. With `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -265,7 +292,8 @@
               "example": {
                 "model": "deepseek/deepseek-v4.1-flash",
                 "prompt": "The sky is blue because",
-                "max_tokens": 40
+                "max_tokens": 40,
+                "stream": false
               }
             }
           }
@@ -311,7 +339,8 @@
               "text/event-stream": {
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[{\"index\":0,\"text\":\" sunlight scatters\",\"finish_reason\":null}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[{\"index\":0,\"text\":\" off air molecules.\",\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[],\"usage\":{\"prompt_tokens\":6,\"completion_tokens\":7,\"total_tokens\":13}}\n\ndata: [DONE]\n"
               }
             }
           },
@@ -323,6 +352,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -346,7 +378,7 @@
           "Chat"
         ],
         "summary": "Create a response",
-        "description": "Runs a request in the OpenAI Responses format. Each request stands alone: responses are not stored, so send the full conversation in `input` rather than `previous_response_id`.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Responses event format (`response.created`, `response.output_text.delta`, `response.completed`, and so on).",
+        "description": "Runs a request in the OpenAI Responses format. Each request stands alone: responses are not stored, so send the full conversation in `input` rather than `previous_response_id`.\n\nThe playground sends the default example, which does not stream; the Streaming example shows `stream: true`. With `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Responses event format (`response.created`, `response.output_text.delta`, `response.completed`, and so on).",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -359,10 +391,31 @@
               "schema": {
                 "$ref": "#/components/schemas/ResponseRequest"
               },
-              "example": {
-                "model": "openai/gpt-6-luna",
-                "input": "Write a one-line release note for a faster login page.",
-                "max_output_tokens": 100
+              "examples": {
+                "basic": {
+                  "summary": "One question",
+                  "value": {
+                    "model": "deepseek/deepseek-v4.1-flash",
+                    "input": "Say hello in five words.",
+                    "max_output_tokens": 100,
+                    "reasoning": {
+                      "enabled": false
+                    },
+                    "stream": false
+                  }
+                },
+                "streaming": {
+                  "summary": "Streaming",
+                  "value": {
+                    "model": "deepseek/deepseek-v4.1-flash",
+                    "input": "Say hello in five words.",
+                    "max_output_tokens": 100,
+                    "reasoning": {
+                      "enabled": false
+                    },
+                    "stream": true
+                  }
+                }
               }
             }
           }
@@ -390,7 +443,7 @@
                   "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
                   "object": "response",
                   "created_at": 1790500000,
-                  "model": "openai/gpt-6-luna",
+                  "model": "deepseek/deepseek-v4.1-flash",
                   "status": "completed",
                   "output": [
                     {
@@ -399,22 +452,23 @@
                       "content": [
                         {
                           "type": "output_text",
-                          "text": "Login is now twice as fast."
+                          "text": "Hello there, nice to meet you."
                         }
                       ]
                     }
                   ],
                   "usage": {
-                    "input_tokens": 18,
+                    "input_tokens": 12,
                     "output_tokens": 8,
-                    "total_tokens": 26
+                    "total_tokens": 20
                   }
                 }
               },
               "text/event-stream": {
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"status\":\"in_progress\",\"output\":[]}}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\"Hello there,\"}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\" nice to meet you.\"}\n\nevent: response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"status\":\"completed\",\"output\":[{\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"output_text\",\"text\":\"Hello there, nice to meet you.\"}]}],\"usage\":{\"input_tokens\":12,\"output_tokens\":8,\"total_tokens\":20}}}\n"
               }
             }
           },
@@ -426,6 +480,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -449,7 +506,7 @@
           "Chat"
         ],
         "summary": "Create a message",
-        "description": "Runs a request in the Anthropic Messages format, for the Anthropic SDKs. Set the SDK base URL to `https://api.pre.dev` (the SDK adds `/v1/messages`) and pass the pre.dev key; the SDK's `x-api-key` header is accepted. The `anthropic-version` header is optional.\n\nUse catalog ids such as `anthropic/claude-sonnet-5`. Any chat model in the catalog works through this format, not only Anthropic models.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Anthropic event format (`message_start`, `content_block_delta`, `message_delta`, `message_stop`).",
+        "description": "Runs a request in the Anthropic Messages format, for the Anthropic SDKs. Set the SDK base URL to `https://api.pre.dev` (the SDK adds `/v1/messages`) and pass the pre.dev key; the SDK's `x-api-key` header is accepted. The `anthropic-version` header is optional.\n\nUse catalog ids such as `anthropic/claude-sonnet-5`. Any chat model in the catalog works through this format, not only Anthropic models.\n\nThe playground sends the default example, which does not stream; the Streaming example shows `stream: true`. With `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Anthropic event format (`message_start`, `content_block_delta`, `message_delta`, `message_stop`).",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -462,22 +519,42 @@
               "schema": {
                 "$ref": "#/components/schemas/MessageRequest"
               },
-              "example": {
-                "model": "anthropic/claude-sonnet-5",
-                "max_tokens": 256,
-                "messages": [
-                  {
-                    "role": "user",
-                    "content": "Give me a haiku about deploys."
+              "examples": {
+                "basic": {
+                  "summary": "One question",
+                  "value": {
+                    "model": "anthropic/claude-sonnet-5",
+                    "max_tokens": 100,
+                    "stream": false,
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "Give me a haiku about deploys."
+                      }
+                    ]
                   }
-                ]
+                },
+                "streaming": {
+                  "summary": "Streaming",
+                  "value": {
+                    "model": "anthropic/claude-sonnet-5",
+                    "max_tokens": 100,
+                    "stream": true,
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "Give me a haiku about deploys."
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The message, or Anthropic-style server-sent events when `stream` is true.",
+            "description": "The message. With `stream: true`, Anthropic-style server-sent events (`text/event-stream`) instead.",
             "headers": {
               "x-predev-request-id": {
                 "$ref": "#/components/headers/RequestId"
@@ -512,11 +589,6 @@
                     "output_tokens": 19
                   }
                 }
-              },
-              "text/event-stream": {
-                "schema": {
-                  "type": "string"
-                }
               }
             }
           },
@@ -528,6 +600,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -546,17 +621,17 @@
           {
             "lang": "cURL",
             "label": "cURL",
-            "source": "curl --fail-with-body https://api.pre.dev/v1/messages \\\n  -H \"x-api-key: $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"anthropic/claude-sonnet-5\", \"max_tokens\": 256, \"messages\": [{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}]}'"
+            "source": "curl --fail-with-body https://api.pre.dev/v1/messages \\\n  -H \"x-api-key: $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"anthropic/claude-sonnet-5\", \"max_tokens\": 100, \"messages\": [{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}]}'"
           },
           {
             "lang": "Python",
             "label": "Python (Anthropic SDK)",
-            "source": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(base_url=\"https://api.pre.dev\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nmessage = client.messages.create(\n    model=\"anthropic/claude-sonnet-5\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}],\n)\nprint(message.content[0].text)"
+            "source": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(base_url=\"https://api.pre.dev\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nmessage = client.messages.create(\n    model=\"anthropic/claude-sonnet-5\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}],\n)\nprint(message.content[0].text)"
           },
           {
             "lang": "JavaScript",
             "label": "Node.js (Anthropic SDK)",
-            "source": "import Anthropic from '@anthropic-ai/sdk';\n\nconst client = new Anthropic({ baseURL: 'https://api.pre.dev', apiKey: process.env.PREDEV_API_KEY });\n\nconst message = await client.messages.create({\n  model: 'anthropic/claude-sonnet-5',\n  max_tokens: 256,\n  messages: [{ role: 'user', content: 'Give me a haiku about deploys.' }],\n});\nconsole.log(message.content);"
+            "source": "import Anthropic from '@anthropic-ai/sdk';\n\nconst client = new Anthropic({ baseURL: 'https://api.pre.dev', apiKey: process.env.PREDEV_API_KEY });\n\nconst message = await client.messages.create({\n  model: 'anthropic/claude-sonnet-5',\n  max_tokens: 100,\n  messages: [{ role: 'user', content: 'Give me a haiku about deploys.' }],\n});\nconsole.log(message.content);"
           }
         ]
       }
@@ -649,6 +724,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -762,6 +840,9 @@
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
           },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
+          },
           "429": {
             "$ref": "#/components/responses/RateLimited"
           },
@@ -798,9 +879,10 @@
                 "$ref": "#/components/schemas/ImageRequest"
               },
               "example": {
-                "model": "bytedance-seed/seedream-5-0-lite",
+                "model": "recraft/recraft-v4.1-flash",
                 "prompt": "A lighthouse at dawn, watercolor",
-                "aspect_ratio": "16:9"
+                "n": 1,
+                "aspect_ratio": "1:1"
               }
             }
           }
@@ -833,11 +915,6 @@
                     }
                   ]
                 }
-              },
-              "text/event-stream": {
-                "schema": {
-                  "type": "string"
-                }
               }
             }
           },
@@ -849,6 +926,9 @@
           },
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -888,8 +968,8 @@
               "example": {
                 "model": "bytedance/seedance-2.0-mini",
                 "prompt": "A paper boat drifting down a rain gutter",
-                "duration": 5,
-                "resolution": "720p"
+                "duration": 4,
+                "resolution": "480p"
               }
             }
           }
@@ -930,6 +1010,9 @@
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
           },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
+          },
           "429": {
             "$ref": "#/components/responses/RateLimited"
           },
@@ -947,7 +1030,7 @@
           {
             "lang": "cURL",
             "label": "cURL (submit, poll, download)",
-            "source": "JOB=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"bytedance/seedance-2.0-mini\", \"prompt\": \"A paper boat drifting down a rain gutter\", \"duration\": 5}')\nPOLL=$(echo \"$JOB\" | jq -r .polling_url)\n\nwhile :; do\n  STATUS=$(curl --fail-with-body -s \"$POLL\" -H \"Authorization: Bearer $PREDEV_API_KEY\" | jq -r .status)\n  case \"$STATUS\" in completed|failed|cancelled|expired) break ;; esac\n  sleep 5\ndone\n\ncurl --fail-with-body \"$POLL/content\" -H \"Authorization: Bearer $PREDEV_API_KEY\" -o video.mp4"
+            "source": "JOB=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"bytedance/seedance-2.0-mini\", \"prompt\": \"A paper boat drifting down a rain gutter\", \"duration\": 4, \"resolution\": \"480p\"}')\nPOLL=$(echo \"$JOB\" | jq -r .polling_url)\n\nwhile :; do\n  STATUS=$(curl --fail-with-body -s \"$POLL\" -H \"Authorization: Bearer $PREDEV_API_KEY\" | jq -r .status)\n  case \"$STATUS\" in completed|failed|cancelled|expired) break ;; esac\n  sleep 5\ndone\n\ncurl --fail-with-body \"$POLL/content\" -H \"Authorization: Bearer $PREDEV_API_KEY\" -o video.mp4"
           }
         ]
       }
@@ -1235,6 +1318,9 @@
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
           },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
+          },
           "429": {
             "$ref": "#/components/responses/RateLimited"
           },
@@ -1377,11 +1463,17 @@
           "402": {
             "$ref": "#/components/responses/PaymentRequired"
           },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFound"
+          },
           "429": {
             "$ref": "#/components/responses/RateLimited"
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
           },
           "503": {
             "$ref": "#/components/responses/BalanceUnavailable"
@@ -2760,6 +2852,22 @@
           }
         }
       },
+      "ModelNotFound": {
+        "description": "The model could not serve this request. The status and message are the model's own, in the `ModelError` shape.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ModelError"
+            },
+            "example": {
+              "error": {
+                "message": "No endpoints found matching your data policy.",
+                "code": 404
+              }
+            }
+          }
+        }
+      },
       "AuthFailures": {
         "description": "More than 30 failed key attempts from this IP address in the current minute.",
         "headers": {
@@ -3329,20 +3437,21 @@
       "ChatCompletionRequest": {
         "type": "object",
         "required": [
+          "model",
           "messages"
         ],
         "properties": {
           "model": {
             "type": "string",
-            "description": "A model id exactly as listed by `GET /v1/models`. Required unless you send `models`.",
-            "example": "anthropic/claude-sonnet-5"
+            "description": "A model id exactly as listed by `GET /v1/models`.",
+            "example": "deepseek/deepseek-v4.1-flash"
           },
           "models": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Fallback model ids, tried in order until one serves the request. The response `model` names the model that answered, and the charge follows that model."
+            "description": "Fallback model ids, tried in order when the first choice cannot serve the request. The response `model` names the model that answered, and the charge follows that model."
           },
           "messages": {
             "type": "array",
@@ -3354,6 +3463,7 @@
           "stream": {
             "type": "boolean",
             "default": false,
+            "example": false,
             "description": "Return server-sent events. The final chunk before `data: [DONE]` carries `usage`."
           },
           "stream_options": {
@@ -3368,7 +3478,8 @@
           "max_tokens": {
             "type": "integer",
             "minimum": 1,
-            "description": "Upper bound on output tokens."
+            "example": 100,
+            "description": "Upper bound on output tokens. Reasoning tokens count toward it, so turn reasoning off or allow more when you keep it small."
           },
           "max_completion_tokens": {
             "type": "integer",
@@ -3710,7 +3821,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "example": "openai/gpt-6-luna"
+            "example": "deepseek/deepseek-v4.1-flash"
           },
           "input": {
             "description": "A string, or an array of input items (messages, function call outputs, and so on). Send the whole conversation: responses are not stored, and `previous_response_id` is not supported.",
@@ -4228,7 +4339,7 @@
           "model": {
             "type": "string",
             "description": "An id from `GET /v1/images/models`.",
-            "example": "bytedance-seed/seedream-5-0-lite"
+            "example": "recraft/recraft-v4.1-flash"
           },
           "prompt": {
             "type": "string",
@@ -4512,10 +4623,12 @@
           },
           "model": {
             "type": "string",
+            "example": "openai/whisper-large-v3",
             "description": "A transcription model id, such as `openai/whisper-large-v3`. Transcription models are not listed by the catalog endpoints."
           },
           "language": {
             "type": "string",
+            "example": "en",
             "description": "ISO-639-1 code. Detected when omitted."
           },
           "response_format": {
@@ -4576,6 +4689,7 @@
           },
           "purpose": {
             "type": "string",
+            "example": "user_data",
             "description": "Sent by the OpenAI SDKs, for example `user_data`."
           }
         }
