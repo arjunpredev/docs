@@ -1,6 +1,6 @@
 ---
 title: "Verification"
-description: "Define acceptance criteria and inspect the checks, browser flows, and evidence behind a change."
+description: "Define acceptance criteria and read how an independent judge checks the work before a build finishes."
 ---
 
 import { Workflow } from "/snippets/workflow.jsx";
@@ -14,20 +14,22 @@ An empty result shows a useful message.
 A failed request leaves the export button usable for retry.
 ```
 
-## Verification workflow
+## How a build is verified
 
-High-effort sprints include a separate acceptance phase. Direct chat and lower-effort work use different execution paths, so inspect the checks that actually ran for the task.
+Before a build that changed code finishes, the agent submits the work to an independent judge. The judge reads the recorded commands, tool results, and browser checks from the run, never the agent's own summary, and scores every acceptance criterion. For criteria it cannot prove, a separate QA agent checks the app live. The agent then fixes what is still unproven and submits again.
 
 <Workflow
   label="Implement acceptance criteria, check behavior, correct failures, and review evidence"
   steps={[
     { title: "Define success", description: "Write observable behavior into the task or specification." },
     { title: "Implement and check", description: "Exercise the relevant tests and user flows." },
-    { title: "Correct and recheck", description: "Fix failed criteria and repeat the affected checks." },
-    { title: "Review the evidence", description: "Compare the report and diff with the original criteria." }
+    { title: "Judge the evidence", description: "An independent judge scores each criterion from the recorded run." },
+    { title: "Correct and recheck", description: "Fix unproven criteria and submit again until they hold." }
   ]}
-  note="Repeat the correction step until the criteria hold. Report skipped checks and blockers so the reviewer can assess what remains uncertain."
+  note="The Verify card in chat shows the result, for example 13/15 proven, 2 need proof, with each unproven criterion and why."
 />
+
+The **Verify** card in the chat reads "Verifying…" while the judge runs and then shows the verdict. Each judge call uses credits like a turn and appears in the project's credit breakdown as the verification judge.
 
 ## Evidence to inspect
 
@@ -49,6 +51,6 @@ For permissions-sensitive features, verify both allowed and denied cases. For UI
 
 ## Before shipping
 
-Read the diff and the final verification report. A completed run or an opened PR alone is not evidence that every possible behavior was tested. Repository CI and your review process still determine whether the change is ready to merge.
+Read the diff and the verification result. A passed verification covers the criteria the judge scored, not every possible behavior. Repository CI and your review process still decide whether a change is ready to merge or publish.
 
-Continue with [pull requests](/coding-agent/building/pull-requests) and [preview](/coding-agent/building/preview-and-hosting).
+Continue with [pull requests](/coding-agent/building/pull-requests), [preview](/coding-agent/building/preview-and-hosting), and [publish](/coding-agent/building/publish).

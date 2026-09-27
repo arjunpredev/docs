@@ -1,32 +1,37 @@
 ---
 title: "Preview and hosting"
-description: "Inspect a running app, share its preview, and review deployment state."
+description: "Inspect the running app, install mobile builds, and see where your app is served."
 ---
 
-Open **Preview** to inspect the running application when the project has a deployment. The workspace checks its status and can attempt to restore an idle environment. If setup or startup fails, use the reported status and agent debugging controls to resolve it.
+**Preview** shows the running app with your latest changes, the draft, from the project's sandbox. The workspace checks its status and restores an idle environment when you open it. If setup or startup fails, use the reported status and the agent's debugging controls to resolve it.
 
 A code change can exist before the application starts successfully. Check the build output, environment variables, start command, and preview behavior before sharing the result.
 
 ## Sessions and access
 
-Select the session whose work you want to inspect. Hosted session previews use the session's deployment where available. Confirm the selected session and URL before comparing changes.
+Select the session whose work you want to inspect. Each session has its own preview; Main's is also reachable through Share's Draft link. For a session running on your laptop through the CLI, the owner sees the laptop's app while its dev server is up.
 
-Use **Share → Public preview access** to make the app accessible through its shareable URL. Private preview access uses the authorized workspace flow. Public preview access and permission to edit the project are [separate settings](/coding-agent/building/collaboration).
+Who can open the app is set in [Publish](/coding-agent/building/publish#who-can-open-it): **Anyone** or **Invited only**. Opening the app and editing the project are [separate permissions](/coding-agent/building/collaboration).
 
 ## Mobile projects
 
-Supported Expo or React Native projects have a mobile preview with a phone frame and a device link or QR code. Follow the device instructions shown by the preview. Tokenized links can expire; refresh the link through the interface when needed.
+Expo and React Native projects preview in a phone frame in the browser. To test native features, install the app on a device from **Install your app**:
 
-If the mobile server is unavailable, **Debug with Agent** sends the relevant context into the project conversation. The project must have a working compatible mobile setup before the device preview can load.
+| Platform | How |
+| --- | --- |
+| Android | **Build Android app**, then download and install the APK |
+| iPhone | **Build for TestFlight** with your Apple Developer account, or install on an iPhone registered with that account |
+
+Connect your Expo account once to build; your Expo plan covers build usage. Builds run in the background, so you can leave the page, and you can ask for an email with the install link when a build is ready. **Send to my phone** gives a QR code or link for the finished build. Live Expo Go previews are under **Advanced options**.
+
+To open the same session on your phone, use the phone handoff next to the preview: scan the QR code, copy the link, or email it to yourself. If the mobile server is unavailable, **Debug with Agent** sends the relevant context into the project conversation.
 
 ## History and export
 
 The Code and history views let you inspect available commits, branches, and file changes. Uncommitted work is not a saved Git version. Review the selected commit and the confirmation before using **Revert**, because it changes the working code.
 
-Use the available export controls to download code or planning artifacts. Review setup instructions and required configuration when running an export elsewhere. **Refresh from GitHub** synchronizes a linked hosted checkout after external changes when offered.
+Use **Download code** to get the project as a zip, and the export controls for planning artifacts. **Refresh from GitHub** synchronizes a linked hosted checkout after external changes when offered.
 
-## Hosting and domains
+## Hosting
 
-Hosted apps can be served through their assigned `.pre.dev` URLs with HTTPS and supported WebSocket routing. Runtime availability still depends on a healthy application and its configured services.
-
-To serve a deployed public app on your own hostname, follow [custom domain setup](/coding-agent/building/custom-domains). Review your production requirements and provider configuration as part of the project's deployment workflow.
+The app's address, `<name>.pre.dev`, serves your [published](/coding-agent/building/publish) app once you publish, and stays up while the sandbox sleeps. Before you publish, it shows the draft. Hosted addresses use HTTPS and support WebSockets. To serve the published app on your own hostname, add a [custom domain](/coding-agent/building/custom-domains).

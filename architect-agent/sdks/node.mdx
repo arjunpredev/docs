@@ -94,7 +94,7 @@ try {
   await client.listSpecs({ limit: 20 });
 } catch (error) {
   if (error instanceof AuthenticationError) {
-    console.error('Check the API key and account access at pre.dev/projects/key.');
+    console.error('Check the API key and account access.');
   } else if (error instanceof RateLimitError) {
     console.error('Back off before retrying.');
   } else if (error instanceof PredevAPIError) {

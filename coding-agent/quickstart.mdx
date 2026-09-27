@@ -21,13 +21,13 @@ You need a [pre.dev account](https://pre.dev) and available [credits](/coding-ag
     Start with a working board using sample data.
     ```
   </Step>
-  <Step title="Choose how to start">
-    **Auto** is the default: the agent chooses an appropriate next step. Use `/plan` to work on the requirements and architecture first. Plan mode returns to Auto when the plan is produced.
+  <Step title="Let the agent choose the approach">
+    The agent chooses the next step itself: it can build a small change directly or plan a larger one first. To work on the requirements and architecture first, ask for a plan in your message.
 
     For an existing app, include the expected behavior, the current problem, and any files or constraints you already know.
   </Step>
   <Step title="Connect what the project needs">
-    Open `/integrations` for **Project setup**. Choose the relevant connection account, enable skills or MCP servers, and fill required **Env Vars**. Use [environment settings](/coding-agent/integrations/env-vars) for secrets and configuration.
+    Open `/integrations` for **Project setup**. Choose the relevant connection account, enable skills or MCP servers, and fill required values under **API Keys**. AI, payments, and sign-in are [already built in](/coding-agent/built-in). Use [environment variables](/coding-agent/integrations/env-vars) for other secrets and configuration.
   </Step>
   <Step title="Build a concrete change">
     Ask the agent to implement the first useful piece. For a dedicated sprint, use:
@@ -41,9 +41,9 @@ You need a [pre.dev account](https://pre.dev) and available [credits](/coding-ag
     Follow the active session and its progress. Additional web sessions may require a connected GitHub repository.
   </Step>
   <Step title="Review and ship">
-    Inspect the code changes, reported checks, and available preview. Test your acceptance criteria, then request any corrections. Use your project's GitHub and deployment workflow to ship the reviewed result.
+    Inspect the code changes, the verification result, and the preview. Test your acceptance criteria, then request any corrections. When the app is ready, choose **Publish** in the header to put it at its permanent address.
 
-    The session **Merge** action can create a pull request and merge it automatically when clean. Use a review-first request if you want a PR left open.
+    For code in GitHub, the session's **Merge into Main** action can create a pull request and merge it automatically when clean. Use a review-first request if you want a PR left open.
   </Step>
 </Steps>
 
@@ -57,3 +57,4 @@ Select an assignee and a status, then clear each filter. Try a combination with 
 | Understand which checks ran | [Verification](/coding-agent/building/acceptance-criteria) |
 | Open a preview or troubleshoot a missing one | [Preview and hosting](/coding-agent/building/preview-and-hosting) |
 | Review and merge the code | [Pull requests](/coding-agent/building/pull-requests) |
+| Put the app at a permanent address | [Publish](/coding-agent/building/publish) |

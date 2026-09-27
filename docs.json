@@ -335,6 +335,7 @@
             "pages": [
               "coding-agent/building/pull-requests",
               "coding-agent/building/preview-and-hosting",
+              "coding-agent/building/publish",
               "coding-agent/building/custom-domains"
             ]
           },
@@ -349,6 +350,7 @@
             "group": "Integrations",
             "pages": [
               "coding-agent/integrations/overview",
+              "coding-agent/built-in",
               "coding-agent/integrations/oauth",
               "coding-agent/integrations/skills",
               "coding-agent/integrations/mcp-servers",

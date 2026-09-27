@@ -1,0 +1,48 @@
+---
+title: "Publish"
+description: "Put your app at a permanent address that stays up while your workspace sleeps, and choose who can open it."
+---
+
+Publish builds your app and serves it at its own address: `<name>.pre.dev`, or your custom domain. The published version stays up while the project's sandbox sleeps, and it changes only when you publish again. Preview keeps showing your latest changes, the draft.
+
+## Publish your app
+
+1. Open **Publish**, the rocket in the project header. It appears once the project has a build.
+2. Choose **Publish**. pre.dev runs the app's `build` script in the sandbox and deploys the output.
+3. Open or copy the link when the app is live.
+
+When newer changes are ready, the header shows it; choose **Publish update** to ship them to the same address. Every publish is kept as a version, listed under **Versions** with its note.
+
+People who can edit the project can publish. You can also ask the agent to publish. In the CLI, `/publish` publishes (add a short note to describe the version, as in `/publish new pricing page`) and `/unpublish` takes the app down.
+
+## Who can open it
+
+| Access | Who can open the app |
+| --- | --- |
+| Anyone | Anyone with the link |
+| Invited only | People with access to the project |
+
+Set access in the Publish sheet. It applies to both links Share offers, the published app and the draft. The **Publish** button leaves access as it is. When you ask the agent to publish or share an app that is **Invited only**, it also sets access to **Anyone** and tells you. [Collaboration](/coding-agent/building/collaboration) covers inviting people.
+
+## Plans
+
+| Plan | Published app |
+| --- | --- |
+| Free and Plus | Stays live for 7 days, with a small "Built on pre.dev" badge. Republishing starts a new 7-day window. |
+| Premium, Pro, Team, and Enterprise | Stays live with no badge, and can use a custom domain |
+
+When a free window ends, the address shows a paused page until you republish.
+
+## What gets published
+
+Publish serves the files the app's `build` script writes to `dist`, `build`, or `out` (the folder must contain `index.html`), plus the app's built-in AI route, so [AI features](/coding-agent/built-in) keep working. The project needs a `package.json` with a `build` script; the build runs in the sandbox, which wakes if it is asleep.
+
+Server code, such as API routes, payment and webhook handlers, runs in the project's sandbox, which Preview and the Draft link reach. It does not run at the published address.
+
+## Address and custom domain
+
+While no custom domain is active, change the name in the address under **Address** in the Publish sheet. Premium and higher plans can connect a [custom domain](/coding-agent/building/custom-domains); it then serves the published app.
+
+## Unpublish
+
+Choose **Unpublish** at the bottom of the Publish sheet and confirm. The published version comes down, and the app's address shows the latest draft from the sandbox again, with the same access setting.

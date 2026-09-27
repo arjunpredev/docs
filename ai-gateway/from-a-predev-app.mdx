@@ -1,26 +1,46 @@
 ---
 title: "From a pre.dev app"
-description: "Projects built on pre.dev have the gateway key pre-set; ask the build agent to add an AI feature."
+description: "Apps built on pre.dev call the AI Gateway from browser code through /predev-ai, or from server code with the key already in their environment."
 ---
 
-Every project built on pre.dev gets the workspace's API key injected into its sandbox and deploy environment automatically. There is nothing to paste and nothing to rotate by hand.
+Every project built on pre.dev has the workspace's API key in its sandbox environment. There is nothing to paste and nothing to rotate by hand.
 
 | Variable | Value |
 | --- | --- |
 | `PREDEV_API_KEY` | The workspace key, `pdk_…` |
 | `PREDEV_API_URL` | `https://api.pre.dev` |
-
-Build the gateway URL as `${PREDEV_API_URL}/v1`.
+| `PREDEV_PROJECT_ID` | This project's id, for usage attribution |
 
 ## Ask the build agent
 
-Tell the coding agent what you want, for example **"add an AI feature"**, "add a summarize button that uses a fast model", or "let users chat with their documents". The agent reads the model catalog for you, picks an id, and wires a server-side call using the variables above. Ask it to list models with prices if you want to choose.
+Tell the coding agent what you want, for example **"add an AI feature"**, "add a summarize button that uses a fast model", or "let users chat with their documents". The agent reads the model catalog, picks an id, and wires the call. Ask it to list models with prices if you want to choose.
 
-Everything the agent adds is ordinary code you can read and change. The credits a deployed feature spends come from the same workspace balance; turn on auto-recharge in billing so a live app does not stop at zero. See [pricing](/ai-gateway/pricing).
+Everything the agent adds is ordinary code you can read and change. The credits a feature spends come from the same workspace balance; turn on auto-recharge in billing so a live app does not stop at zero. See [pricing](/ai-gateway/pricing).
 
-## Server-side only
+## From browser code
 
-The key spends the workspace's credits, so it must never reach the browser. A single-page app calls its own backend route, and the route calls the gateway. The build agent follows this rule; keep it when you edit by hand.
+The key never reaches the browser. Apps on pre.dev's default web scaffold serve a same-origin route, `/predev-ai/`, that adds the key and the project id and sends the request on to `https://api.pre.dev/v1`. Browser code calls it with no key:
+
+```typescript
+const res = await fetch('/predev-ai/chat/completions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'deepseek/deepseek-v4.1-flash',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: 'Summarize this note in three bullets: …' }],
+  }),
+});
+const { choices } = await res.json();
+```
+
+Any gateway path works under the prefix: `/predev-ai/images`, `/predev-ai/audio/speech`, `/predev-ai/audio/transcriptions`, `/predev-ai/embeddings`, `/predev-ai/models`, and streaming responses. The route accepts requests only from the app's own pages, and request bodies up to 25 MB. `GET /__predev_ai` reports whether the route is on.
+
+The same route is part of a [published](/coding-agent/building/publish) app, so AI features keep working at its permanent address.
+
+## From server code
+
+Apps with their own server, such as Next.js, Express, or Hono, use a stock SDK with the variables above. Send `x-predev-project-id` so usage is attributed to the project:
 
 <CodeGroup>
 ```typescript Node.js server route
@@ -68,12 +88,12 @@ def summarize(text: str) -> str:
 ```
 </CodeGroup>
 
-The browser calls `POST /api/summarize`; only the server holds the key. Validate and rate-limit that route as you would any endpoint that spends money.
+Server routes run in the project's sandbox, not at a published app's address; see [publish](/coding-agent/building/publish#what-gets-published). Validate and rate-limit any route that spends credits.
 
 ## Attribute usage to the project
 
-Send `x-predev-project-id: <projectId>` on each gateway call, as the examples above do, and the call is attributed to that project. Only the workspace's own projects count; other ids are ignored. [`GET /v1/usage`](/ai-gateway/api/usage) reports the attributed totals.
+Calls through `/predev-ai` carry the project id automatically. From server code, send `x-predev-project-id: <projectId>` on each call, as the examples above do. Only the workspace's own projects count; other ids are ignored. [`GET /v1/usage`](/ai-gateway/api/usage) reports the attributed totals.
 
 ## Local development
 
-Outside the sandbox, copy the key from **Integrations → API Keys** into your local environment as `PREDEV_API_KEY` and set `PREDEV_API_URL=https://api.pre.dev`. See [API key](/ai-gateway/api-key) and [environment variables](/coding-agent/integrations/env-vars).
+Outside the sandbox, copy the key into your local environment as `PREDEV_API_KEY` and set `PREDEV_API_URL=https://api.pre.dev`. See [authentication](/api-reference/authentication).

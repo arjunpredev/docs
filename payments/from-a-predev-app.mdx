@@ -1,17 +1,18 @@
 ---
 title: "From a pre.dev app"
-description: "The Stripe variables every pre.dev project has, and the two SDK options that use them."
+description: "The Stripe variables every pre.dev project has, and the server and browser code that uses them."
 ---
 
-Every project built on pre.dev has these set in its sandbox and deploy environment. There is nothing to paste.
+Every project built on pre.dev has these set in its sandbox environment, where the app's server runs. There is nothing to paste.
 
 | Variable | Value |
 | --- | --- |
 | `STRIPE_SECRET_KEY` | Your workspace's pre.dev key, tagged with the project. Only `api.pre.dev` accepts it. |
-| `STRIPE_API_HOST` | `api.pre.dev` (with `STRIPE_API_PROTOCOL`, and `STRIPE_API_PORT` when not the default) |
+| `STRIPE_API_HOST`, `STRIPE_API_PROTOCOL` | Where the Stripe SDK sends requests: `api.pre.dev` over `https` (plus `STRIPE_API_PORT` when it is not the default) |
 | `STRIPE_PUBLISHABLE_KEY` | Publishable key for Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
 | `STRIPE_ACCOUNT_ID` | Your workspace's Stripe account, `acct_…`, needed by Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
 | `STRIPE_WEBHOOK_SECRET` | This project's signing secret for relayed events. See [webhooks](/payments/webhooks). |
+| `STRIPE_PAYMENTS_MODE` | `test` or `live`, the Stripe account this project uses |
 
 ## Ask the build agent
 
@@ -69,17 +70,23 @@ def create_checkout(price_id: str, origin: str) -> str:
 
 Create products and prices in code and keep them idempotent, for example by looking a price up by `lookup_key` and creating it only when missing. There is no Stripe dashboard to click through while in test mode.
 
+These routes run on your app's server in the project's sandbox, which Preview and the Draft link reach. A [published](/coding-agent/building/publish) app serves only its built front end, so its published address does not run them.
+
 ## Browser side
 
-Stripe Checkout needs no browser code beyond sending the user to `session.url`. One rule: the pre.dev preview runs your app inside an iframe, and Stripe Checkout refuses to render inside a frame, so open it in a new tab when framed:
+Stripe Checkout needs no browser code beyond sending the user to `session.url`. The pre.dev preview runs your app inside an iframe, and Stripe Checkout refuses to render inside a frame, so open it in a new tab when framed:
 
 ```ts
-const { url } = await fetch('/api/checkout', { method: 'POST' }).then(r => r.json());
+const { url } = await fetch('/api/checkout', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ priceId }),
+}).then(r => r.json());
 if (window.self !== window.top) window.open(url, '_blank', 'noopener');
 else window.location.assign(url);
 ```
 
-The build agent writes it this way. The same applies to the Billing Portal URL. If you use Stripe.js or Elements, initialise it with both public values:
+The build agent writes it this way. The same applies to the Billing Portal URL. If you use Stripe.js or Elements, initialize it with both public values:
 
 ```ts
 import { loadStripe } from '@stripe/stripe-js';

@@ -49,7 +49,7 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 - Keep the OpenAPI schema and endpoint MDX in the same change. Bind pages explicitly, for example `openapi: "/api-reference/openapi.json GET /credits-balance"`.
 - OpenAPI is the machine-readable public reference; product handlers determine actual behavior. Record backend defects separately from public documentation.
 - Write product guides in the present tense. Keep audit dates, "checked on" notes, and "at the time of writing" caveats out of published docs. Keep estimates in their canonical guide, label them as estimates, and update facts when the product changes. Dates belong in release history and versioned protocol identifiers.
-- A pre.dev API key comes from `https://pre.dev/projects/key`; third-party service keys belong in Integrations.
+- The pre.dev API key is the workspace `pdk_` key on **Integrations → Built-in** (`https://pre.dev/projects/integrations?tab=built-in`). State its location only through `snippets/api-key-location.mdx`. Legacy keys still authenticate, but never send readers to the legacy key page. Third-party service keys belong in the Integrations **API Keys** tab.
 - Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is separate. There is no pre.dev npm MCP-server package.
 - Match examples to a published SDK version. Check Python dictionary/object responses, file MIME types, stream termination, and terminal task outcomes.
 - Use the native HTML/React visuals in `snippets/` for workflows, specification outlines, branch lanes, and request lifecycles. Keep essential facts in MDX prose or tables as well, so Markdown exports remain useful.

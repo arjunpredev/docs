@@ -3,19 +3,23 @@ title: "The workspace"
 description: "Navigate agent chat, planning artifacts, code, preview, and project settings."
 ---
 
-The project workspace brings the agent conversation, code, and project artifacts into one place. Use the session tabs to switch workstreams and the view menu to inspect the current project.
+The project workspace brings the agent conversation, code, and project artifacts into one place. Use the session tabs to switch workstreams and the view switcher to inspect the current project.
 
 ## Views
 
 | View | Shortcut | What it shows |
 | --- | --- | --- |
 | Agent | Cmd/Ctrl + 1 | Chat, tool activity, and the current run |
-| Plan → Roadmap | Cmd/Ctrl + 2 | Available milestones, stories, and timeline |
-| Plan → Architecture | Cmd/Ctrl + 3 | Available system and user-flow graphs |
-| Plan → Spec | Cmd/Ctrl + 4 | Available specification documents |
+| Plan → Overview | | Project summary and progress |
+| Plan → Roadmap | Cmd/Ctrl + 2 | Milestones, stories, and timeline |
+| Plan → Architecture | Cmd/Ctrl + 3 | System and user-flow graphs |
+| Plan → Spec | Cmd/Ctrl + 4 | Specification documents |
 | Code | Cmd/Ctrl + 5 | Source files and Git information |
+| Preview | | The running app with your latest changes |
 
-Planning views appear when their artifacts exist. A direct build can have working code before it has a roadmap or architecture graph. Open the preview from the workspace's preview controls when a development server is available.
+Roadmap, Architecture, and Spec appear when their artifacts exist. A direct build can have working code before it has a roadmap or architecture graph.
+
+The header also holds **Share** and **Publish**. [Publish](/coding-agent/building/publish) puts the app at its permanent address.
 
 ## Inspect and edit code
 
@@ -42,37 +46,32 @@ The editor supports basic changes without autocomplete, diagnostics, or code fol
 
 ## Chat controls
 
-Type `/` to see commands supported by the current client.
+Type `/` in the composer to see the commands for the current project.
 
 | Command | Action |
 | --- | --- |
-| `/auto` | Let the agent choose whether to answer, build, or plan |
-| `/plan` | Shape the plan before implementation |
 | `/model` | Choose models for chat, research, coding, and acceptance |
 | `/effort` | Set sprint effort to auto, low, medium, or high |
 | `/balance` | View remaining credits |
-| `/sprint <feature>` | Start a dedicated sprint |
-| `/fork <prompt>` | Start another session for a task |
+| `/sprint <feature>` | Start a dedicated sprint in a new session |
 | `/integrations` | Open Project setup |
-| `/reverse` | Analyze an existing codebase |
-| `/kanban`, `/roadmap`, `/arch` | Open project planning views |
 | `/share` | Open sharing controls |
+| `/kanban`, `/roadmap`, `/arch` | Open planning views, when the project has them |
 
-The [CLI command reference](/cli/commands) lists terminal-specific commands and keys. The web and CLI palettes have different capabilities.
+The composer also shows the credits used on the project; select it for a turn-by-turn breakdown. The [CLI command reference](/cli/commands) lists terminal commands and keys; the web and CLI palettes differ.
 
 ## Project setup
 
-Open `/integrations`, use the prompt bar's **+** menu, or use **Environment** from Code. The **Project setup** dialog has four tabs:
+Open `/integrations` or the composer's **+** menu. **Project setup** has the same tabs as workspace [Integrations](/coding-agent/integrations/overview), for this project:
 
+- **Built-in**: AI, the project's payments mode (test or live), and its sign-in app.
 - **Connections**: choose a workspace account for each provider.
-- **Skills**: configure the agent's reusable instructions.
-- **MCP**: connect additional tools and data sources.
-- **Env Vars**: configure the application's environment.
-
-[Integrations](/coding-agent/integrations/overview) explains workspace defaults and project overrides.
+- **Agent Skills**: reusable instructions for the agent.
+- **MCP Servers**: additional tools and data sources.
+- **API Keys**: the project's environment variables.
 
 ## Sessions and sharing
 
-A session has its own conversation and branch of work. The active session determines what you are inspecting. Presence indicators help collaborators see which session others are viewing.
+A session has its own conversation and branch of work. The active session determines what you are inspecting. Presence indicators show which session collaborators are viewing.
 
-Use **Share** to manage collaborators and preview access. Public preview access does not grant permission to edit the project. See [sessions](/coding-agent/building/sessions-and-parallel-agents) and [collaboration](/coding-agent/building/collaboration).
+Use **Share** to invite collaborators and copy links to the app. See [sessions](/coding-agent/building/sessions-and-parallel-agents) and [collaboration](/coding-agent/building/collaboration).

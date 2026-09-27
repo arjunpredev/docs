@@ -4,12 +4,15 @@ description: "Generate a specification asynchronously, poll to completion, and r
 ---
 
 import { LifecycleExplorer } from "/snippets/lifecycle.jsx";
+import ApiKeyLocation from "/snippets/api-key-location.mdx";
 
 By the end of this guide, you will have a saved specification ID and a completed implementation plan in Markdown and JSON.
 
 ## Before you start
 
-Get your key from [pre.dev/projects/key](https://pre.dev/projects/key) and make it available as `PREDEV_API_KEY`. The [authentication guide](/api-reference/authentication) explains account and organization access.
+<ApiKeyLocation />
+
+Make it available as `PREDEV_API_KEY`. Specification generation needs a plan that includes the Architect API; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
 
 ## 1. Submit a specification
 

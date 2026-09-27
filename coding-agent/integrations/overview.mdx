@@ -1,19 +1,19 @@
 ---
 title: "Integrations"
-description: "Connect provider accounts, agent tools, instructions, and application configuration."
+description: "Built-in services, provider accounts, agent skills, MCP servers, and API keys for your workspace and projects."
 ---
 
 import { ConnectionScope } from "/snippets/workflow.jsx";
 
-Open `/integrations` in a web project for **Project setup**. Use [workspace Integrations](https://pre.dev/projects/integrations) to manage reusable personal connections and configuration.
+Workspace [Integrations](https://pre.dev/projects/integrations) manages reusable settings for your personal workspace; a team workspace has its own Integrations page. In a web project, `/integrations` opens **Project setup**, which has the same tabs for that project.
 
-| Setting | Purpose | Guide |
+| Tab | Purpose | Guide |
 | --- | --- | --- |
-| Connections | Authorize a provider account and choose which account the project uses | [Provider connections](/coding-agent/integrations/oauth) |
-| Skills | Reusable instructions for the coding agent | [Agent skills](/coding-agent/integrations/skills) |
-| MCP | Tools exposed by an external MCP server | [External MCP servers](/coding-agent/integrations/mcp-servers) |
-| Env Vars | Secrets and configuration used by your application | [Environment variables](/coding-agent/integrations/env-vars) |
-| Workspace API keys | Reusable third-party credentials for projects | [Service API keys](/coding-agent/integrations/api-keys) |
+| Built-in | Your pre.dev API key, Payments, and sign-in apps that pre.dev sets up for every project | [Built into every app](/coding-agent/built-in) |
+| Connections | Authorize a provider account and choose which account a project uses | [Provider connections](/coding-agent/integrations/oauth) |
+| Agent Skills | Reusable instructions for the coding agent | [Agent skills](/coding-agent/integrations/skills) |
+| MCP Servers | Tools exposed by an external MCP server | [External MCP servers](/coding-agent/integrations/mcp-servers) |
+| API Keys | Third-party credentials and environment variables for your apps | [Service API keys](/coding-agent/integrations/api-keys) and [environment variables](/coding-agent/integrations/env-vars) |
 
 ## Connection selection
 
@@ -27,7 +27,7 @@ In **Connections**, leave a provider on **workspace default** or pin an account 
 
 Personal projects inherit personal entries and can add project-specific entries. A project entry with the same name takes precedence over its personal default. Organization entries remain shared within the organization, including when managed from a team project.
 
-The CLI's `/skills`, `/mcp`, and `/integrations` panels manage or display personal entries. Use the web for team configuration and project overrides.
+The CLI's `/skills`, `/mcp`, and `/integrations` panels manage or display personal entries, and `/skills add` and `/mcp add` create them. Use the web for team configuration and project overrides.
 
 ## Connect pre.dev to another agent
 

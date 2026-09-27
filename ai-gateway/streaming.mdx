@@ -1,6 +1,6 @@
 ---
 title: "Streaming"
-description: "Stream chat completions over SSE and read the settled cost from the final chunk."
+description: "Stream chat completions over SSE, read token usage from the final chunk, and look up the charge afterward."
 ---
 
 Set `stream: true` and the gateway returns a `text/event-stream` response in the standard chat completion chunk format. The stock SDKs handle the stream for you.
@@ -28,7 +28,7 @@ const stream = await client.chat.completions.create({
 });
 for await (const chunk of stream) {
   process.stdout.write(chunk.choices[0]?.delta?.content ?? '');
-  if (chunk.usage) console.log('\ncost usd:', (chunk.usage as any).cost);
+  if (chunk.usage) console.log('\ntokens:', chunk.usage.total_tokens, 'generation:', chunk.id);
 }
 ```
 ```python Python
@@ -46,7 +46,7 @@ for chunk in stream:
     if chunk.choices and chunk.choices[0].delta.content:
         print(chunk.choices[0].delta.content, end="", flush=True)
     if chunk.usage:
-        print("\ncost usd:", chunk.usage.model_dump().get("cost"))
+        print("\ntokens:", chunk.usage.total_tokens, "generation:", chunk.id)
 ```
 ```typescript Vercel AI SDK
 import { createOpenAI } from '@ai-sdk/openai';
@@ -62,22 +62,24 @@ for await (const part of result.textStream) process.stdout.write(part);
 ```
 </CodeGroup>
 
-## The final chunk carries the cost
+## The final chunk carries usage
 
-On streaming chat completions the gateway sets `stream_options.include_usage`, so the last data chunk before `[DONE]` has a `usage` object with the model's metered `cost` for the call in dollars:
+On streaming chat completions, the last data chunk before `[DONE]` has a `usage` object with the call's token counts. You do not need to set `stream_options` yourself.
 
 ```text
-data: {"id":"gen-…","choices":[],"usage":{"prompt_tokens":12,"completion_tokens":31,"total_tokens":43,"cost":0.0000276}}
+data: {"id":"pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47","choices":[],"usage":{"prompt_tokens":12,"completion_tokens":31,"total_tokens":43}}
 
 data: [DONE]
 ```
 
-You do not need to set `stream_options` yourself, and setting it does no harm. The credits for a stream settle at this final chunk, based on that metered cost as described on [pricing](/ai-gateway/pricing).
+The credits for a stream settle when it ends. Headers are sent before the stream starts, so a stream carries `x-predev-request-id` but not `x-predev-credits-charged`. To read the charge, pass the chunk's `id` to [`GET /v1/generation`](/ai-gateway/api/usage#one-generation), or see the totals in [`GET /v1/usage`](/ai-gateway/api/usage).
+
+Lines that start with `:` are keep-alive comments; SSE clients ignore them.
 
 ## Disconnects
 
-Closing the connection mid-stream does not cancel generation at the model. The call is still charged for what the model generated. Keep `max_tokens` bounded on user-facing streams.
+If your client disconnects mid-stream, generation stops shortly after, and the call is charged for what the model generated. Keep `max_tokens` bounded on user-facing streams.
 
 ## Other streaming paths
 
-`POST /v1/completions`, `POST /v1/responses`, and `POST /v1/messages` stream in their own native event formats (text completion chunks, Responses API events, and Anthropic-style events respectively). The Anthropic SDK's `client.messages.stream()` works against `/v1/messages`; see [Messages](/ai-gateway/api/messages).
+`POST /v1/completions`, `POST /v1/responses`, and `POST /v1/messages` stream in their own native event formats (text completion chunks, Responses API events, and Anthropic-style events). The Anthropic SDK's `client.messages.stream()` works against `/v1/messages`; see [Messages](/ai-gateway/api/messages).

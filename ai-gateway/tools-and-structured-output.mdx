@@ -3,7 +3,7 @@ title: "Tools and structured output"
 description: "Tool calling and JSON-schema output with the standard OpenAI-compatible fields."
 ---
 
-`tools`, `tool_choice`, `parallel_tool_calls`, `response_format`, and `structured_outputs` are forwarded to the model as-is. Support for each varies by model; check the model's row in [`GET /v1/models`](/ai-gateway/api/models) before relying on it.
+`tools`, `tool_choice`, `parallel_tool_calls`, `response_format`, and `structured_outputs` use the standard OpenAI-compatible fields. Support for each varies by model; check `supported_parameters` in the model's row from [`GET /v1/models`](/ai-gateway/api/models) before relying on it.
 
 ## Tool calling
 
@@ -89,7 +89,7 @@ Set `parallel_tool_calls: false` to force one call per turn on models that would
 
 ## Structured output
 
-Use `response_format` with a JSON schema. The gateway forwards it, and the schema is enforced on models that support structured outputs.
+Use `response_format` with a JSON schema. The schema is enforced on models that support structured outputs.
 
 <CodeGroup>
 ```bash curl
@@ -97,7 +97,7 @@ curl --fail-with-body https://api.pre.dev/v1/chat/completions \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "openai/gpt-5.6-luna",
+    "model": "openai/gpt-6-luna",
     "messages": [{ "role": "user", "content": "Extract: Ada Lovelace, born 1815, London." }],
     "response_format": {
       "type": "json_schema",
@@ -120,7 +120,7 @@ curl --fail-with-body https://api.pre.dev/v1/chat/completions \
 ```
 ```typescript Node.js
 const completion = await client.chat.completions.create({
-  model: 'openai/gpt-5.6-luna',
+  model: 'openai/gpt-6-luna',
   messages: [{ role: 'user', content: 'Extract: Ada Lovelace, born 1815, London.' }],
   response_format: {
     type: 'json_schema',
@@ -140,7 +140,7 @@ const person = JSON.parse(completion.choices[0].message.content!);
 ```
 ```python Python
 completion = client.chat.completions.create(
-    model="openai/gpt-5.6-luna",
+    model="openai/gpt-6-luna",
     messages=[{"role": "user", "content": "Extract: Ada Lovelace, born 1815, London."}],
     response_format={
         "type": "json_schema",
@@ -171,4 +171,4 @@ Add the `response-healing` plugin to repair near-valid JSON from models without 
 }
 ```
 
-Any plugin cost is part of the model's metered cost for the call, so it is included in `usage.cost` and therefore in the credits charged.
+Any plugin cost is part of the call's charge.

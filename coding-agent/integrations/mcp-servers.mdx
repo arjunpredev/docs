@@ -1,35 +1,48 @@
 ---
 title: "External MCP servers"
-description: "Give the Coding Agent access to additional tools and data sources."
+description: "Give the Coding Agent tools and data from other services with remote MCP servers."
 ---
 
 Connect an external MCP server when the agent needs tools from another service or your own system. To use **pre.dev's tools in another assistant**, follow [product MCP setup](/architect-agent/mcp-setup) instead.
 
 ## Add a server
 
-1. Open **Project setup → MCP** or **MCP Servers** in [workspace Integrations](https://pre.dev/projects/integrations).
-2. Paste a remote URL, a supported command, or the server configuration.
-3. Include the authentication headers or environment values required by that server.
-4. Use **Test** to check the handshake and advertised tools.
-5. Save and enable the entry.
+1. Open **MCP Servers** in [workspace Integrations](https://pre.dev/projects/integrations?tab=mcp), or the same tab in a project's **Project setup**.
+2. Choose **Add server**, then pick a preset or paste the server's URL. pre.dev detects HTTP or SSE transport from the URL.
+3. Name the server and add any headers it needs.
+4. Test the connection and save.
 
-Remote configuration example; replace the URL and credential with your server's values:
+Header values can reference your environment variables with `${NAME}`, so a credential stays in one place:
 
 ```json
 {
   "url": "https://mcp.example.com/mcp",
   "headers": {
-    "Authorization": "Bearer YOUR_SERVER_TOKEN"
+    "Authorization": "Bearer ${MY_API_KEY}"
   }
 }
 ```
 
-Standard-input/output configurations use `command`, `args`, and `env`. The command runs in the agent's execution environment; a path on your own laptop is not automatically available there. Compatibility depends on transport, authentication, and runtime requirements. Test the actual configuration before relying on its tools.
+**Advanced: edit config JSON** accepts the same configuration directly.
+
+## Sign in to a server
+
+Servers that use OAuth offer **Connect**. Sign in on the server's own page; the card then shows who you are signed in as, with **Reconnect** and **Disconnect**. When a sign-in expires, the card asks you to reconnect. Each connect shows the host where you will sign in; if that host changes, continue only when you trust it.
+
+## Local commands run only in the CLI
+
+Web builds use remote servers. A local command, such as `npx -y <package>`, only runs in the pre.dev CLI, on your machine. Add one there:
+
+```text
+/mcp add files npx -y @modelcontextprotocol/server-filesystem ./docs
+```
+
+`/mcp add <name> <url>` adds a remote server from the terminal as well.
 
 ## Scope and controls
 
-Personal projects inherit personal MCP entries and can override a matching name. Organization entries are shared across the organization. See [integration scope](/coding-agent/integrations/overview).
+Personal projects inherit personal entries and can override a matching name. Organization entries are shared across the organization. See [integration scope](/coding-agent/integrations/overview#skill-and-mcp-scope).
 
-In the CLI, `/mcp` lists personal entries and supports toggling or removal. Press `o` to add or configure entries on the web. On the web, use `/integrations` to open Project setup.
+In the CLI, `/mcp` lists personal entries. Enter or Space toggles an entry, `d` removes it, and `o` opens workspace Integrations in the browser.
 
 Enable the servers needed for the task, and describe the operation you want the agent to perform. A successful connection test confirms tool discovery; individual calls can still fail because of provider permissions or service errors.

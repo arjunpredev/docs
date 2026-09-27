@@ -1,12 +1,20 @@
 ---
 title: "pre.dev documentation"
 sidebarTitle: "Introduction"
-description: "Build software, generate specifications, and run browser tasks."
+description: "Build and publish software with the Coding Agent, generate specifications, run browser tasks, and call hundreds of AI models."
 ---
 
 import { ProductPaths } from "/snippets/product-paths.jsx";
 
-Use the [Coding Agent](/coding-agent/quickstart) to implement a change, the [Architect API](/architect-agent/quickstart) to plan one, or [Browser Agents](/browser-agents/quickstart) to work with a website.
+pre.dev builds software and exposes the pieces behind it as APIs.
+
+| Product | What it does | Start with |
+| --- | --- | --- |
+| Coding Agent | Builds, verifies, and publishes apps, in the web workspace or your terminal | [Build your first project](/coding-agent/quickstart) |
+| Architect | Turns a description into a specification with milestones, stories, and architecture | [Generate a spec](/architect-agent/quickstart) |
+| Browser Agents | Runs tasks on websites and returns structured data | [Run a browser task](/browser-agents/quickstart) |
+| AI Gateway | One OpenAI-compatible API for hundreds of models from every major lab, paid with pre.dev credits | [Call a model](/ai-gateway/quickstart) |
+| Payments and Authentication | Stripe payments and user sign-in, built into every app you build on pre.dev | [Built into every app](/coding-agent/built-in) |
 
 <ProductPaths />
 
@@ -14,22 +22,22 @@ Use the [Coding Agent](/coding-agent/quickstart) to implement a change, the [Arc
 
 | Work from | Use | Start with |
 | --- | --- | --- |
-| A browser | The web workspace for code, plans, and previews | [Build your first project](/coding-agent/quickstart) |
+| A browser | The web workspace for code, plans, previews, and publishing | [Build your first project](/coding-agent/quickstart) |
 | A local repository | The CLI and your existing Git workflow | [Install the CLI](/cli/overview) |
-| Your application | REST or an SDK for specifications and browser tasks | [API overview](/api-reference/overview) |
-| Another AI assistant | The product MCP server | [Connect MCP](/architect-agent/mcp-setup) |
+| Your application | REST at `https://api.pre.dev`, the AI Gateway at `https://api.pre.dev/v1`, or the Node and Python SDKs | [API overview](/api-reference/overview) |
+| Another AI assistant | The product MCP server at `https://api.pre.dev/mcp` | [Connect MCP](/architect-agent/mcp-setup) |
 
-The public API exposes planning and browser operations. For code implementation, start in the web workspace or CLI.
+The public API covers specifications, browser tasks, and AI model calls. For code implementation, start in the web workspace or CLI.
 
 ## Build an integration
 
 <CardGroup cols={2}>
   <Card title="Get an API key" icon="key" href="/api-reference/authentication">
-    Choose your account, authenticate a request, and check access.
+    Find your key, send it, and check which accounts each interface accepts.
   </Card>
   <Card title="Handle results and errors" icon="code" href="/api-reference/errors">
     Recognize terminal states, recover from failures, and retry safely.
   </Card>
 </CardGroup>
 
-Giving these docs to a coding assistant? Start with the [guide for agents](/for-agents) and the [OpenAPI schema](/api-reference/openapi.json). For account access and usage, see [plans and credits](/coding-agent/plans-and-credits).
+Giving these docs to a coding assistant? Start with the [guide for agents](/for-agents) and the [OpenAPI schema](/api-reference/openapi.json). For plans and usage, see [plans, credits, and pricing](/coding-agent/plans-and-credits).

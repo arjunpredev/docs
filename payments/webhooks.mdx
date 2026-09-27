@@ -1,13 +1,13 @@
 ---
 title: "Webhooks"
-description: "Stripe events are delivered to your app for you, including the live sandbox, signed with your project's own secret."
+description: "Stripe events are delivered to your app's server in the project's sandbox, signed with your project's own secret."
 ---
 
-Stripe cannot reach a sandbox, so pre.dev receives every Stripe event for your workspace and relays it to your app. There is no endpoint to register and no signing secret to copy.
+Stripe cannot reach a sandbox, so pre.dev receives the Stripe events for your workspace and relays them to your app. There is no endpoint to register and no signing secret to copy.
 
 ## Where events arrive
 
-pre.dev posts each event to **`POST /api/stripe/webhook`** on your app, at the live sandbox URL while you build and at the deployed URL once deployed. Mount your handler on exactly that path.
+pre.dev posts each event to **`POST /api/stripe/webhook`** on your app's server, which runs in the project's sandbox. That is true after you publish too: a [published](/coding-agent/building/publish) app's address serves only its built front end, so events go to the sandbox. Sessions with their own sandbox receive the events as well. Mount your handler on exactly that path.
 
 The request looks exactly like one from Stripe: a JSON event body and a `Stripe-Signature` header. Verify it with the Stripe SDK and `STRIPE_WEBHOOK_SECRET`, which is this project's own secret.
 
@@ -65,15 +65,17 @@ def stripe_webhook():
 
 The handler must read the **raw** request body. A JSON body parser that runs first changes the bytes and the signature check fails.
 
-## Which events
+## Which projects receive events
 
-Every event Stripe emits for your workspace's account is relayed. Handle the ones you need and return `2xx` for the rest. Typical ones for subscriptions are `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, and `customer.subscription.updated` or `deleted`.
+Each Stripe event for your workspace's account goes to every project in the workspace that called Stripe through pre.dev in the last 30 days, up to 25 projects, most recent first. A project whose deliveries are paused does not receive events.
+
+Projects in a workspace share its Stripe account, so a project also receives events caused by the workspace's other projects, whether it is in test or live mode. Match each event to your own records, for example by customer or metadata, and return `2xx` for events you do not handle. Typical events for subscriptions are `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, and `customer.subscription.updated` or `deleted`.
 
 ## Retries and pausing
 
 A delivery that fails with a timeout or a `5xx` is retried with backoff for about 45 minutes. A `4xx` other than `408` or `429` is not retried.
 
-If your app answers `404` at the webhook path three times in a row, deliveries to that project pause. They resume the next time the app makes a Stripe call through pre.dev, so mounting the route and reloading is enough.
+If your app answers `404` at the webhook path three times in a row, deliveries to that project pause. They resume after the app next calls Stripe through pre.dev, which can take up to 10 minutes to register, so mount the route, reload, and make a Stripe call.
 
 ## Do not register an endpoint
 

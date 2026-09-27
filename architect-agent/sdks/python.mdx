@@ -104,7 +104,7 @@ from predev_api import AuthenticationError, RateLimitError, PredevAPIError
 try:
     page = client.list_specs(limit=20)
 except AuthenticationError:
-    print("Check the API key and account access at pre.dev/projects/key.")
+    print("Check the API key and account access.")
 except RateLimitError:
     print("Back off before retrying.")
 except PredevAPIError as error:

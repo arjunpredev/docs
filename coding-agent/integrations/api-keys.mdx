@@ -1,27 +1,27 @@
 ---
 title: "Service API keys"
-description: "Store reusable third-party credentials and propagate updates to projects."
+description: "Store reusable third-party credentials and apply updates to your projects."
 ---
 
-Use **API Keys** in [workspace Integrations](https://pre.dev/projects/integrations) for credentials your applications use, such as payment, email, storage, or database keys.
+Use the **API Keys** tab in [workspace Integrations](https://pre.dev/projects/integrations?tab=api-keys) for credentials your applications use, such as email, storage, or database keys. Values saved here reach your projects as environment variables.
 
-A **pre.dev API key** authenticates calls to pre.dev itself and is managed at [pre.dev/projects/key](https://pre.dev/projects/key). See [API authentication](/api-reference/authentication) for that workflow.
+Your **pre.dev API key**, which authenticates calls to pre.dev itself, is on the **Built-in** tab instead. See [authentication](/api-reference/authentication).
 
 ## Add a service credential
 
 1. Open **Integrations → API Keys**.
-2. Choose a provider or add a custom entry.
-3. Enter the credential values and save.
-4. Open the target project's **Env Vars** to review the values it needs.
+2. Choose **Add key**, or **Import** to add several at once.
+3. Enter the name and value, then save.
+4. Open the target project's **Project setup → API Keys** to review the values it uses.
 
-Keys are stored encrypted. Use the configuration controls for secret values; do not rely on a guarantee that arbitrary agent output can never expose a value.
+Keys are stored encrypted, and sensitive values are masked. Do not rely on a guarantee that arbitrary agent output can never expose a value.
 
 ## Import several keys
 
-Use **Import Keys** to paste configuration or upload a supported `.env`, `.txt`, or `.json` file. The importer can also extract values from an image. Review detected names and values before saving, especially for multiple environments or accounts.
+Use **Import** to paste configuration or upload a `.env`, `.txt`, or `.json` file, or a screenshot. Review the detected names and values before saving, especially for multiple environments or accounts.
 
 ## Apply and rotate
 
-Reusable credentials can supply project environment configuration. Existing projects may need propagation after a change. When the interface reports projects with outdated values, review the affected projects and apply the update to the intended ones.
+Workspace keys supply project environment variables. When projects are missing a saved value, Integrations lists them so you can update them one at a time or all at once. An updated project shows **Saved · on next start**: new projects and projects waking from a pause pick up the value, and a project running now keeps its current value until it next starts.
 
-For a value specific to one application, use [Project setup → Env Vars](/coding-agent/integrations/env-vars). Verify the running application's behavior after updating a credential; some integrations also require an application restart or provider-side configuration.
+For a value specific to one application, use [Project setup → API Keys](/coding-agent/integrations/env-vars). Verify the running application's behavior after updating a credential; some integrations also need provider-side configuration.

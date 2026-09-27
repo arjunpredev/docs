@@ -3,30 +3,34 @@ title: "Overview"
 description: "Payments are built into every pre.dev app: Stripe, already wired up, in test mode until you go live."
 ---
 
-Every project built on pre.dev can take payments without creating a Stripe account, pasting keys, or registering webhooks. pre.dev Payments is powered by Stripe: your workspace gets a Stripe account behind pre.dev, the build agent uses the ordinary Stripe SDK, and pre.dev delivers Stripe's events to your app, including the live sandbox while you build.
+Every project built on pre.dev can take payments without creating a Stripe account, pasting keys, or registering webhooks. pre.dev Payments is powered by Stripe: your workspace gets a Stripe account behind pre.dev, the build agent uses the ordinary Stripe SDK, and pre.dev delivers Stripe's events to your app's server while you build.
 
 ## What you get
 
 | | |
 | --- | --- |
 | **Nothing to set up** | The Stripe keys are already in your app's environment. Ask the build agent for "a $9/month plan" or "a checkout button" and it works. |
-| **Real Stripe** | Checkout, subscriptions, customers, invoices, refunds, the billing portal. Any Stripe API, any Stripe example, unchanged. |
-| **Webhooks that reach the sandbox** | Stripe events are relayed to your app's webhook route on the live sandbox and on the deployed app, signed with your project's own secret. |
+| **Real Stripe** | Checkout, subscriptions, customers, invoices, refunds, the billing portal. Any Stripe API and any Stripe example, unchanged. |
+| **Webhooks that reach your app** | Stripe events are relayed to your app's webhook route in the project's sandbox, signed with the project's own secret. |
 | **Test mode while building** | Pay with card `4242 4242 4242 4242`. No real money moves until you go live. |
 
 ## How it works
 
-Your app talks to Stripe through `api.pre.dev` with the workspace's pre.dev key. pre.dev forwards each request to Stripe scoped to your workspace's connected account and forwards the response back. The Stripe SDK needs two options, which the build agent sets from environment variables that are already there:
+Your app talks to Stripe through `api.pre.dev` with the workspace's pre.dev key. pre.dev sends each request to Stripe for your workspace's Stripe account and returns Stripe's response. The Stripe SDK needs its host pointed at pre.dev, which the build agent sets from variables that are already there:
 
 ```ts
 import Stripe from 'stripe';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   host: process.env.STRIPE_API_HOST,
+  protocol: (process.env.STRIPE_API_PROTOCOL as 'https' | 'http') || 'https',
+  ...(process.env.STRIPE_API_PORT ? { port: Number(process.env.STRIPE_API_PORT) } : {}),
 });
 ```
 
-That is the whole integration. See [from a pre.dev app](/payments/from-a-predev-app) for the variables and [webhooks](/payments/webhooks) for event delivery.
+That is the whole integration. See [from a pre.dev app](/payments/from-a-predev-app) for the variables and the browser side, and [webhooks](/payments/webhooks) for event delivery.
+
+Payment code runs on your app's server, in the project's sandbox. A [published](/coding-agent/building/publish) app serves only its built front end, so checkout and webhook routes are not available at its published address.
 
 ## Test mode and going live
 
@@ -36,8 +40,8 @@ To take real money, connect a Stripe account you own once from **Integrations �
 
 ## Bring your own Stripe account
 
-If you already have a Stripe account, paste your own `sk_…` key as `STRIPE_SECRET_KEY` in the project's [environment variables](/coding-agent/integrations/env-vars). pre.dev then drops its host override and your app talks to Stripe directly with your key. Webhooks for your own account are yours to register in the Stripe dashboard.
+If you already have a Stripe account, paste your own `sk_…` key as `STRIPE_SECRET_KEY` in the project's [environment variables](/coding-agent/integrations/env-vars). pre.dev then drops its host override and account id, and your app talks to Stripe directly. Also replace `STRIPE_PUBLISHABLE_KEY` (and its `VITE_` and `NEXT_PUBLIC_` copies) and `STRIPE_WEBHOOK_SECRET` with your own values; pre.dev's stay in place until you do. Webhooks for your own account are yours to register in the Stripe dashboard.
 
 ## Not available through the built-in key
 
-Account management, application fees, and Stripe products that need a platform-level agreement (Radar, Sigma, Issuing, Treasury, Terminal) return a `403` with an explanation. Everything an app normally does to take money is available.
+Account management, application fees, and Stripe products that need a platform-level agreement return `403` with an explanation. That covers accounts, account links and sessions, apps, application fees, Apple Pay domains, country specs, Financial Connections, Identity, Issuing, Radar, reporting, Sigma, bulk tax rates, Terminal, and Treasury. Everything an app normally does to take money is available.

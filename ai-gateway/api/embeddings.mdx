@@ -49,7 +49,7 @@ print(len(result.data[0].embedding), result.usage)
 ```
 </CodeGroup>
 
-The response is the standard embeddings response: `data[].embedding`, `model`, and `usage`. Credits are computed from `usage.cost` and reported in `x-predev-credits-charged`.
+The response is the standard embeddings response: `data[].embedding`, `model`, and `usage`. The call is charged from its metered usage, reported in `x-predev-credits-charged`.
 
 ## Rerank
 

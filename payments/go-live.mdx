@@ -15,7 +15,7 @@ When Stripe finishes verification the card shows **Live**. Verification is usual
 
 ## 2. Switch a project to live
 
-Open the project, then its **Built-in** tab, and use the **Payments** card at the top to switch from **Test** to **Live**. The preview restarts so the browser-side Stripe key and account match. From then on:
+Open the project's settings (`/integrations`), then its **Built-in** tab, and use the **Payments** card to switch from **Test** to **Live**. The project's sandbox restarts so the browser-side Stripe key and account match. If the app is [published](/coding-agent/building/publish), republish it after switching so its front end gets the new values. From then on:
 
 - Checkout in that project charges real cards on your Stripe account.
 - Test cards are declined, as they are on any live Stripe account.
@@ -30,8 +30,8 @@ Test-mode products and prices do not exist in live mode; that is how Stripe work
 
 ## Fees
 
-Live payments carry Stripe's standard processing fees, paid by your account, plus the pre.dev platform fee of 5% of each payment, shown on the Payments card. Test mode never charges anything.
+Live payments carry Stripe's standard processing fees, paid by your account. When a pre.dev platform fee applies to live payments, the **Payments** card on **Integrations → Built-in** shows it next to Stripe's. Test mode never charges anything.
 
 ## Bring your own Stripe account instead
 
-If you already run a Stripe account and would rather not connect through pre.dev, paste your own `sk_live_…` as `STRIPE_SECRET_KEY` in the project's environment variables. pre.dev then steps out of the way: your app talks to Stripe directly, and webhooks for that account are yours to register in your Stripe dashboard.
+If you already run a Stripe account and would rather not connect through pre.dev, paste your own `sk_live_…` as `STRIPE_SECRET_KEY` in the project's environment variables. pre.dev then drops its host override and account id, and your app talks to Stripe directly. Replace `STRIPE_PUBLISHABLE_KEY` (and its `VITE_` and `NEXT_PUBLIC_` copies) and `STRIPE_WEBHOOK_SECRET` with your own values too; pre.dev's stay until you do. Webhooks for that account are yours to register in your Stripe dashboard.
