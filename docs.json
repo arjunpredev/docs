@@ -660,5 +660,37 @@
       "instagram": "https://www.instagram.com/predev.ai/",
       "discord": "https://discord.gg/ejVTRJ6WXS"
     }
+  },
+  "description": "Documentation for pre.dev: the coding agent on the web and in the terminal, Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), built-in payments, and the REST and MCP APIs.",
+  "seo": {
+    "metatags": {
+      "twitter:site": "@predotdev"
+    },
+    "organization": {
+      "name": "pre.dev",
+      "url": "https://pre.dev",
+      "sameAs": [
+        "https://www.linkedin.com/company/99516177/",
+        "https://x.com/predotdev",
+        "https://www.youtube.com/@predotdev",
+        "https://www.instagram.com/predev.ai/",
+        "https://discord.gg/ejVTRJ6WXS"
+      ]
+    }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_8ayngDr5zFcIOTbulDvje0PNMDwRrDHvKW2Patg4hmJ",
+      "apiHost": "https://us.i.posthog.com",
+      "sessionRecording": false
+    }
+  },
+  "markdown": {
+    "instructions": [
+      "Agents: start with https://docs.pre.dev/agents.md, which has complete recipes, plan access, polling rules, errors and limits.",
+      "Authenticate with the workspace API key (pdk_…) from Integrations → Built-in, sent as Authorization: Bearer <key>.",
+      "REST API: https://api.pre.dev (OpenAPI: https://docs.pre.dev/api-reference/openapi.json). AI Gateway: https://api.pre.dev/v1, OpenAI-compatible (OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json).",
+      "pre.dev MCP server: https://api.pre.dev/mcp. Search these docs over MCP at https://docs.pre.dev/mcp."
+    ]
   }
 }
