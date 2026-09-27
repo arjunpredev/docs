@@ -199,8 +199,14 @@ if (sourceIndex !== -1) {
   for (const operation of routes) check(operations.has(operation), `Undocumented source route: ${operation}`);
   for (const operation of operations) check(routes.has(operation), `Documented route absent from source: ${operation}`);
   const registry = await fs.readFile(path.join(sourceRoot,'predev-app/backend/src/services/MCP/server.ts'),'utf8');
-  // Tools register through a small `register(name, ...)` wrapper around registerTool.
-  const names = [...registry.matchAll(/(?:registerTool|register)\(\s*['"]([^'"]+)/g)].map(m => m[1]);
+  // Tools come from the MCP_TOOLS list (`{ name: 'fast_spec', ... }`); older servers
+  // called registerTool('name', ...) or a register('name', ...) wrapper directly.
+  const toolList = registry.match(/MCP_TOOLS[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? '';
+  const names = [...new Set([
+    ...[...toolList.matchAll(/\bname:\s*['"]([^'"]+)['"]/g)].map(m => m[1]),
+    ...[...registry.matchAll(/(?:registerTool|register)\(\s*['"]([^'"]+)/g)].map(m => m[1])
+  ])];
+  check(names.length > 0, 'Found no MCP tool registrations in services/MCP/server.ts; update the parser');
   const reference = pages.get('mcp/tools');
   for (const name of names) check(reference.includes('`'+name+'`'), `Undocumented MCP tool: ${name}`);
   console.log(`Source coverage: ${routes.size} REST operations and ${names.length} MCP registrations`);

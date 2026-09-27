@@ -53,7 +53,7 @@ Generation results are text, not the REST `SpecResponse` JSON envelope. A progre
 { "specId": "507f1f77bcf86cd799439011" }
 ```
 
-`specId` is required. Use the ID returned by generation or listing. A successful `structuredContent` contains `specId` and `status`; it may also include `endpoint`, `created`, `executionTimeMs`, `progress`, `specUrl`, `predevUrl`, `output`, and `errorMessage`.
+`specId` is required. Use the ID returned by generation or listing. A successful `structuredContent` contains `specId` and `status`; it may also include `endpoint`, `created`, `executionTimeMs`, `progress`, `specUrl`, `predevUrl`, `output`, `errorMessage`, and `creditsUsed`, the credits recorded for the spec's project so far.
 
 `output` is specification Markdown, preferring the coding-agent variant. Status is `pending`, `processing`, `completed`, `failed`, or `unknown`. Optional values may be absent while generation is running.
 
