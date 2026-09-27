@@ -111,3 +111,16 @@ A matching existing run returns HTTP `200` as **JSON**, including when `stream: 
 ## Response schemas
 
 The generated schema below describes the run and task fields. [Get run status](/browser-agents/api/task-status) explains pending entries, task outcomes, retry counts, and timelines. The `completed` count alone is not a reliable completion signal; use batch `status`.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | `INVALID_TASK`, `INVALID_URL`, `MISSING_INSTRUCTION`, `URL_UNREACHABLE`, or `BATCH_TOO_LARGE`. Nothing was started or charged |
+| `401` | Missing or invalid key |
+| `402` | `SUBSCRIPTION_REQUIRED` or `INSUFFICIENT_CREDITS`, with an `actionUrl` |
+| `429` | `RATE_LIMITED` or `QUEUE_FULL` |
+| `500` | Unexpected error. Retrieve the run before resubmitting |
+| `503` | `URL_CHECK_UNAVAILABLE` (retry later), or streaming capacity is full (submit with `async: true` and poll) |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

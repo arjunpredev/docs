@@ -1,6 +1,7 @@
 ---
 title: "Usage"
 description: "Per-call headers, GET /v1/usage for totals by model, and GET /v1/generation for one call."
+openapi: "/api-reference/ai-gateway.openapi.json GET /v1/usage"
 ---
 
 ## Per-call headers
@@ -24,7 +25,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 ```json
 {
-  "workspace": "…",
+  "workspace": "ws_3f9a1c07b2e4d5a8",
   "project": null,
   "credits_remaining": 412.5,
   "tier": "SoloPro",
@@ -55,7 +56,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 | Field | Meaning |
 | --- | --- |
-| `workspace` | The workspace the key belongs to |
+| `workspace` | An opaque, stable id (`ws_` and 16 hex characters) for the workspace the key belongs to |
 | `project` | The project named by `x-predev-project-id`, or `null` |
 | `credits_remaining` | Current balance; `null` when the workspace has no credit limit |
 | `tier` | Plan tier |
@@ -68,7 +69,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 ## One generation
 
-`GET /v1/generation?id=<id>` returns the record of one call, using the `pdg-…` id from the response body or a stream chunk. Only this workspace's generations are visible. Stats can take a few seconds to appear after a call; a `404` with code `not_ready` means retry shortly.
+[`GET /v1/generation?id=<id>`](/ai-gateway/api/generation) returns the record of one call, using the `pdg-…` id from the response body or a stream chunk. Only this workspace's generations are visible. Stats can take a few seconds to appear after a call; a `404` with code `not_ready` means retry shortly.
 
 ```bash
 curl --fail-with-body "https://api.pre.dev/v1/generation?id=pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47" \

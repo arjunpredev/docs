@@ -24,4 +24,12 @@ Use `--data-urlencode` or your HTTP library's query encoder so regex characters 
 
 The `specs`, `total`, and `hasMore` envelope uses the same summary format and pagination as [list specifications](/architect-agent/api/list-specs). Use [spec status](/architect-agent/api/spec-status) for full bodies.
 
-A missing or empty query returns `400`. An invalid regular expression returns `500`; correct the pattern instead of repeatedly retrying it.
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | `query` is missing or empty |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `500` | The regular expression is invalid, or an unexpected error. Correct the pattern instead of retrying it |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

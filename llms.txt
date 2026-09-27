@@ -1,0 +1,116 @@
+# pre.dev
+
+> pre.dev is an AI product engineer that plans, builds, verifies and ships software, in a web workspace or a terminal.
+> Its APIs run browser tasks, generate software specifications, serve hundreds of AI models through one OpenAI-compatible API, and add payments to apps built on pre.dev.
+
+## Agents start here
+
+- [Guide for agents](https://docs.pre.dev/agents.md): Interfaces, the API key, plan access, five complete recipes, polling and error rules, and limits.
+- [skill.md](https://docs.pre.dev/skill.md): Short capability summary for agents. Install it with `npx skills add https://docs.pre.dev`.
+- [REST API OpenAPI](https://docs.pre.dev/api-reference/openapi.json): Specifications, browser tasks, and the credit balance at `https://api.pre.dev`.
+- [AI Gateway OpenAPI](https://docs.pre.dev/api-reference/ai-gateway.openapi.json): Every operation under `https://api.pre.dev/v1`, with error examples.
+- Product MCP server: `https://api.pre.dev/mcp` (Streamable HTTP; OAuth, or `Authorization: Bearer <key>`). Tools: https://api.pre.dev/mcp/info
+- Docs MCP server: `https://docs.pre.dev/mcp` searches and reads these docs, with no key.
+- Full text: https://docs.pre.dev/llms-full.txt. Any page as Markdown: add `.md` to its URL.
+
+## Start
+
+- [pre.dev documentation](https://docs.pre.dev/overview.md): What pre.dev does and where to begin.
+- [Coding Agent quickstart](https://docs.pre.dev/coding-agent/quickstart.md): Create a project, make a change, and review the result.
+- [Architect quickstart](https://docs.pre.dev/architect-agent/quickstart.md): Generate a specification, poll to completion, and read its Markdown and JSON.
+- [Browser Agents quickstart](https://docs.pre.dev/browser-agents/quickstart.md): Extract a page heading and inspect the result.
+- [AI Gateway quickstart](https://docs.pre.dev/ai-gateway/quickstart.md): Send a chat completion through api.pre.dev/v1 with curl or a stock SDK.
+- [Authentication](https://docs.pre.dev/api-reference/authentication.md): Where the API key is, how to send it, and which accounts each interface accepts.
+- [Errors and retries](https://docs.pre.dev/api-reference/errors.md): HTTP failures, browser task outcomes, AI Gateway error codes, stream errors, and safe retries.
+- [Plans, credits, and pricing](https://docs.pre.dev/coding-agent/plans-and-credits.md): Plan allowances, what uses credits, AI Gateway pricing, limits, and which plans unlock each feature.
+- [Changelog](https://docs.pre.dev/changelog.md): Product and API releases, newest first.
+
+## Build with pre.dev
+
+- [Coding Agent overview](https://docs.pre.dev/coding-agent/overview.md): Build and maintain software in the web workspace or a local terminal.
+- [The workspace](https://docs.pre.dev/coding-agent/workspace.md): Agent chat, plans, code, preview, and project settings.
+- [Create a project](https://docs.pre.dev/coding-agent/projects/creating-a-project.md): Start from a prompt or an existing repository.
+- [Import a repository](https://docs.pre.dev/coding-agent/projects/importing-repos.md): Build on an existing GitHub codebase and its conventions.
+- [GitHub integration](https://docs.pre.dev/coding-agent/projects/github-integration.md): Connect GitHub, import code, and review branch changes.
+- [pre.dev CLI](https://docs.pre.dev/cli/overview.md): Install the CLI and use the coding agent in a local directory.
+- [CLI commands](https://docs.pre.dev/cli/commands.md): Terminal commands, keys, and launch flags.
+- [Work on an existing repo](https://docs.pre.dev/cli/existing-repos.md): Map a local codebase and make changes you review with Git.
+- [Fast vs Deep specs](https://docs.pre.dev/coding-agent/specifications/fast-vs-deep.md): Choose planning depth.
+- [Understanding specs](https://docs.pre.dev/coding-agent/specifications/understanding-specs.md): Requirements, architecture, milestones, and artifacts for agents.
+- [How the agent works](https://docs.pre.dev/coding-agent/building/build-modes.md): How the agent decides to answer, plan, or build, and how sprints and effort shape the work.
+- [Model selection](https://docs.pre.dev/coding-agent/building/pro-mode.md): Choose one model for all phases or one per phase.
+- [Sessions and parallel agents](https://docs.pre.dev/coding-agent/building/sessions-and-parallel-agents.md): Separate workstreams, where each runs, and merging.
+- [Verification and acceptance criteria](https://docs.pre.dev/coding-agent/building/acceptance-criteria.md): How an independent judge checks the work before a build finishes.
+- [Pull requests and merges](https://docs.pre.dev/coding-agent/building/pull-requests.md): Review session changes and bring them into your repository.
+- [Preview and hosting](https://docs.pre.dev/coding-agent/building/preview-and-hosting.md): The running app, mobile builds, and where the app is served.
+- [Publish an app](https://docs.pre.dev/coding-agent/building/publish.md): A permanent address that stays up while the workspace sleeps, and who can open it.
+- [Custom domains](https://docs.pre.dev/coding-agent/building/custom-domains.md): Serve a published app on your own hostname.
+- [Collaboration](https://docs.pre.dev/coding-agent/building/collaboration.md): Invite people, share app links, and share a read-only overview.
+- [Roadmap and progress](https://docs.pre.dev/coding-agent/building/progress-tracking.md): Planned work, active sessions, and completion evidence.
+- [Integrations overview](https://docs.pre.dev/coding-agent/integrations/overview.md): Built-in services, provider accounts, skills, MCP servers, and API keys.
+- [Provider connections](https://docs.pre.dev/coding-agent/integrations/oauth.md): Connect accounts and pick a workspace default or a project account.
+- [Agent skills](https://docs.pre.dev/coding-agent/integrations/skills.md): Add Agent Skills as a SKILL.md or a .zip, per person, project, or organization.
+- [External MCP servers](https://docs.pre.dev/coding-agent/integrations/mcp-servers.md): Give the Coding Agent tools from other services with remote MCP servers.
+- [Service API keys](https://docs.pre.dev/coding-agent/integrations/api-keys.md): Store third-party credentials and apply updates to projects.
+- [Environment variables](https://docs.pre.dev/coding-agent/integrations/env-vars.md): Fill missing configuration and update a project's runtime.
+- [Built into every app](https://docs.pre.dev/coding-agent/built-in.md): AI, Stripe payments, and sign-in wired into apps built on pre.dev.
+- [Payments overview](https://docs.pre.dev/payments/overview.md): Stripe, already wired into every pre.dev app, in test mode until you go live.
+- [Payments webhooks](https://docs.pre.dev/payments/webhooks.md): Stripe events delivered to the app's server in the project's sandbox, signed per project.
+- [Take live payments](https://docs.pre.dev/payments/go-live.md): Connect a Stripe account you own, then switch a project from test to live.
+
+## API & SDKs
+
+- [API overview](https://docs.pre.dev/api-reference/overview.md): Base URLs, the key, and every REST endpoint.
+- [Get credit balance](https://docs.pre.dev/architect-agent/api/credits-balance.md): The credit balance for the key's account or organization.
+- [Architect API](https://docs.pre.dev/architect-agent/overview.md): Specifications as Markdown, JSON, architecture graphs, and estimates.
+- [Spec inputs and outputs](https://docs.pre.dev/architect-agent/inputs-and-outputs.md): Context and files in; specifications, graphs, and documentation archives out.
+- [Generate a Fast Spec](https://docs.pre.dev/architect-agent/api/fast-spec.md): POST /fast-spec: architecture, milestones, user stories, and acceptance criteria.
+- [Generate a Deep Spec](https://docs.pre.dev/architect-agent/api/deep-spec.md): POST /deep-spec: a detailed specification with subtasks.
+- [Get specification status](https://docs.pre.dev/architect-agent/api/spec-status.md): Progress, failures, or the finished specification.
+- [List specifications](https://docs.pre.dev/architect-agent/api/list-specs.md): Specification summaries with filters and pagination.
+- [Search specifications](https://docs.pre.dev/architect-agent/api/find-specs.md): Search specification inputs.
+- [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP.
+- [Run browser tasks](https://docs.pre.dev/browser-agents/api/run-task.md): POST /browser-agent: JSON, an async run ID, or a live SSE stream.
+- [Get run status and results](https://docs.pre.dev/browser-agents/api/task-status.md): A run's task outcomes, retries, and optional timeline.
+- [Stream an existing run](https://docs.pre.dev/browser-agents/api/stream-task.md): Snapshot, live SSE updates, and terminal status.
+- [Watch the live browser](https://docs.pre.dev/browser-agents/api/live-browser.md): A WebSocket URL for live browser frames.
+- [List browser runs](https://docs.pre.dev/browser-agents/api/list-tasks.md): Browser run history with filters and pagination.
+- [Get your queue status](https://docs.pre.dev/browser-agents/api/queue-status.md): Your pending and running tasks and in-flight limit.
+- [Get service capacity](https://docs.pre.dev/browser-agents/api/capacity.md): Advisory service queue statistics.
+- [Migrate a browser workflow](https://docs.pre.dev/browser-agents/migrate-from-browser-use.md): Move a locally managed browser workflow to pre.dev tasks.
+- [AI Gateway overview](https://docs.pre.dev/ai-gateway/overview.md): Hundreds of models from every major lab through api.pre.dev/v1, on your key and credits.
+- [Choose a model](https://docs.pre.dev/ai-gateway/models.md): Model ids from the catalog and their credit prices.
+- [Stream responses](https://docs.pre.dev/ai-gateway/streaming.md): SSE streams, usage in the final chunk, and the charge afterwards.
+- [Tools and structured output](https://docs.pre.dev/ai-gateway/tools-and-structured-output.md): Tool calling and JSON-schema output.
+- [Multimodal input and output](https://docs.pre.dev/ai-gateway/multimodal.md): Images, files, audio, and video with the same key.
+- [Fallbacks and advanced options](https://docs.pre.dev/ai-gateway/routing-and-fallbacks.md): Fallback models, reasoning, plugins, and web search.
+- [Chat completions](https://docs.pre.dev/ai-gateway/api/chat-completions.md): POST /v1/chat/completions in the OpenAI format.
+- [Anthropic Messages](https://docs.pre.dev/ai-gateway/api/messages.md): POST /v1/messages, for the Anthropic SDKs.
+- [OpenAI Responses](https://docs.pre.dev/ai-gateway/api/responses.md): POST /v1/responses; each request stands alone.
+- [Text completions](https://docs.pre.dev/ai-gateway/api/completions.md): POST /v1/completions, the legacy prompt format.
+- [Embeddings](https://docs.pre.dev/ai-gateway/api/embeddings.md): POST /v1/embeddings.
+- [Rerank](https://docs.pre.dev/ai-gateway/api/rerank.md): POST /v1/rerank: order documents by relevance to a query.
+- [Generate images](https://docs.pre.dev/ai-gateway/api/images-and-video.md): POST /v1/images, and how video jobs work.
+- [Submit a video job](https://docs.pre.dev/ai-gateway/api/video-jobs.md): POST /v1/videos, then poll its polling_url.
+- [Get a video job](https://docs.pre.dev/ai-gateway/api/video-status.md): GET /v1/videos/{jobId}; the poll that sees it finish charges it.
+- [Download a video](https://docs.pre.dev/ai-gateway/api/video-content.md): GET /v1/videos/{jobId}/content.
+- [Speech and music](https://docs.pre.dev/ai-gateway/api/audio.md): POST /v1/audio/speech.
+- [Transcribe audio](https://docs.pre.dev/ai-gateway/api/transcriptions.md): POST /v1/audio/transcriptions, as multipart/form-data.
+- [Upload a file](https://docs.pre.dev/ai-gateway/api/files.md): POST /v1/files, for use in chat requests.
+- [List files](https://docs.pre.dev/ai-gateway/api/list-files.md): GET /v1/files.
+- [Get file metadata](https://docs.pre.dev/ai-gateway/api/get-file.md): GET /v1/files/{id}.
+- [Download a file](https://docs.pre.dev/ai-gateway/api/file-content.md): GET /v1/files/{id}/content, for downloadable files.
+- [Delete a file](https://docs.pre.dev/ai-gateway/api/delete-file.md): DELETE /v1/files/{id}.
+- [Model catalog](https://docs.pre.dev/ai-gateway/api/models.md): GET /v1/models, every model with credit prices.
+- [Count models](https://docs.pre.dev/ai-gateway/api/model-count.md): GET /v1/models/count.
+- [List models without a key](https://docs.pre.dev/ai-gateway/api/public-models.md): GET /v1/models/public: labs and modalities, no prices, no key.
+- [List embedding models](https://docs.pre.dev/ai-gateway/api/embedding-models.md): GET /v1/embeddings/models.
+- [List image models](https://docs.pre.dev/ai-gateway/api/image-models.md): GET /v1/images/models, with per-image prices.
+- [List video models](https://docs.pre.dev/ai-gateway/api/video-models.md): GET /v1/videos/models, with per-second prices.
+- [Usage totals](https://docs.pre.dev/ai-gateway/api/usage.md): GET /v1/usage and the per-call headers.
+- [Generation stats](https://docs.pre.dev/ai-gateway/api/generation.md): GET /v1/generation: one call's stats and charge.
+- [SDK overview](https://docs.pre.dev/architect-agent/sdks/overview.md): The Node.js and Python SDKs for specifications and browser tasks.
+- [Node.js SDK](https://docs.pre.dev/architect-agent/sdks/node.md): The predev-api TypeScript client.
+- [Python SDK](https://docs.pre.dev/architect-agent/sdks/python.md): The predev-api Python package.
+- [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): pre.dev's spec and browser tools in Claude Code, Cursor, or another MCP client.
+- [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The seven tools, exact input names, results, and deprecated aliases.

@@ -28,4 +28,14 @@ Filter for `type: "frame"` before reading those fields. For a preview image, use
 
 Frames are a live visual feed, not a durable recording, task-control channel, or completion signal. Some execution paths do not produce live frames. Use [SSE or polling](/browser-agents/api/stream-task) for authoritative task state and `includeEvents=true` for available screenshot history.
 
-`404` can mean the run is inaccessible or live streaming is unavailable. A returned URL does not guarantee that a frame will arrive. Current SDKs and MCP tools do not have a wrapper for this endpoint.
+A returned URL does not guarantee that a frame will arrive. Current SDKs and MCP tools do not have a wrapper for this endpoint.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | `id` is not a valid run ID |
+| `401` | Missing or invalid key |
+| `404` | No run with this ID in your account, or no live stream for it |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

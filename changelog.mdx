@@ -7,7 +7,103 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-09-27
+
+### Documentation for agents
+
+*Documentation update. No product change.*
+
+- **[Guide for agents](/agents)** covers the interfaces, the API key, plan access, five complete recipes, polling and error rules, and limits. It comes first in [llms-full.txt](https://docs.pre.dev/llms-full.txt).
+- **[llms.txt](https://docs.pre.dev/llms.txt)** is written by hand: agent entry points first, then every page by tab with a unique title.
+- **[skill.md](https://docs.pre.dev/skill.md)** is reviewed by hand. Install it with `npx skills add https://docs.pre.dev`.
+- **The AI Gateway has an OpenAPI file**, [ai-gateway.openapi.json](https://docs.pre.dev/api-reference/ai-gateway.openapi.json), covering all 25 `/v1` operations with error examples. Every operation has a reference page, and every REST response in [openapi.json](https://docs.pre.dev/api-reference/openapi.json) now has an example.
+- The docs search server for agents is at `https://docs.pre.dev/mcp`.
+
+### AI Gateway: a model list without a key, and prices in credits only
+
+- [`GET /v1/models/public`](/ai-gateway/api/public-models) lists every model an app can call, with its lab, type and modalities, and needs no API key. Credit prices stay on `GET /v1/models`.
+- The catalog listings carry prices in credits only, in each row's `predev` object. When the catalog cannot be read, they answer `502` with code `catalog_unavailable`.
+- [`GET /v1/usage`](/ai-gateway/api/usage) reports requests, credits and tokens only, and `workspace` is an opaque `ws_…` id.
+
+### MCP tools say what they do and cost
+
+- Tool descriptions and [`/mcp/info`](https://api.pre.dev/mcp/info) say what each tool does, when it helps, and what it costs. `get_spec` and `list_specs` use no credits.
+- `get_spec` returns `creditsUsed`: the credits recorded so far for the spec's project.
+
+## 2026-09-26
+
+### Agent Skills and sign-in for MCP servers
+
+- **Skills follow the Agent Skills format.** Paste a `SKILL.md` or upload a skill folder as a `.zip`. The agent sees each skill's name and description and loads the rest only when a task needs it.
+- **Remote MCP servers can sign in with OAuth.** Add the server's `https` URL in Integrations and approve access, instead of pasting a token.
+- Local command (stdio) MCP servers run only from the CLI; the web workspace uses remote servers.
+
+### A project header that fits any window
+
+- The header no longer overflows at narrow widths. The **Sandbox** chip shows its status, with CPU and memory on hover, and **Publish** is a rocket icon.
+- Clicking the Sandbox chip explains where the project runs and how to work on it from a terminal: install the CLI, then `predev open`.
+
+## 2026-09-25
+
+### Plan mode removed on the web
+
+- The web workspace no longer has a Plan toggle or the `/plan` and `/auto` commands. The agent decides when to plan before it builds.
+
+### CLI: publish, usage, undo, and more
+
+- `/publish` and `/unpublish` put the app on its live address or take it down.
+- `/usage` lists what the project's credits went on, turn by turn.
+- `/undo` and `/redo`, with a checkpoint before every run on your machine.
+- `/rename`, `/logout`, `/mcp add` and `/skills add`.
+- Up and down arrows recall earlier prompts, each session tab keeps its draft, and suggested next messages appear after a turn.
+
+## 2026-09-23
+
+### AI Gateway: choose a model, not a provider
+
+- Responses carry pre.dev generation ids (`pdg-…`), which [`GET /v1/generation`](/ai-gateway/api/generation) accepts. `usage` no longer includes cost fields: read the charge from `x-predev-credits-charged`, or from `GET /v1/generation` for a streamed call.
+- A `provider` object in a request is ignored, and `/v1/providers` and the per-model endpoints lists are gone. Choose a model id from `GET /v1/models`, and send `models` for fallbacks.
+- Errors from the model keep their status and message.
+
+### Browser Agents: leaner results
+
+- Task results and events no longer include `totalTokenUsage` or `llmCallsUsed`. Data, credits, status and step counts are unchanged.
+
+## 2026-09-22
+
+### Publish apps to a live address
+
+- **Publish** in the project header builds a production version of the app at its own pre.dev address, or your own domain. Every publish is kept as a version, and you choose who can open it.
+- Ask the agent to publish or unpublish; it checks with you first.
+- Share leads with two links: **Live**, the published app, and **Draft**, your latest changes.
+- Free plans publish for 7 days; Premium and above keep apps live and can add a custom domain. See [Publish](/coding-agent/building/publish).
+
+### WebMCP
+
+- Forms and actions the agent builds are registered as WebMCP tools that run the same handler as the button, so AI agents in the browser can use your app directly.
+- Browser Agents call a site's WebMCP tools when it registers them, and work the page as before when it does not.
+
+## 2026-09-17
+
+### Integrations opens on a Built-in tab
+
+- The workspace API key, the model catalog and payments are on **Integrations → Built-in**. Each project's settings has a Test or Live switch for payments.
+
 ## 2026-09-16
+
+### AI Gateway: hundreds of models inside every app
+
+- `https://api.pre.dev/v1` serves hundreds of models from every major lab through one OpenAI-compatible API, plus the Messages format: chat, Responses, embeddings, rerank, images, video, speech and music, transcription, and files.
+- Every project built on pre.dev gets the workspace key as `PREDEV_API_KEY`, and calls are charged to the workspace's credits. The catalog at `GET /v1/models` lists credit prices per model. See the [AI Gateway](/ai-gateway/overview).
+
+### One API key per workspace
+
+- Each workspace, personal or team, has one fixed key that starts with `pdk_`. It authenticates the REST API, the MCP server, Browser Agents and the AI Gateway. Existing keys keep working.
+- Rotating the key keeps the old one valid for 15 minutes.
+
+### Payments built in
+
+- Apps built on pre.dev take payments with no setup: checkout, subscriptions and webhooks work in test mode while you build. To take real payments, connect an account you own and switch a project from test to live. See [payments](/payments/overview).
 
 ### Faster code browsing, with editing when you need it
 
@@ -17,6 +113,12 @@ to get notified on every SDK bump.
 
 See [The workspace](/coding-agent/workspace#inspect-and-edit-code) for the controls and shortcuts.
 
+## 2026-09-14
+
+### CLI projects stay local
+
+- A project created in the CLI and opened on the web no longer starts a cloud sandbox or reseeds a template over your local files, even when it has a GitHub remote.
+
 ## 2026-09-07
 
 ### Reject unusable browser tasks before starting work
@@ -24,6 +126,38 @@ See [The workspace](/coding-agent/workspace#inspect-and-edit-code) for the contr
 - The dashboard now keeps Run disabled until each task has a valid website URL and instructions or an output schema, with inline guidance and consistent URL normalization for drafts and CSV rows.
 - The backend checks task input and DNS before charging or queueing, so empty tasks and nonexistent domains do not consume sandbox time. Output-schema-only extraction remains supported.
 - Permanent task and URL failures no longer get another sandbox attempt. Failed runner outcomes display as failed in the run details.
+
+## 2026-09-06
+
+### Browser Agents API: task `mode`
+
+- `POST /browser-agent` accepts `mode` per task: `extract` for schema-driven extraction, `agent` for step-by-step interaction with a completion check, or `auto` (the default) to choose. Requests without `mode` behave as before.
+
+## 2026-08-20
+
+### CLI projects on the web dashboard
+
+- Projects started in the CLI appear in the web dashboard's Projects list.
+
+## 2026-08-02
+
+### `predev --version` and `--help`
+
+- Both print and exit instead of opening the terminal UI, so they work in scripts and CI.
+
+## 2026-07-25
+
+### MCP specification tools report failures
+
+- `fast_spec`, `deep_spec` and `get_spec` report a failed generation as a failure, with the reason.
+- `get_spec` reports a specification that is still generating as in progress instead of returning an error (since 2026-07-22).
+
+## 2026-07-21
+
+### CLI commands and per-project integrations
+
+- `/clear` resets the feed, `/help` lists every command, and `/integrations` shows what is connected and opens setup in the browser.
+- MCP servers and skills can be scoped to one project, with a list of what each build can use and where it came from.
 
 ## 2026-07-15
 

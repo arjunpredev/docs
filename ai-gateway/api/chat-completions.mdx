@@ -1,9 +1,10 @@
 ---
 title: "Chat completions"
 description: "POST /v1/chat/completions, /v1/completions, and /v1/responses in the OpenAI-compatible shape."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/chat/completions"
 ---
 
-`POST https://api.pre.dev/v1/chat/completions` takes the OpenAI-compatible chat completion request body and returns the chat completion response. `POST /v1/completions` (text completions) and `POST /v1/responses` (Responses API shape) work the same way with their own bodies.
+`POST https://api.pre.dev/v1/chat/completions` takes the OpenAI-compatible chat completion request body and returns the chat completion response. [`POST /v1/completions`](/ai-gateway/api/completions) (text completions) and [`POST /v1/responses`](/ai-gateway/api/responses) (Responses API shape) work the same way with their own bodies.
 
 <CodeGroup>
 ```bash curl
@@ -11,8 +12,7 @@ curl --fail-with-body -i https://api.pre.dev/v1/chat/completions \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "anthropic/claude-sonnet-5",
-    "max_tokens": 200,
+    "model": "deepseek/deepseek-v4.1-flash",
     "messages": [
       { "role": "system", "content": "Answer in one sentence." },
       { "role": "user", "content": "Why is the sky blue?" }
@@ -26,8 +26,7 @@ const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.e
 
 const { data: completion, response } = await client.chat.completions
   .create({
-    model: 'anthropic/claude-sonnet-5',
-    max_tokens: 200,
+    model: 'deepseek/deepseek-v4.1-flash',
     messages: [
       { role: 'system', content: 'Answer in one sentence.' },
       { role: 'user', content: 'Why is the sky blue?' },
@@ -44,8 +43,7 @@ from openai import OpenAI
 client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
 
 raw = client.chat.completions.with_raw_response.create(
-    model="anthropic/claude-sonnet-5",
-    max_tokens=200,
+    model="deepseek/deepseek-v4.1-flash",
     messages=[
         {"role": "system", "content": "Answer in one sentence."},
         {"role": "user", "content": "Why is the sky blue?"},
@@ -81,7 +79,7 @@ The body is the standard chat completion response. `id` is the pre.dev generatio
 {
   "id": "pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47",
   "object": "chat.completion",
-  "model": "anthropic/claude-sonnet-5",
+  "model": "deepseek/deepseek-v4.1-flash",
   "choices": [
     {
       "index": 0,
@@ -96,7 +94,7 @@ The body is the standard chat completion response. `id` is the pre.dev generatio
 | Header | Meaning |
 | --- | --- |
 | `x-predev-request-id` | `pdr_…`, the gateway's id for this call |
-| `x-predev-credits-charged` | Credits charged |
+| `x-predev-credits-charged` | Credits charged. Not sent on streamed responses; read [`GET /v1/generation`](/ai-gateway/api/generation) afterwards |
 | `x-predev-credits-remaining` | Balance after the call; omitted when the workspace has no credit limit |
 
 Send `x-predev-project-id: <projectId>` to attribute the call to a project. See [usage](/ai-gateway/api/usage).

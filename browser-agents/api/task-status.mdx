@@ -64,4 +64,12 @@ An event uses `{ type, timestamp, iteration?, data }`, where `timestamp` is Unix
 
 Screenshot payloads can contain inline image data rather than a URL. Events vary by execution path and are not guaranteed for every step. Timelines can be large, so omit them from routine status checks. The [existing-run stream](/browser-agents/api/stream-task) provides a snapshot followed by live updates.
 
-A malformed ID returns `400`. An unknown or inaccessible run returns `404`.
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | `id` is not a valid run ID |
+| `401` | Missing or invalid key |
+| `404` | No run with this ID in your account |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

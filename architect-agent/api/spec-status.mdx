@@ -28,4 +28,15 @@ Poll at a bounded interval, for example five seconds, with an application deadli
 
 Full results can include both specification variants as JSON and Markdown, download URLs, graphs, technology explanations, archives, estimates, and credit usage. See [inputs and outputs](/architect-agent/inputs-and-outputs). Optional fields can be absent or null until their artifacts exist.
 
-A successful status lookup is HTTP `200` even when the generation status is `failed`. A malformed ID returns `400`; a missing or inaccessible request returns `404`.
+A successful status lookup is HTTP `200` even when the generation status is `failed`.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | `specId` is not a valid ID |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `404` | No specification with this ID in your account or organization |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

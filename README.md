@@ -18,7 +18,7 @@ npm run a11y
 npm run dev
 ```
 
-`check` validates OpenAPI, lifecycle fixtures, JSON and curl examples, JSX syntax and imports, interactive response examples, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
+`check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, JSX syntax and imports, interactive response examples, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
 
 When sibling product repositories are available, also run:
 
@@ -26,7 +26,7 @@ When sibling product repositories are available, also run:
 npm run check -- --source-root ..
 ```
 
-This compares public REST route coverage and MCP registrations with `predev-app`. It deliberately excludes the internal agent screenshot and flow-recording upload routes, and the proposal-review routes, which stay live but undocumented. It reads the sibling checkout's working tree, so check out or export `origin/main` first. It does not run authenticated requests or prove deployed behavior.
+This compares public REST routes, AI Gateway routes (`routes/ai_gateway.ts` and the catalog paths in `services/AiGateway/catalog.ts`), and MCP registrations with `predev-app`. It deliberately excludes the internal agent screenshot and flow-recording upload routes, and the proposal-review routes, which stay live but undocumented. It reads the sibling checkout's working tree, so check out or export `origin/main` first. It does not run authenticated requests or prove deployed behavior.
 
 ## Sources to check when editing
 
@@ -49,11 +49,11 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 
 ## Editing rules
 
-- Keep the OpenAPI schema and endpoint MDX in the same change. Bind pages explicitly, for example `openapi: "/api-reference/openapi.json GET /credits-balance"`.
+- Keep the OpenAPI schema and endpoint MDX in the same change. Bind pages explicitly, for example `openapi: "/api-reference/openapi.json GET /credits-balance"`. AI Gateway pages bind to `api-reference/ai-gateway.openapi.json`, for example `openapi: "/api-reference/ai-gateway.openapi.json POST /v1/chat/completions"`.
 - OpenAPI is the machine-readable public reference; product handlers determine actual behavior. Record backend defects separately from public documentation.
 - Write product guides in the present tense. Keep audit dates, "checked on" notes, and "at the time of writing" caveats out of published docs. Keep estimates in their canonical guide, label them as estimates, and update facts when the product changes. Dates belong in release history and versioned protocol identifiers.
 - The pre.dev API key is the workspace `pdk_` key on **Integrations → Built-in** (`https://pre.dev/projects/integrations?tab=built-in`). State its location only through `snippets/api-key-location.mdx`. Legacy keys still authenticate, but never send readers to the legacy key page. Third-party service keys belong in the Integrations **API Keys** tab.
-- Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is separate. There is no pre.dev npm MCP-server package.
+- Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is `https://docs.pre.dev/mcp`, hosted by Mintlify. There is no pre.dev npm MCP-server package.
 - Match examples to a published SDK version. Check Python dictionary/object responses, file MIME types, stream termination, and terminal task outcomes.
 - Say each repeated fact once, in a `snippets/*.mdx` file imported where it is needed: key location (`api-key-location`), base URLs, auth headers, SDK install lines, MCP URL, credit value, the browser credit floor, and limits. Change the snippet, not a copy.
 - Use the native HTML/React visuals in `snippets/` for workflows, specification outlines, branch lanes, and request lifecycles. Keep essential facts in MDX prose or tables as well, so Markdown exports remain useful.
@@ -63,7 +63,9 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 - Do not document the proposal-review endpoints or the media API (`/media/*`); both stay out of the public docs. The AI Gateway is described as pre.dev AI: never name the upstream router or providers, never call it a proxy or pass-through, never show dollar costs next to credit prices, and never state the margin.
 - The published build serves the static front end plus `/predev-ai`; server routes (checkout, webhooks, APIs) run in the project's sandbox. Do not claim otherwise.
 - Keep internal infrastructure, credentials, and private audit findings out of public pages.
-- Add product-release changelog entries only for verified releases. Label documentation-only updates accordingly.
+- Add product-release changelog entries only for verified releases. Label documentation-only updates accordingly. No prices and no vendor or upstream names in the changelog. `node scripts/changelog-gaps.mjs` lists in-app changelog entries (`https://pre.dev/changelog.json`, or `--source-root ..` for a sibling checkout) dated after the latest docs entry; add `--details`, `--type feature,improvement`, `--since YYYY-MM-DD` or `--json`. It never edits files.
+- `llms.txt`, `skill.md`, and the AI Gateway OpenAPI file at the repo root and in `api-reference/` are written by hand and served in place of Mintlify's generated versions. When you add, move, or rename a page, add it to `llms.txt` under its tab with a unique title (`npm run check` fails otherwise), and update `skill.md` if a fact it states changes.
+- `agents.mdx` sorts first in the path-ordered `llms-full.txt` on purpose, so agents read it first; keep that path.
 
 ## Visuals
 
@@ -88,8 +90,9 @@ After changing a visual, inspect it at desktop and mobile widths in both themes,
 
 Paths predate the four tabs and stay stable; `docs.json` decides where each page appears.
 
-- `overview.mdx`, `for-agents.mdx`, `changelog.mdx`: entry points for humans and agents, and release history
-- `api-reference/`: API overview, authentication, errors, and OpenAPI
+- `overview.mdx`, `agents.mdx`, `changelog.mdx`: entry points for humans and agents, and release history
+- `llms.txt`, `skill.md`: hand-written agent entry points served at `/llms.txt` and `/skill.md`
+- `api-reference/`: API overview, authentication, errors, and the two OpenAPI files (`openapi.json` for REST, `ai-gateway.openapi.json` for `/v1`)
 - `coding-agent/`: the web workspace, building and shipping, integrations, plans, and `built-in.mdx` (AI, payments, and sign-in inside apps)
 - `cli/`: the terminal workflow
 - `payments/`: Payments guides
@@ -97,5 +100,5 @@ Paths predate the four tabs and stay stable; `docs.json` decides where each page
 - `browser-agents/`: browser tasks, lifecycle, and streaming
 - `ai-gateway/`: AI Gateway guides and reference
 - `mcp/`: product tool reference
-- `scripts/`: offline documentation checks
+- `scripts/`: offline documentation checks, and `changelog-gaps.mjs` for changelog upkeep
 - `snippets/`: shared fact snippets (`*.mdx`) and reusable visuals (`*.jsx`); `styles.css` styles the visuals

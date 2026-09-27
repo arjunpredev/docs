@@ -1,6 +1,7 @@
 ---
 title: "Audio"
 description: "POST /v1/audio/speech for text to speech and music, POST /v1/audio/transcriptions for speech to text."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/audio/speech"
 ---
 
 Both endpoints take the OpenAI-compatible speech and transcription request bodies and return the matching responses. Speech and music models appear in the main [catalog](/ai-gateway/api/models) with `audio` in `architecture.output_modalities`.

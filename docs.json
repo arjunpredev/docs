@@ -12,7 +12,10 @@
   },
   "favicon": "/images/favicon.ico",
   "api": {
-    "openapi": "api-reference/openapi.json",
+    "openapi": [
+      "api-reference/openapi.json",
+      "api-reference/ai-gateway.openapi.json"
+    ],
     "playground": {
       "display": "interactive"
     },
@@ -337,6 +340,10 @@
     {
       "source": "/browser-agents/mcp-tool",
       "destination": "/mcp/tools"
+    },
+    {
+      "source": "/for-agents",
+      "destination": "/agents"
     }
   ],
   "navigation": {
@@ -348,7 +355,7 @@
             "group": "Get started",
             "pages": [
               "overview",
-              "for-agents"
+              "agents"
             ]
           },
           {
@@ -504,14 +511,66 @@
               {
                 "group": "AI Gateway reference",
                 "pages": [
-                  "ai-gateway/api/chat-completions",
-                  "ai-gateway/api/messages",
-                  "ai-gateway/api/embeddings",
-                  "ai-gateway/api/images-and-video",
-                  "ai-gateway/api/audio",
-                  "ai-gateway/api/files",
-                  "ai-gateway/api/models",
-                  "ai-gateway/api/usage"
+                  {
+                    "group": "Chat",
+                    "pages": [
+                      "ai-gateway/api/chat-completions",
+                      "ai-gateway/api/messages",
+                      "ai-gateway/api/responses",
+                      "ai-gateway/api/completions"
+                    ]
+                  },
+                  {
+                    "group": "Embeddings",
+                    "pages": [
+                      "ai-gateway/api/embeddings",
+                      "ai-gateway/api/rerank"
+                    ]
+                  },
+                  {
+                    "group": "Images and video",
+                    "pages": [
+                      "ai-gateway/api/images-and-video",
+                      "ai-gateway/api/video-jobs",
+                      "ai-gateway/api/video-status",
+                      "ai-gateway/api/video-content"
+                    ]
+                  },
+                  {
+                    "group": "Audio",
+                    "pages": [
+                      "ai-gateway/api/audio",
+                      "ai-gateway/api/transcriptions"
+                    ]
+                  },
+                  {
+                    "group": "Files",
+                    "pages": [
+                      "ai-gateway/api/files",
+                      "ai-gateway/api/list-files",
+                      "ai-gateway/api/get-file",
+                      "ai-gateway/api/file-content",
+                      "ai-gateway/api/delete-file"
+                    ]
+                  },
+                  {
+                    "group": "Models",
+                    "pages": [
+                      "ai-gateway/api/models",
+                      "ai-gateway/api/model-count",
+                      "ai-gateway/api/public-models",
+                      "ai-gateway/api/embedding-models",
+                      "ai-gateway/api/image-models",
+                      "ai-gateway/api/video-models"
+                    ]
+                  },
+                  {
+                    "group": "Usage",
+                    "pages": [
+                      "ai-gateway/api/usage",
+                      "ai-gateway/api/generation"
+                    ]
+                  }
                 ]
               }
             ]
@@ -601,5 +660,37 @@
       "instagram": "https://www.instagram.com/predev.ai/",
       "discord": "https://discord.gg/ejVTRJ6WXS"
     }
+  },
+  "description": "Documentation for pre.dev: the coding agent on the web and in the terminal, Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), built-in payments, and the REST and MCP APIs.",
+  "seo": {
+    "metatags": {
+      "twitter:site": "@predotdev"
+    },
+    "organization": {
+      "name": "pre.dev",
+      "url": "https://pre.dev",
+      "sameAs": [
+        "https://www.linkedin.com/company/99516177/",
+        "https://x.com/predotdev",
+        "https://www.youtube.com/@predotdev",
+        "https://www.instagram.com/predev.ai/",
+        "https://discord.gg/ejVTRJ6WXS"
+      ]
+    }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_8ayngDr5zFcIOTbulDvje0PNMDwRrDHvKW2Patg4hmJ",
+      "apiHost": "https://us.i.posthog.com",
+      "sessionRecording": false
+    }
+  },
+  "markdown": {
+    "instructions": [
+      "Agents: start with https://docs.pre.dev/agents.md, which has complete recipes, plan access, polling rules, errors and limits.",
+      "Authenticate with the workspace API key (pdk_…) from Integrations → Built-in, sent as Authorization: Bearer <key>.",
+      "REST API: https://api.pre.dev (OpenAPI: https://docs.pre.dev/api-reference/openapi.json). AI Gateway: https://api.pre.dev/v1, OpenAI-compatible (OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json).",
+      "pre.dev MCP server: https://api.pre.dev/mcp. Search these docs over MCP at https://docs.pre.dev/mcp."
+    ]
   }
 }

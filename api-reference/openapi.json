@@ -115,6 +115,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalid_input": {
+                    "summary": "No input or file",
+                    "value": {
+                      "error": "Invalid input",
+                      "message": "Please provide either a file upload or input text describing your spec"
+                    }
+                  },
+                  "invalid_doc_urls": {
+                    "summary": "docURLs is not an array",
+                    "value": {
+                      "error": "Invalid docURLs",
+                      "message": "docURLs must be an array of strings"
+                    }
+                  }
                 }
               }
             }
@@ -125,6 +141,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -135,6 +174,11 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Insufficient credits",
+                  "message": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan.",
+                  "generationsAvailable": 0
                 }
               }
             }
@@ -145,6 +189,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Free trials exhausted",
+                  "message": "You have used all 3 of your free API trials. Please subscribe to Solo Premium to continue.",
+                  "requiresSubscription": true,
+                  "trialsUsed": 3,
+                  "maxTrials": 3
                 }
               }
             }
@@ -155,6 +206,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to generate fast spec",
+                  "message": "Generation failed. Retry the request."
                 }
               }
             }
@@ -254,6 +309,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalid_input": {
+                    "summary": "No input or file",
+                    "value": {
+                      "error": "Invalid input",
+                      "message": "Please provide either a file upload or input text describing your spec"
+                    }
+                  }
                 }
               }
             }
@@ -264,6 +328,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -274,6 +361,11 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Insufficient credits",
+                  "message": "You have insufficient credits to generate a spec. Please purchase more credits or upgrade your plan.",
+                  "generationsAvailable": 0
                 }
               }
             }
@@ -284,6 +376,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Free trials exhausted",
+                  "message": "You have used all 3 of your free API trials. Please subscribe to Solo Premium to continue.",
+                  "requiresSubscription": true,
+                  "trialsUsed": 3,
+                  "maxTrials": 3
                 }
               }
             }
@@ -294,6 +393,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to generate deep spec",
+                  "message": "Generation failed. Retry the request."
                 }
               }
             }
@@ -334,6 +437,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SpecResponse"
+                },
+                "example": {
+                  "_id": "507f1f77bcf86cd799439011",
+                  "endpoint": "fast_spec",
+                  "status": "completed",
+                  "success": true,
+                  "progress": 100,
+                  "input": "Build a team task manager with projects, assignees, and due dates.",
+                  "codingAgentSpecMarkdown": "# Task manager\n\nProjects, assignments, and due dates."
                 }
               }
             }
@@ -344,6 +456,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid request ID",
+                  "message": "Please provide a valid request ID"
                 }
               }
             }
@@ -354,6 +470,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -364,6 +503,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid API Key or Domain"
                 }
               }
             }
@@ -374,6 +516,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Request not found",
+                  "message": "The specified request ID does not exist or you do not have access to it"
                 }
               }
             }
@@ -384,6 +530,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to fetch request status",
+                  "message": "Retry the request."
                 }
               }
             }
@@ -455,16 +605,19 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListSpecsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "specs": [
+                    {
+                      "_id": "507f1f77bcf86cd799439011",
+                      "endpoint": "fast_spec",
+                      "status": "completed",
+                      "success": true,
+                      "input": "Build a team task manager with projects, assignees, and due dates."
+                    }
+                  ],
+                  "total": 1,
+                  "hasMore": false
                 }
               }
             }
@@ -475,6 +628,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -485,6 +661,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid API Key or Domain"
                 }
               }
             }
@@ -495,6 +674,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to list specs",
+                  "message": "Retry the request."
                 }
               }
             }
@@ -576,6 +759,19 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListSpecsResponse"
+                },
+                "example": {
+                  "specs": [
+                    {
+                      "_id": "507f1f77bcf86cd799439011",
+                      "endpoint": "deep_spec",
+                      "status": "completed",
+                      "success": true,
+                      "input": "Add Stripe billing to the task manager."
+                    }
+                  ],
+                  "total": 1,
+                  "hasMore": false
                 }
               }
             }
@@ -586,6 +782,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid search query",
+                  "message": "Please provide a search query parameter"
                 }
               }
             }
@@ -596,6 +796,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -606,6 +829,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid API Key or Domain"
                 }
               }
             }
@@ -616,6 +842,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to search specs",
+                  "message": "Retry the request."
                 }
               }
             }
@@ -638,6 +868,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreditsBalanceResponse"
+                },
+                "example": {
+                  "success": true,
+                  "creditsRemaining": 412.5
                 }
               }
             }
@@ -648,6 +882,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
                 }
               }
             }
@@ -658,6 +915,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid API Key or Domain"
                 }
               }
             }
@@ -668,6 +928,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to retrieve credits balance",
+                  "message": "Retry the request."
                 }
               }
             }
@@ -783,6 +1047,42 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_instruction": {
+                    "summary": "Task has no instruction or output schema",
+                    "value": {
+                      "error": "Task 1: Describe what the agent should do, or provide an output schema.",
+                      "code": "MISSING_INSTRUCTION",
+                      "taskIndex": 0,
+                      "field": "instruction"
+                    }
+                  },
+                  "invalid_url": {
+                    "summary": "Task URL rejected",
+                    "value": {
+                      "error": "Task 1: Enter a full website URL, such as https://example.com.",
+                      "code": "INVALID_URL",
+                      "taskIndex": 0,
+                      "field": "url"
+                    }
+                  },
+                  "batch_too_large": {
+                    "summary": "Too many tasks",
+                    "value": {
+                      "error": "A batch can contain at most 1000 tasks.",
+                      "code": "BATCH_TOO_LARGE"
+                    }
+                  },
+                  "url_unreachable": {
+                    "summary": "Domain has no DNS address",
+                    "value": {
+                      "error": "Task 1: We couldn't find the website example.invalid. Check the URL and try again. No tasks were started.",
+                      "code": "URL_UNREACHABLE",
+                      "taskIndex": 0,
+                      "field": "url"
+                    }
+                  }
                 }
               }
             }
@@ -793,6 +1093,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -803,6 +1119,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "insufficient_credits": {
+                    "summary": "Not enough credits",
+                    "value": {
+                      "error": "Need ~0.5 credits, have 0.00. Buy more to continue.",
+                      "code": "INSUFFICIENT_CREDITS",
+                      "actionUrl": "https://pre.dev/projects/browser-agents?upgrade=credits"
+                    }
+                  },
+                  "subscription_required": {
+                    "summary": "Free allowance used",
+                    "value": {
+                      "error": "Free accounts can spend up to 2 credits on browser agents. You've used 2.00. Subscribe to keep going.",
+                      "code": "SUBSCRIPTION_REQUIRED",
+                      "actionUrl": "https://pre.dev/projects/browser-agents?upgrade=subscribe"
+                    }
+                  }
                 }
               }
             }
@@ -813,6 +1147,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Rate limit: 600 requests/minute. Try again in a minute.",
+                  "code": "RATE_LIMITED"
                 }
               }
             }
@@ -823,6 +1161,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error"
                 }
               }
             }
@@ -833,6 +1174,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "url_check_unavailable": {
+                    "summary": "Website verification unavailable",
+                    "value": {
+                      "error": "Website verification timed out or is temporarily unavailable. Please try again. No tasks were started.",
+                      "code": "URL_CHECK_UNAVAILABLE",
+                      "field": "url"
+                    }
+                  },
+                  "stream_capacity": {
+                    "summary": "Streaming capacity full (stream: true)",
+                    "value": {
+                      "error": "SSE capacity exceeded on this pod (5000/5000). Retry with async=true and poll GET /browser-agent/:id."
+                    }
+                  }
                 }
               }
             }
@@ -932,6 +1289,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "invalid batch id"
                 }
               }
             }
@@ -942,6 +1302,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -952,6 +1328,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "batch not found"
                 }
               }
             }
@@ -962,6 +1341,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Authentication failed",
+                  "message": "Retry the request."
                 }
               }
             }
@@ -1020,6 +1403,23 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListBatchesResponse"
+                },
+                "example": {
+                  "batches": [
+                    {
+                      "id": "507f1f77bcf86cd799439011",
+                      "name": "Example heading",
+                      "status": "completed",
+                      "total": 1,
+                      "completed": 1,
+                      "totalCreditsUsed": 0.1,
+                      "createdAt": "2026-09-27T12:00:00.000Z",
+                      "completedAt": "2026-09-27T12:00:21.000Z",
+                      "results": []
+                    }
+                  ],
+                  "total": 1,
+                  "hasMore": false
                 }
               }
             }
@@ -1030,6 +1430,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -1040,6 +1456,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error"
                 }
               }
             }
@@ -1062,6 +1481,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BrowserAgentStatus"
+                },
+                "example": {
+                  "running": 2,
+                  "claimed": 0,
+                  "pending": 3,
+                  "total": 5,
+                  "cap": 25
                 }
               }
             }
@@ -1072,6 +1498,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -1082,6 +1524,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error"
                 }
               }
             }
@@ -1104,6 +1549,17 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BrowserCapacity"
+                },
+                "example": {
+                  "totalActive": 64,
+                  "maxSandboxes": 200,
+                  "perUserCap": 50,
+                  "pending": 12,
+                  "running": 60,
+                  "claimed": 4,
+                  "failed": 0,
+                  "utilization": 32,
+                  "oldestQueuedAgeMs": 1800
                 }
               }
             }
@@ -1114,6 +1570,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -1124,6 +1596,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error"
                 }
               }
             }
@@ -1158,6 +1633,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LiveBrowserResponse"
+                },
+                "example": {
+                  "url": "wss://browser-worker.example/ws/507f1f77bcf86cd799439011?token=3f1c0b9e2d4a7c58"
                 }
               }
             }
@@ -1168,6 +1646,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "invalid batch id"
                 }
               }
             }
@@ -1178,6 +1659,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -1188,6 +1685,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "not_found": {
+                    "summary": "Unknown batch",
+                    "value": {
+                      "error": "batch not found"
+                    }
+                  },
+                  "no_stream": {
+                    "summary": "No live stream for this batch",
+                    "value": {
+                      "error": "live stream not available"
+                    }
+                  }
                 }
               }
             }
@@ -1233,6 +1744,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "invalid batch id"
                 }
               }
             }
@@ -1243,6 +1757,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  }
                 }
               }
             }
@@ -1253,6 +1783,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "batch not found"
                 }
               }
             }
@@ -1263,6 +1796,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "SSE capacity exceeded on this pod (5000/5000). Fall back to polling GET /browser-agent/:id."
                 }
               }
             }
@@ -2228,8 +2764,11 @@
             "description": "Whether the request was successful"
           },
           "creditsRemaining": {
-            "type": "integer",
-            "description": "The number of remaining credits available for the user"
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Remaining credits. `null` on plans without a credit limit."
           }
         }
       },

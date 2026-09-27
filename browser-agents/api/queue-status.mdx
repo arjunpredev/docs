@@ -26,3 +26,12 @@ For example, a snapshot with `cap: 25` and `total: 20` suggests room for five ta
 The cap depends on the plan and service configuration. Read `cap` rather than hard-coding a number or assuming the 1,000-task request ceiling is your account limit.
 
 Node: `client.browserAgentStatus()`. Python: `client.browser_agent_status()` returns a dictionary. [Service capacity](/browser-agents/api/capacity) is a separate endpoint and does not replace your account's cap.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `401` | Missing or invalid key |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

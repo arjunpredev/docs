@@ -14,3 +14,12 @@ This endpoint returns service-level queue and execution statistics. Fields inclu
 The response is an advisory operational snapshot, not an admission guarantee or a forecast. Additional diagnostic fields may be returned. **Use [`GET /browser-agent-status`](/browser-agents/api/queue-status) and its `cap` field for your account's current limit**; the service snapshot's `perUserCap` is a legacy field.
 
 There is no dedicated method in the current SDKs or product MCP tools; call the endpoint with direct HTTP when needed.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `401` | Missing or invalid key |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).
