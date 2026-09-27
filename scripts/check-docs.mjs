@@ -117,6 +117,16 @@ for (const [slug, text] of pages) {
 for (const operation of operations) check(referenced.has(operation), `Missing reference page: ${operation}`);
 for (const operation of gatewayOperations) check(gatewayReferenced.has(operation), `Missing reference page: ${gatewaySpecPath} ${operation}`);
 
+// llms.txt is written by hand: one link per navigation page, unique titles, agent entry points first.
+const llms = await read('llms.txt');
+check(/^# \S/.test(llms), 'llms.txt must start with an H1 site title');
+check(Buffer.byteLength(llms) <= 16384, `llms.txt is ${Buffer.byteLength(llms)} bytes; keep it under 16 KB`);
+const llmsPages = [...llms.matchAll(/\]\(https:\/\/docs\.pre\.dev\/([^)\s]+)\.md\)/g)].map(m => m[1]).filter(page => page !== 'skill');
+for (const page of nav) check(llmsPages.includes(page), `llms.txt is missing ${page}`);
+for (const page of llmsPages) check(nav.includes(page), `llms.txt links a page that is not in the navigation: ${page}`);
+check(llmsPages.length === new Set(llmsPages).size, 'llms.txt lists a page twice');
+const llmsTitles = [...llms.matchAll(/^- \[([^\]]+)\]\(https:\/\/docs\.pre\.dev\/[^)\s]+\.md\)/gm)].map(m => m[1]);
+check(llmsTitles.length === new Set(llmsTitles).size, 'llms.txt link titles must be unique');
 
 // Custom visuals must compile, and links inside them need the same coverage as MDX.
 const snippets = files.filter(file => file.startsWith('snippets/') && file.endsWith('.jsx'));
@@ -245,4 +255,4 @@ if (sourceIndex !== -1) {
   console.log(`Source coverage: ${routes.size} REST operations, ${gatewayRoutes.size} AI Gateway operations and ${names.length} MCP registrations`);
 }
 assert.equal(failures.length, 0, failures.join('\n'));
-console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} REST and ${gatewayOperations.size} AI Gateway operations, ${openapiExamples} schema-checked OpenAPI examples, ${snippets.length} visual components, ${visualExamples} schema-checked visual states, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests`);
+console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} REST and ${gatewayOperations.size} AI Gateway operations, ${openapiExamples} schema-checked OpenAPI examples, ${snippets.length} visual components, ${visualExamples} schema-checked visual states, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests, ${llmsPages.length} llms.txt pages`);
