@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="604" viewBox="0 0 540 604" role="img" aria-labelledby="title desc">
+<title id="title">How money and events move in pre.dev Payments</title>
+<desc id="desc">Your app server starts Checkout through api.pre.dev with the Stripe SDK, on your workspace Stripe account. The customer pays on Stripe hosted Checkout. The money settles in your Stripe balance minus Stripe processing fees and any pre.dev platform fee, then Stripe pays out to your bank on your payout schedule. In parallel, pre.dev relays the Stripe event to POST /api/stripe/webhook on your app server, where your handler verifies it with STRIPE_WEBHOOK_SECRET and marks the order paid. In test mode no money moves and no fees are charged.</desc>
+<style>
+text{font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+.m{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+.b{font-weight:600}
+.cap{letter-spacing:.07em}
+.bg{fill:#141416;stroke:#2a2a2e}
+.n{fill:#1c1c1f;stroke:#3b3b41}
+.na{fill:#1f2940;stroke:#a9bff6}
+.soft{fill:#232327}
+.fa{fill:#a9bff6}
+.fsa{fill:#1f2940}
+.t1{fill:#ededed}
+.t2{fill:#bdbdbd}
+.t3{fill:#9a9a9f}
+.ta{fill:#b9ccf9}
+.ton{fill:#0e0e10}
+.ln{fill:none;stroke:#76767d}
+.lna{fill:none;stroke:#a9bff6}
+.hd{fill:#76767d}
+.hda{fill:#a9bff6}
+.rule{fill:none;stroke:#2c2c31}
+</style>
+<rect x="0.5" y="0.5" width="539" height="603" rx="12" class="bg"/>
+<rect x="20" y="20" width="500" height="90" rx="10" class="n"/>
+<circle cx="44" cy="46" r="12" class="n"/><text x="44" y="50.6" font-size="13" class="t2 b" text-anchor="middle">1</text>
+<text x="66" y="52" font-size="17" class="t1 b">Your app starts Checkout</text>
+<text x="66" y="75" font-size="14" class="t2">Its server calls Stripe with the Stripe SDK through</text>
+<text x="66" y="94" font-size="14" class="t2">api.pre.dev, on your workspace’s Stripe account.</text>
+<path d="M270 112L270 128" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M270 134L266.2 127L273.9 127Z" class="hd"/>
+<rect x="20" y="136" width="500" height="64" rx="10" class="na"/>
+<circle cx="44" cy="162" r="12" class="fa"/><text x="44" y="166.6" font-size="13" class="ton b" text-anchor="middle">2</text>
+<text x="66" y="168" font-size="17" class="t1 b">The customer pays</text>
+<text x="66" y="189" font-size="14" class="t2">on Stripe’s hosted Checkout page.</text>
+<path d="M270 202L270 214L141.5 214L141.5 252" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M141.5 258L137.7 251L145.4 251Z" class="hd"/>
+<path d="M270 214L398.5 214L398.5 252" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M398.5 258L394.7 251L402.4 251Z" class="hd"/>
+<text x="22" y="242" font-size="13" class="t3 b cap">MONEY</text>
+<text x="518" y="242" font-size="13" class="t3 b cap" text-anchor="end">EVENT</text>
+<rect x="20" y="260" width="243" height="124" rx="10" class="n"/>
+<circle cx="44" cy="286" r="12" class="n"/><text x="44" y="290.6" font-size="13" class="t2 b" text-anchor="middle">3</text>
+<text x="64" y="292" font-size="16" class="t1 b">Stripe settles</text>
+<text x="34" y="318" font-size="14" class="t2">The payment lands in your</text>
+<text x="34" y="337" font-size="14" class="t2">Stripe balance, minus</text>
+<text x="34" y="356" font-size="14" class="t2">Stripe’s processing fee and</text>
+<text x="34" y="375" font-size="14" class="t2">any pre.dev platform fee.</text>
+<rect x="277" y="260" width="243" height="124" rx="10" class="n"/>
+<circle cx="301" cy="286" r="12" class="n"/><text x="301" y="290.6" font-size="13" class="t2 b" text-anchor="middle">3</text>
+<text x="321" y="292" font-size="16" class="t1 b">pre.dev relays it</text>
+<text x="291" y="318" font-size="14" class="t2">The Stripe event goes to</text>
+<text x="291" y="337" font-size="14" class="t2">your app’s server:</text>
+<text x="291" y="356" font-size="14"><tspan class="t1 m" font-size="13.5">POST /api/stripe/webhook</tspan></text>
+<path d="M141.5 386L141.5 402" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M141.5 408L137.7 401L145.4 401Z" class="hd"/>
+<path d="M398.5 386L398.5 402" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M398.5 408L394.7 401L402.4 401Z" class="hd"/>
+<rect x="20" y="410" width="243" height="124" rx="10" class="n"/>
+<circle cx="44" cy="436" r="12" class="n"/><text x="44" y="440.6" font-size="13" class="t2 b" text-anchor="middle">4</text>
+<text x="64" y="442" font-size="16" class="t1 b">Stripe pays out</text>
+<text x="34" y="468" font-size="14" class="t2">to your bank account, on</text>
+<text x="34" y="487" font-size="14" class="t2">your Stripe payout schedule.</text>
+<text x="34" y="506" font-size="14" class="t2">The Stripe account is yours.</text>
+<rect x="277" y="410" width="243" height="124" rx="10" class="n"/>
+<circle cx="301" cy="436" r="12" class="n"/><text x="301" y="440.6" font-size="13" class="t2 b" text-anchor="middle">4</text>
+<text x="321" y="442" font-size="16" class="t1 b">Your handler runs</text>
+<text x="291" y="468" font-size="14" class="t2">It verifies the signature</text>
+<text x="291" y="487" font-size="14"><tspan class="t2">with </tspan><tspan class="t1 m" font-size="13.5">STRIPE_WEBHOOK_SECRET</tspan></text>
+<text x="291" y="506" font-size="14" class="t2">and marks the order paid.</text>
+<text x="20" y="564" font-size="14" class="t3">In test mode Checkout takes Stripe test cards: no money</text>
+<text x="20" y="584" font-size="14" class="t3">moves and no fees are charged.</text>
+</svg>
