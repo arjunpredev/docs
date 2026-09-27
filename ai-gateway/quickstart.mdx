@@ -1,5 +1,6 @@
 ---
 title: "AI Gateway quickstart"
+sidebarTitle: "Call a model"
 description: "Send a chat completion through api.pre.dev/v1 with curl or a stock SDK."
 ---
 
@@ -11,7 +12,7 @@ Send one chat completion to `deepseek/deepseek-v4.1-flash` and read the credits 
 
 <ApiKeyLocation />
 
-Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway calls in total, whatever its balance; after that, calls return `402` until the workspace subscribes. See [authentication](/api-reference/authentication) and [pricing](/ai-gateway/pricing).
+Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway calls in total, whatever its balance; after that, calls return `402` until the workspace subscribes. See [authentication](/api-reference/authentication) and [pricing](/coding-agent/plans-and-credits#ai-gateway-calls).
 
 ## Send a request
 
@@ -126,4 +127,4 @@ Add `-i` to the curl command to print them. In the SDKs, use the raw-response he
 
 Change `model` to any id from [`GET /v1/models`](/ai-gateway/api/models), for example `anthropic/claude-sonnet-5`, `google/gemini-3.8-flash`, or `openai/gpt-6-luna`. An id the catalog does not serve returns a `4xx` error; check the id against the catalog.
 
-Continue with [streaming](/ai-gateway/streaming), [tools and structured output](/ai-gateway/tools-and-structured-output), or [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Continue with [streaming](/ai-gateway/streaming), [tools and structured output](/ai-gateway/tools-and-structured-output), or [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).

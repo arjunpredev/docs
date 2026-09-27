@@ -28,7 +28,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 ```
 
-That is the whole integration. See [from a pre.dev app](/payments/from-a-predev-app) for the variables and the browser side, and [webhooks](/payments/webhooks) for event delivery.
+That is the whole integration. See [built into every app](/coding-agent/built-in#payments) for the variables and the browser side, and [webhooks](/payments/webhooks) for event delivery.
 
 Payment code runs on your app's server, in the project's sandbox. A [published](/coding-agent/building/publish) app serves only its built front end, so checkout and webhook routes are not available at its published address.
 

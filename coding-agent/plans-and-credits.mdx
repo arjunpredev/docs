@@ -1,10 +1,16 @@
 ---
 title: "Plans, credits, and pricing"
-sidebarTitle: "Plans and credits"
-description: "Plan prices and allowances, what uses credits, and which plans unlock each feature."
+sidebarTitle: "Plans, credits, and pricing"
+description: "Plan prices and allowances, what uses credits, how AI Gateway calls are priced, limits, and which plans unlock each feature."
 ---
 
-Credits pay for coding, planning, verification, browser tasks, and AI calls from apps you build. One credit is worth $0.10. Check your balance with `/balance` in the workspace or CLI.
+import CreditValue from "/snippets/credit-value.mdx";
+import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
+import Limits from "/snippets/limits.mdx";
+
+<CreditValue />
+
+Check your balance with `/balance` in the workspace or CLI.
 
 ## Plans
 
@@ -27,10 +33,34 @@ Each plan includes everything in the plans above it. A team workspace without a 
 | Verification | Each judge call is charged like a turn |
 | Images, video, and audio the agent generates | Charged per generation |
 | Fast and Deep specs | Variable; see the [Architect overview](/architect-agent/overview) for estimates |
-| Browser tasks | Every task is charged a 0.1-credit floor at submission, including tasks that fail; successful tasks can cost more |
-| AI calls from your apps | Each call at the model's credit price from [`GET /v1/models`](/ai-gateway/api/models); Free workspaces can spend 5 credits on these calls in total. See [AI Gateway pricing](/ai-gateway/pricing). |
+| Browser tasks | A floor per task at submission, and more for successful tasks that do more work |
+| AI calls from your apps | Each call at the model's credit price; see [AI Gateway calls](#ai-gateway-calls) |
 
-Browser submission charges the 0.1-credit floor for each task before execution. When a task finishes, a successful task is charged any usage above the floor, and a failed task keeps the floor. A submission can be rejected because of an account limit even when the overall balance is positive. Browser trial limits and in-flight caps are separate from your credit allowance.
+<BrowserCreditFloor />
+
+A browser submission can be rejected because of an account limit even when the overall balance is positive. Browser trial limits and in-flight caps are separate from your credit allowance.
+
+## AI Gateway calls
+
+Calls to the [AI Gateway](/ai-gateway/overview), including the AI features in apps you build on pre.dev, are charged from each call's metered usage at the model's credit price. The price per model is listed on [`GET /v1/models`](/ai-gateway/api/models): each row carries a `predev` object with `credits_per_m_input` and `credits_per_m_output` and, where the model has them, prices such as `credits_per_m_cache_read`, `credits_per_m_cache_write`, `credits_per_image`, and `credits_per_request`. Read those numbers rather than deriving prices yourself.
+
+Worked example: a model whose row lists `credits_per_m_input: 20` and `credits_per_m_output: 100` costs 0.2 credits for 10,000 input tokens plus 0.2 credits for 2,000 output tokens, so a call of that size settles at about 0.4 credits.
+
+- Plugin costs, such as web search, are part of the call's charge.
+- With `models` fallbacks, you pay the price of the model that answered.
+- Streams settle when they end. If your client disconnects mid-stream, the call is charged for what the model generated.
+- Video jobs are charged when a status poll reports completion, and submitting one needs at least 10 credits available. See [images and video](/ai-gateway/api/images-and-video).
+- Catalog reads are free.
+
+Non-streaming responses report the charge in `x-predev-credits-charged` and the balance in `x-predev-credits-remaining`. [`GET /v1/usage`](/ai-gateway/api/usage) breaks the last 1 to 90 days down by model and path.
+
+**Free allowance.** A Free workspace can spend 5 credits on gateway calls in total, whatever its credit balance. After that, every call returns `402` with code `subscription_required` until the workspace subscribes.
+
+**Out of credits.** A workspace without enough credits for a call gets `402` with code `insufficient_credits` before anything is sent to the model, so nothing is generated or charged. Turn on auto-recharge in billing to keep a live app running when the balance would otherwise reach zero. See [AI Gateway errors](/api-reference/errors#ai-gateway-errors).
+
+## Limits
+
+<Limits />
 
 ## Check usage and recover
 

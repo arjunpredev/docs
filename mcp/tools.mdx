@@ -3,7 +3,11 @@ title: "MCP tool reference"
 description: "The seven primary pre.dev tools, exact input names, result formats, and deprecated aliases."
 ---
 
-Connect once at **`https://api.pre.dev/mcp`** to use specification generation and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
+import McpUrl from "/snippets/mcp-url.mdx";
+
+<McpUrl />
+
+Connect once to use specification generation and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
 
 Call **`tools/list`** after initialization for the live input schemas. `GET /mcp/info` is a human-readable service inventory; it is not the protocol's tool-discovery method.
 
@@ -91,7 +95,67 @@ Limits apply to each task. Set explicit budgets for long flows; defaults can var
 
 Synchronous execution returns a **text summary**, which truncates task data. Retrieve `browser_agent_get` for full structured results. Async execution returns the ID in text so you can poll it.
 
-The MCP tool has no `stream` or `idempotencyKey` input. It emits live notifications during synchronous execution when the client supports them. See [browser MCP examples](/browser-agents/mcp-tool).
+The MCP tool has no `stream` or `idempotencyKey` input and no cancellation operation; closing the client does not stop browser work. It emits live notifications during synchronous execution when the client supports them. The same credit, batch-size, and account in-flight gates apply as in REST.
+
+### Extract structured data
+
+```json
+{
+  "tasks": [{
+    "url": "https://example.com",
+    "instruction": "Extract the main page heading.",
+    "output": {
+      "type": "object",
+      "properties": { "heading": { "type": "string" } },
+      "required": ["heading"]
+    },
+    "mode": "extract",
+    "maxSteps": 10,
+    "maxDurationSeconds": 120
+  }]
+}
+```
+
+The tool returns a text summary and run ID. Call `browser_agent_get` with that ID for the complete `structuredContent`, including `results[i].data`.
+
+### Run a longer workflow
+
+For a multi-step workflow, use `mode: "agent"`, give a concrete completion condition, and submit asynchronously:
+
+```json
+{
+  "tasks": [{
+    "url": "https://news.ycombinator.com/newest",
+    "instruction": "Open the next page using More, then collect the first five story titles and links.",
+    "successCondition": "The next page has been opened and five stories from that page have been collected.",
+    "output": {
+      "type": "object",
+      "properties": {
+        "stories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string" }
+            },
+            "required": ["title", "url"]
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      },
+      "required": ["stories"]
+    },
+    "mode": "agent",
+    "maxSteps": 20,
+    "maxDurationSeconds": 180
+  }],
+  "async": true
+}
+```
+
+Save the ID from the returned text, then call `browser_agent_get` every few seconds. Stop when batch `status` becomes `completed` or `failed`, and inspect each task's uppercase status. A completed batch does not mean every task succeeded.
 
 ## browser_agent_get
 
@@ -99,7 +163,7 @@ The MCP tool has no `stream` or `idempotencyKey` input. It emits live notificati
 { "id": "507f1f77bcf86cd799439011", "includeEvents": false }
 ```
 
-`id` is required; `includeEvents` is optional and defaults to false. `structuredContent` contains the [browser run](/browser-agents/api/task-status), including individual task outcomes and extracted data. Set `includeEvents` to true to retrieve timelines and screenshots.
+`id` is required; `includeEvents` is optional and defaults to false. `structuredContent` contains the [browser run](/browser-agents/api/task-status), including individual task outcomes and extracted data. Set `includeEvents` to true to retrieve timelines and any available screenshots. During synchronous execution, clients with logging support also receive `notifications/message`; these are MCP notification envelopes, not REST SSE frames, and heavy event data may be shortened.
 
 ## browser_agent_list
 

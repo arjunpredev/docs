@@ -4,12 +4,18 @@ description: "The public REST API for specifications, browser automation, AI mod
 ---
 
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
+import AuthHeaders from "/snippets/auth-headers.mdx";
+import BaseUrls from "/snippets/base-urls.mdx";
 
-All public REST endpoints use **`https://api.pre.dev`** as their base URL. Paths are mounted at the root: use `/browser-agent`, not `/api/v1/browser-agents`.
+<BaseUrls />
+
+REST paths are mounted at the root: use `/browser-agent`, not `/api/v1/browser-agents`. The AI Gateway is the one API under a prefix, `/v1`.
 
 <ApiKeyLocation />
 
-Send the key as `Authorization: Bearer $PREDEV_API_KEY`. Read [authentication](/api-reference/authentication) and [errors](/api-reference/errors) before building an integration.
+<AuthHeaders />
+
+Read [authentication](/api-reference/authentication) and [errors](/api-reference/errors) before building an integration.
 
 ## Specifications
 
@@ -36,7 +42,7 @@ Send the key as `Authorization: Bearer $PREDEV_API_KEY`. Read [authentication](/
 
 ## AI Gateway
 
-The [AI Gateway](/ai-gateway/overview) is the one API mounted under a prefix: **`https://api.pre.dev/v1`** is an OpenAI-compatible API for hundreds of models from every major lab, with the same key and credits. It covers chat completions, the Anthropic Messages shape, embeddings, images, video, audio, files, and a model catalog with credit prices. Point the stock OpenAI, Vercel AI, or Anthropic SDK at that base URL; see the [quickstart](/ai-gateway/quickstart) and [pricing](/ai-gateway/pricing).
+The [AI Gateway](/ai-gateway/overview) is an OpenAI-compatible API for hundreds of models from every major lab, with the same key and credits. It covers chat completions, the Anthropic Messages shape, embeddings, images, video, audio, files, and a model catalog with credit prices. Point the stock OpenAI, Vercel AI, or Anthropic SDK at that base URL; see the [quickstart](/ai-gateway/quickstart) and [pricing](/coding-agent/plans-and-credits#ai-gateway-calls).
 
 ## SDKs and MCP
 

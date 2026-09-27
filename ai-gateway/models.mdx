@@ -7,7 +7,7 @@ The gateway serves hundreds of models from every major lab. Use the model id exa
 
 Example ids: `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, and `openai/gpt-6-luna`.
 
-Some models also have variant ids in the catalog, such as a `:free` or `:batch` suffix; use them exactly as listed. Append `:online` to a model id to add web search, the same as the `web` plugin. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Some models also have variant ids in the catalog, such as a `:free` or `:batch` suffix; use them exactly as listed. Append `:online` to a model id to add web search, the same as the `web` plugin. See [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).
 
 ## List models with prices
 
@@ -69,6 +69,6 @@ print(cheapest["id"], cheapest["predev"])
 
 ## Invalid ids
 
-An id the catalog does not serve returns a `4xx` error in the OpenAI error shape. The message keeps what the model service said about the request; check the id against [`GET /v1/models`](/ai-gateway/api/models). See [errors](/ai-gateway/api/errors).
+An id the catalog does not serve returns a `4xx` error in the OpenAI error shape. The message keeps what the model service said about the request; check the id against [`GET /v1/models`](/ai-gateway/api/models). See [errors](/api-reference/errors#ai-gateway-errors).
 
-Send several ids in `models` to fall back automatically. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Send several ids in `models` to fall back automatically. See [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).

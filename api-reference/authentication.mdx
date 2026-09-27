@@ -4,8 +4,13 @@ description: "One pre.dev API key for REST, the AI Gateway, the SDKs, and MCP: w
 ---
 
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
+import AuthHeaders from "/snippets/auth-headers.mdx";
+import BaseUrls from "/snippets/base-urls.mdx";
+import McpUrl from "/snippets/mcp-url.mdx";
 
-Every pre.dev interface uses the same workspace key: specifications and browser tasks over REST, the AI Gateway at `/v1`, the SDKs, and the MCP server.
+Every pre.dev interface uses the same workspace key: specifications and browser tasks over REST, the AI Gateway, the SDKs, and the MCP server.
+
+<BaseUrls />
 
 ## Get your key
 
@@ -19,10 +24,7 @@ Keys issued before workspace keys existed keep working. Use the `pdk_` key for n
 
 ## Send the key
 
-| Interface | Send |
-| --- | --- |
-| REST and AI Gateway | `Authorization: Bearer <key>` (recommended) or `x-api-key: <key>` |
-| MCP | Browser sign-in (OAuth) in interactive clients, or `Authorization: Bearer <key>`, `x-api-key`, or `predev-api-key` |
+<AuthHeaders />
 
 ```bash
 curl --fail-with-body https://api.pre.dev/browser-agent-status \
@@ -69,4 +71,6 @@ client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
 
 ## MCP sign-in
 
-Add `https://api.pre.dev/mcp` to your client's remote HTTP servers, then use the client's authentication flow. The browser asks you to sign in and choose the personal account or team to connect. [MCP setup](/architect-agent/mcp-setup) covers client configuration and troubleshooting.
+<McpUrl />
+
+Add it to your client's remote HTTP servers, then use the client's authentication flow. The browser asks you to sign in and choose the personal account or team to connect. [MCP setup](/architect-agent/mcp-setup) covers client configuration and troubleshooting.

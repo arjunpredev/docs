@@ -4,6 +4,7 @@ description: "Run browser workflows and extract structured data through REST, SD
 ---
 
 import { Workflow } from "/snippets/workflow.jsx";
+import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
 
 Give Browser Agents a starting URL and a task. It navigates pages, interacts with forms and controls, and returns task outcomes with data and an optional execution timeline.
 
@@ -11,7 +12,7 @@ Give Browser Agents a starting URL and a task. It navigates pages, interacts wit
   <Card title="Run your first task" icon="play" href="/browser-agents/quickstart">
     Extract a page heading with curl, Python, or TypeScript.
   </Card>
-  <Card title="Use an MCP tool" icon="plug" href="/browser-agents/mcp-tool">
+  <Card title="Use an MCP tool" icon="plug" href="/mcp/tools#browser_agent">
     Give your assistant browser automation and structured results.
   </Card>
 </CardGroup>
@@ -57,7 +58,9 @@ Task counts, account in-flight limits, and per-run concurrency are different con
 
 ## Credits
 
-Every task is charged a **0.1-credit floor** when you submit it, so you need available credits to start. Successful tasks can cost more for more complex work. Failed tasks are charged the 0.1-credit floor and nothing more. Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
+<BrowserCreditFloor />
+
+Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
 
 ## Benchmark
 

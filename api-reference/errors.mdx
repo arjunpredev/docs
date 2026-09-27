@@ -1,6 +1,6 @@
 ---
 title: "Errors and retries"
-description: "Handle HTTP failures, browser task outcomes, stream errors, and safe retries."
+description: "Handle HTTP failures, browser task outcomes, AI Gateway error codes, stream errors, and safe retries."
 ---
 
 Check the HTTP status before parsing a success response. Successful HTTP delivery and successful task execution are separate: a browser batch can return HTTP `200` with individual task failures, and a specification status request can return HTTP `200` with `status: "failed"`.
@@ -11,7 +11,7 @@ Check the HTTP status before parsing a success response. Successful HTTP deliver
 | --- | --- | --- |
 | `400` | Missing input, invalid ID, or an oversized browser batch | Correct the request |
 | `401` | Missing/invalid credentials, or the account cannot authenticate for this interface | Check the key and [account access](/api-reference/authentication) |
-| `402` | Insufficient credits or a browser subscription requirement | Read the message and any `actionUrl` |
+| `402` | Insufficient credits or a subscription requirement | Read the message and any `actionUrl` |
 | `403` | Access denied or specification trial exhausted | Check account context and plan eligibility |
 | `404` | Resource missing or inaccessible | Check the returned ID and the caller |
 | `429` | Rate limit or browser in-flight limit reached | Back off; inspect your [queue](/browser-agents/api/queue-status) |
@@ -44,15 +44,90 @@ Input validation errors may include a zero-based `taskIndex` and a `field`. Vali
 
 These codes belong to Browser Agents. Do not assume an Architect `402` has a browser gate code.
 
+## AI Gateway errors
+
+Errors from `https://api.pre.dev/v1` use the OpenAI error shape with an extra `predev` object, so the OpenAI and Anthropic SDKs raise them as their usual typed exceptions.
+
+```json
+{
+  "error": {
+    "message": "This pre.dev workspace has no credits left for AI calls. Top up at https://pre.dev/billing or enable auto-recharge.",
+    "type": "insufficient_credits",
+    "code": "insufficient_credits",
+    "param": null,
+    "predev": {
+      "credits_remaining": 0,
+      "estimated_credits": 1.4,
+      "topup_url": "https://pre.dev/billing"
+    }
+  }
+}
+```
+
+| Code | HTTP | Cause | `predev` fields | Handling |
+| --- | --- | --- | --- | --- |
+| `invalid_request` | `400` | A speech request without `model` and `input`, or with a model that does not produce audio | `available_models` for a wrong model | Fix the request |
+| `missing_id` | `400` | `GET /v1/generation` without `id` | | Send the generation id |
+| `missing_api_key` | `401` | No `Authorization` or `x-api-key` header | | Send the key; see [authentication](/api-reference/authentication) |
+| `invalid_api_key` | `401` | Key unknown, or rotated more than 15 minutes ago | | Copy the current key from **Integrations → Built-in** |
+| `insufficient_credits` | `402` | The balance cannot cover the call; nothing was sent to the model | `credits_remaining`, `estimated_credits`, `topup_url` | Add credits or enable auto-recharge |
+| `subscription_required` | `402` | A Free workspace used its 5-credit gateway allowance | `credits_remaining`, `trial_credits_used`, `topup_url` | Subscribe |
+| `not_found` | `404` | Unknown path, or a file, job, or generation that belongs to another workspace | | Check the path and id |
+| `not_ready` | `404` | The generation's stats are not recorded yet | | Retry in a few seconds |
+| `rate_limit_exceeded` | `429` | More than the per-minute request limit | `retry_after` | Wait `Retry-After` seconds, then retry |
+| `too_many_auth_failures` | `429` | Too many failed key attempts from one address | `retry_after` | Check the key, then retry after a minute |
+| `internal_error` | `500` | An unexpected gateway error | | Retry, and quote `x-predev-request-id` if it persists |
+| `upstream_unavailable` | `502` | The model did not answer | | Retry with backoff; consider `models` fallbacks |
+| `balance_unavailable` | `503` | The balance check could not complete | `retry_after` | Wait `Retry-After` seconds, then retry |
+
+The error `type` follows the OpenAI convention for the status, for example `authentication_error` for `401` and `rate_limit_error` for `429`; for `402` it repeats the code. A `429` also sets `Retry-After`. [Rate limits](/coding-agent/plans-and-credits#limits) lists the per-minute limits.
+
+```json
+{
+  "error": {
+    "message": "The free trial includes 5 credits of AI calls and this workspace has used them. Subscribe at https://pre.dev/billing to keep going.",
+    "type": "subscription_required",
+    "code": "subscription_required",
+    "param": null,
+    "predev": {
+      "credits_remaining": 18,
+      "trial_credits_used": 5,
+      "topup_url": "https://pre.dev/billing"
+    }
+  }
+}
+```
+
+When the model rejects a request, for example an unknown model id, a malformed request, or an unsupported parameter, the error keeps its HTTP status and its message about the request, in the same OpenAI error shape. Check the model id against [`GET /v1/models`](/ai-gateway/api/models) first.
+
+The OpenAI and Anthropic SDKs raise typed exceptions by status: `AuthenticationError` (401), `RateLimitError` (429), `NotFoundError` (404), and `APIStatusError` with the original `status` for 402, 502, and 503. Read `error.code` from the body to tell `insufficient_credits` from `subscription_required`, and `x-predev-request-id` from the response headers when reporting a problem.
+
+```typescript
+import OpenAI from 'openai';
+
+try {
+  await client.chat.completions.create({ model: 'anthropic/claude-sonnet-5', messages });
+} catch (error) {
+  if (error instanceof OpenAI.APIError) {
+    const code = (error.error as any)?.code;
+    if (code === 'insufficient_credits') redirectTo((error.error as any).predev.topup_url);
+    else if (error.status === 429) scheduleRetry(Number(error.headers?.get('retry-after') ?? 5));
+    else throw error;
+  }
+}
+```
+
 ## Streaming failures
 
 Once SSE response headers have been sent, a failure arrives as an `event: error` frame, even though the HTTP status is `200`. The browser SDKs raise an exception for these frames. A disconnected stream or EOF without `done` does not establish success; fetch the run by its saved ID.
 
 The existing-run stream's `done` payload contains only the batch status. Fetch the final result after it. The submission stream's `done` payload contains the full batch. See [streaming](/browser-agents/api/stream-task).
 
+AI Gateway streams that fail after headers are sent end early; the charge covers what the model generated. See [gateway streaming](/ai-gateway/streaming).
+
 ## Retry submissions
 
-For REST browser requests, send a stable **`Idempotency-Key`** header. If a run with the same caller/key already exists from the last 24 hours, the API returns that run as JSON instead of creating a new one—even if the retry requested streaming. Keep the payload the same and use a new key for intentional new work. The API does not compare payloads for you.
+For REST browser requests, send a stable **`Idempotency-Key`** header. If a run with the same caller/key already exists from the last 24 hours, the API returns that run as JSON instead of creating a new one, even if the retry requested streaming. Keep the payload the same and use a new key for intentional new work. The API does not compare payloads for you.
 
 Do not rely on this lookup as a lock for simultaneous duplicate requests. Serialize retries of the same logical submission.
 
@@ -60,6 +135,6 @@ Specification generation has no documented idempotency key. If a request times o
 
 ## SDK exceptions
 
-Both SDKs provide `AuthenticationError`, `RateLimitError`, and `PredevAPIError`. Browser gate codes also map to `SubscriptionRequiredError`, `InsufficientCreditsError`, `QueueFullError`, and `BatchTooLargeError`. Billing exceptions may include `actionUrl` in Node or `action_url` in Python.
+Both `predev-api` SDKs provide `AuthenticationError`, `RateLimitError`, and `PredevAPIError`. Browser gate codes also map to `SubscriptionRequiredError`, `InsufficientCreditsError`, `QueueFullError`, and `BatchTooLargeError`. Billing exceptions may include `actionUrl` in Node or `action_url` in Python.
 
 The Node base exception exposes `message`; Python exceptions can be read with `str(error)`. Neither SDK exposes a `statusCode` / `status_code` property on its base exception. Use direct HTTP when your application needs the original status, headers, and full response body.

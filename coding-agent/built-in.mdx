@@ -1,26 +1,194 @@
 ---
 title: "Built into every app"
-sidebarTitle: "Built-in services"
-description: "AI, payments, and sign-in come wired into apps you build on pre.dev, with their keys already in the project's environment."
+sidebarTitle: "AI, payments, and sign-in"
+description: "AI, Stripe payments, and user sign-in come wired into apps you build on pre.dev, with their keys already in the project's environment."
 ---
 
-Apps you build on pre.dev come with three services already set up. Their keys are in the project's environment, and the build agent uses them when your request needs them. See their status on **Integrations → Built-in**, in your workspace or in a project's settings.
+Apps you build on pre.dev come with three services already set up. Their keys are in the project's sandbox environment, where the app's server runs, and the build agent uses them when your request needs them. See their status on **Integrations → Built-in**, in your workspace or in a project's settings.
 
-| Service | Ask the agent for | Environment variables |
+| Service | Ask the agent for | Environment |
 | --- | --- | --- |
-| AI | "Add a summarize button", "let users chat with their documents" | `PREDEV_API_KEY`, `PREDEV_API_URL`, `PREDEV_PROJECT_ID` |
-| Payments | "Add a $9/month plan", "sell this as a one-time purchase" | `STRIPE_*`, listed in the [payments code guide](/payments/from-a-predev-app) |
-| Sign-in | "Users sign in with Google and see only their own orders" | `CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` |
+| [AI](#ai) | "Add a summarize button", "let users chat with their documents" | `PREDEV_API_KEY`, `PREDEV_API_URL`, `PREDEV_PROJECT_ID` |
+| [Payments](#payments) | "Add a $9/month plan", "sell this as a one-time purchase" | `STRIPE_*`, listed below |
+| [Sign-in](#sign-in) | "Users sign in with Google and see only their own orders" | `CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` |
 
-The variables are set in the project's sandbox, where the app's server runs. A [published](/coding-agent/building/publish) app serves its built front end and the AI route; server code keeps running in the sandbox.
+Everything the agent adds is ordinary code you can read and change. A [published](/coding-agent/building/publish) app serves its built front end and the AI route; server code, including payment and webhook routes, keeps running in the project's sandbox, which Preview and the Draft link reach.
 
 ## AI
 
-The app can call any model in the pre.dev catalog with the workspace key, billed to your credits. [From a pre.dev app](/ai-gateway/from-a-predev-app) shows browser and server code.
+The app can call any model in the pre.dev catalog through the [AI Gateway](/ai-gateway/overview), billed to your workspace's credits. The agent reads the model catalog, picks an id, and wires the call; ask it to list models with prices if you want to choose. Turn on auto-recharge in billing so a live app does not stop at zero.
+
+| Variable | Value |
+| --- | --- |
+| `PREDEV_API_KEY` | The workspace key, `pdk_…`. Server-side only. |
+| `PREDEV_API_URL` | `https://api.pre.dev` |
+| `PREDEV_PROJECT_ID` | This project's id, for usage attribution |
+
+### From browser code
+
+The key never reaches the browser. Apps on pre.dev's default web scaffold serve a same-origin route, `/predev-ai/`, that adds the key and the project id and sends the request on to `https://api.pre.dev/v1`. Browser code calls it with no key:
+
+```typescript
+const res = await fetch('/predev-ai/chat/completions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'deepseek/deepseek-v4.1-flash',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: 'Summarize this note in three bullets: …' }],
+  }),
+});
+const { choices } = await res.json();
+```
+
+Any gateway path works under the prefix: `/predev-ai/images`, `/predev-ai/audio/speech`, `/predev-ai/audio/transcriptions`, `/predev-ai/embeddings`, `/predev-ai/models`, and streaming responses. The route accepts requests only from the app's own pages, and request bodies up to 25 MB. `GET /__predev_ai` reports whether the route is on. The same route is part of a published app, so AI features keep working at its permanent address.
+
+### From server code
+
+Apps with their own server, such as Next.js, Express, or Hono, use a stock SDK with the variables above. Send `x-predev-project-id` so usage is attributed to the project; calls through `/predev-ai` carry it automatically.
+
+<CodeGroup>
+```typescript Node.js server route
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: `${process.env.PREDEV_API_URL}/v1`,
+  apiKey: process.env.PREDEV_API_KEY!,
+  defaultHeaders: { 'x-predev-project-id': process.env.PREDEV_PROJECT_ID ?? '' },
+});
+
+// POST /api/summarize  { text: string }
+export async function summarize(text: string) {
+  const completion = await client.chat.completions.create({
+    model: 'deepseek/deepseek-v4.1-flash',
+    messages: [
+      { role: 'system', content: 'Summarize the user text in three bullets.' },
+      { role: 'user', content: text },
+    ],
+  });
+  return completion.choices[0].message.content;
+}
+```
+```python Python server route
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=f"{os.environ['PREDEV_API_URL']}/v1",
+    api_key=os.environ["PREDEV_API_KEY"],
+    default_headers={"x-predev-project-id": os.environ.get("PREDEV_PROJECT_ID", "")},
+)
+
+
+# POST /api/summarize  {"text": "..."}
+def summarize(text: str) -> str:
+    completion = client.chat.completions.create(
+        model="deepseek/deepseek-v4.1-flash",
+        messages=[
+            {"role": "system", "content": "Summarize the user text in three bullets."},
+            {"role": "user", "content": text},
+        ],
+    )
+    return completion.choices[0].message.content
+```
+</CodeGroup>
+
+Only the workspace's own project ids count; other ids are ignored. [`GET /v1/usage`](/ai-gateway/api/usage) reports the attributed totals. Validate and rate-limit any route that spends credits. For local development outside the sandbox, set `PREDEV_API_KEY` to your key and `PREDEV_API_URL=https://api.pre.dev`; see [authentication](/api-reference/authentication).
 
 ## Payments
 
-Payments run on Stripe, in test mode while you build. The agent creates products and prices in code, wires Checkout, and handles the webhook events pre.dev relays to your app. Start with the [Payments overview](/payments/overview).
+Payments run on Stripe, in test mode while you build. The agent creates products and prices in code, wires Stripe Checkout, mounts the webhook handler, and tests the flow with a test card before handing it back. The [Payments overview](/payments/overview) explains how it works, [webhooks](/payments/webhooks) covers event delivery, and [go live](/payments/go-live) covers real payments.
+
+| Variable | Value |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | Your workspace's pre.dev key, tagged with the project. Only `api.pre.dev` accepts it. |
+| `STRIPE_API_HOST`, `STRIPE_API_PROTOCOL` | Where the Stripe SDK sends requests: `api.pre.dev` over `https` (plus `STRIPE_API_PORT` when it is not the default) |
+| `STRIPE_PUBLISHABLE_KEY` | Publishable key for Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
+| `STRIPE_ACCOUNT_ID` | Your workspace's Stripe account, `acct_…`, needed by Stripe.js (`VITE_` and `NEXT_PUBLIC_` copies exist) |
+| `STRIPE_WEBHOOK_SECRET` | This project's signing secret for relayed events |
+| `STRIPE_PAYMENTS_MODE` | `test` or `live`, the Stripe account this project uses |
+
+### Server side
+
+The Stripe SDK needs its host pointed at pre.dev. That is the only difference from any Stripe app.
+
+<CodeGroup>
+```typescript Node.js
+import Stripe from 'stripe';
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  host: process.env.STRIPE_API_HOST,
+  protocol: (process.env.STRIPE_API_PROTOCOL as 'https' | 'http') || 'https',
+  ...(process.env.STRIPE_API_PORT ? { port: Number(process.env.STRIPE_API_PORT) } : {}),
+});
+
+// POST /api/checkout  { priceId: string }
+export async function createCheckout(priceId: string, origin: string) {
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${origin}/billing?status=success`,
+    cancel_url: `${origin}/billing`,
+  });
+  return session.url;
+}
+```
+```python Python
+import os
+import stripe
+
+stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+stripe.api_base = (
+    f"{os.environ.get('STRIPE_API_PROTOCOL', 'https')}://{os.environ['STRIPE_API_HOST']}"
+    + (f":{os.environ['STRIPE_API_PORT']}" if os.environ.get("STRIPE_API_PORT") else "")
+)
+
+
+# POST /api/checkout  {"priceId": "..."}
+def create_checkout(price_id: str, origin: str) -> str:
+    session = stripe.checkout.Session.create(
+        mode="subscription",
+        line_items=[{"price": price_id, "quantity": 1}],
+        success_url=f"{origin}/billing?status=success",
+        cancel_url=f"{origin}/billing",
+    )
+    return session.url
+```
+</CodeGroup>
+
+Create products and prices in code and keep them idempotent, for example by looking a price up by `lookup_key` and creating it only when missing. There is no Stripe dashboard to click through while in test mode. `STRIPE_SECRET_KEY` can create refunds and read customers, so call Stripe from a server route, never from the browser.
+
+### Browser side
+
+Stripe Checkout needs no browser code beyond sending the user to `session.url`. The pre.dev preview runs your app inside an iframe, and Stripe Checkout refuses to render inside a frame, so open it in a new tab when framed:
+
+```ts
+const { url } = await fetch('/api/checkout', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ priceId }),
+}).then(r => r.json());
+if (window.self !== window.top) window.open(url, '_blank', 'noopener');
+else window.location.assign(url);
+```
+
+The build agent writes it this way. The same applies to the Billing Portal URL. If you use Stripe.js or Elements, initialize it with both public values, which are safe to ship to the client:
+
+```ts
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
+  stripeAccount: import.meta.env.VITE_STRIPE_ACCOUNT_ID,
+});
+```
+
+Without `stripeAccount`, Elements cannot find your account.
+
+### Activation and test cards
+
+The first time a workspace uses payments, pre.dev creates its test account. Stripe usually activates it in under a minute, occasionally a few. Until then a charge attempt returns HTTP 503 with code `payments_account_activating` and a `Retry-After` header. Nothing is misconfigured; retry shortly.
+
+In test mode, use card number `4242 4242 4242 4242` with any future expiry, any CVC, and any postal code. Stripe's other [test cards](https://docs.stripe.com/testing) work too, including the ones that decline.
 
 ## Sign-in
 
