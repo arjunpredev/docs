@@ -1527,17 +1527,38 @@
                 "schema": {
                   "$ref": "#/components/schemas/FileList"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "file-8Kz3pQ",
-                      "object": "file",
-                      "bytes": 1024000,
-                      "created_at": 1790500000,
-                      "filename": "contract.pdf",
-                      "purpose": "user_data"
+                "examples": {
+                  "openai_style": {
+                    "summary": "OpenAI-style fields",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "file-8Kz3pQ",
+                          "object": "file",
+                          "bytes": 1024000,
+                          "created_at": 1790500000,
+                          "filename": "contract.pdf",
+                          "purpose": "user_data"
+                        }
+                      ]
                     }
-                  ]
+                  },
+                  "extended": {
+                    "summary": "Extended fields",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "file-8Kz3pQ",
+                          "type": "file",
+                          "filename": "contract.pdf",
+                          "mime_type": "application/pdf",
+                          "size_bytes": 1024000,
+                          "created_at": "2026-09-27T12:00:00Z",
+                          "downloadable": false
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -1580,13 +1601,30 @@
                 "schema": {
                   "$ref": "#/components/schemas/File"
                 },
-                "example": {
-                  "id": "file-8Kz3pQ",
-                  "object": "file",
-                  "bytes": 1024000,
-                  "created_at": 1790500000,
-                  "filename": "contract.pdf",
-                  "purpose": "user_data"
+                "examples": {
+                  "openai_style": {
+                    "summary": "OpenAI-style fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "object": "file",
+                      "bytes": 1024000,
+                      "created_at": 1790500000,
+                      "filename": "contract.pdf",
+                      "purpose": "user_data"
+                    }
+                  },
+                  "extended": {
+                    "summary": "Extended fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "type": "file",
+                      "filename": "contract.pdf",
+                      "mime_type": "application/pdf",
+                      "size_bytes": 1024000,
+                      "created_at": "2026-09-27T12:00:00Z",
+                      "downloadable": false
+                    }
+                  }
                 }
               }
             }
@@ -1646,10 +1684,22 @@
                 "schema": {
                   "$ref": "#/components/schemas/FileDeleted"
                 },
-                "example": {
-                  "id": "file-8Kz3pQ",
-                  "object": "file",
-                  "deleted": true
+                "examples": {
+                  "openai_style": {
+                    "summary": "OpenAI-style fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "object": "file",
+                      "deleted": true
+                    }
+                  },
+                  "extended": {
+                    "summary": "Extended fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "type": "file_deleted"
+                    }
+                  }
                 }
               }
             }
@@ -3105,7 +3155,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "enum": [
+            "examples": [
               "web",
               "file-parser",
               "response-healing",
@@ -4435,12 +4485,24 @@
       },
       "FileDeleted": {
         "type": "object",
+        "description": "Deletion result: `{ id, object: \"file\", deleted: true }` in the OpenAI style, or `{ id, type: \"file_deleted\" }`.",
         "required": [
           "id"
         ],
         "properties": {
           "id": {
             "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "const": "file"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "const": "file_deleted"
           }
         },
         "additionalProperties": true
