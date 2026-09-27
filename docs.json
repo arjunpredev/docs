@@ -12,7 +12,10 @@
   },
   "favicon": "/images/favicon.ico",
   "api": {
-    "openapi": "api-reference/openapi.json",
+    "openapi": [
+      "api-reference/openapi.json",
+      "api-reference/ai-gateway.openapi.json"
+    ],
     "playground": {
       "display": "interactive"
     },
@@ -504,14 +507,66 @@
               {
                 "group": "AI Gateway reference",
                 "pages": [
-                  "ai-gateway/api/chat-completions",
-                  "ai-gateway/api/messages",
-                  "ai-gateway/api/embeddings",
-                  "ai-gateway/api/images-and-video",
-                  "ai-gateway/api/audio",
-                  "ai-gateway/api/files",
-                  "ai-gateway/api/models",
-                  "ai-gateway/api/usage"
+                  {
+                    "group": "Chat",
+                    "pages": [
+                      "ai-gateway/api/chat-completions",
+                      "ai-gateway/api/messages",
+                      "ai-gateway/api/responses",
+                      "ai-gateway/api/completions"
+                    ]
+                  },
+                  {
+                    "group": "Embeddings",
+                    "pages": [
+                      "ai-gateway/api/embeddings",
+                      "ai-gateway/api/rerank"
+                    ]
+                  },
+                  {
+                    "group": "Images and video",
+                    "pages": [
+                      "ai-gateway/api/images-and-video",
+                      "ai-gateway/api/video-jobs",
+                      "ai-gateway/api/video-status",
+                      "ai-gateway/api/video-content"
+                    ]
+                  },
+                  {
+                    "group": "Audio",
+                    "pages": [
+                      "ai-gateway/api/audio",
+                      "ai-gateway/api/transcriptions"
+                    ]
+                  },
+                  {
+                    "group": "Files",
+                    "pages": [
+                      "ai-gateway/api/files",
+                      "ai-gateway/api/list-files",
+                      "ai-gateway/api/get-file",
+                      "ai-gateway/api/file-content",
+                      "ai-gateway/api/delete-file"
+                    ]
+                  },
+                  {
+                    "group": "Models",
+                    "pages": [
+                      "ai-gateway/api/models",
+                      "ai-gateway/api/model-count",
+                      "ai-gateway/api/public-models",
+                      "ai-gateway/api/embedding-models",
+                      "ai-gateway/api/image-models",
+                      "ai-gateway/api/video-models"
+                    ]
+                  },
+                  {
+                    "group": "Usage",
+                    "pages": [
+                      "ai-gateway/api/usage",
+                      "ai-gateway/api/generation"
+                    ]
+                  }
                 ]
               }
             ]

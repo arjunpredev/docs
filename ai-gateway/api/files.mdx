@@ -1,6 +1,7 @@
 ---
 title: "Files"
 description: "Upload, list, fetch, and delete files scoped to your workspace."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/files"
 ---
 
 The files endpoints store documents for reuse across chat requests. Files are scoped to the workspace that uploaded them; another workspace's file id returns `404`.
@@ -58,13 +59,13 @@ curl --fail-with-body "https://api.pre.dev/v1/files/$FILE_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 
 curl --fail-with-body "https://api.pre.dev/v1/files/$FILE_ID/content" \
-  -H "Authorization: Bearer $PREDEV_API_KEY" -o contract.pdf
+  -H "Authorization: Bearer $PREDEV_API_KEY" -o file.bin
 
 curl --fail-with-body -X DELETE "https://api.pre.dev/v1/files/$FILE_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-In the SDKs these are `client.files.list()`, `client.files.retrieve(id)`, `client.files.content(id)`, and `client.files.delete(id)` (Node `client.files.del(id)` on older versions).
+Only files whose metadata says `downloadable: true` can be downloaded; a file you uploaded returns `400` from `/content`. In the SDKs these are `client.files.list()`, `client.files.retrieve(id)`, `client.files.content(id)`, and `client.files.delete(id)` (Node `client.files.del(id)` on older versions).
 
 ## Use a file in a request
 

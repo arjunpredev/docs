@@ -1,6 +1,7 @@
 ---
 title: "Images and video"
 description: "POST /v1/images for image generation; POST /v1/videos with polling for video jobs."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/images"
 ---
 
 Both endpoints take a `model` and a `prompt` and return generated images or video. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
@@ -25,28 +26,31 @@ Use `credits_per_image` or the other `predev` prices in the model row to estimat
 
 Video generation is asynchronous:
 
-1. `POST /v1/videos` submits the job and returns a job id.
-2. `GET /v1/videos/{jobId}` reports status.
-3. `GET /v1/videos/{jobId}/content` returns the finished video.
+1. [`POST /v1/videos`](/ai-gateway/api/video-jobs) submits the job and returns it with a `polling_url`.
+2. [`GET /v1/videos/{jobId}`](/ai-gateway/api/video-status), the `polling_url`, reports status.
+3. [`GET /v1/videos/{jobId}/content`](/ai-gateway/api/video-content) returns the finished video.
 
 ```bash
 MODEL=$(curl -s https://api.pre.dev/v1/videos/models \
   -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.data[0].id')
 
-JOB_ID=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
+POLL=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"model\": \"$MODEL\", \"prompt\": \"A paper boat drifting down a rain gutter\"}" | jq -r '.id')
+  -d "{\"model\": \"$MODEL\", \"prompt\": \"A paper boat drifting down a rain gutter\"}" | jq -r '.polling_url')
 
 # poll until the status is terminal
-curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID" \
-  -H "Authorization: Bearer $PREDEV_API_KEY"
+while :; do
+  STATUS=$(curl --fail-with-body -s "$POLL" -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.status')
+  case "$STATUS" in completed|failed|cancelled|expired) break ;; esac
+  sleep 5
+done
 
 # then download
-curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID/content" \
+curl --fail-with-body "$POLL/content" \
   -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
 ```
 
-Submitting a job needs at least 10 credits available. The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
+Submitting a job needs at least 10 credits available. The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (`completed`, `failed`, `cancelled` or `expired`) before reading `/content`. Use the `polling_url` from the submit response as the job's address.
 
 Jobs belong to the workspace that created them; another workspace's job id returns `404`.

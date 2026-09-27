@@ -12,6 +12,10 @@ const read = file => fs.readFile(path.join(root, file), 'utf8');
 const config = JSON.parse(await read('docs.json'));
 const api = JSON.parse(await read('api-reference/openapi.json'));
 await SwaggerParser.validate(structuredClone(api));
+// The AI Gateway has its own OpenAPI file; its reference pages bind to it by path.
+const gatewaySpecPath = 'api-reference/ai-gateway.openapi.json';
+const gateway = JSON.parse(await read(gatewaySpecPath));
+await SwaggerParser.validate(structuredClone(gateway));
 const failures = [];
 const check = (ok, message) => { if (!ok) failures.push(message); };
 async function walk(dir = '') {
@@ -48,8 +52,12 @@ for (const [source, destination] of redirects) {
 const edge = (await read('_redirects')).trim().split('\n').map(line => line.trim().split(/\s+/));
 check(edge.length === redirects.size && edge.every(([from, to, status]) => redirects.get(from) === to && status === '301!'), '_redirects must mirror docs.json');
 
-const operations = new Set(Object.entries(api.paths).flatMap(([url, methods]) => Object.keys(methods).filter(m => /^(get|post|put|patch|delete|head|options)$/.test(m)).map(m => `${m.toUpperCase()} ${url}`)));
+const operationsOf = spec => new Set(Object.entries(spec.paths).flatMap(([url, methods]) => Object.keys(methods).filter(m => /^(get|post|put|patch|delete|head|options)$/.test(m)).map(m => `${m.toUpperCase()} ${url}`)));
+const operations = operationsOf(api);
 const referenced = new Map();
+const gatewayOperations = operationsOf(gateway);
+const gatewayReferenced = new Map();
+check([].concat(config.api?.openapi ?? []).includes(gatewaySpecPath), `docs.json api.openapi must list ${gatewaySpecPath}`);
 let jsonExamples = 0;
 let curlExamples = 0;
 let visualExamples = 0;
@@ -57,19 +65,22 @@ const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
 const transform = value => JSON.parse(JSON.stringify(value).replaceAll('#/components/schemas/', '#/$defs/'));
 const defs = transform(api.components.schemas);
-function validate(schema, value, label) {
-  const validator = ajv.compile({ $defs: defs, ...transform(schema) });
+const gatewayDefs = transform(gateway.components.schemas);
+function validate(schema, value, label, schemaDefs = defs) {
+  const validator = ajv.compile({ $defs: schemaDefs, ...transform(schema) });
   check(validator(value), `${label}: ${ajv.errorsText(validator.errors)}`);
 }
 for (const [slug, text] of pages) {
   check(text.startsWith('---\n') && /^title:\s*[^\n]+/m.test(text.split('\n---\n')[0]), `Missing title/frontmatter: ${slug}`);
   check(/^description:\s*[^\n]+/m.test(text.split('\n---\n')[0]), `Missing description: ${slug}`);
   check(!/^api:\s/m.test(text), `Duplicate legacy API declaration: ${slug}`);
-  const operation = text.match(/^openapi:\s*["']?(?:\/api-reference\/openapi\.json )?((?:GET|POST|PUT|PATCH|DELETE) [^"'\n]+)["']?$/m)?.[1];
-  if (operation) {
-    check(operations.has(operation), `Unknown OpenAPI operation on ${slug}: ${operation}`);
-    check(!referenced.has(operation), `Duplicate reference for ${operation}`);
-    referenced.set(operation, slug);
+  const binding = text.match(/^openapi:\s*["']?(?:\/(api-reference\/(?:ai-gateway\.)?openapi\.json) )?((?:GET|POST|PUT|PATCH|DELETE) [^"'\n]+)["']?$/m);
+  if (binding) {
+    const [, specFile = 'api-reference/openapi.json', operation] = binding;
+    const [known, seen] = specFile === gatewaySpecPath ? [gatewayOperations, gatewayReferenced] : [operations, referenced];
+    check(known.has(operation), `Unknown OpenAPI operation on ${slug}: ${specFile} ${operation}`);
+    check(!seen.has(operation), `Duplicate reference for ${specFile} ${operation}`);
+    seen.set(operation, slug);
   }
   for (const match of text.matchAll(/```json[^\n]*\n([\s\S]*?)\n\s*```/g)) {
     try { JSON.parse(match[1]); jsonExamples++; }
@@ -93,16 +104,19 @@ for (const [slug, text] of pages) {
   for (const block of text.matchAll(/```(?:bash|shell)[^\n]*\n([\s\S]*?)\n\s*```/g)) {
     const shell = spawnSync('bash', ['-n'], { input: block[1], encoding: 'utf8' });
     check(shell.status === 0, `Invalid shell example on ${slug}: ${shell.stderr}`);
-    const url = block[1].match(/https:\/\/api\.pre\.dev(\/[\w-]+)/)?.[1];
+    const url = block[1].match(/https:\/\/api\.pre\.dev(\/v1\/[\w/-]+|\/[\w-]+)/)?.[1];
     const payload = block[1].match(/(?:-d|--data(?:-raw)?)\s+'([\s\S]*?)'/)?.[1];
     if (!url || !payload) continue;
-    const schema = api.paths[url]?.post?.requestBody?.content?.['application/json']?.schema;
+    const [spec, specDefs] = url.startsWith('/v1/') ? [gateway, gatewayDefs] : [api, defs];
+    const schema = spec.paths[url]?.post?.requestBody?.content?.['application/json']?.schema;
     if (!schema) continue;
-    try { validate(schema, JSON.parse(payload), `curl request on ${slug}`); curlExamples++; }
+    try { validate(schema, JSON.parse(payload), `curl request on ${slug}`, specDefs); curlExamples++; }
     catch (error) { failures.push(`Invalid curl JSON on ${slug}: ${error.message}`); }
   }
 }
 for (const operation of operations) check(referenced.has(operation), `Missing reference page: ${operation}`);
+for (const operation of gatewayOperations) check(gatewayReferenced.has(operation), `Missing reference page: ${gatewaySpecPath} ${operation}`);
+
 
 // Custom visuals must compile, and links inside them need the same coverage as MDX.
 const snippets = files.filter(file => file.startsWith('snippets/') && file.endsWith('.jsx'));
@@ -151,20 +165,26 @@ checkVisualExamples(lifecycle);
 check(visualExamples === 8, 'Expected four spec and four browser state examples');
 
 // Validate examples consumed by Mintlify's generated request/response panels.
-for (const [url, methods] of Object.entries(api.paths)) {
-  for (const operation of Object.values(methods)) {
-    for (const sample of operation['x-codeSamples'] || []) {
-      if (sample.lang === 'cURL') {
-        const shell = spawnSync('bash', ['-n'], {input:sample.source,encoding:'utf8'});
-        check(shell.status === 0, `Invalid generated curl sample ${url}: ${shell.stderr}`);
+// Every JSON response, errors included, carries at least one example.
+let openapiExamples = 0;
+for (const [spec, specDefs, file] of [[api, defs, 'api-reference/openapi.json'], [gateway, gatewayDefs, gatewaySpecPath]]) {
+  const resolve = response => (response?.$ref ? spec.components.responses[response.$ref.split('/').pop()] : response);
+  for (const [url, methods] of Object.entries(spec.paths)) {
+    for (const operation of Object.values(methods)) {
+      for (const sample of operation['x-codeSamples'] || []) {
+        if (sample.lang === 'cURL') {
+          const shell = spawnSync('bash', ['-n'], {input:sample.source,encoding:'utf8'});
+          check(shell.status === 0, `Invalid generated curl sample ${file} ${url}: ${shell.stderr}`);
+        }
       }
-    }
-    const containers = [operation.requestBody, ...Object.values(operation.responses || {})];
-    for (const container of containers) {
-      for (const [mediaType, content] of Object.entries(container?.content || {})) {
-        if (mediaType !== 'application/json' || !content.schema) continue;
-        if (content.example !== undefined) validate(content.schema, content.example, `OpenAPI example ${url}`);
-        for (const example of Object.values(content.examples || {})) validate(content.schema, example.value, `OpenAPI example ${url}`);
+      const containers = [['request', operation.requestBody], ...Object.entries(operation.responses || {}).map(([status, response]) => [status, resolve(response)])];
+      for (const [status, container] of containers) {
+        for (const [mediaType, content] of Object.entries(container?.content || {})) {
+          if (mediaType !== 'application/json' || !content.schema) continue;
+          const values = content.example !== undefined ? [content.example] : Object.values(content.examples || {}).map(example => example.value);
+          check(status === 'request' || values.length > 0, `Missing response example: ${file} ${url} ${status}`);
+          for (const value of values) { validate(content.schema, value, `OpenAPI example ${file} ${url} ${status}`, specDefs); openapiExamples++; }
+        }
       }
     }
   }
@@ -209,7 +229,20 @@ if (sourceIndex !== -1) {
   check(names.length > 0, 'Found no MCP tool registrations in services/MCP/server.ts; update the parser');
   const reference = pages.get('mcp/tools');
   for (const name of names) check(reference.includes('`'+name+'`'), `Undocumented MCP tool: ${name}`);
-  console.log(`Source coverage: ${routes.size} REST operations and ${names.length} MCP registrations`);
+  // AI Gateway: the JSON and multipart POST sets, the literal routes, and the mirrored catalog paths.
+  const gatewaySource = await fs.readFile(path.join(sourceRoot, 'predev-app/backend/src/routes/ai_gateway.ts'), 'utf8');
+  const catalogSource = await fs.readFile(path.join(sourceRoot, 'predev-app/backend/src/services/AiGateway/catalog.ts'), 'utf8');
+  const quoted = text => [...(text ?? '').matchAll(/'([^']+)'/g)].map(m => m[1]);
+  const setOf = name => quoted(gatewaySource.match(new RegExp(`const ${name} = new Set\\(\\[([\\s\\S]*?)\\]\\)`))?.[1]);
+  const gatewayRoutes = new Set([
+    ...[...setOf('JSON_POST_PATHS'), ...setOf('MULTIPART_POST_PATHS')].map(url => `POST /v1${url}`),
+    ...[...gatewaySource.matchAll(/router\.(get|post|put|patch|delete)\(\s*'([^']+)'/g)].map(([, method, url]) => `${method.toUpperCase()} /v1${url.replace(/:(\w+)/g, '{$1}')}`),
+    ...quoted(catalogSource.match(/CATALOG_PATHS = new Set\(\[([^\]]*)\]\)/)?.[1]).map(url => `GET /v1${url}`)
+  ]);
+  check(gatewayRoutes.size > 0, 'Found no AI Gateway routes in routes/ai_gateway.ts; update the parser');
+  for (const operation of gatewayRoutes) check(gatewayOperations.has(operation), `Undocumented AI Gateway route: ${operation}`);
+  for (const operation of gatewayOperations) check(gatewayRoutes.has(operation), `Documented AI Gateway route absent from source: ${operation}`);
+  console.log(`Source coverage: ${routes.size} REST operations, ${gatewayRoutes.size} AI Gateway operations and ${names.length} MCP registrations`);
 }
 assert.equal(failures.length, 0, failures.join('\n'));
-console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} operations, ${snippets.length} visual components, ${visualExamples} schema-checked visual states, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests`);
+console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} REST and ${gatewayOperations.size} AI Gateway operations, ${openapiExamples} schema-checked OpenAPI examples, ${snippets.length} visual components, ${visualExamples} schema-checked visual states, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests`);

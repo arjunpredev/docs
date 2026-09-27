@@ -2592,7 +2592,7 @@
                 "summary": "No key sent",
                 "value": {
                   "error": {
-                    "message": "Send your pre.dev API key as `Authorization: Bearer <key>` or `x-api-key`. Find it under Integrations → API Keys.",
+                    "message": "Send your pre.dev API key as `Authorization: Bearer <key>` or `x-api-key`. Copy it from Integrations → Built-in: https://pre.dev/projects/integrations",
                     "type": "authentication_error",
                     "code": "missing_api_key",
                     "param": null,

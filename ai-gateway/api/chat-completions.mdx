@@ -1,9 +1,10 @@
 ---
 title: "Chat completions"
 description: "POST /v1/chat/completions, /v1/completions, and /v1/responses in the OpenAI-compatible shape."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/chat/completions"
 ---
 
-`POST https://api.pre.dev/v1/chat/completions` takes the OpenAI-compatible chat completion request body and returns the chat completion response. `POST /v1/completions` (text completions) and `POST /v1/responses` (Responses API shape) work the same way with their own bodies.
+`POST https://api.pre.dev/v1/chat/completions` takes the OpenAI-compatible chat completion request body and returns the chat completion response. [`POST /v1/completions`](/ai-gateway/api/completions) (text completions) and [`POST /v1/responses`](/ai-gateway/api/responses) (Responses API shape) work the same way with their own bodies.
 
 <CodeGroup>
 ```bash curl

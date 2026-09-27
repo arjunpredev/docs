@@ -1,6 +1,7 @@
 ---
 title: "Model catalog"
 description: "Read-only catalog endpoints with credit prices, refreshed every 15 minutes."
+openapi: "/api-reference/ai-gateway.openapi.json GET /v1/models"
 ---
 
 The catalog lists every model the gateway serves, with pre.dev credit prices added. Reads are free, not rate-limited, and do not need credits.
@@ -8,10 +9,11 @@ The catalog lists every model the gateway serves, with pre.dev credit prices add
 | Method | Path | Returns |
 | --- | --- | --- |
 | GET | `/v1/models` | All models, each row with a `predev` price object |
-| GET | `/v1/models/count` | Number of models in `/v1/models` |
-| GET | `/v1/embeddings/models` | Embedding models |
-| GET | `/v1/images/models` | Image generation models |
-| GET | `/v1/videos/models` | Video generation models |
+| GET | [`/v1/models/count`](/ai-gateway/api/model-count) | Number of models in `/v1/models` |
+| GET | [`/v1/embeddings/models`](/ai-gateway/api/embedding-models) | Embedding models |
+| GET | [`/v1/images/models`](/ai-gateway/api/image-models) | Image generation models |
+| GET | [`/v1/videos/models`](/ai-gateway/api/video-models) | Video generation models |
+| GET | [`/v1/models/public`](/ai-gateway/api/public-models) | Every model with its lab and modalities and no prices; needs no key |
 
 ```bash
 curl --fail-with-body -i https://api.pre.dev/v1/models \

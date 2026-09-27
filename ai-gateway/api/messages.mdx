@@ -1,6 +1,7 @@
 ---
 title: "Messages"
 description: "POST /v1/messages in the Anthropic Messages shape, for the Anthropic SDK."
+openapi: "/api-reference/ai-gateway.openapi.json POST /v1/messages"
 ---
 
 `POST https://api.pre.dev/v1/messages` accepts the Anthropic Messages request body and returns the Anthropic response. Use it with the Anthropic SDK: set the client's `baseURL` to `https://api.pre.dev`, without `/v1`, because the SDK appends `/v1/messages` itself. Pass the pre.dev key as the API key; the SDK's `x-api-key` header is accepted.
