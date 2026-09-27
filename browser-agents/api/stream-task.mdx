@@ -34,7 +34,64 @@ An already-terminal run emits `snapshot`, then `done`, then closes. Keepalive li
 
 The stream has no event-ID replay contract. After a disconnect, fetch a fresh result or reconnect for a new snapshot; do not assume that every transient event will be replayed. Treat EOF without `done` as an interrupted stream and check status.
 
-The API also accepts `apiKey` as a query parameter for EventSource clients. Prefer header authentication with a streaming HTTP client to keep API keys out of URLs.
+## Read the stream in code
+
+Send the key in a header, as on every other endpoint, and read the response body as it arrives. The browser's `EventSource` cannot set headers, so use `fetch` or an HTTP client that streams.
+
+<CodeGroup>
+```typescript Node.js
+const response = await fetch(`https://api.pre.dev/browser-agent/${batchId}/stream`, {
+  headers: { Authorization: `Bearer ${process.env.PREDEV_API_KEY}` },
+});
+if (!response.ok || !response.body) throw new Error(`Stream failed: HTTP ${response.status}`);
+
+const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+let buffer = '';
+let finished = false;
+while (!finished) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  buffer += value;
+  let boundary;
+  while (!finished && (boundary = buffer.indexOf('\n\n')) !== -1) {
+    const frame = buffer.slice(0, boundary);
+    buffer = buffer.slice(boundary + 2);
+    const event = frame.match(/^event: (.+)$/m)?.[1];
+    const data = frame.match(/^data: (.*)$/m)?.[1];
+    if (!event || data === undefined) continue; // keepalive comment
+    if (event === 'error') throw new Error(JSON.parse(data).error);
+    if (event === 'done') finished = true;
+    console.log(event, JSON.parse(data));
+  }
+}
+// After done (or an interrupted stream), fetch GET /browser-agent/{id} for the final result.
+```
+```python Python
+import json
+import os
+import requests
+
+with requests.get(
+    f"https://api.pre.dev/browser-agent/{batch_id}/stream",
+    headers={"Authorization": f"Bearer {os.environ['PREDEV_API_KEY']}"},
+    stream=True,
+    timeout=(10, 120),
+) as response:
+    response.raise_for_status()
+    event = None
+    for line in response.iter_lines(decode_unicode=True):
+        if line.startswith("event: "):
+            event = line[len("event: "):]
+        elif line.startswith("data: ") and event:
+            data = json.loads(line[len("data: "):])
+            if event == "error":
+                raise RuntimeError(data.get("error"))
+            print(event, data)
+            if event == "done":
+                break
+# After done (or an interrupted stream), fetch GET /browser-agent/{id} for the final result.
+```
+</CodeGroup>
 
 ## Errors
 

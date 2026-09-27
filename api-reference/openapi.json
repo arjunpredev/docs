@@ -1274,9 +1274,6 @@
           },
           {
             "xApiKey": []
-          },
-          {
-            "streamQueryKey": []
           }
         ]
       }
@@ -1848,19 +1845,13 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "API key",
-        "description": "Use a pre.dev API key from https://pre.dev/projects/key."
+        "description": "Your pre.dev workspace API key (pdk_...) from Integrations, Built-in tab: https://pre.dev/projects/integrations?tab=built-in"
       },
       "xApiKey": {
         "type": "apiKey",
         "in": "header",
         "name": "x-api-key",
         "description": "Alternative to Authorization: Bearer."
-      },
-      "streamQueryKey": {
-        "type": "apiKey",
-        "in": "query",
-        "name": "apiKey",
-        "description": "GET batch stream only. Prefer a header: URLs can be recorded in logs."
       }
     },
     "schemas": {
@@ -3291,9 +3282,6 @@
       "BrowserAgentStatus": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string"
-          },
           "running": {
             "type": "integer"
           },
