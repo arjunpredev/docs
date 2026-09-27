@@ -25,7 +25,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 ```json
 {
-  "workspace": "…",
+  "workspace": "ws_3f9a1c07b2e4d5a8",
   "project": null,
   "credits_remaining": 412.5,
   "tier": "SoloPro",
@@ -56,7 +56,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 | Field | Meaning |
 | --- | --- |
-| `workspace` | The workspace the key belongs to |
+| `workspace` | An opaque, stable id (`ws_` and 16 hex characters) for the workspace the key belongs to |
 | `project` | The project named by `x-predev-project-id`, or `null` |
 | `credits_remaining` | Current balance; `null` when the workspace has no credit limit |
 | `tier` | Plan tier |

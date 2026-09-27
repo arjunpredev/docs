@@ -73,11 +73,12 @@ Errors from `https://api.pre.dev/v1` use the OpenAI error shape with an extra `p
 | `insufficient_credits` | `402` | The balance cannot cover the call; nothing was sent to the model | `credits_remaining`, `estimated_credits`, `topup_url` | Add credits or enable auto-recharge |
 | `subscription_required` | `402` | A Free workspace used its 5-credit gateway allowance | `credits_remaining`, `trial_credits_used`, `topup_url` | Subscribe |
 | `not_found` | `404` | Unknown path, or a file, job, or generation that belongs to another workspace | | Check the path and id |
-| `not_ready` | `404` | The generation's stats are not recorded yet | | Retry in a few seconds |
+| `not_ready` | `404` or `502` | The generation's stats are not recorded yet (`404`), or could not be read (`502`) | | Retry in a few seconds |
 | `rate_limit_exceeded` | `429` | More than the per-minute request limit | `retry_after` | Wait `Retry-After` seconds, then retry |
 | `too_many_auth_failures` | `429` | Too many failed key attempts from one address | `retry_after` | Check the key, then retry after a minute |
 | `internal_error` | `500` | An unexpected gateway error | | Retry, and quote `x-predev-request-id` if it persists |
 | `upstream_unavailable` | `502` | The model did not answer | | Retry with backoff; consider `models` fallbacks |
+| `catalog_unavailable` | `502` or `503` | The model catalog could not be read: `502` from the catalog listings, which carries no `predev` object, and `503` from `GET /v1/models/public` | | Retry shortly |
 | `balance_unavailable` | `503` | The balance check could not complete | `retry_after` | Wait `Retry-After` seconds, then retry |
 
 The error `type` follows the OpenAI convention for the status, for example `authentication_error` for `401` and `rate_limit_error` for `429`; for `402` it repeats the code. A `429` also sets `Retry-After`. [Rate limits](/coding-agent/plans-and-credits#limits) lists the per-minute limits.

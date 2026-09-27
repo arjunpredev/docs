@@ -1881,6 +1881,9 @@
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/CatalogUnavailable"
           }
         }
       }
@@ -2050,6 +2053,9 @@
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/CatalogUnavailable"
           }
         }
       }
@@ -2106,6 +2112,9 @@
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/CatalogUnavailable"
           }
         }
       }
@@ -2187,6 +2196,9 @@
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/CatalogUnavailable"
           }
         }
       }
@@ -2253,6 +2265,9 @@
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/CatalogUnavailable"
           }
         }
       }
@@ -2291,7 +2306,7 @@
                   "$ref": "#/components/schemas/Usage"
                 },
                 "example": {
-                  "workspace": "org:66f2a1c9e4b0a1b2c3d4e5f6",
+                  "workspace": "ws_3f9a1c07b2e4d5a8",
                   "project": null,
                   "credits_remaining": 412.5,
                   "tier": "EnterprisePremium",
@@ -2830,6 +2845,24 @@
           }
         }
       },
+      "CatalogUnavailable": {
+        "description": "The catalog could not be read and no copy was cached. Retry shortly.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "example": {
+              "error": {
+                "message": "The model catalog is unavailable right now. Retry in a moment.",
+                "type": "server_error",
+                "code": "catalog_unavailable",
+                "param": null
+              }
+            }
+          }
+        }
+      },
       "BalanceUnavailable": {
         "description": "The credit balance could not be read, so nothing ran. Retry after `Retry-After` seconds.",
         "headers": {
@@ -2860,7 +2893,7 @@
     "schemas": {
       "GatewayError": {
         "type": "object",
-        "description": "An error raised by pre.dev, in the OpenAI error shape with an extra `predev` object. Branch on `error.code`.",
+        "description": "An error raised by pre.dev, in the OpenAI error shape with an extra `predev` object (absent on `catalog_unavailable` from the catalog listings). Branch on `error.code`.",
         "required": [
           "error"
         ],
@@ -2871,8 +2904,7 @@
               "message",
               "type",
               "code",
-              "param",
-              "predev"
+              "param"
             ],
             "properties": {
               "message": {
@@ -2910,7 +2942,7 @@
                   "catalog_unavailable",
                   "internal_error"
                 ],
-                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 503 | `GET /v1/models/public` while the catalog refreshes. |\n| `internal_error` | 500 | Unexpected error. |"
+                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 502 or 503 | The model catalog could not be read: 502 from the catalog listings, 503 from `GET /v1/models/public`. Retry shortly. |\n| `internal_error` | 500 | Unexpected error. |"
               },
               "param": {
                 "type": "null"
@@ -4713,7 +4745,7 @@
       },
       "Model": {
         "type": "object",
-        "description": "A model row. Fields other than the ones listed here describe the model (limits, default parameters, and so on) and vary by modality.",
+        "description": "A model row. Prices are in credits, in `predev`; rows carry no other prices. Fields other than the ones listed here describe the model (limits, default parameters, and so on) and vary by modality.",
         "required": [
           "id",
           "predev"
@@ -4978,7 +5010,8 @@
         "properties": {
           "workspace": {
             "type": "string",
-            "description": "The workspace the key belongs to (a personal account or a team)."
+            "pattern": "^ws_[0-9a-f]{16}$",
+            "description": "An opaque, stable id for the workspace the key belongs to (a personal account or a team)."
           },
           "project": {
             "type": [
