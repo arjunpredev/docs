@@ -6,7 +6,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 
-const guides = ['architect-agent/sdks/node', 'browser-agents/sdks/node', 'browser-agents/quickstart'];
+const guides = ['architect-agent/sdks/node', 'browser-agents/quickstart'];
 const sources = new Map();
 for (const guide of guides) {
   const text = await fs.readFile(`${guide}.mdx`, 'utf8');

@@ -1,6 +1,6 @@
 ---
 title: "Sessions and parallel agents"
-description: "Separate workstreams, inspect each result, and merge when ready."
+description: "Separate workstreams, choose where each one runs, and merge when ready."
 ---
 
 import { SessionBranches } from "/snippets/workflow.jsx";
@@ -11,9 +11,21 @@ A session groups a conversation and its branch of work. Use sessions for indepen
 
 ## Start separate work
 
-Use `/fork <prompt>` for another task, `/sprint <feature>` for a dedicated sprint, or the session controls in the web workspace. Additional web sessions require a GitHub connection and available session capacity.
+Use `/sprint <feature>` for a dedicated sprint, `/fork <prompt>` in the CLI, or the session controls in the web workspace. Additional web sessions require a GitHub connection and available session capacity.
 
 Each session has its own chat context and branch. Hosted sessions can have their own running environment and preview. CLI sessions use separate Git worktrees. Select the session before inspecting its code, messages, or preview.
+
+## Where a session runs
+
+A session runs either in the cloud, in the project's sandbox, or on your laptop through the [CLI](/cli/overview). Session tabs on the web show a laptop icon for a laptop session, green while the laptop is connected, and the header explains where the session runs.
+
+| You want to | Do this |
+| --- | --- |
+| Run a web project on your machine | `predev open <project link>` in a folder, or the command the header offers |
+| Hand a laptop session to the cloud | `/cloud` in the CLI, or **Continue in the cloud** on the web |
+| Bring a cloud session back to your laptop | `/local` in the CLI |
+
+A message you type on the web for a laptop session runs on the laptop while it is connected. If the laptop is offline, the web asks whether to continue in the cloud or wait for it.
 
 ## Work with collaborators
 
@@ -23,11 +35,11 @@ Presence indicators show who is viewing a session. Give parallel tasks clear bou
 
 | Action | Effect |
 | --- | --- |
-| Merge | Integrate the session through the GitHub merge workflow; a clean PR can be merged automatically |
-| Promote to Main | Change which session serves as the project's main session |
-| Archive | Remove a session from the active list while retaining its record |
+| Merge into Main | Combine the session's changes with Main through a GitHub pull request; a clean one merges automatically |
+| Make this the Main | Use this session as Main and move the main preview address to it |
+| Archive session | Move the session to Archived while keeping its record |
 | Revive | Restore an archived session when its backing branch is still available |
 
-Promoting a session and merging its code are different operations. Read the confirmation and resulting status for the selected action.
+Merge and Make this the Main ask you to click again to confirm. Making a session the Main and merging its code are different operations. If a merge has conflicts, the agent in Main can resolve them.
 
 A deleted GitHub branch can prevent revival. If needed, start a new session from the current Main. See [pull requests and merges](/coding-agent/building/pull-requests).

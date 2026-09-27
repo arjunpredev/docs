@@ -5,14 +5,9 @@ description: "Use any model id from the pre.dev catalog and read credit prices f
 
 The gateway serves hundreds of models from every major lab. Use the model id exactly as listed by [`GET /v1/models`](/ai-gateway/api/models): if the catalog lists it, `model: "<author>/<slug>"` works here.
 
-| Example id | Author |
-| --- | --- |
-| `anthropic/claude-sonnet-5` | Anthropic |
-| `deepseek/deepseek-v4.1-flash` | DeepSeek |
-| `google/gemini-3.8-flash` | Google |
-| `openai/gpt-5.6-luna` | OpenAI |
+Example ids: `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, and `openai/gpt-6-luna`.
 
-Variant suffixes are accepted: `deepseek/deepseek-v4.1-flash:free`, `anthropic/claude-sonnet-5:nitro`, `google/gemini-3.8-flash:online`, `openai/gpt-5.6-luna:batch`. `:free` variants are rate-limited and may train on prompts; `:nitro` is shorthand for throughput-sorted provider routing and `:online` for the web search plugin. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Some models also have variant ids in the catalog, such as a `:free` or `:batch` suffix; use them exactly as listed. Append `:online` to a model id to add web search, the same as the `web` plugin. See [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).
 
 ## List models with prices
 
@@ -21,33 +16,25 @@ curl --fail-with-body https://api.pre.dev/v1/models \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Each row describes the model (`id`, `name`, `context_length`, dollar `pricing`, and so on) and carries a `predev` object with its prices in credits:
+Each row describes the model (`id`, `name`, `context_length`, supported modalities and parameters, and so on) and carries a `predev` object with its prices in credits:
 
 ```json
 {
   "id": "deepseek/deepseek-v4.1-flash",
-  "name": "DeepSeek V4.1 Flash",
-  "context_length": 262144,
-  "pricing": { "prompt": "0.0000002", "completion": "0.0000008" },
+  "name": "DeepSeek: DeepSeek V4.1 Flash",
+  "context_length": 1048576,
   "predev": {
-    "credits_per_m_input": 2.86,
-    "credits_per_m_output": 11.43
+    "credits_per_m_input": 2.5,
+    "credits_per_m_output": 10
   }
 }
 ```
 
-| `predev` field | Present when |
-| --- | --- |
-| `credits_per_m_input` | Always |
-| `credits_per_m_output` | Always |
-| `credits_per_m_cache_read` | The model prices cache reads |
-| `credits_per_m_cache_write` | The model prices cache writes |
-| `credits_per_image` | The model prices image inputs |
-| `credits_per_request` | The model has a per-request price |
+The numbers above are illustrative; read the live row for current prices. The [catalog reference](/ai-gateway/api/models#the-predev-object) lists every `predev` field.
 
 The catalog refreshes every 15 minutes. The `x-predev-catalog-age` response header reports seconds since the last refresh. Catalog reads are free and not rate-limited.
 
-Other catalog endpoints: `/v1/models/count`, `/v1/models/{author}/{slug}/endpoints` for the providers behind one model, `/v1/embeddings/models`, `/v1/images/models`, `/v1/videos/models`, and `/v1/providers`. See the [catalog reference](/ai-gateway/api/models).
+Other catalog endpoints: `/v1/models/count`, `/v1/embeddings/models`, `/v1/images/models`, and `/v1/videos/models`. See the [catalog reference](/ai-gateway/api/models).
 
 ## Pick a model in code
 
@@ -82,6 +69,6 @@ print(cheapest["id"], cheapest["predev"])
 
 ## Invalid ids
 
-An id the catalog does not recognize returns the provider's error with its original status and message; the gateway does not rewrite it. See [errors](/ai-gateway/api/errors).
+An id the catalog does not serve returns a `4xx` error in the OpenAI error shape. The message keeps what the model service said about the request; check the id against [`GET /v1/models`](/ai-gateway/api/models). See [errors](/api-reference/errors#ai-gateway-errors).
 
-Send several ids in `models` to fall back automatically. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Send several ids in `models` to fall back automatically. See [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).

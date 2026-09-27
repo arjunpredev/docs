@@ -30,7 +30,6 @@ The documentation site's **Ask AI / MCP** features search documentation. To exec
 | Run browser tasks | `POST /browser-agent` | `browser_agent` |
 | Retrieve a browser run | `GET /browser-agent/{id}` | `browser_agent_get` |
 | Browse browser history | `GET /list-browser-agents` | `browser_agent_list` |
-| Review a proposal | [Proposal REST endpoints](/architect-agent/proposals) | Use REST |
 | Check available credits | `GET /credits-balance` | Use REST |
 
 Both official SDKs are named **`predev-api`**. Python imports use `from predev_api import PredevAPI`; Node imports use `import { PredevAPI } from 'predev-api'`. The Python SDK uses blocking HTTP calls, including its server-side async submission methods.

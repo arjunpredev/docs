@@ -1,18 +1,21 @@
 ---
-title: "Auto, Plan, and effort"
-description: "Choose the agent's intent, sprint scope, and depth of work."
+title: "How the agent works"
+description: "How the agent decides whether to answer, plan, or build, and how sprints and effort shape the work."
 ---
 
-Three controls answer different questions: **Auto or Plan** sets the intent of your conversation, **sprints** define a unit of work, and **effort** controls how deeply a sprint approaches it. [Model selection](/coding-agent/building/pro-mode) chooses the models used for that work.
+There is no mode to pick before you send a request. The agent reads each message and decides whether to answer, ask for context, implement directly, or plan first. Two controls shape the work itself: **sprints** define a unit of work, and **effort** sets how deeply a sprint approaches it. [Model selection](/coding-agent/building/pro-mode) chooses the models used for that work.
 
-## Auto and Plan
+## How the agent decides
 
-| Mode | Behavior | Command |
-| --- | --- | --- |
-| Auto | The agent can answer, ask for context, implement directly, or plan first | `/auto` |
-| Plan | Messages shape requirements, user flows, roadmap, and architecture | `/plan` |
+| Your message | What the agent does |
+| --- | --- |
+| A question | Answers without changing code |
+| A focused change | Implements it directly in the current session |
+| A larger product or feature | Can plan requirements, user flows, roadmap, and architecture before it builds |
 
-Auto is the default. Plan mode returns to Auto when the plan is produced. Selecting Plan does not itself start a build: send the requirements you want to develop, review the artifacts, then request implementation.
+To plan first, say so in your message, for example "plan the architecture before you build". Review the plan in **Plan**, then ask for implementation. Planning never starts a build on its own.
+
+In the CLI, `/plan` keeps your next messages on the plan (flows, spec, roadmap, architecture) and runs no code; it returns to automatic behavior once the plan lands, and `/auto` returns immediately. `/plan` needs a paid plan. The web app has no Plan toggle.
 
 ## Choose a unit of work
 
@@ -22,9 +25,9 @@ For a small change, describe it in chat. Use a dedicated sprint for a defined fe
 /sprint add CSV export to the reports page with a progress indicator
 ```
 
-`/fork <prompt>` starts another task in a separate session. In projects with a roadmap, **Build Next Task** works on the next unit of planned work and **Build on Autopilot** continues through the roadmap. Availability depends on the project's plan and active work.
+A sprint runs in a new session. In projects with a roadmap, the sprint controls can build the next planned task or continue through the roadmap on **Autopilot**.
 
-Follow the session that owns the run. Parallel work, queuing, and admission limits depend on the client and account; submitting another message is not a guarantee that it starts immediately.
+Follow the session that owns the run. Parallel work, queuing, and admission limits depend on the client and account; sending another message does not guarantee that it starts immediately.
 
 ## Sprint effort
 
@@ -32,13 +35,13 @@ Set effort with `/effort` before launching the sprint.
 
 | Setting | Approach |
 | --- | --- |
-| `auto` | Choose an approach for the task |
-| `low` | A direct implementation loop for focused changes |
+| `auto` | Choose an approach for each sprint (recommended) |
+| `low` | A fast direct loop for focused changes |
 | `medium` | A direct loop organized around a task list |
-| `high` | A separate research, coding, and acceptance workflow |
+| `high` | A full research, coding, and verification pipeline |
 
-Higher effort can involve more model work and credits. Effort controls the workflow; it does not promise a particular duration or result. A direct chat change does not necessarily run the full high-effort pipeline.
+Higher effort can involve more model work and credits. Effort controls the workflow; it does not promise a particular duration or result.
 
 ## Review the outcome
 
-State the checks you need in the request: for example, type checking, a specific test suite, or a browser journey. Read the actual [verification evidence](/coding-agent/building/acceptance-criteria) and inspect the diff before shipping.
+Builds that change code end with an independent [verification](/coding-agent/building/acceptance-criteria) of your acceptance criteria. State the checks you need in the request, for example type checking, a specific test suite, or a browser journey, and read the diff before shipping.

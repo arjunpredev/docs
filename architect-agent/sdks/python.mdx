@@ -1,14 +1,14 @@
 ---
 title: "Python SDK"
-description: "Generate and retrieve specifications with the published predev-api Python package."
+description: "Generate specifications and run browser tasks with the published predev-api Python package."
 icon: "python"
 ---
 
-```bash
-pip install predev-api
-```
+import SdkInstall from "/snippets/sdk-install.mdx";
 
-Python 3.8+ is supported.
+<SdkInstall />
+
+Python 3.8+ is supported. This guide targets published **1.1.0**.
 
 ## Generate and wait for a specification
 
@@ -53,10 +53,14 @@ else:
 | `list_specs(...)` | Optional `limit`, `skip`, `endpoint`, `status` | Dictionary with `specs`, `total`, `hasMore` |
 | `find_specs(query, ...)` | Required regex `query`; same filters | Dictionary with `specs`, `total`, `hasMore` |
 | `get_credits_balance()` | None | `CreditsBalanceResponse` object |
+| `browser_agent(tasks, ...)` | Task list; optional `concurrency`, `stream=False`, `run_async=False` | Run dictionary, or an iterator when `stream=True` |
+| `get_browser_agent(id, ...)` | Run ID; optional `include_events=False` | Run dictionary |
+| `list_browser_agents(...)` | Optional `limit`, `skip`, `status` | Dictionary with `batches`, `total`, `hasMore` |
+| `browser_agent_status()` | None | Dictionary with your queue and `cap` |
 
-`*_async` submits server-side work and returns its ID; these are ordinary blocking Python functions, not coroutines. Do not `await` them. Calls to generate specs use a 300-second HTTP timeout; status/list/search calls use 60 seconds. A polling deadline is separate from an individual HTTP timeout.
+`*_async` methods and `run_async=True` submit server-side work and return its ID; they are ordinary blocking Python calls, not coroutines. Do not `await` them. Spec generation calls use a 300-second HTTP timeout and status, list, and search calls 60 seconds. Browser submissions use 300 seconds, retrieval and list 60 seconds, and queue status 30 seconds. A polling deadline is separate from an individual HTTP timeout, and there is no client-wide timeout or retry option.
 
-## History and credits
+## Specification history and credits
 
 ```python
 page = client.find_specs(query="report|export", status="completed", limit=20)
@@ -96,21 +100,103 @@ print(job["specId"])
 
 See [accepted formats and limits](/architect-agent/inputs-and-outputs#upload-a-file).
 
+## Run browser tasks and poll
+
+```python
+tasks = [{
+    "url": "https://example.com",
+    "instruction": "Extract the main page heading.",
+    "output": {
+        "type": "object",
+        "properties": {"heading": {"type": "string"}},
+        "required": ["heading"],
+    },
+    "mode": "extract",
+    "maxSteps": 10,
+    "maxDurationSeconds": 120,
+}]
+browser_job = client.browser_agent(tasks, run_async=True)
+print("Save this run ID:", browser_job["id"])
+run_deadline = time.monotonic() + 600
+
+while time.monotonic() < run_deadline:
+    run = client.get_browser_agent(browser_job["id"])
+    if run["status"] in ("completed", "failed"):
+        for task in run["results"]:
+            if task and task.get("status") == "SUCCESS":
+                print(task.get("data"))
+            else:
+                print("Task failed:", (task or {}).get("error", "No result"))
+        break
+    time.sleep(5)
+else:
+    raise TimeoutError("Polling deadline reached; retrieve the saved run later.")
+```
+
+The SDK passes task dictionaries through to REST, including the current per-task controls such as `mode`, `maxSteps`, and `maxDurationSeconds`.
+
+## Stream a new browser submission
+
+```python
+saw_done = False
+for message in client.browser_agent(tasks, stream=True):
+    if message["event"] == "task_event":
+        print(message["data"]["taskIndex"], message["data"]["type"])
+    elif message["event"] == "done":
+        saw_done = True
+        final = message["data"]
+        print(final["status"], final["totalCreditsUsed"])
+if not saw_done:
+    raise RuntimeError("The stream ended before a final result arrived.")
+```
+
+This call creates a **new run**. Streamed `error` frames raise SDK exceptions. A clean iterator exit without `done` still requires recovery; the SDK does not make EOF a terminal success. To attach to a saved async ID, use [existing-run SSE over direct HTTP](/browser-agents/api/stream-task).
+
+## Browser history and evidence
+
+```python
+queue = client.browser_agent_status()
+print(queue["total"], queue["cap"])
+
+runs = client.list_browser_agents(limit=20, status="completed")
+for summary in runs["batches"]:
+    print(summary["id"], summary["totalCreditsUsed"])
+
+evidence = client.get_browser_agent(browser_job["id"], include_events=True)
+```
+
+`include_events=True` adds available timelines and screenshots. Routine polling should omit it. [Status and results](/browser-agents/api/task-status) explains pending stubs, null slots, uppercase task statuses, and lowercase batch statuses.
+
 ## Errors
 
 ```python
-from predev_api import AuthenticationError, RateLimitError, PredevAPIError
+from predev_api import (
+    AuthenticationError,
+    InsufficientCreditsError,
+    PredevAPIError,
+    QueueFullError,
+    RateLimitError,
+)
 
 try:
     page = client.list_specs(limit=20)
 except AuthenticationError:
-    print("Check the API key and account access at pre.dev/projects/key.")
+    print("Check the API key and account access.")
 except RateLimitError:
     print("Back off before retrying.")
 except PredevAPIError as error:
     print(str(error))
+
+try:
+    browser_job = client.browser_agent(tasks, run_async=True)
+except InsufficientCreditsError as error:
+    print(str(error), error.action_url)
+except QueueFullError:
+    print("Wait for tasks to finish before submitting more work.")
+except PredevAPIError as error:
+    print(str(error))
 ```
 
-The base exception has no `status_code` attribute. Browser gate errors have additional typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`.
+The base exception has no `status_code` attribute. Browser gate errors have typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`. Use [direct REST](/browser-agents/api/run-task#idempotency) when a retry needs an idempotency key; the SDK has no idempotency or arbitrary-header option.
 
-Continue with the [Browser Agents Python guide](/browser-agents/sdks/python), [PyPI package](https://pypi.org/project/predev-api/), or [SDK source](https://github.com/predotdev/predev-api).
+See the [PyPI package](https://pypi.org/project/predev-api/) or the [SDK source](https://github.com/predotdev/predev-api).

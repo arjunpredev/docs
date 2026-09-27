@@ -1,19 +1,38 @@
 ---
 title: "Agent skills"
-description: "Save reusable instructions at personal, project, or organization scope."
+description: "Add Agent Skills as a SKILL.md or a .zip, at personal, project, or organization scope."
 ---
 
-Skills provide reusable instructions to the Coding Agent, such as a testing convention, style guide, or repository workflow.
+Skills give the Coding Agent reusable instructions and files, such as a testing convention, a style guide, or a repository workflow. pre.dev reads skills in the [Agent Skills](https://agentskills.io/specification) format: a `SKILL.md` whose frontmatter names the skill and says when to use it.
 
-```text
-Use the repository's existing component library.
-For behavior changes, run the relevant test suite and report its result.
-Record any verification that could not be completed.
+```markdown
+---
+name: pdf-forms
+description: Fill in and read PDF forms. Use when the user mentions PDF forms, form fields, or fillable PDFs.
+---
+
+Use the repository's PDF library. Run the form tests after every change and report their result.
 ```
 
 ## Add a skill
 
-Open **Project setup → Skills** for a project, or **Agent Skills** in [workspace Integrations](https://pre.dev/projects/integrations). Add a name and instructions, save, and enable the entry.
+Open **Agent Skills** in [workspace Integrations](https://pre.dev/projects/integrations?tab=skills), or the same tab in a project's **Project setup**. Then either:
+
+- **Paste SKILL.md**: paste the file's contents.
+- **Upload .md or .zip**: a `SKILL.md`, or a `.zip` of the skill folder with `SKILL.md` plus `scripts/`, `references/`, or `assets/`.
+
+pre.dev shows what it read before you save. Every skill needs:
+
+| Field | Rule |
+| --- | --- |
+| Name | Lowercase letters, numbers, and single hyphens; up to 64 characters |
+| Description | What the skill does and when the agent should use it; up to 1,024 characters |
+
+A skill package can hold up to 2 MB of files. Keep long material in `references/` rather than the `SKILL.md` body.
+
+In the CLI, `/skills add <name> <instructions>` adds a personal skill from one line of instructions.
+
+## Scope
 
 | Where you configure it | Scope |
 | --- | --- |
@@ -25,8 +44,8 @@ Choose a distinct name when the instruction should supplement an inherited entry
 
 ## Edit or disable
 
-Use the entry controls to edit, toggle, or remove a skill. Apply changes before starting the work that should use them; do not assume a running task has reloaded its instructions.
+Use the entry controls to edit, toggle, or remove a skill. Apply changes before starting the work that should use them.
 
-In the CLI, `/skills` lists personal entries. Enter toggles an entry, `d` removes it, and `o` opens the web app for creation and configuration. Use the web to manage project-specific or organization entries.
+In the CLI, `/skills` lists personal entries. Enter or Space toggles an entry, `d` removes it, and `o` opens workspace Integrations in the browser.
 
 Skills guide behavior. Review the actual output and checks for the task, especially when a requirement must be enforced by a test or repository policy.

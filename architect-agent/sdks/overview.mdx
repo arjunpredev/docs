@@ -1,29 +1,42 @@
 ---
 title: "SDKs"
-description: "Install the official Node.js and Python SDKs for specifications and browser tasks."
+description: "The official Node.js and Python SDKs for specifications and browser tasks."
 ---
 
-Both SDKs use the package name **`predev-api`** and support specification generation and Browser Agents.
+import SdkInstall from "/snippets/sdk-install.mdx";
+
+Both SDKs use the package name **`predev-api`** and cover specification generation and Browser Agents.
+
+<SdkInstall />
 
 | | Node.js / TypeScript | Python |
 | --- | --- | --- |
-| Install | `npm install predev-api` | `pip install predev-api` |
 | Import | `import { PredevAPI } from 'predev-api'` | `from predev_api import PredevAPI` |
 | Runtime | Node.js 18+ | Python 3.8+ |
 | HTTP behavior | Promises; async generator for browser streams | Blocking requests; iterator for browser streams |
-| Specification results | JavaScript objects | Dictionaries |
+| Specification and browser results | JavaScript objects | Dictionaries |
 | Credit balance | JavaScript object | `CreditsBalanceResponse` object |
-| Browser results | JavaScript objects | Dictionaries |
 
-Both clients accept an API key and optional base URL. Neither exposes a client-wide timeout or retry configuration option. Python sets timeouts inside its methods; use server-side async submission for long work and direct HTTP when you need transport controls.
+| Operation | Node | Python |
+| --- | --- | --- |
+| Generate a spec | `fastSpec`, `deepSpec` | `fast_spec`, `deep_spec` |
+| Submit a spec and poll | `fastSpecAsync`, `getSpecStatus` | `fast_spec_async`, `get_spec_status` |
+| List or search specs | `listSpecs`, `findSpecs` | `list_specs`, `find_specs` |
+| Read the credit balance | `getCreditsBalance()` | `get_credits_balance()` |
+| Run browser tasks | `browserAgent(tasks, options)` | `browser_agent(tasks, ...)` |
+| Submit browser tasks asynchronously | `{ async: true }` | `run_async=True` |
+| Stream a new browser submission | `{ stream: true }` → async generator | `stream=True` → iterator |
+| Retrieve a browser run | `getBrowserAgent(id, options)` | `get_browser_agent(id, include_events=False)` |
+| List browser runs | `listBrowserAgents(params)` | `list_browser_agents(...)` |
+| Read your browser queue | `browserAgentStatus()` | `browser_agent_status()` |
+
+Both clients accept an API key and optional base URL. Neither exposes a client-wide timeout, retry, or arbitrary-header option. Use direct REST for live browser URLs, existing-run SSE, capacity statistics, and idempotency keys.
 
 <CardGroup cols={2}>
   <Card title="Node SDK" icon="node-js" href="/architect-agent/sdks/node">
-    Specifications, bounded polling, uploads, and errors.
+    Specifications, uploads, browser runs, streams, and errors.
   </Card>
   <Card title="Python SDK" icon="python" href="/architect-agent/sdks/python">
-    Specification results, async jobs, and file uploads.
+    Dictionary results, blocking calls, browser runs, and streaming iterators.
   </Card>
 </CardGroup>
-
-See [Browser Agents SDKs](/browser-agents/sdks/overview) for task execution and streaming. Use direct REST for proposal review, live browser URLs, existing-run SSE, capacity statistics, and idempotency headers.

@@ -3,17 +3,24 @@ title: "AI Gateway"
 description: "Call hundreds of models from every major lab through api.pre.dev/v1 with your pre.dev key and credits."
 ---
 
-The pre.dev AI Gateway is a metered, OpenAI-compatible inference API. Point an OpenAI-compatible client at **`https://api.pre.dev/v1`**, send your pre.dev API key, and call any model in the pre.dev catalog — hundreds of models from every major lab — by the id listed in [`GET /v1/models`](/ai-gateway/api/models). Calls are paid with pre.dev credits.
+import ApiKeyLocation from "/snippets/api-key-location.mdx";
+import BaseUrls from "/snippets/base-urls.mdx";
+
+The pre.dev AI Gateway is an OpenAI-compatible API for hundreds of models from every major lab. Point an OpenAI-compatible client at the AI Gateway base URL, send your pre.dev API key, and call any model in the pre.dev catalog by the id listed in [`GET /v1/models`](/ai-gateway/api/models). Calls are paid with pre.dev credits.
+
+<BaseUrls />
+
+<ApiKeyLocation />
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="play" href="/ai-gateway/quickstart">
     First request with curl, the OpenAI SDK, the Vercel AI SDK, or the Anthropic SDK.
   </Card>
-  <Card title="API key" icon="key" href="/ai-gateway/api-key">
-    Where the key lives, which headers carry it, and how it reaches your deployed app.
+  <Card title="In apps you build" icon="code" href="/coding-agent/built-in#ai">
+    Call models from apps built on pre.dev, with the key already in place.
   </Card>
-  <Card title="Pricing" icon="coins" href="/ai-gateway/pricing">
-    Credits per call, the trial allowance, and what happens when credits run out.
+  <Card title="Pricing" icon="coins" href="/coding-agent/plans-and-credits#ai-gateway-calls">
+    Credits per call, the free allowance, and what happens when credits run out.
   </Card>
   <Card title="Models" icon="list" href="/ai-gateway/models">
     Browse the catalog with credit prices attached.
@@ -22,14 +29,13 @@ The pre.dev AI Gateway is a metered, OpenAI-compatible inference API. Point an O
 
 ## What you send
 
-Model ids are `<author>/<slug>` strings exactly as listed by [`GET /v1/models`](/ai-gateway/api/models), for example `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, or `openai/gpt-5.6-luna`. There are no separate pre.dev-specific model names. Variant suffixes such as `:free`, `:nitro`, `:online`, and `:batch` are accepted.
+Model ids are `<author>/<slug>` strings exactly as listed by [`GET /v1/models`](/ai-gateway/api/models), for example `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, or `openai/gpt-6-luna`. There are no separate pre.dev-specific model names.
 
-The standard chat completion fields (`messages`, `temperature`, `max_tokens`, `stop`, and so on) work as you would expect. On top of those, the pre.dev AI API supports these advanced options, described on [routing and fallbacks](/ai-gateway/routing-and-fallbacks):
+The standard chat completion fields (`messages`, `temperature`, `max_tokens`, `stop`, and so on) work as you would expect. The pre.dev AI API also supports these options, described on [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks):
 
 | Field | Purpose |
 | --- | --- |
-| `models`, `route` | Fallback model list and routing |
-| `provider` | Provider preferences: `order`, `sort`, `ignore`, `only`, `max_price`, `data_collection` |
+| `models`, `route` | Fallback model list |
 | `transforms` | Prompt transforms |
 | `reasoning`, `reasoning_effort` | Reasoning controls |
 | `plugins` | `web`, `file-parser`, `response-healing`, `context-compression` |
@@ -39,16 +45,9 @@ The standard chat completion fields (`messages`, `temperature`, `max_tokens`, `s
 | `prediction`, `verbosity`, `session_id` | Predicted outputs, verbosity, session grouping |
 | `stream` | Server-sent event streaming |
 
-## What the gateway changes
+## What you get back
 
-The gateway edits four things and nothing else:
-
-1. Replaces your pre.dev key with pre.dev's own model-provider credentials.
-2. Sets `stream_options.include_usage` on streaming chat completions, so the final chunk carries `usage.cost`.
-3. Sets, or prefixes, the `user` field with a workspace hash for abuse attribution.
-4. Adds attribution headers.
-
-Request and response bodies are otherwise the standard OpenAI-compatible shapes, and the Anthropic Messages shape on `/v1/messages`.
+Responses use the standard OpenAI-compatible shapes, and the Anthropic Messages shape on `/v1/messages`. Model responses carry a pre.dev generation id (`pdg-…`) and token counts in `usage`. Streaming chat completions end with a chunk that carries `usage`.
 
 ## Endpoints
 
@@ -60,13 +59,15 @@ Request and response bodies are otherwise the standard OpenAI-compatible shapes,
 | POST, GET | `/v1/images`, `/v1/videos`, `/v1/videos/{jobId}`, `/v1/videos/{jobId}/content` | [Images and video](/ai-gateway/api/images-and-video) |
 | POST | `/v1/audio/speech`, `/v1/audio/transcriptions` | [Audio](/ai-gateway/api/audio) |
 | POST, GET, DELETE | `/v1/files`, `/v1/files/{id}`, `/v1/files/{id}/content` | [Files](/ai-gateway/api/files) |
-| GET | `/v1/models`, `/v1/models/count`, `/v1/models/{author}/{slug}/endpoints`, `/v1/embeddings/models`, `/v1/images/models`, `/v1/videos/models`, `/v1/providers` | [Model catalog](/ai-gateway/api/models) |
+| GET | `/v1/models`, `/v1/models/count`, `/v1/embeddings/models`, `/v1/images/models`, `/v1/videos/models` | [Model catalog](/ai-gateway/api/models) |
 | GET | `/v1/usage`, `/v1/generation` | [Usage](/ai-gateway/api/usage) |
+
+Any other `/v1` path returns `404`.
 
 ## Response headers
 
-Every inference call returns `x-predev-request-id` (`pdr_…`), `x-predev-credits-charged`, and `x-predev-credits-remaining` (omitted on unlimited plans). Send `x-predev-project-id` to attribute usage to one of your projects. See [usage](/ai-gateway/api/usage).
+Every inference call returns `x-predev-request-id` (`pdr_…`). Completed non-streaming calls also return `x-predev-credits-charged` and `x-predev-credits-remaining` (omitted when the workspace has no credit limit). Streamed calls carry only the request id; read their charge from [`GET /v1/usage`](/ai-gateway/api/usage#usage-totals) or [`GET /v1/generation`](/ai-gateway/api/usage#one-generation). Send `x-predev-project-id` to attribute usage to one of your projects.
 
-## Billing in one line
+## Billing
 
-1 credit = $0.10. Each call is charged in credits based on the model's metered cost for that call, reported in `usage.cost`; the credit price per model is listed on [`GET /v1/models`](/ai-gateway/api/models) under `predev.credits_per_m_input` and `predev.credits_per_m_output`. Catalog reads are free. Details and the trial rule are on [pricing](/ai-gateway/pricing).
+Each call is charged in credits from the model's metered usage for that call. The credit price per model is listed on [`GET /v1/models`](/ai-gateway/api/models) under `predev.credits_per_m_input` and `predev.credits_per_m_output`. Catalog reads are free. Details and the free allowance are on [pricing](/coding-agent/plans-and-credits#ai-gateway-calls).

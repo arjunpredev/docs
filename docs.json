@@ -72,7 +72,7 @@
     },
     {
       "source": "/labs/browser-agents/mcp-tool",
-      "destination": "/browser-agents/mcp-tool"
+      "destination": "/mcp/tools"
     },
     {
       "source": "/labs/browser-agents/task-schemas",
@@ -265,48 +265,141 @@
     {
       "source": "/mcp-integration/usage",
       "destination": "/architect-agent/mcp-setup"
+    },
+    {
+      "source": "/architect-agent/proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/upload-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/list-proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/get-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/vet-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/list-vetted-proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/get-vetted-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/ai-gateway",
+      "destination": "/ai-gateway/overview"
+    },
+    {
+      "source": "/cli",
+      "destination": "/cli/overview"
+    },
+    {
+      "source": "/ai-gateway/api-key",
+      "destination": "/api-reference/authentication"
+    },
+    {
+      "source": "/ai-gateway/api/errors",
+      "destination": "/api-reference/errors"
+    },
+    {
+      "source": "/ai-gateway/pricing",
+      "destination": "/coding-agent/plans-and-credits"
+    },
+    {
+      "source": "/ai-gateway/from-a-predev-app",
+      "destination": "/coding-agent/built-in"
+    },
+    {
+      "source": "/payments/from-a-predev-app",
+      "destination": "/coding-agent/built-in"
+    },
+    {
+      "source": "/browser-agents/sdks/overview",
+      "destination": "/architect-agent/sdks/overview"
+    },
+    {
+      "source": "/browser-agents/sdks/node",
+      "destination": "/architect-agent/sdks/node"
+    },
+    {
+      "source": "/browser-agents/sdks/python",
+      "destination": "/architect-agent/sdks/python"
+    },
+    {
+      "source": "/browser-agents/mcp-tool",
+      "destination": "/mcp/tools"
     }
   ],
   "navigation": {
     "tabs": [
       {
-        "tab": "Start here",
+        "tab": "Start",
         "groups": [
           {
-            "group": "Documentation",
+            "group": "Get started",
             "pages": [
               "overview",
               "for-agents"
             ]
           },
           {
-            "group": "API essentials",
+            "group": "Quickstarts",
             "pages": [
-              "api-reference/overview",
+              "coding-agent/quickstart",
+              "architect-agent/quickstart",
+              "browser-agents/quickstart",
+              "ai-gateway/quickstart"
+            ]
+          },
+          {
+            "group": "Essentials",
+            "pages": [
               "api-reference/authentication",
-              "api-reference/errors"
+              "api-reference/errors",
+              "coding-agent/plans-and-credits"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "changelog"
             ]
           }
         ]
       },
       {
-        "tab": "Coding Agent",
+        "tab": "Build with pre.dev",
         "groups": [
           {
-            "group": "Get started",
+            "group": "Coding Agent",
             "pages": [
               "coding-agent/overview",
-              "coding-agent/quickstart",
-              "coding-agent/plans-and-credits"
+              "coding-agent/workspace"
             ]
           },
           {
-            "group": "Workspace",
+            "group": "Projects",
             "pages": [
-              "coding-agent/workspace",
               "coding-agent/projects/creating-a-project",
               "coding-agent/projects/importing-repos",
               "coding-agent/projects/github-integration"
+            ]
+          },
+          {
+            "group": "Work locally",
+            "pages": [
+              "cli/overview",
+              "cli/commands",
+              "cli/existing-repos"
             ]
           },
           {
@@ -317,32 +410,23 @@
             ]
           },
           {
-            "group": "Build",
+            "group": "Build, verify, ship",
             "pages": [
               "coding-agent/building/build-modes",
               "coding-agent/building/pro-mode",
-              "coding-agent/building/sessions-and-parallel-agents"
-            ]
-          },
-          {
-            "group": "Verify",
-            "pages": [
-              "coding-agent/building/acceptance-criteria"
-            ]
-          },
-          {
-            "group": "Ship",
-            "pages": [
+              "coding-agent/building/sessions-and-parallel-agents",
+              "coding-agent/building/acceptance-criteria",
               "coding-agent/building/pull-requests",
               "coding-agent/building/preview-and-hosting",
+              "coding-agent/building/publish",
               "coding-agent/building/custom-domains"
             ]
           },
           {
-            "group": "Track and collaborate",
+            "group": "Collaborate and track",
             "pages": [
-              "coding-agent/building/progress-tracking",
-              "coding-agent/building/collaboration"
+              "coding-agent/building/collaboration",
+              "coding-agent/building/progress-tracking"
             ]
           },
           {
@@ -355,174 +439,98 @@
               "coding-agent/integrations/api-keys",
               "coding-agent/integrations/env-vars"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "CLI",
-        "groups": [
+          },
           {
-            "group": "Get started",
+            "group": "In your app",
             "pages": [
-              "cli/overview",
-              "cli/commands",
-              "cli/existing-repos"
+              "coding-agent/built-in",
+              {
+                "group": "Payments",
+                "pages": [
+                  "payments/overview",
+                  "payments/webhooks",
+                  "payments/go-live"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "Browser Agents",
+        "tab": "API & SDKs",
         "groups": [
           {
-            "group": "Get started",
+            "group": "API",
             "pages": [
-              "browser-agents/overview",
-              "browser-agents/quickstart"
+              "api-reference/overview",
+              "architect-agent/api/credits-balance"
             ]
           },
           {
-            "group": "API reference",
+            "group": "Specs (Architect)",
             "pages": [
+              "architect-agent/overview",
+              "architect-agent/inputs-and-outputs",
+              "architect-agent/api/fast-spec",
+              "architect-agent/api/deep-spec",
+              "architect-agent/api/spec-status",
+              "architect-agent/api/list-specs",
+              "architect-agent/api/find-specs"
+            ]
+          },
+          {
+            "group": "Browser Agents",
+            "pages": [
+              "browser-agents/overview",
               "browser-agents/api/run-task",
               "browser-agents/api/task-status",
               "browser-agents/api/stream-task",
               "browser-agents/api/live-browser",
               "browser-agents/api/list-tasks",
               "browser-agents/api/queue-status",
-              "browser-agents/api/capacity"
-            ]
-          },
-          {
-            "group": "SDKs",
-            "pages": [
-              "browser-agents/sdks/overview",
-              "browser-agents/sdks/python",
-              "browser-agents/sdks/node"
-            ]
-          },
-          {
-            "group": "Migrations",
-            "pages": [
+              "browser-agents/api/capacity",
               "browser-agents/migrate-from-browser-use"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "AI Gateway",
-        "groups": [
-          {
-            "group": "Get started",
-            "pages": [
-              "ai-gateway/overview",
-              "ai-gateway/quickstart",
-              "ai-gateway/api-key",
-              "ai-gateway/pricing"
-            ]
           },
           {
-            "group": "Guides",
+            "group": "AI Gateway",
             "pages": [
+              "ai-gateway/overview",
               "ai-gateway/models",
               "ai-gateway/streaming",
               "ai-gateway/tools-and-structured-output",
               "ai-gateway/multimodal",
               "ai-gateway/routing-and-fallbacks",
-              "ai-gateway/from-a-predev-app"
-            ]
-          },
-          {
-            "group": "API reference",
-            "pages": [
-              "ai-gateway/api/chat-completions",
-              "ai-gateway/api/messages",
-              "ai-gateway/api/embeddings",
-              "ai-gateway/api/images-and-video",
-              "ai-gateway/api/audio",
-              "ai-gateway/api/files",
-              "ai-gateway/api/models",
-              "ai-gateway/api/usage",
-              "ai-gateway/api/errors"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Payments",
-        "groups": [
-          {
-            "group": "Get started",
-            "pages": [
-              "payments/overview",
-              "payments/from-a-predev-app",
-              "payments/webhooks",
-              "payments/go-live"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Architect",
-        "groups": [
-          {
-            "group": "Get started",
-            "pages": [
-              "architect-agent/overview",
-              "architect-agent/quickstart",
-              "architect-agent/inputs-and-outputs"
-            ]
-          },
-          {
-            "group": "API reference",
-            "pages": [
-              "architect-agent/api/fast-spec",
-              "architect-agent/api/deep-spec",
-              "architect-agent/api/spec-status",
-              "architect-agent/api/list-specs",
-              "architect-agent/api/find-specs",
-              "architect-agent/api/credits-balance"
-            ]
-          },
-          {
-            "group": "Proposals",
-            "pages": [
-              "architect-agent/proposals",
-              "architect-agent/api/upload-proposal",
-              "architect-agent/api/list-proposals",
-              "architect-agent/api/get-proposal",
-              "architect-agent/api/vet-proposal",
-              "architect-agent/api/list-vetted-proposals",
-              "architect-agent/api/get-vetted-proposal"
+              {
+                "group": "AI Gateway reference",
+                "pages": [
+                  "ai-gateway/api/chat-completions",
+                  "ai-gateway/api/messages",
+                  "ai-gateway/api/embeddings",
+                  "ai-gateway/api/images-and-video",
+                  "ai-gateway/api/audio",
+                  "ai-gateway/api/files",
+                  "ai-gateway/api/models",
+                  "ai-gateway/api/usage"
+                ]
+              }
             ]
           },
           {
             "group": "SDKs",
             "pages": [
               "architect-agent/sdks/overview",
-              "architect-agent/sdks/python",
-              "architect-agent/sdks/node"
+              "architect-agent/sdks/node",
+              "architect-agent/sdks/python"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "MCP",
-        "groups": [
+          },
           {
-            "group": "Connect and use",
+            "group": "MCP",
             "pages": [
               "architect-agent/mcp-setup",
-              "mcp/tools",
-              "browser-agents/mcp-tool"
+              "mcp/tools"
             ]
           }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "pages": [
-          "changelog"
         ]
       }
     ],
@@ -557,6 +565,10 @@
   },
   "navbar": {
     "links": [
+      {
+        "label": "Changelog",
+        "href": "/changelog"
+      },
       {
         "label": "pre.dev",
         "href": "https://pre.dev"

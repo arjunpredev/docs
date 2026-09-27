@@ -1,13 +1,18 @@
 ---
 title: "Browser Agents quickstart"
+sidebarTitle: "Run a browser task"
 description: "Extract a page heading, inspect the result, and choose a response mode."
 ---
+
+import ApiKeyLocation from "/snippets/api-key-location.mdx";
 
 Extract the main heading from a page and read it as structured data. This example uses `https://example.com` and an output schema with one required field: `heading`.
 
 ## Before you start
 
-Get a key from [pre.dev/projects/key](https://pre.dev/projects/key) and store it as `PREDEV_API_KEY`. You need available credits to submit a task; see [authentication and account access](/api-reference/authentication).
+<ApiKeyLocation />
+
+Store it as `PREDEV_API_KEY`. You need available credits to submit a task; see [authentication and account access](/api-reference/authentication).
 
 ## Run the task
 

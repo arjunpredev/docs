@@ -49,7 +49,7 @@ print(len(result.data[0].embedding), result.usage)
 ```
 </CodeGroup>
 
-The response is the standard embeddings response: `data[].embedding`, `model`, and `usage`. Credits are computed from `usage.cost` and reported in `x-predev-credits-charged`.
+The response is the standard embeddings response: `data[].embedding`, `model`, and `usage`. The call is charged from its metered usage, reported in `x-predev-credits-charged`.
 
 ## Rerank
 
@@ -64,7 +64,7 @@ curl --fail-with-body https://api.pre.dev/v1/rerank \
     \"query\": \"how are gateway calls billed\",
     \"documents\": [
       \"Credits are computed from the model's metered cost per call.\",
-      \"Browser tasks have a 0.1-credit floor.\",
+      \"Streams settle when they end.\",
       \"Catalog reads are free.\"
     ]
   }"

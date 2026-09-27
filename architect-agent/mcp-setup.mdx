@@ -4,8 +4,12 @@ description: "Use pre.dev's specification and browser tools from Claude Code, Cu
 ---
 
 import { ProtocolTrace } from "/snippets/protocol-trace.jsx";
+import McpUrl from "/snippets/mcp-url.mdx";
+import AuthHeaders from "/snippets/auth-headers.mdx";
 
-The pre.dev product MCP server is **`https://api.pre.dev/mcp`**. One connection exposes [seven primary tools](/mcp/tools) for specifications and browser automation.
+<McpUrl />
+
+One connection exposes [seven primary tools](/mcp/tools) for specifications and browser automation. It accepts personal accounts on a paid plan and team workspaces; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
 
 ## Connect your client
 
@@ -37,7 +41,11 @@ The pre.dev product MCP server is **`https://api.pre.dev/mcp`**. One connection 
   <Tab title="Other clients">
     Add a remote server with **Streamable HTTP** transport and URL `https://api.pre.dev/mcp`. Use browser OAuth if your client supports it.
 
-    For a programmatic client, send one of the [supported authentication headers](/api-reference/authentication), for example `Authorization: Bearer <key>`. Obtain the key at [pre.dev/projects/key](https://pre.dev/projects/key). No pre.dev npm MCP server package is required.
+    For a programmatic client, send your pre.dev API key in one of the supported headers:
+
+    <AuthHeaders />
+
+    No pre.dev npm MCP server package is required. See [authentication](/api-reference/authentication) for the key.
   </Tab>
 </Tabs>
 
@@ -51,14 +59,14 @@ assignees, due dates, and organization-scoped access. Retrieve the
 completed specification and show me its milestones.
 ```
 
-Or try [browser automation](/browser-agents/mcp-tool):
+Or try [browser automation](/mcp/tools#browser_agent):
 
 ```text
 Use pre.dev browser_agent to read https://example.com and extract
 its main heading. Fetch the complete structured result afterward.
 ```
 
-Tool execution uses your account's credits and access. Connecting a server does not change your plan. See [authentication eligibility](/api-reference/authentication) if a free account can use browser REST but cannot authenticate to MCP.
+Tool execution uses your account's credits and access. Connecting a server does not change your plan. A Free account can use browser REST but cannot authenticate to MCP; see [authentication](/api-reference/authentication#which-accounts-each-interface-accepts).
 
 ## Connection lifecycle
 

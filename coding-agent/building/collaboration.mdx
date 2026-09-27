@@ -1,32 +1,37 @@
 ---
 title: "Collaboration"
-description: "Invite collaborators and manage preview access separately from project editing."
+description: "Invite people to a project, share links to the app, and share a read-only overview."
 ---
 
-Open **Share** in the web workspace to invite collaborators, manage their roles, and configure access to the deployed preview. `/share` opens these controls in the web client.
+Open **Share** in the project header, or type `/share`. The Share dialog has three parts: links to the app, the people who can open the project, and a read-only overview link.
 
-## Invite and manage collaborators
+## Links to the app
 
-Enter an email and send the invitation. The current Share flow invites new collaborators as **Viewers**. The owner can then use **Make Admin** or **Make Viewer** to change their role.
-
-| Role | Project access |
+| Link | What it opens |
 | --- | --- |
-| Owner | Manage the project and collaborator roles |
-| Admin | Edit the project and manage permitted Viewer collaborators |
-| Viewer | View the project with read-only permissions |
+| Live | The [published](/coding-agent/building/publish) app. It changes only when you publish. |
+| Draft | Your latest changes, as Preview shows them. Opening it wakes the sandbox, so it can take a few seconds. |
 
-Only the owner can assign Admin access. Admins cannot manage the owner or other admins. The interface exposes the actions available to your role.
+Both links follow the app's access setting, **Anyone** or **Invited only**, which you set in [Publish](/coding-agent/building/publish#who-can-open-it). Opening the app does not let someone edit the project. Your app's own sign-in and permissions are separate from this setting.
 
-## Preview privacy
+## Invite people
 
-The **Public preview access** toggle controls access to the deployed application. Making the preview public lets people open its shared URL; it does not make them project editors.
+Enter an email and choose **Invite**. People you invite open the project itself.
 
-For private previews, open the app through the authorized workspace flow. A raw copied preview URL may lack the access grant needed to identify you. Application-level login and permissions are separate from this preview access setting.
+| Access | Project access |
+| --- | --- |
+| Owner | Everything, including everyone's access |
+| Can edit | Work on the project, publish it, and invite people with **Can view** access |
+| Can view | View the project |
 
-A custom domain requires a public preview and an existing deployment. See [custom domains](/coding-agent/building/custom-domains).
+The owner chooses **Can view** or **Can edit** for each invitation and can change or remove anyone's access. People with **Can edit** can invite others as **Can view** and remove viewers. **Copy project link** copies a link that only the people listed can open.
+
+## Read-only overview
+
+Turn on **Overview** to share a read-only page with the project's plan, architecture, roadmap, and estimates. Anyone with its link can read it without signing in; it shows no chat or code. It is off by default.
 
 ## Work in parallel
 
-Use [separate sessions](/coding-agent/building/sessions-and-parallel-agents) for distinct workstreams. Presence indicators show which session collaborators are viewing. Review each session before using Merge; that action can automatically merge a clean PR.
+Use [separate sessions](/coding-agent/building/sessions-and-parallel-agents) for distinct workstreams. Presence indicators show which session collaborators are viewing. Review each session before merging it into Main; a clean merge can complete automatically.
 
 Team projects use organization-scoped connections and configuration. Review [integration scope](/coding-agent/integrations/overview) before changing a setting shared with other projects.

@@ -30,21 +30,34 @@ If your shell has not picked up the PATH change, open a new terminal or run `~/.
 
 ## First run
 
-Sign in through the browser when prompted, then return to the terminal. The CLI stores its credential in `~/.predev/auth.json`; `/login` signs in again or switches accounts.
+Sign in through the browser when prompted, then return to the terminal. The CLI stores its credential in `~/.predev/auth.json`; `/login` signs in again or switches accounts, and `/logout` signs this machine out.
 
 The CLI resolves a project for the directory and resumes it on subsequent launches. Use `predev --new` to create a fresh project association. An existing codebase can be mapped with `/reverse` before you request changes.
 
 ```bash
 predev "add an empty state to the reports page"
+predev open "https://pre.dev/projects/$PROJECT_ID"
 predev --version
 predev --help
 ```
 
+`predev open` brings an existing project, for example one you started on the web, into the current folder: its files are pulled here and it runs on this machine.
+
 ## Work in the terminal
 
-Auto mode is the default. Use `/plan` for planning, `/sprint <feature>` for a dedicated sprint, and `/fork <task>` for a separate session. `/kanban`, `/roadmap`, and `/arch` open project views in the terminal.
+The agent decides whether to answer, plan, or build. Use `/sprint <feature>` for a dedicated sprint and `/fork <task>` for a separate session. `/kanban`, `/roadmap`, and `/arch` open project views in the terminal. `/usage` shows what the project's credits went on, and `/publish` puts the app at its permanent address.
 
-Review file changes with `git status` and `git diff`. Shared project records do not automatically synchronize all local files with a hosted checkout; use the normal Git workflow for the repository.
+Review file changes with `git status` and `git diff`. `/undo` puts the files back the way they were before your last message or sprint, and `/redo` brings the change back.
+
+## Your laptop or the cloud
+
+A session you start in the CLI runs on your machine. The web shows the same session, and a message typed there runs on your laptop while the CLI is connected. When the app's dev server is running, the owner can see it live in the web Preview.
+
+| Command | Effect |
+| --- | --- |
+| `/cloud` | Syncs this folder up and hands the session to its cloud workspace. Messages you type in the terminal go there. |
+| `/local` | Pulls the session's latest files into this folder and runs it here again. Files you changed here since the last sync are kept. |
+| `/status` | Shows where the session runs and which local processes are up |
 
 The launcher checks for updates in the background and verifies downloaded releases. A background update can take effect on a later launch; `predev --version` reports the installed version in use.
 

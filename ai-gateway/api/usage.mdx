@@ -1,23 +1,21 @@
 ---
 title: "Usage"
-description: "GET /v1/usage for per-model totals, GET /v1/generation for one call, and the x-predev headers."
+description: "Per-call headers, GET /v1/usage for totals by model, and GET /v1/generation for one call."
 ---
 
 ## Per-call headers
 
-Every inference response carries:
-
 | Header | Meaning |
 | --- | --- |
-| `x-predev-request-id` | `pdr_…`; quote it when contacting support |
-| `x-predev-credits-charged` | Credits charged for this call |
-| `x-predev-credits-remaining` | Workspace balance after the call; omitted on unlimited plans |
+| `x-predev-request-id` | `pdr_…`, on every inference call; quote it when contacting support |
+| `x-predev-credits-charged` | Credits charged for this call, on completed non-streaming calls |
+| `x-predev-credits-remaining` | Workspace balance after the call; omitted when the workspace has no credit limit |
 
 Send `x-predev-project-id: <projectId>` on a request to attribute it to one of the workspace's projects. Ids of projects the workspace does not own are ignored.
 
-## GET /v1/usage
+## Usage totals
 
-Returns totals for the last `days` days (1–90, default 30), broken down by model and path.
+`GET /v1/usage` returns totals for the last `days` days (1 to 90, default 30), broken down by model and path. The read is not charged.
 
 ```bash
 curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
@@ -26,29 +24,27 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 ```json
 {
-  "workspace": "ws_7f3a9c",
+  "workspace": "…",
   "project": null,
   "credits_remaining": 412.5,
-  "tier": "pro",
-  "since": "2026-08-16T00:00:00.000Z",
-  "totals": { "requests": 1840, "credits": 87.5, "usd": 6.13 },
+  "tier": "SoloPro",
+  "since": "2026-08-28T00:00:00.000Z",
+  "totals": { "requests": 1840, "credits": 87.5 },
   "by_model": [
     {
       "model": "deepseek/deepseek-v4.1-flash",
-      "path": "/v1/chat/completions",
+      "path": "/chat/completions",
       "requests": 1702,
       "credits": 41.2,
-      "usd": 2.88,
       "prompt_tokens": 9120000,
       "completion_tokens": 1410000,
       "errors": 3
     },
     {
       "model": "anthropic/claude-sonnet-5",
-      "path": "/v1/messages",
+      "path": "/messages",
       "requests": 138,
       "credits": 46.3,
-      "usd": 3.25,
       "prompt_tokens": 610000,
       "completion_tokens": 92000,
       "errors": 0
@@ -60,25 +56,23 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 | Field | Meaning |
 | --- | --- |
 | `workspace` | The workspace the key belongs to |
-| `project` | Project the totals are attributed to, or `null` |
-| `credits_remaining` | Current balance; `null` on unlimited plans |
+| `project` | The project named by `x-predev-project-id`, or `null` |
+| `credits_remaining` | Current balance; `null` when the workspace has no credit limit |
 | `tier` | Plan tier |
 | `since` | Start of the window |
-| `totals.requests`, `totals.credits`, `totals.usd` | Window totals |
+| `totals.requests`, `totals.credits` | Window totals |
 | `by_model[].model`, `path` | One row per model and endpoint |
-| `by_model[].requests`, `credits`, `usd` | Volume and spend for that row |
+| `by_model[].requests`, `credits` | Volume and credits for that row |
 | `by_model[].prompt_tokens`, `completion_tokens` | Token totals |
 | `by_model[].errors` | Requests that returned an error |
 
-The usage read is not charged.
+## One generation
 
-## GET /v1/generation
-
-Returns the generation metadata for one call, by the `id` from the response body (`gen-…`). Only generations this workspace made are visible.
+`GET /v1/generation?id=<id>` returns the record of one call, using the `pdg-…` id from the response body or a stream chunk. Only this workspace's generations are visible. Stats can take a few seconds to appear after a call; a `404` with code `not_ready` means retry shortly.
 
 ```bash
-curl --fail-with-body "https://api.pre.dev/v1/generation?id=gen-1757900000-abc123" \
+curl --fail-with-body "https://api.pre.dev/v1/generation?id=pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-The body reports the model and provider that served the call, latency, native token counts, and the metered cost behind a specific charge.
+The body's `data` object reports the model, timing (`latency`, `generation_time`), `finish_reason`, whether the call streamed or was cancelled, token counts including reasoning and cached tokens, counts of images and other attachments, and `credits`: the credits charged for the call.

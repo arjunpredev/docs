@@ -3,7 +3,7 @@ title: "Images and video"
 description: "POST /v1/images for image generation; POST /v1/videos with polling for video jobs."
 ---
 
-Both endpoints take a `model` and a `prompt` and return generated media. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
+Both endpoints take a `model` and a `prompt` and return generated images or video. List the models with `GET /v1/images/models` and `GET /v1/videos/models`; both lists are free and not rate-limited and include a `predev` price object per row.
 
 ## Images
 
@@ -19,7 +19,7 @@ curl --fail-with-body https://api.pre.dev/v1/images \
   -d "{\"model\": \"$MODEL\", \"prompt\": \"A lighthouse at dawn, watercolor\"}"
 ```
 
-Use `credits_per_image` from the model row to estimate cost; the actual charge follows `usage.cost` like every other call.
+Use `credits_per_image` or the other `predev` prices in the model row to estimate cost; the actual charge follows the call's metered usage, like every other call.
 
 ## Video
 
@@ -47,6 +47,6 @@ curl --fail-with-body "https://api.pre.dev/v1/videos/$JOB_ID/content" \
   -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
 ```
 
-The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
+Submitting a job needs at least 10 credits available. The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (completed or failed) before reading `/content`; the status body reports the job `id` and its current state.
 
 Jobs belong to the workspace that created them; another workspace's job id returns `404`.

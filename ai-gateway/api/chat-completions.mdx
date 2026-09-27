@@ -61,25 +61,25 @@ print("credits:", raw.headers.get("x-predev-credits-charged"))
 
 | Field | Notes |
 | --- | --- |
-| `model` | The model id exactly as listed by `GET /v1/models`, with optional `:free`, `:nitro`, `:online`, `:batch` variant |
+| `model` | The model id exactly as listed by `GET /v1/models`; append `:online` for web search |
 | `messages` | OpenAI chat messages, including image and file content parts |
-| `models`, `route`, `provider`, `transforms` | [Routing and fallbacks](/ai-gateway/routing-and-fallbacks) |
+| `models`, `route`, `transforms` | [Fallbacks and advanced options](/ai-gateway/routing-and-fallbacks) |
 | `reasoning`, `reasoning_effort` | Reasoning controls |
 | `plugins`, `web_search_options` | Plugins and web search |
 | `response_format`, `structured_outputs`, `tools`, `tool_choice`, `parallel_tool_calls` | [Tools and structured output](/ai-gateway/tools-and-structured-output) |
-| `prediction`, `verbosity`, `session_id` | Passed through |
-| `stream`, `stream_options` | [Streaming](/ai-gateway/streaming); the gateway sets `stream_options.include_usage` |
-| `user` | Set or prefixed with a workspace hash by the gateway |
+| `prediction`, `verbosity`, `session_id` | Predicted outputs, verbosity, session grouping |
+| `stream` | [Streaming](/ai-gateway/streaming); the final chunk carries `usage` |
+| `user` | End-user identifier; pre.dev prefixes it with an identifier for your workspace |
 
-Every other standard field (`temperature`, `max_tokens`, `stop`, and so on) is forwarded to the model unchanged. Advanced options such as `models`, `provider`, `reasoning`, and `plugins` are on [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Every other standard field (`temperature`, `max_tokens`, `stop`, and so on) works as in the OpenAI API.
 
 ## Response
 
-The body is the standard chat completion response. `usage.cost` is the model's metered cost for the call in dollars, which the charge was computed from; `model` is the model that served the call.
+The body is the standard chat completion response. `id` is the pre.dev generation id (`pdg-…`), `model` is the model that answered, and `usage` has the token counts.
 
 ```json
 {
-  "id": "gen-1757900000-abc123",
+  "id": "pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47",
   "object": "chat.completion",
   "model": "anthropic/claude-sonnet-5",
   "choices": [
@@ -89,7 +89,7 @@ The body is the standard chat completion response. `usage.cost` is the model's m
       "finish_reason": "stop"
     }
   ],
-  "usage": { "prompt_tokens": 21, "completion_tokens": 14, "total_tokens": 35, "cost": 0.000273 }
+  "usage": { "prompt_tokens": 21, "completion_tokens": 14, "total_tokens": 35 }
 }
 ```
 
@@ -97,10 +97,10 @@ The body is the standard chat completion response. `usage.cost` is the model's m
 | --- | --- |
 | `x-predev-request-id` | `pdr_…`, the gateway's id for this call |
 | `x-predev-credits-charged` | Credits charged |
-| `x-predev-credits-remaining` | Balance after the call; omitted on unlimited plans |
+| `x-predev-credits-remaining` | Balance after the call; omitted when the workspace has no credit limit |
 
 Send `x-predev-project-id: <projectId>` to attribute the call to a project. See [usage](/ai-gateway/api/usage).
 
 ## Errors
 
-Gateway errors (`401`, `402`, `429`, `503`) use the OpenAI error shape with a `predev` object; provider errors, such as an unknown model id, are returned with their original status and message. See [errors](/ai-gateway/api/errors).
+Errors use the OpenAI error shape. Account and billing errors (`401`, `402`, `429`, `503`) add a `predev` object; errors from the model, such as an unknown model id, keep their HTTP status. See [errors](/api-reference/errors#ai-gateway-errors).

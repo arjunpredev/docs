@@ -3,11 +3,11 @@ title: "Audio"
 description: "POST /v1/audio/speech for text to speech and music, POST /v1/audio/transcriptions for speech to text."
 ---
 
-Both endpoints take the OpenAI-compatible speech and transcription request bodies and return the matching responses. Speech and transcription models appear in the main [catalog](/ai-gateway/api/models); pick an id whose row lists the audio modality.
+Both endpoints take the OpenAI-compatible speech and transcription request bodies and return the matching responses. Speech and music models appear in the main [catalog](/ai-gateway/api/models) with `audio` in `architecture.output_modalities`.
 
 ## Text to speech
 
-`POST /v1/audio/speech` takes the standard speech body and returns audio bytes. Speech models are `openai/gpt-audio-mini` (fast) and `openai/gpt-audio` (higher quality); voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer` and `verse`. The response is `audio/wav` (24 kHz mono); pass `response_format: "pcm16"` for the raw samples. `instructions` sets the delivery (default: read the text verbatim, warmly).
+`POST /v1/audio/speech` takes the standard speech body and returns audio bytes. Speech models are `openai/gpt-audio-mini` (fast) and `openai/gpt-audio` (higher quality); voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer` and `verse`. The response is `audio/wav` (24 kHz mono); pass `response_format: "pcm16"` for the raw samples. `instructions` sets the delivery; by default the model reads the text verbatim.
 
 <CodeGroup>
 ```bash curl
@@ -86,4 +86,4 @@ print(transcript.text)
 ```
 </CodeGroup>
 
-Set `TRANSCRIBE_MODEL` to a transcription id from the catalog (`openai/whisper-large-v3` today). All three calls return the usual `x-predev-*` headers and are billed from `usage.cost`.
+Set `TRANSCRIBE_MODEL` to a speech-to-text model such as `openai/whisper-large-v3`. Transcription models are not listed by `GET /v1/models`. Speech, music, and transcription calls return the usual `x-predev-*` headers and are charged from the model's metered usage.

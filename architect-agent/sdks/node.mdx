@@ -1,14 +1,14 @@
 ---
 title: "Node.js SDK"
-description: "Generate and retrieve specifications with the published predev-api TypeScript client."
+description: "Generate specifications and run browser tasks with the published predev-api TypeScript client."
 icon: "node-js"
 ---
 
-```bash
-npm install predev-api
-```
+import SdkInstall from "/snippets/sdk-install.mdx";
 
-The package is ESM and supports Node.js 18+.
+<SdkInstall />
+
+The package is ESM and supports Node.js 18+. This guide targets published **1.1.0**.
 
 ## Generate and wait for a specification
 
@@ -51,10 +51,14 @@ console.log(spec.codingAgentSpecMarkdown);
 | `listSpecs(params)` | Optional `limit`, `skip`, `endpoint`, `status` | `Promise<ListSpecsResponse>` |
 | `findSpecs(params)` | Required `query`; same filters | `Promise<ListSpecsResponse>` |
 | `getCreditsBalance()` | None | `Promise<CreditsBalanceResponse>` |
+| `browserAgent(tasks, options)` | Task array; optional `concurrency`, `stream`, `async` | A Promise, or an async generator when `stream: true` |
+| `getBrowserAgent(id, options)` | Run ID; optional `includeEvents` | A Promise of the run |
+| `listBrowserAgents(params)` | Optional `limit`, `skip`, `status` | A Promise of `batches`, `total`, `hasMore` |
+| `browserAgentStatus()` | None | A Promise of your queue and `cap` |
 
 All methods use `https://api.pre.dev` by default. The constructor accepts `apiKey` and optional `baseUrl`; it has no timeout, retry, or custom-header option. Use direct HTTP when you need those controls. A polling deadline does not abort an in-flight SDK request.
 
-## History and credits
+## Specification history and credits
 
 ```typescript
 const page = await client.findSpecs({ query: 'report|export', status: 'completed' });
@@ -85,16 +89,88 @@ console.log(upload.specId);
 
 The SDK serializes `docURLs` correctly for multipart requests. It generates a filename for Blob uploads; use direct multipart HTTP if preserving the original filename matters. See [accepted formats and limits](/architect-agent/inputs-and-outputs#upload-a-file).
 
+## Run browser tasks and poll
+
+```typescript
+const tasks = [{
+  url: 'https://example.com',
+  instruction: 'Extract the main page heading.',
+  output: {
+    type: 'object',
+    properties: { heading: { type: 'string' } },
+    required: ['heading'],
+  },
+}];
+const browserJob = await client.browserAgent(tasks, { async: true });
+console.log('Save this run ID:', browserJob.id);
+const runDeadline = Date.now() + 600_000;
+
+async function waitForRun() {
+  while (Date.now() < runDeadline) {
+    const run = await client.getBrowserAgent(browserJob.id);
+    if (run.status === 'completed' || run.status === 'failed') return run;
+    await new Promise(resolve => setTimeout(resolve, 5_000));
+  }
+  throw new Error('Polling deadline reached; retrieve the saved run later.');
+}
+
+const run = await waitForRun();
+for (const task of run.results) {
+  if (task?.status === 'SUCCESS') console.log(task.data);
+  else console.error(task?.error ?? 'No successful result');
+}
+```
+
+Use batch `status` to detect completion and inspect every task result. The current TypeScript declarations lag some REST fields, including running stubs and nullable result slots; guard missing values at runtime. Published task types do not declare `mode`, `maxSteps`, or `maxDurationSeconds`; use [direct REST](/browser-agents/api/run-task) when your integration needs those controls without extending the package's types.
+
+## Stream a new browser submission
+
+```typescript
+let sawDone = false;
+for await (const message of client.browserAgent(tasks, { stream: true })) {
+  if (message.event === 'task_event') {
+    console.log(message.data.taskIndex, message.data.type);
+  } else if (message.event === 'done') {
+    sawDone = true;
+    console.log(message.data.status, message.data.totalCreditsUsed);
+  }
+}
+if (!sawDone) throw new Error('The stream ended before a final result arrived.');
+```
+
+`stream: true` returns an async generator; synchronous and async-submission modes return a Promise. The stream example creates a **new run**. Streamed `error` frames raise exceptions. To attach to an existing run, use [direct HTTP SSE](/browser-agents/api/stream-task).
+
+## Browser history and evidence
+
+```typescript
+const queue = await client.browserAgentStatus();
+console.log(queue.total, queue.cap);
+
+const runs = await client.listBrowserAgents({ limit: 20, status: 'completed' });
+for (const summary of runs.batches) console.log(summary.id, summary.totalCreditsUsed);
+
+const evidence = await client.getBrowserAgent(browserJob.id, { includeEvents: true });
+console.log(evidence.status);
+```
+
+Timelines can be large; omit `includeEvents` for routine polling. See [status and results](/browser-agents/api/task-status) for event shapes and per-task fields.
+
 ## Errors
 
 ```typescript
-import { AuthenticationError, RateLimitError, PredevAPIError } from 'predev-api';
+import {
+  AuthenticationError,
+  InsufficientCreditsError,
+  PredevAPIError,
+  QueueFullError,
+  RateLimitError,
+} from 'predev-api';
 
 try {
   await client.listSpecs({ limit: 20 });
 } catch (error) {
   if (error instanceof AuthenticationError) {
-    console.error('Check the API key and account access at pre.dev/projects/key.');
+    console.error('Check the API key and account access.');
   } else if (error instanceof RateLimitError) {
     console.error('Back off before retrying.');
   } else if (error instanceof PredevAPIError) {
@@ -103,8 +179,22 @@ try {
     throw error;
   }
 }
+
+try {
+  await client.browserAgent(tasks, { async: true });
+} catch (error) {
+  if (error instanceof InsufficientCreditsError) {
+    console.error(error.message, error.actionUrl);
+  } else if (error instanceof QueueFullError) {
+    console.error('Wait for tasks to finish before submitting more work.');
+  } else if (error instanceof PredevAPIError) {
+    console.error(error.message);
+  } else {
+    throw error;
+  }
+}
 ```
 
-The base exception has no `statusCode` property. Browser gate errors have additional typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`.
+The base exception has no `statusCode` property. Browser gate errors have typed subclasses; see [errors and retries](/api-reference/errors). An Architect `402` without a machine-readable browser gate code raises `PredevAPIError`. Use [direct REST](/browser-agents/api/run-task#idempotency) for an idempotency key; the SDK does not forward arbitrary options as headers or request fields.
 
-Continue with the [Browser Agents Node guide](/browser-agents/sdks/node), [npm package](https://www.npmjs.com/package/predev-api), or [SDK source](https://github.com/predotdev/predev-api).
+See the [npm package](https://www.npmjs.com/package/predev-api) or the [SDK source](https://github.com/predotdev/predev-api).

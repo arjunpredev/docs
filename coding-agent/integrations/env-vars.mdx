@@ -1,33 +1,33 @@
 ---
 title: "Environment variables"
-description: "Detect missing configuration, import values, and update a project's runtime."
+description: "Fill missing configuration, import values, and update a project's runtime."
 ---
 
-Open **Project setup → Env Vars** using `/integrations`, or click **Environment** from Code. The editor combines detected requirements with custom configuration for the project.
+Open `/integrations` in a project and choose **API Keys**. This tab of **Project setup** holds the project's environment variables: the values the code needs, detected from the code, plus any you add.
 
 ## Configure the project
 
-1. Review variables detected from the code and the provider instructions shown for them.
-2. Fill missing values or add custom variables.
+1. Review the variables detected from the code and the provider instructions shown for them. Required values are marked.
+2. Fill missing values, or add your own with **Add key**.
 3. Review imported or inherited values and remove entries the app no longer needs.
 4. Save and check the application's runtime status.
 
-Sensitive values are masked with a reveal control. Custom names are normalized to uppercase. Saved values persist across detection scans.
+Sensitive values are masked with a reveal control. Saved values persist across detection scans.
 
-Saving persists the configuration and applies it to the running project where available. A service that reads variables only at startup may require a restart; inspect the runtime result rather than assuming a save alone verified the integration.
+Saving applies the configuration to the running project where available. A service that reads variables only at startup may need a restart; check the running app rather than assuming a save alone verified the integration.
+
+`PREDEV_API_KEY`, `PREDEV_API_URL`, and `PREDEV_PROJECT_ID` are set by pre.dev and cannot be edited here; see [built into every app](/coding-agent/built-in).
 
 ## Bulk import
 
-Paste `.env` text or drop a supported `.env`, `.txt`, `.json`, or image file. The importer matches values to detected variables and can add custom entries. Review the result before saving, including environment-specific values and names that appear more than once.
+Paste `.env` text or upload a `.env`, `.txt`, or `.json` file, or a screenshot. The importer matches values to detected variables and can add new entries. Review the result before saving, including environment-specific values and names that appear more than once.
 
 ## Shared values
 
-[Workspace service keys](/coding-agent/integrations/api-keys) provide reusable credentials. Team configuration can also supply shared environment values. Propagation controls show affected projects so you can apply updates individually or together.
-
-The project's Env Vars view is where you review its concrete configuration. Workspace key changes do not prove that every existing project's runtime has already picked them up.
+[Workspace service keys](/coding-agent/integrations/api-keys) provide reusable credentials, and team workspaces can supply shared values. The project's API Keys tab is where you review its concrete configuration. A workspace key change does not prove that every running project has picked it up.
 
 ## Missing configuration
 
 The build can report missing variables and send a notification linking back to Project setup. Supply the values, resume the relevant task if needed, and verify the feature that depends on them.
 
-The [pre.dev API key page](https://pre.dev/projects/key) is for authenticating to pre.dev; application service credentials belong in Integrations or the project's environment.
+Your pre.dev API key is not a project variable: it is on **Integrations → Built-in**, and apps receive it automatically. See [authentication](/api-reference/authentication).

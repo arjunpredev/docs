@@ -1,65 +1,95 @@
 ---
 title: "CLI commands"
-description: "Supported terminal commands, launch flags, and integration controls."
+description: "Terminal commands, keys, and launch flags."
 ---
 
-Type `/` to open the command palette. Use the arrow keys to select, Enter to run, and Escape to dismiss. Commands with arguments keep the composer open for the rest of the request.
+Type `/` to open the command palette. Use the arrow keys to select, Enter to run, and Escape to dismiss. Commands that take text keep the composer open for the rest of the request. `/help` lists every command and key.
 
 ## Work and models
 
 | Command | Action |
 | --- | --- |
-| `/auto` | Let the agent answer, build, or plan as needed |
-| `/plan` | Work on the plan; returns to Auto when the plan is produced |
-| `/sprint <feature>` | Launch a dedicated sprint in another session |
-| `/fork <prompt>` | Start a task in an isolated session |
+| `/model` | Choose one model for every phase, a model per phase, or reset to automatic |
 | `/effort` | Choose auto, low, medium, or high sprint effort |
-| `/model` | Open model selection for all phases or individual phases |
+| `/sprint <feature>` | Launch a dedicated sprint in a new session |
+| `/fork <prompt>` | Start a task in a new isolated session |
+| `/plan` | Keep your next messages on the plan (flows, spec, roadmap, architecture) without running code; returns to automatic once the plan lands. Needs a paid plan. |
+| `/auto` | Return to automatic: the agent decides whether to answer, plan, or build |
 
-A message prefixed with `>>` also forks a task. Separate sessions use separate Git worktrees. Review their changes and integration result, particularly when tasks modify related files.
+A message that starts with `>>` also forks a task. Separate sessions use separate Git worktrees. Review their changes and integration result, particularly when tasks change related files.
 
 ```text
 /fork add tests for the invoice date formatter
 ```
 
-## Project and conversation
+## Project
 
 | Command | Action |
 | --- | --- |
 | `/reverse` | Analyze an existing codebase and produce architecture context |
-| `/kanban` | Open the Kanban view |
-| `/roadmap` | Open the roadmap view |
-| `/arch` | Open the architecture view |
-| `/clear` | Clear the visible chat feed; preserve stored history |
-| `/help` | Show commands and keybindings |
-| `/login` | Sign in or switch accounts through the browser |
+| `/init` | Have the agent write or refresh `CLAUDE.md` for this repository |
+| `/share` | Open the project's sharing controls in your browser |
+| `/publish [what changed]` | Publish the app to its permanent address, or ship your latest changes there |
+| `/unpublish` | Take the published app down; its address shows your latest draft again |
+| `/kanban`, `/roadmap`, `/arch` | Open the Kanban, roadmap, or architecture view |
 
 Escape returns from project views to chat. Views require the corresponding project data.
 
-## Integrations and billing
+## Session
 
 | Command | Action |
 | --- | --- |
-| `/integrations` | View personal workspace connections, MCP servers, and skills |
-| `/skills` | View, toggle, or remove personal skill entries |
-| `/mcp` | View, toggle, or remove personal MCP entries |
+| `/clear` | Clear the visible chat feed; stored history is kept |
+| `/rename <name>` | Rename the current session tab |
+| `/undo` | Put the files back the way they were before your last message or sprint |
+| `/redo` | Bring back what the last `/undo` removed |
+| `/cloud` | Sync this folder up and hand the session to the cloud |
+| `/local` | Pull the session's latest files into this folder and run it here |
+| `/status` | Show where the session runs and which local processes are up |
+| `/help` | Show all commands and keys |
+
+## Integrations
+
+| Command | Action |
+| --- | --- |
+| `/integrations` | Show your connected accounts, MCP servers, and skills |
+| `/skills` | List, toggle, or remove your agent skills |
+| `/skills add <name> <instructions>` | Add an agent skill |
+| `/mcp` | List, toggle, or remove your MCP servers |
+| `/mcp add <name> <url or command>` | Add an MCP server, for example `/mcp add linear https://mcp.linear.app/sse` |
+
+In the Skills and MCP panels, press Enter or Space to toggle an entry, `d` to remove it, and `o` to open workspace Integrations in the browser. Connecting provider accounts happens on the web. These panels show your personal entries; use [Project setup](/coding-agent/integrations/overview) on the web for project entries and team settings.
+
+## Account and billing
+
+| Command | Action |
+| --- | --- |
 | `/balance` | Show remaining credits |
+| `/usage` | Show what this project's credits went on, turn by turn |
 | `/topup` | Open credit purchasing in the browser |
 | `/upgrade` | Open plan selection in the browser |
+| `/login` | Sign in or switch accounts through the browser |
+| `/logout` | Sign this machine out and quit; every session is saved first |
 
-In the Skills and MCP panels, use Enter to toggle, `d` to remove, and `o` to open the web app to add or configure entries. Connecting OAuth accounts also happens in the web app.
+## Keys
 
-These CLI panels show personal entries. Use [Project setup](/coding-agent/integrations/overview) on the web for project-scoped entries, team connections, and provider account selection.
-
-<Note>
-  `/pro` is retired. `/init` and `/share` may appear in the shared command metadata, but the current CLI does not implement their handlers. Use the web Share menu for collaboration.
-</Note>
+| Key | Action |
+| --- | --- |
+| `/` | Open the command palette |
+| Enter | Send your message |
+| Esc | Stop the running agent, or cancel |
+| Ctrl+N / Ctrl+P | Next or previous session tab |
+| Ctrl+T | New session tab |
+| Ctrl+X | Close a session tab (merge or discard) |
+| Shift+Tab | Cycle views: chat, Kanban, roadmap, architecture |
+| Ctrl+C | Quit; every session is saved |
 
 ## Launch flags
 
 | Invocation | Effect |
 | --- | --- |
 | `predev "<prompt>"` | Start with an opening prompt |
+| `predev open <project link or id>` | Bring an existing pre.dev project into this folder and run it here |
 | `predev --new` or `predev -n` | Create a fresh project for this directory |
 | `predev --version` or `predev -v` | Print the installed version and exit |
 | `predev --help` or `predev -h` | Print launch help and exit |

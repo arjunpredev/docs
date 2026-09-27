@@ -87,7 +87,7 @@ def reject_network(*args, **kwargs):
     raise AssertionError("Unmocked network access is forbidden in documentation tests")
 
 
-guides = ["architect-agent/sdks/python", "browser-agents/sdks/python", "browser-agents/quickstart"]
+guides = ["architect-agent/sdks/python", "browser-agents/quickstart"]
 with tempfile.TemporaryDirectory(prefix="predev-docs-python-") as directory:
     pdf = Path(directory) / "requirements.pdf"
     pdf.write_bytes(b"%PDF-1.4\nExample fixture\n")

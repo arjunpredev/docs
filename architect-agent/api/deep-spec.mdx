@@ -18,6 +18,6 @@ curl --fail-with-body https://api.pre.dev/deep-spec \
   }'
 ```
 
-Save `specId` from the HTTP `200` response, then [poll its status](/architect-agent/api/spec-status). Async submission is useful for detailed specifications because generation can outlast client or proxy timeouts.
+Save `specId` from the HTTP `200` response, then [poll its status](/architect-agent/api/spec-status). Async submission is useful for detailed specifications because generation can outlast client and network timeouts.
 
 [Inputs and outputs](/architect-agent/inputs-and-outputs) explains file uploads, existing context, JSON, Markdown, and graphs. Credit use is variable; inspect `creditsUsed` rather than assuming a fixed per-request price. Access and trial errors follow the same [authentication and error rules](/api-reference/errors) as Fast Spec.

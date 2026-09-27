@@ -1,0 +1,6 @@
+| Limit | Value |
+| --- | --- |
+| Browser tasks per request | 1,000 |
+| Browser tasks running at once within a run (`concurrency`) | 1 to 20, default 5 |
+| Browser tasks in flight per account, queued or running | Set by your plan; read `cap` from [`GET /browser-agent-status`](/browser-agents/api/queue-status) |
+| AI Gateway requests per workspace | 600 a minute; 30 a minute on the Free plan. Catalog reads do not count. |

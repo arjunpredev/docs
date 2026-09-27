@@ -1,28 +1,28 @@
 ---
 title: "Custom domains"
-description: "Connect a hostname to a deployed, public pre.dev app."
+description: "Serve your published app on your own hostname."
 ---
 
-A custom domain requires an existing deployment and **Public preview access** enabled in **Share**. The current interface supports one custom domain per project.
+Premium, Pro, Team, and Enterprise plans can connect one custom domain per project. The domain serves your [published](/coding-agent/building/publish) app, and access to the app must be set to **Anyone**.
 
 <Steps>
   <Step title="Add the hostname">
-    In the project's Share controls, open **Custom Domain** and enter a hostname such as `app.example.com`. Copy the exact DNS target shown after adding it.
+    Open **Publish** in the project header. Under **Custom domain**, enter a hostname such as `app.example.com` and choose **Add**. If the row asks you to, set **Access** to **Anyone** first.
   </Step>
   <Step title="Configure DNS">
-    At your DNS provider, add the record shown in the interface. For a subdomain, this is normally a CNAME:
+    At your DNS provider, add the record the sheet shows:
 
-    | Type | Host | Target |
+    | Type | Host | Value |
     | --- | --- | --- |
-    | CNAME | `app` or `app.example.com`, as your provider requires | The exact target shown by pre.dev |
+    | CNAME | Your hostname, for example `app.example.com` | Your app's pre.dev address, as shown |
 
-    Use a hostname as the target, without an `https://` prefix or a path. For an apex domain, follow your provider's supported alias or flattening configuration and the records shown by pre.dev.
+    Enter the value as a hostname, without `https://` or a path. Some providers expect only the subdomain part, such as `app`, in the host field. For an apex domain, use your provider's CNAME flattening or alias record.
   </Step>
   <Step title="Verify the connection">
-    Return to pre.dev and click **Verify Connection**. Once verification and hostname setup succeed, the domain becomes active. Allow time for DNS and certificate provisioning before checking HTTPS.
+    Choose **Verify Connection**. DNS can take a few minutes to propagate. Once verification succeeds, the domain becomes active; allow time for the certificate before checking HTTPS.
   </Step>
   <Step title="Check the application">
-    Open the domain and exercise key flows. Review allowed origins, login callback URLs, cookies, and any provider configuration that depends on the hostname. The agent can help update application settings after domain activation.
+    Open the domain and exercise key flows. Review allowed origins, sign-in callback URLs, cookies, and any provider configuration that depends on the hostname. The agent can help update application settings after the domain is active.
   </Step>
 </Steps>
 
@@ -30,10 +30,10 @@ A custom domain requires an existing deployment and **Public preview access** en
 
 | Symptom | What to check |
 | --- | --- |
-| Cannot add a domain | The project has a deployment, preview is public, and no domain is already configured |
-| DNS verification fails | The hostname resolves to the exact target shown; the DNS change may still be propagating |
-| Verify is unavailable | Wait for the current operation indicated by the interface |
+| No custom domain field | The plan is Premium or higher, access is **Anyone**, the project has a build, and no domain is already configured |
+| DNS verification fails | The hostname resolves to the exact value shown; the DNS change may still be propagating |
+| Verify is unavailable | Wait for the current operation to finish |
 | HTTPS is not ready | Check hostname status and certificate provisioning; do not repeatedly remove a valid DNS record |
-| App loads but login or API calls fail | Check callback URLs, allowed origins, cookies, and runtime configuration |
+| The app loads but sign-in or API calls fail | Check callback URLs, allowed origins, cookies, and runtime configuration |
 
-Use the domain's remove control to detach it. Remove the corresponding DNS record at your provider when it is no longer needed. The original deployment URL remains the fallback hosting address.
+Use the domain's remove control to detach it, then remove the DNS record at your provider when it is no longer needed. The app's pre.dev address keeps working.

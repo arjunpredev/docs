@@ -3,17 +3,15 @@ title: "Model catalog"
 description: "Read-only catalog endpoints with credit prices, refreshed every 15 minutes."
 ---
 
-The catalog lists every model and provider the gateway serves, with pre.dev credit prices added. Reads are free, not rate-limited, and do not need credits.
+The catalog lists every model the gateway serves, with pre.dev credit prices added. Reads are free, not rate-limited, and do not need credits.
 
 | Method | Path | Returns |
 | --- | --- | --- |
 | GET | `/v1/models` | All models, each row with a `predev` price object |
-| GET | `/v1/models/count` | Number of models |
-| GET | `/v1/models/{author}/{slug}/endpoints` | The provider endpoints behind one model |
+| GET | `/v1/models/count` | Number of models in `/v1/models` |
 | GET | `/v1/embeddings/models` | Embedding models |
 | GET | `/v1/images/models` | Image generation models |
 | GET | `/v1/videos/models` | Video generation models |
-| GET | `/v1/providers` | Providers |
 
 ```bash
 curl --fail-with-body -i https://api.pre.dev/v1/models \
@@ -22,43 +20,39 @@ curl --fail-with-body -i https://api.pre.dev/v1/models \
 
 ## The `predev` object
 
-Each model row carries its prices in credits (see [pricing](/ai-gateway/pricing)):
+Each model row carries its prices in credits (see [pricing](/coding-agent/plans-and-credits#ai-gateway-calls)):
 
 | Field | Unit | Present when |
 | --- | --- | --- |
-| `credits_per_m_input` | Credits per million input tokens | Always |
-| `credits_per_m_output` | Credits per million output tokens | Always |
+| `credits_per_m_input` | Credits per million input tokens | Always; `null` when the model has no token price |
+| `credits_per_m_output` | Credits per million output tokens | Always; `null` when the model has no token price |
 | `credits_per_m_cache_read` | Credits per million cached input tokens read | The model prices cache reads |
 | `credits_per_m_cache_write` | Credits per million tokens written to cache | The model prices cache writes |
-| `credits_per_image` | Credits per image input | The model prices image inputs |
+| `credits_per_image` | Credits per image | The model prices images |
 | `credits_per_request` | Credits per request | The model has a per-request price |
+| `credits_per_second_output` | Credits per second of generated video | Video models priced by the second |
+| `credits_per_m_video_tokens` | Credits per million video tokens | Video models priced by the token |
+| `credits_per_m_output_image_tokens` | Credits per million generated image tokens | Image models priced by the token |
+| `billables` | Each priced unit as `{ billable, unit, credits }` | Image models with itemized prices |
 
 ```json
 {
   "id": "anthropic/claude-sonnet-5",
   "name": "Anthropic: Claude Sonnet 5",
   "context_length": 1000000,
-  "pricing": { "prompt": "0.000003", "completion": "0.000015", "input_cache_read": "0.0000003", "input_cache_write": "0.00000375" },
   "predev": {
-    "credits_per_m_input": 42.86,
-    "credits_per_m_output": 214.29,
-    "credits_per_m_cache_read": 4.29,
-    "credits_per_m_cache_write": 53.57
+    "credits_per_m_input": 40,
+    "credits_per_m_output": 200,
+    "credits_per_m_cache_read": 4,
+    "credits_per_m_cache_write": 50
   }
 }
 ```
 
-The numbers above are illustrative; read the live row for current prices. The other fields in the row (`name`, `context_length`, dollar `pricing`, supported modalities and parameters, and so on) describe the model itself.
+The numbers above are illustrative; read the live row for current prices. The other fields in the row (`name`, `context_length`, `architecture` with input and output modalities, `supported_parameters`, and so on) describe the model itself.
 
 ## Freshness
 
-`x-predev-catalog-age` on every catalog response is the number of seconds since the catalog last refreshed. The catalog refreshes every 15 minutes, so a newly released model can be callable before it appears in the list. Calling a model id that is not yet listed still works if the gateway serves it.
+`x-predev-catalog-age` on every catalog response is the number of seconds since the catalog last refreshed. The catalog refreshes every 15 minutes, so a newly released model can appear up to 15 minutes after it becomes available.
 
-## Endpoints for one model
-
-```bash
-curl --fail-with-body https://api.pre.dev/v1/models/deepseek/deepseek-v4.1-flash/endpoints \
-  -H "Authorization: Bearer $PREDEV_API_KEY"
-```
-
-Use this with `provider` preferences to pin or exclude specific providers. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Paths outside this table return `404`.

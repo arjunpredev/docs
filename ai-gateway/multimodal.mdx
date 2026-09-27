@@ -3,7 +3,7 @@ title: "Multimodal"
 description: "Images, files, audio, and video through the same key and credits."
 ---
 
-Images, documents, audio, and video are all available through the gateway with the same key and credits. Request and response shapes are the standard OpenAI-compatible ones; this page shows where each modality lives.
+Images, documents, audio, and video are all available through the gateway with the same key and credits. Request and response shapes are the standard OpenAI-compatible ones; this page shows where each one lives.
 
 | Need | Endpoint | Reference |
 | --- | --- | --- |
@@ -29,8 +29,8 @@ curl --fail-with-body https://api.pre.dev/v1/chat/completions \
     "messages": [{
       "role": "user",
       "content": [
-        { "type": "text", "text": "What is in this picture?" },
-        { "type": "image_url", "image_url": { "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg" } }
+        { "type": "text", "text": "Describe this image." },
+        { "type": "image_url", "image_url": { "url": "https://pre.dev/predevlogosquare.png" } }
       ]
     }]
   }'
@@ -41,8 +41,8 @@ const completion = await client.chat.completions.create({
   messages: [{
     role: 'user',
     content: [
-      { type: 'text', text: 'What is in this picture?' },
-      { type: 'image_url', image_url: { url: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg' } },
+      { type: 'text', text: 'Describe this image.' },
+      { type: 'image_url', image_url: { url: 'https://pre.dev/predevlogosquare.png' } },
     ],
   }],
 });
@@ -53,8 +53,8 @@ completion = client.chat.completions.create(
     messages=[{
         "role": "user",
         "content": [
-            {"type": "text", "text": "What is in this picture?"},
-            {"type": "image_url", "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"}},
+            {"type": "text", "text": "Describe this image."},
+            {"type": "image_url", "image_url": {"url": "https://pre.dev/predevlogosquare.png"}},
         ],
     }],
 )
@@ -83,8 +83,8 @@ Upload once with [`POST /v1/files`](/ai-gateway/api/files) when the same documen
 
 ## Web search
 
-Add `plugins: [{ "id": "web" }]`, or use a model's `:online` variant, and tune with `web_search_options`. Search cost is part of `usage.cost`. See [routing and fallbacks](/ai-gateway/routing-and-fallbacks).
+Add `plugins: [{ "id": "web" }]`, or append `:online` to the model id, and tune with `web_search_options`. Search cost is part of the call's charge. See [fallbacks and advanced options](/ai-gateway/routing-and-fallbacks).
 
-## Generated media
+## Generated images, video, and audio
 
 Image, video, and speech models are listed by `/v1/images/models`, `/v1/videos/models`, and the main catalog. Video is asynchronous: submit, poll `GET /v1/videos/{jobId}`, then download from `/content`; the job is charged once it finishes, whether you poll it to completion, download its content, or stop polling and let pre.dev settle it. See [images and video](/ai-gateway/api/images-and-video) and [audio](/ai-gateway/api/audio).

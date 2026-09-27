@@ -1,43 +1,80 @@
 ---
-title: "Plans and credits"
-description: "Understand plan allowances, measured usage, and account limits."
+title: "Plans, credits, and pricing"
+sidebarTitle: "Plans, credits, and pricing"
+description: "Plan prices and allowances, what uses credits, how AI Gateway calls are priced, limits, and which plans unlock each feature."
 ---
 
-Credits pay for coding, planning, and browser tasks. Use `/balance` in the workspace or CLI to check your remaining credits.
+import CreditValue from "/snippets/credit-value.mdx";
+import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
+import Limits from "/snippets/limits.mdx";
+
+<CreditValue />
+
+Check your balance with `/balance` in the workspace or CLI.
 
 ## Plans
 
-Paid plans include a monthly credit allowance. Team credits are pooled across members. Prices below are for monthly billing; see [pricing](https://pre.dev/pricing) for annual billing and Enterprise options.
+| Plan | Monthly | Annual | Credits | Adds |
+| --- | --- | --- | --- | --- |
+| Free | $0 | $0 | 20 a month | Coding agent in the browser and terminal, browser agents, publishing for 7 days |
+| Plus | $10 | $99 | 100 a month | More monthly credits |
+| Premium | $49 | $499 | 500 a month | Model selection, published apps that stay live, custom domains |
+| Pro | $199 | $1,999 | 2,500 a month | More monthly credits |
+| Team | $499 | $4,990 | 5,000 a month, pooled | Unlimited team seats |
+| Enterprise | Custom | Custom | Per agreement | A dedicated solutions engineer |
 
-| Plan | Monthly price | Included credits | Main additions |
-| --- | --- | --- | --- |
-| Free | $0 | 20 | Coding in web and CLI, browser agents |
-| Plus | $10 | 100 monthly | Fast Spec and the default model offering |
-| Premium | $49 | 500 monthly | Full model catalog |
-| Pro | $199 | 2,500 monthly | Deep Spec |
-| Team | $499 | 5,000 pooled monthly | Unlimited team seats, Architect MCP and API |
-| Enterprise | Custom | Per agreement | Dedicated support and negotiated capacity |
+Each plan includes everything in the plans above it. A team workspace without a plan gets its 20 free credits once, not every month. See [pricing](https://pre.dev/pricing) for current offers, and manage your plan, top-ups, and auto-recharge in **Billing**.
 
-Free includes 20 credits to get started. Manage your subscription and view your account's price and allowance in billing.
+## What uses credits
 
-## What consumes credits
-
-| Work | How to interpret the charge |
+| Work | How it is charged |
 | --- | --- |
 | Coding and planning | Measured model work; model choice and effort affect usage |
-| Fast and Deep specs | Variable usage; see the [Architect comparison](/architect-agent/overview) for estimates |
-| Browser tasks | Every task is charged a 0.1-credit floor at submission, including tasks that fail; successful tasks can cost more |
-| Proposal assessment | 100 credits per vetting request; [validate inputs before submitting](/architect-agent/proposals) |
-| AI gateway calls (runtime inference in your app) | Charged from the model's metered cost per call; per-model credit prices are on `GET /v1/models`; Free includes 5 credits of gateway calls; see [AI Gateway pricing](/ai-gateway/pricing) |
+| Verification | Each judge call is charged like a turn |
+| Images, video, and audio the agent generates | Charged per generation |
+| Fast and Deep specs | Variable; see the [Architect overview](/architect-agent/overview) for estimates |
+| Browser tasks | A floor per task at submission, and more for successful tasks that do more work |
+| AI calls from your apps | Each call at the model's credit price; see [AI Gateway calls](#ai-gateway-calls) |
 
-Browser submission charges the 0.1-credit floor for each task before execution. When a task finishes, a successful task is charged any usage above the floor, and a failed task keeps the floor. A submission may be rejected because of an account limit even when the overall balance is positive. Browser trial limits and inflight caps are separate from your total credit allowance.
+<BrowserCreditFloor />
+
+A browser submission can be rejected because of an account limit even when the overall balance is positive. Browser trial limits and in-flight caps are separate from your credit allowance.
+
+## AI Gateway calls
+
+Calls to the [AI Gateway](/ai-gateway/overview), including the AI features in apps you build on pre.dev, are charged from each call's metered usage at the model's credit price. The price per model is listed on [`GET /v1/models`](/ai-gateway/api/models): each row carries a `predev` object with `credits_per_m_input` and `credits_per_m_output` and, where the model has them, prices such as `credits_per_m_cache_read`, `credits_per_m_cache_write`, `credits_per_image`, and `credits_per_request`. Read those numbers rather than deriving prices yourself.
+
+Worked example: a model whose row lists `credits_per_m_input: 20` and `credits_per_m_output: 100` costs 0.2 credits for 10,000 input tokens plus 0.2 credits for 2,000 output tokens, so a call of that size settles at about 0.4 credits.
+
+- Plugin costs, such as web search, are part of the call's charge.
+- With `models` fallbacks, you pay the price of the model that answered.
+- Streams settle when they end. If your client disconnects mid-stream, the call is charged for what the model generated.
+- Video jobs are charged when a status poll reports completion, and submitting one needs at least 10 credits available. See [images and video](/ai-gateway/api/images-and-video).
+- Catalog reads are free.
+
+Non-streaming responses report the charge in `x-predev-credits-charged` and the balance in `x-predev-credits-remaining`. [`GET /v1/usage`](/ai-gateway/api/usage) breaks the last 1 to 90 days down by model and path.
+
+**Free allowance.** A Free workspace can spend 5 credits on gateway calls in total, whatever its credit balance. After that, every call returns `402` with code `subscription_required` until the workspace subscribes.
+
+**Out of credits.** A workspace without enough credits for a call gets `402` with code `insufficient_credits` before anything is sent to the model, so nothing is generated or charged. Turn on auto-recharge in billing to keep a live app running when the balance would otherwise reach zero. See [AI Gateway errors](/api-reference/errors#ai-gateway-errors).
+
+## Limits
+
+<Limits />
 
 ## Check usage and recover
 
-Use `/balance` for the account balance and project cost analytics for a breakdown of work. In the CLI, `/topup` and `/upgrade` open billing. A run paused for insufficient credits may resume after billing recovers; inspect its current status before launching duplicate work.
+- `/balance` shows the account balance.
+- The credits pill next to the composer shows what the current project has used. Select it for **Credits on this project**: a newest-first ledger of turns with the phase, model, tokens, and credits for each.
+- `/usage` in the CLI shows the same breakdown in the terminal.
+- In the CLI, `/topup` and `/upgrade` open billing.
 
-For integrations, [GET /credits-balance](/architect-agent/api/credits-balance) returns the effective balance. [GET /browser-agent-status](/browser-agents/api/queue-status) reports the current browser inflight cap.
+A run paused for insufficient credits can pick up where it stopped after you add credits; check its current status before launching duplicate work.
+
+For integrations, [GET /credits-balance](/architect-agent/api/credits-balance) returns the effective balance, and [GET /browser-agent-status](/browser-agents/api/queue-status) reports the current browser in-flight cap.
 
 ## API and MCP access
 
-Browser REST is available to eligible free accounts. Architect REST and the product MCP server require subscription or organization authentication, with additional trial checks for specification generation. See [authentication](/api-reference/authentication) for account requirements and [errors and retries](/api-reference/errors) for access errors.
+The Architect API and the MCP server are included with the Premium, Pro, Team, and Enterprise plans. Plus accounts, and team workspaces without an active plan, can connect and generate 3 specifications as a trial; after that, generation returns `403`. Free accounts cannot authenticate to the Architect API or MCP.
+
+Browser Agents REST and the AI Gateway accept every account, including Free. See [authentication](/api-reference/authentication) for how each interface checks keys and [errors and retries](/api-reference/errors) for access errors.
