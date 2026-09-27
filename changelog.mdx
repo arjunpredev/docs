@@ -19,10 +19,11 @@ to get notified on every SDK bump.
 - **The AI Gateway has an OpenAPI file**, [ai-gateway.openapi.json](https://docs.pre.dev/api-reference/ai-gateway.openapi.json), covering all 25 `/v1` operations with error examples. Every operation has a reference page, and every REST response in [openapi.json](https://docs.pre.dev/api-reference/openapi.json) now has an example.
 - The docs search server for agents is at `https://docs.pre.dev/mcp`.
 
-### AI Gateway: a model list without a key, and usage in credits
+### AI Gateway: a model list without a key, and prices in credits only
 
 - [`GET /v1/models/public`](/ai-gateway/api/public-models) lists every model an app can call, with its lab, type and modalities, and needs no API key. Credit prices stay on `GET /v1/models`.
-- [`GET /v1/usage`](/ai-gateway/api/usage) reports requests, credits and tokens only.
+- The catalog listings carry prices in credits only, in each row's `predev` object. When the catalog cannot be read, they answer `502` with code `catalog_unavailable`.
+- [`GET /v1/usage`](/ai-gateway/api/usage) reports requests, credits and tokens only, and `workspace` is an opaque `ws_…` id.
 
 ### MCP tools say what they do and cost
 
