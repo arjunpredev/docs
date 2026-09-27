@@ -3,8 +3,7 @@
 /quickstart /coding-agent/quickstart 301!
 /how-it-works /coding-agent/overview 301!
 /coding-agent/how-it-works /coding-agent/overview 301!
-/labs /overview 301!
-/labs/overview /overview 301!
+/labs /labs/overview 301!
 /labs/browser-agents/overview /browser-agents/overview 301!
 /labs/browser-agents/quickstart /browser-agents/quickstart 301!
 /labs/browser-agents/rest-api /browser-agents/api/run-task 301!

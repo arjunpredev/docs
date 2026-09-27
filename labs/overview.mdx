@@ -1,0 +1,27 @@
+---
+title: "pre.dev for AI labs"
+sidebarTitle: "Overview"
+description: "RL Tasks and Codebases: training data built from private production code, licensed directly from the teams that built it."
+---
+
+pre.dev offers AI labs two kinds of training data. Both come from private production codebases that pre.dev licenses directly from the teams that built them.
+
+## RL Tasks
+
+Hard, verified coding tasks for post-training, built from private production code no model has seen. One real commit becomes one task: a Harbor task container at the commit's parent, an instruction, a graded verifier, and a reference solution. Every task clears QC checks for solvability and for gaming before solver runs place it in a difficulty band. You receive tasks, not repository access.
+
+See [RL Tasks](/labs/rl-tasks) for the bundle layout, `task.toml`, the reward, and the QC checks.
+
+## Codebases
+
+Licensed private codebases with full git history, cleaned and delivered for training. Each repository ships with every branch and tag, its pull requests with reviews, and a README that explains how to rebuild each pull request as a task. Secrets and personal data are removed from every version of every file, and contributors are pseudonymized.
+
+See [Codebases](/labs/codebases) for the zip layout, the pull request record, the catalog sheet, and pricing.
+
+## How buying works
+
+1. **Tell us what you're training.** The short form on [pre.dev/labs](https://pre.dev/labs) or [pre.dev/rl-tasks](https://pre.dev/rl-tasks#request-samples) asks for your name, work email, company, and what you're training.
+2. **Book a 30-minute call with the founders.** Sample tasks, verifiers, QC evidence, and model results are walked through with your team on the call, and a set is scoped to your target domains and languages.
+3. **Start with a paid pilot.** Pricing is set per engagement. Licenses are non-exclusive by default.
+
+[Trust and data handling](/labs/trust) covers the privacy checks, what is removed before delivery, and how licensing works.

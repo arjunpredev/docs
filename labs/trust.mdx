@@ -1,0 +1,48 @@
+---
+title: "Trust and data handling"
+description: "How pre.dev checks that code is private, what is removed before anything is delivered, and how licensing works."
+---
+
+## Contamination
+
+### Exposure check
+
+Before a repository is analyzed, listed, or used for RL tasks, it goes through an exposure check. It is refused if:
+
+- its host reports it as public, or its page loads for a signed-out visitor;
+- the Internet Archive holds a public capture of it;
+- it is a fork of a project from outside the team that licensed it;
+- it is published on npm or PyPI, with the registry entry pointing back at it;
+- pre.dev's own agent created it.
+
+Weaker signals, such as an open-source license file or stars and forks on a private repository, go to a person for review. A refused repository is never listed, delivered, or used for tasks.
+
+{/* Pending predev-app feat/codebase-delivery-checks: the delivery-time re-check. */}
+
+Codebases are checked again before each delivery, and a repository found public, archived, forked, or published is held back. See [delivery and re-delivery](/labs/codebases#delivery-and-re-delivery).
+
+### What an RL solver sees
+
+The solver's workspace holds the repository at the before-state with no git history. The original commit message is withheld, and the task container runs without network access. See [RL Tasks](/labs/rl-tasks).
+
+### Checking overlap yourself
+
+{/* Pending predev-agent fix/rl-export-identity-and-tree-manifest: bundles carry file_tree once it ships. */}
+
+Every RL task bundle lists the SHA-256 of each file in its starting repository, plus a root hash over the whole tree, so you can check overlap against your own corpus. See [checking overlap](/labs/rl-tasks#checking-overlap-with-your-corpus).
+
+## Data handling
+
+- **Cleaned before anything reads it.** Secrets and personal data are removed from the full git history before the code is counted, graded, delivered, or turned into tasks. Contributors become pseudonyms. See [how the history is cleaned](/labs/codebases#how-the-history-is-cleaned).
+- **Checked again at export.** An RL bundle, including its solver trajectories, is scanned for private keys, AWS access keys, and bearer tokens, and its task files and evidence for connection strings with embedded passwords. Any hit stops the export. A codebase zip is built only if it passes the [delivery checks](/labs/codebases#delivery-checks).
+- **No names.** Codebases are delivered under catalog IDs, and the zip, its folder, and its README carry no owner or repository name. RL tasks carry opaque task IDs.
+- **Verifiable transfer.** RL tasks ship as `.tar.gz` archives with SHA-256 checksums. Codebases ship through signed download links that expire after seven days.
+
+{/* Pending predev-agent fix/rl-export-identity-and-tree-manifest: opaque task IDs. */}
+
+## Licensing
+
+- Every codebase is licensed directly from the team that built it, under a signed agreement that lets pre.dev sublicense it to labs.
+- A repository is delivered only while its owner's signed agreement is in place and the owner has not asked for it to be removed. Download links are issued only after your own license agreement is confirmed.
+- Licenses to labs are non-exclusive by default. Terms and pricing are set per engagement.
+- RL Tasks license the tasks built from this code, not access to the repositories.

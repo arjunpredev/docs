@@ -47,11 +47,7 @@
     },
     {
       "source": "/labs",
-      "destination": "/overview"
-    },
-    {
-      "source": "/labs/overview",
-      "destination": "/overview"
+      "destination": "/labs/overview"
     },
     {
       "source": "/labs/browser-agents/overview",
@@ -588,6 +584,20 @@
             "pages": [
               "architect-agent/mcp-setup",
               "mcp/tools"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Labs",
+        "groups": [
+          {
+            "group": "For AI labs",
+            "pages": [
+              "labs/overview",
+              "labs/rl-tasks",
+              "labs/codebases",
+              "labs/trust"
             ]
           }
         ]
