@@ -1,0 +1,262 @@
+---
+title: "Guide for agents"
+sidebarTitle: "For agents"
+description: "Everything a coding agent needs to use pre.dev: interfaces, the API key, plan access, five complete recipes, field names, polling and error rules, and limits."
+---
+
+import ApiKeyLocation from "/snippets/api-key-location.mdx";
+import AuthHeaders from "/snippets/auth-headers.mdx";
+import BaseUrls from "/snippets/base-urls.mdx";
+import Limits from "/snippets/limits.mdx";
+
+This page is written for AI agents and the people who set them up. Each recipe runs as written once `PREDEV_API_KEY` is set.
+
+## Interfaces
+
+<BaseUrls />
+
+Two more ways in: the **CLI**, `predev`, runs the coding agent in a local repository and needs a person to sign in; the **docs MCP server**, `https://docs.pre.dev/mcp`, searches and reads this documentation with no key.
+
+| Machine-readable resource | Use it for |
+| --- | --- |
+| [llms.txt](https://docs.pre.dev/llms.txt) | An index of every page, with agent entry points first |
+| [llms-full.txt](https://docs.pre.dev/llms-full.txt) | The whole site as one file; this guide comes first |
+| Any page URL plus `.md` | One page as Markdown, for example [agents.md](https://docs.pre.dev/agents.md) |
+| [REST OpenAPI](https://docs.pre.dev/api-reference/openapi.json) | Specifications, browser tasks, and credits |
+| [AI Gateway OpenAPI](https://docs.pre.dev/api-reference/ai-gateway.openapi.json) | Every `/v1` operation, with error examples |
+| [MCP tools](/mcp/tools) and [`/mcp/info`](https://api.pre.dev/mcp/info) | Tool inputs and results; the live list comes from `tools/list` |
+| [skill.md](https://docs.pre.dev/skill.md) | A short capability summary. Install it with `npx skills add https://docs.pre.dev` |
+
+## Get a key
+
+<ApiKeyLocation />
+
+<AuthHeaders />
+
+Projects built on pre.dev already have the key as `PREDEV_API_KEY`. It spends the workspace's credits, so keep it on a server.
+
+## Plan access
+
+Browser tasks and AI Gateway calls work on every plan, Free included: a Free personal account can spend 2 credits on browser tasks, and a Free workspace 5 credits on AI calls, before it needs a plan. Specifications and the MCP server need Premium, Pro, Team or Enterprise; Plus and team workspaces without a plan get 3 trial specifications. See [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
+
+## Choose an interface
+
+| Task | REST | MCP |
+| --- | --- | --- |
+| Run browser tasks | `POST /browser-agent` | `browser_agent` |
+| Retrieve a browser run | `GET /browser-agent/{id}` | `browser_agent_get` |
+| Browse browser history | `GET /list-browser-agents` | `browser_agent_list` |
+| Generate a concise specification | `POST /fast-spec` | `fast_spec` |
+| Generate a detailed specification | `POST /deep-spec` | `deep_spec` |
+| Retrieve a specification | `GET /spec-status/{specId}` | `get_spec` |
+| Browse specification history | `GET /list-specs` | `list_specs` |
+| Search specification input | `GET /find-specs` | Use REST |
+| Check available credits | `GET /credits-balance` | Use REST |
+| Call a model | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK | Use REST |
+
+Both official SDKs are named **`predev-api`**: `from predev_api import PredevAPI` in Python and `import { PredevAPI } from 'predev-api'` in Node. They cover specifications and browser tasks.
+
+## Recipe 1: run a browser task over REST
+
+Submit asynchronously, save the `id`, and poll until the batch finishes.
+
+```bash
+ID=$(curl --fail-with-body -s https://api.pre.dev/browser-agent \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: heading-example-1" \
+  -d '{
+    "async": true,
+    "tasks": [{
+      "url": "https://example.com",
+      "instruction": "Return the page heading",
+      "output": {
+        "type": "object",
+        "properties": { "heading": { "type": "string" } },
+        "required": ["heading"]
+      }
+    }]
+  }' | jq -r .id)
+
+while :; do
+  RUN=$(curl --fail-with-body -s "https://api.pre.dev/browser-agent/$ID" \
+    -H "Authorization: Bearer $PREDEV_API_KEY")
+  case $(echo "$RUN" | jq -r .status) in completed|failed) break ;; esac
+  sleep 5
+done
+
+echo "$RUN" | jq '.results[] | {status, data, error, creditsUsed}'
+```
+
+The batch `status` is lowercase: `processing`, `completed` or `failed`. Each task has its own uppercase `status`; read `data` only when it is `SUCCESS`, because a completed batch can contain failed tasks. See [submit tasks](/browser-agents/api/run-task).
+
+## Recipe 2: call a model with the OpenAI SDK
+
+<CodeGroup>
+```typescript Node.js
+// npm install openai
+import OpenAI from 'openai';
+
+const client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });
+
+const { data: completion, response } = await client.chat.completions
+  .create({
+    model: 'anthropic/claude-sonnet-5',
+    max_tokens: 200,
+    messages: [{ role: 'user', content: 'Write a one-line welcome message for a todo app.' }],
+  })
+  .withResponse();
+
+console.log(completion.choices[0].message.content);
+console.log('credits charged:', response.headers.get('x-predev-credits-charged'));
+```
+```python Python
+# pip install openai
+import os
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.pre.dev/v1", api_key=os.environ["PREDEV_API_KEY"])
+
+raw = client.chat.completions.with_raw_response.create(
+    model="anthropic/claude-sonnet-5",
+    max_tokens=200,
+    messages=[{"role": "user", "content": "Write a one-line welcome message for a todo app."}],
+)
+print(raw.parse().choices[0].message.content)
+print("credits charged:", raw.headers.get("x-predev-credits-charged"))
+```
+</CodeGroup>
+
+Use model ids exactly as [`GET /v1/models`](/ai-gateway/api/models) lists them; each row carries its credit prices in a `predev` object. The same key works with the Anthropic SDK at base URL `https://api.pre.dev`. See the [AI Gateway](/ai-gateway/overview).
+
+## Recipe 3: generate a specification over MCP
+
+Add the MCP server with the key in a header. This works headless, with no browser sign-in:
+
+```bash
+claude mcp add --transport http predev https://api.pre.dev/mcp \
+  --header "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+Any MCP client that can send a header connects the same way. Then call `fast_spec`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "fast_spec",
+    "arguments": { "executiveSummary": "A habit tracker with streaks and daily reminders" }
+  }
+}
+```
+
+`executiveSummary` says what to build, in at least 10 characters. Add `existingContext` (text describing an existing codebase) and `docURLs` when they help. If the result gives a spec id before the spec is finished, call `get_spec` with it every few seconds until the status is `completed` or `failed`. `get_spec` and `list_specs` use no credits. See [MCP setup](/architect-agent/mcp-setup) and the [tool reference](/mcp/tools).
+
+## Recipe 4: take a payment in an app built on pre.dev
+
+The project's environment already holds `STRIPE_SECRET_KEY` (a project-tagged pre.dev key), `STRIPE_API_HOST` and `STRIPE_WEBHOOK_SECRET`. Point the Stripe SDK at pre.dev and write ordinary Stripe code in the app's server:
+
+```typescript
+// npm install stripe express
+import express from 'express';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  host: process.env.STRIPE_API_HOST,
+  protocol: (process.env.STRIPE_API_PROTOCOL as 'https' | 'http') || 'https',
+  ...(process.env.STRIPE_API_PORT ? { port: Number(process.env.STRIPE_API_PORT) } : {}),
+});
+
+const app = express();
+
+// The webhook route reads the raw body, so mount it before any JSON parser.
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'] as string, process.env.STRIPE_WEBHOOK_SECRET!);
+  } catch {
+    return res.status(400).send('invalid signature');
+  }
+  if (event.type === 'checkout.session.completed') {
+    // mark the order paid
+  }
+  res.json({ received: true });
+});
+
+app.post('/api/checkout', express.json(), async (req, res) => {
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    line_items: [{ price: req.body.priceId, quantity: 1 }],
+    success_url: `${req.headers.origin}/thanks`,
+    cancel_url: `${req.headers.origin}/cart`,
+  });
+  res.json({ url: session.url });
+});
+
+app.listen(Number(process.env.PORT) || 3000);
+```
+
+Payments run in Stripe test mode while you build; use card `4242 4242 4242 4242`. The preview shows the app in a frame, where Checkout will not render, so open `url` in a new tab when framed. Server routes like these run in the project's sandbox, including after you publish. See [payments](/payments/overview) and [webhooks](/payments/webhooks).
+
+## Recipe 5: use the coding agent from a terminal
+
+```bash
+curl -fsSL https://pre.dev/install | bash   # macOS and Linux
+cd your-repo
+predev "add dark mode to the settings page"
+```
+
+A person signs in once in a browser; on a machine without one, the CLI prints a link to open on another device. There is no unattended mode yet, so an agent cannot start the CLI on its own. Sign-in with an API key, for unattended runs, is coming. See [the CLI](/cli/overview).
+
+## Keep names distinct
+
+| Meaning | REST | MCP | Python SDK |
+| --- | --- | --- | --- |
+| What to specify | `input` | `executiveSummary` (at least 10 characters) | `input_text` |
+| Existing codebase context | `currentContext` | `existingContext` | `current_context` |
+| Reference documentation | `docURLs` | `docURLs` | `doc_urls` |
+| Specification polling ID | `specId` from submission; `_id` on retrieval | `specId` | `result["specId"]` |
+| Browser run ID | `id` | `id` | `result["id"]` |
+| Submit browser work asynchronously | `async: true` | `async: true` | `run_async=True` |
+
+Pass existing context as **text describing the codebase**. It is not an ID that loads another project.
+
+## Long-running work
+
+- Save every id as soon as you get it: `id` for browser runs, `specId` for specifications, and the generation `id` (`pdg-…`) and `x-predev-request-id` for AI calls.
+- Poll at a bounded interval, such as every 5 seconds, and stop on a terminal status: `completed` or `failed` for specifications and browser runs. Do not infer completion from array lengths or the `completed` count.
+- A timeout or a dropped stream does not mean the work stopped. Fetch it by id before submitting again, and send one `Idempotency-Key` per logical browser submission; retries within 24 hours return the original run.
+- Browser runs stream from [`GET /browser-agent/{id}/stream`](/browser-agents/api/stream-task); the end of a stream is not a success signal. Request `includeEvents=true` only when you need the step timeline, since it can hold large screenshots.
+- AI Gateway calls stream with `stream: true`. Lines that start with `:` are keep-alives. Streamed responses carry no credits header; read the charge from [`GET /v1/generation`](/ai-gateway/api/generation) afterwards.
+
+## Errors
+
+REST errors are JSON with an `error` message and, where one applies, a machine-readable `code` such as `INSUFFICIENT_CREDITS`, `SUBSCRIPTION_REQUIRED` or `QUEUE_FULL` on browser submissions. Some MCP results are text without `isError`; confirm a specification's status with `get_spec`.
+
+The AI Gateway raises its own errors in the OpenAI error shape, so the OpenAI and Anthropic SDKs raise their usual exceptions:
+
+```json
+{
+  "error": {
+    "message": "This pre.dev workspace has no credits left for AI calls. Top up at https://pre.dev/billing or enable auto-recharge.",
+    "type": "insufficient_credits",
+    "code": "insufficient_credits",
+    "param": null,
+    "predev": { "credits_remaining": 0, "estimated_credits": 0.05, "topup_url": "https://pre.dev/billing" }
+  }
+}
+```
+
+Branch on `error.code`: `missing_api_key` or `invalid_api_key` (401), `insufficient_credits` or `subscription_required` (402, nothing ran), `rate_limit_exceeded` (429, wait `Retry-After` seconds), `balance_unavailable` (503, retry), and `upstream_unavailable` (502, retry or send `models` fallbacks). Errors from the model keep their own status and message. See [errors and retries](/api-reference/errors).
+
+## Limits
+
+<Limits />
+
+The AI Gateway also refuses more than 30 failed key attempts a minute from one IP address, and accepts request bodies up to 100 MB of JSON or 60 MB for file and audio uploads.
+
+## What the API does not do
+
+The public REST API has no endpoint to start a coding session, deploy, cancel work, register webhooks, or schedule runs. Build with the [coding agent](/coding-agent/overview) on the web or in the [CLI](/cli/overview), and schedule API calls in your own application. Browser tasks do not expose a reusable login session or cookie profile.

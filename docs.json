@@ -340,6 +340,10 @@
     {
       "source": "/browser-agents/mcp-tool",
       "destination": "/mcp/tools"
+    },
+    {
+      "source": "/for-agents",
+      "destination": "/agents"
     }
   ],
   "navigation": {
@@ -351,7 +355,7 @@
             "group": "Get started",
             "pages": [
               "overview",
-              "for-agents"
+              "agents"
             ]
           },
           {
