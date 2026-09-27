@@ -14,7 +14,7 @@ pre.dev is an AI product engineer: it plans, builds, verifies and ships software
 
 ## Authenticate
 
-- One API key per workspace, `pdk_…`. Copy it from Integrations > Built-in in the pre.dev dashboard. Projects built on pre.dev already have it as `PREDEV_API_KEY`.
+- One API key per workspace, `pdk_…`. Copy it from Integrations → Built-in in the pre.dev dashboard. Projects built on pre.dev already have it as `PREDEV_API_KEY`.
 - Send it as `Authorization: Bearer $PREDEV_API_KEY`. `x-api-key` also works.
 - Keep it on a server. It spends the workspace's credits.
 
