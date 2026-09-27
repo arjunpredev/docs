@@ -18,3 +18,12 @@ The response contains `specs`, `total`, and `hasMore`. Increase `skip` by your p
 Entries include `_id`, `created`, `input`, `endpoint`, `status`, available download links, and other summary metadata. They do **not** include full Markdown/JSON bodies, graph data, or live progress messages. Retrieve a specific entry with [spec status](/architect-agent/api/spec-status) before reading its artifacts.
 
 Supported endpoints are `fast_spec` and `deep_spec`; supported statuses are `pending`, `processing`, `completed`, and `failed`. Unknown filter values are ignored. Use [search](/architect-agent/api/find-specs) to match text in the original input.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

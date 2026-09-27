@@ -20,3 +20,12 @@ Rows include the run `id`, task count `total`, finished-task `completed` count, 
 Fetch [run status](/browser-agents/api/task-status) for full task details and timelines. List summaries and detailed run snapshots have different behavior for the `completed` count; use `status` to decide whether a run is terminal.
 
 Node: `client.listBrowserAgents({ limit: 20, skip: 0 })`. Python: `client.list_browser_agents(limit=20, skip=0)` returns a dictionary.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `401` | Missing or invalid key |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

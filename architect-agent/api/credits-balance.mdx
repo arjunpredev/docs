@@ -20,3 +20,12 @@ Credit balances can be fractional. The key determines which account or organizat
 Use this for budgeting before generation. A balance check does not reserve credits, and specification costs vary. For browser submissions, also check your [queue and in-flight limit](/browser-agents/api/queue-status).
 
 In Node, call `client.getCreditsBalance()`. In Python, `client.get_credits_balance()` returns a `CreditsBalanceResponse` object, so read `balance.creditsRemaining`. This is an exception to the Python SDK's dictionary-shaped specification and browser responses.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

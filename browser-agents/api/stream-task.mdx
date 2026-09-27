@@ -93,8 +93,17 @@ with requests.get(
 ```
 </CodeGroup>
 
+The SDKs stream **submission** responses; use direct HTTP for this existing-run endpoint.
+
 ## Errors
 
-Before streaming begins, invalid IDs return `400`, authentication failures `401`, inaccessible runs `404`, and stream capacity limits `503`. For `503`, poll [run status](/browser-agents/api/task-status). Once headers are sent, handle SSE `error` frames as failures even with HTTP `200`.
+These statuses arrive before streaming begins. Once headers are sent, handle SSE `error` frames as failures even with HTTP `200`.
 
-The SDKs stream **submission** responses; use direct HTTP for this existing-run endpoint.
+| Status | When |
+| --- | --- |
+| `400` | `id` is not a valid run ID |
+| `401` | Missing or invalid key |
+| `404` | No run with this ID in your account |
+| `503` | Streaming capacity is full; poll [`GET /browser-agent/{id}`](/browser-agents/api/task-status) instead |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

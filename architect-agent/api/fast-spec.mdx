@@ -21,8 +21,20 @@ curl --fail-with-body https://api.pre.dev/fast-spec \
 
 With `async: true`, HTTP `200` returns `{ "specId": "…", "status": "pending" }`. Poll [spec status](/architect-agent/api/spec-status) using the returned ID. With async omitted or false, the connection waits for the completed specification; long requests can exceed your client's timeout.
 
-## Access and failures
+## Access and cost
 
-An accepted API key is required. Eligible accounts can use a limited specification trial; paid generation requires available credits. Trial exhaustion returns `403`, insufficient credits `402`, and invalid inputs `400`. See [authentication](/api-reference/authentication) and [errors](/api-reference/errors).
+A key for a paid plan or a team workspace is required; Plus and team workspaces without a plan get a limited specification trial, and paid generation needs available credits. See [authentication](/api-reference/authentication).
 
 Generation cost varies with the request. The completed result includes `creditsUsed` when available. A network timeout does not prove generation stopped; check history before creating another spec.
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | No `input` or file, or `docURLs` is not an array of strings |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `402` | Not enough credits to start |
+| `403` | The specification trial is used up (Plus, or a team workspace without a plan), or the call came from a browser origin that is not allowed |
+| `500` | Generation failed. Check [history](/architect-agent/api/list-specs) before retrying |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

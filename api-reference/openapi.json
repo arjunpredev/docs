@@ -1073,6 +1073,15 @@
                       "error": "A batch can contain at most 1000 tasks.",
                       "code": "BATCH_TOO_LARGE"
                     }
+                  },
+                  "url_unreachable": {
+                    "summary": "Domain has no DNS address",
+                    "value": {
+                      "error": "Task 1: We couldn't find the website example.invalid. Check the URL and try again. No tasks were started.",
+                      "code": "URL_UNREACHABLE",
+                      "taskIndex": 0,
+                      "field": "url"
+                    }
                   }
                 }
               }
@@ -1166,8 +1175,21 @@
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 },
-                "example": {
-                  "error": "SSE capacity exceeded on this pod (200/200). Retry with async=true and poll GET /browser-agent/:id."
+                "examples": {
+                  "url_check_unavailable": {
+                    "summary": "Website verification unavailable",
+                    "value": {
+                      "error": "Website verification timed out or is temporarily unavailable. Please try again. No tasks were started.",
+                      "code": "URL_CHECK_UNAVAILABLE",
+                      "field": "url"
+                    }
+                  },
+                  "stream_capacity": {
+                    "summary": "Streaming capacity full (stream: true)",
+                    "value": {
+                      "error": "SSE capacity exceeded on this pod (5000/5000). Retry with async=true and poll GET /browser-agent/:id."
+                    }
+                  }
                 }
               }
             }
@@ -1776,7 +1798,7 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "example": {
-                  "error": "SSE capacity exceeded on this pod (200/200). Fall back to polling GET /browser-agent/:id."
+                  "error": "SSE capacity exceeded on this pod (5000/5000). Fall back to polling GET /browser-agent/:id."
                 }
               }
             }
