@@ -1,6 +1,6 @@
 # pre.dev
 
-> pre.dev is an AI product engineer that plans, builds, verifies and ships software, in a web workspace or a terminal.
+> pre.dev is the coding agent built for long-horizon tasks: it plans, builds, verifies and ships software, in a web workspace or a terminal.
 > Its APIs run browser tasks, generate software specifications, serve hundreds of AI models through one OpenAI-compatible API, and add payments to apps built on pre.dev.
 
 ## Agents start here
