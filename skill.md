@@ -10,7 +10,7 @@ metadata:
 
 # pre.dev
 
-pre.dev is an AI product engineer: it plans, builds, verifies and ships software in a web workspace or a terminal. Its APIs are also usable on their own: Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), specification generation, and payments for apps built on pre.dev.
+pre.dev is the coding agent built for long-horizon tasks: it plans, builds, verifies and ships software in a web workspace or a terminal. Its APIs are also usable on their own: Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), specification generation, and payments for apps built on pre.dev.
 
 ## Authenticate
 
