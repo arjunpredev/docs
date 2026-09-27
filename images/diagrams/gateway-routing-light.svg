@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="732" viewBox="0 0 540 732" role="img" aria-labelledby="title desc">
+<title id="title">How the AI Gateway handles a call</title>
+<desc id="desc">Your code calls https://api.pre.dev/v1 with an OpenAI or Anthropic SDK or plain HTTP. The gateway authenticates your pre.dev key from Bearer or x-api-key (refused with 401 otherwise), admits the call only with enough credits and under the workspace rate limit (402 or 429 otherwise), routes to the model you named or your models list in order, with pre.dev choosing how to serve it, and charges credits for the metered cost when the response or stream finishes. The response keeps the standard shape and carries an x-predev-request-id header; non-streamed responses also carry x-predev-credits-charged and x-predev-credits-remaining.</desc>
+<style>
+text{font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+.m{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+.b{font-weight:600}
+.cap{letter-spacing:.07em}
+.bg{fill:#fafafa;stroke:#e5e5e5}
+.n{fill:#ffffff;stroke:#d4d4d4}
+.na{fill:#eaf0fc;stroke:#315cbc}
+.soft{fill:#f0f0f0}
+.fa{fill:#315cbc}
+.fsa{fill:#eaf0fc}
+.t1{fill:#161616}
+.t2{fill:#474747}
+.t3{fill:#666666}
+.ta{fill:#2b52a8}
+.ton{fill:#ffffff}
+.ln{fill:none;stroke:#8f8f8f}
+.lna{fill:none;stroke:#315cbc}
+.hd{fill:#8f8f8f}
+.hda{fill:#315cbc}
+.rule{fill:none;stroke:#e3e3e3}
+</style>
+<rect x="0.5" y="0.5" width="539" height="731" rx="12" class="bg"/>
+<rect x="20" y="20" width="500" height="96" rx="10" class="n"/>
+<text x="36" y="48" font-size="17" class="t1 b">Your code</text>
+<text x="36" y="70" font-size="14" class="t3">An OpenAI or Anthropic SDK, or plain HTTP</text>
+<text x="36" y="96" font-size="14"><tspan class="t3">base URL </tspan><tspan class="t1 m">https://api.pre.dev/v1</tspan></text>
+<path d="M270 118L270 134" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M270 140L266.2 133L273.9 133Z" class="hd"/>
+<rect x="20" y="142" width="500" height="388" rx="12" class="na"/>
+<text x="36" y="170" font-size="13" class="ta b cap">PRE.DEV AI GATEWAY</text>
+<circle cx="50" cy="210" r="12" class="fa"/><text x="50" y="214.6" font-size="13" class="ton b" text-anchor="middle">1</text>
+<text x="74" y="216" font-size="16" class="t1 b">Authenticate</text>
+<text x="74" y="238" font-size="14"><tspan class="t2">Your pre.dev key, sent as </tspan><tspan class="t1 m">Bearer</tspan><tspan class="t2"> or </tspan><tspan class="t1 m">x-api-key</tspan><tspan class="t2">,</tspan></text>
+<text x="74" y="257" font-size="14" class="t2">identifies the workspace.</text>
+<text x="504" y="216" font-size="13" class="t3 m" text-anchor="end">refused: 401</text>
+<path d="M36 268L504 268" class="rule" stroke-width="1"/>
+<circle cx="50" cy="296" r="12" class="fa"/><text x="50" y="300.6" font-size="13" class="ton b" text-anchor="middle">2</text>
+<text x="74" y="302" font-size="16" class="t1 b">Admit</text>
+<text x="74" y="324" font-size="14" class="t2">Enough credits for the call, and under the</text>
+<text x="74" y="343" font-size="14" class="t2">workspace rate limit. Nothing runs otherwise.</text>
+<text x="504" y="302" font-size="13" class="t3 m" text-anchor="end">refused: 402, 429</text>
+<path d="M36 354L504 354" class="rule" stroke-width="1"/>
+<circle cx="50" cy="382" r="12" class="fa"/><text x="50" y="386.6" font-size="13" class="ton b" text-anchor="middle">3</text>
+<text x="74" y="388" font-size="16" class="t1 b">Route</text>
+<text x="74" y="410" font-size="14"><tspan class="t2">The </tspan><tspan class="t1 m">model</tspan><tspan class="t2"> you named, or your </tspan><tspan class="t1 m">models</tspan><tspan class="t2"> list in</tspan></text>
+<text x="74" y="429" font-size="14" class="t2">order. pre.dev chooses how to serve it.</text>
+<path d="M36 440L504 440" class="rule" stroke-width="1"/>
+<circle cx="50" cy="468" r="12" class="fa"/><text x="50" y="472.6" font-size="13" class="ton b" text-anchor="middle">4</text>
+<text x="74" y="474" font-size="16" class="t1 b">Charge</text>
+<text x="74" y="496" font-size="14" class="t2">Credits for the call’s metered cost, once</text>
+<text x="74" y="515" font-size="14" class="t2">the response or stream finishes.</text>
+<path d="M270 532L270 548" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M270 554L266.2 547L273.9 547Z" class="hd"/>
+<rect x="20" y="556" width="500" height="156" rx="10" class="n"/>
+<text x="36" y="584" font-size="17" class="t1 b">The response</text>
+<text x="36" y="606" font-size="14" class="t3">The standard response shape, streamed if you asked.</text>
+<text x="36" y="634" font-size="14"><tspan class="t3">Every response: </tspan><tspan class="t1 m" font-size="13">x-predev-request-id</tspan></text>
+<text x="36" y="660" font-size="14" class="t3">Non-streamed responses also carry:</text>
+<text x="36" y="680" font-size="13" class="t1 m">x-predev-credits-charged</text>
+<text x="36" y="698" font-size="13" class="t1 m">x-predev-credits-remaining</text>
+</svg>

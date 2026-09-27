@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="486" viewBox="0 0 540 486" role="img" aria-labelledby="title desc">
+<title id="title">pre.dev products</title>
+<desc id="desc">Five products and how to reach them. Coding Agent: web and CLI; returns pull requests and published apps. Architect: API and MCP; returns Markdown and JSON specs. Browser Agents: API and MCP; returns results and an event timeline. AI Gateway: API; returns OpenAI-compatible model responses. Payments and sign-in: built into apps made in the web workspace; provides Checkout, payouts, and user accounts.</desc>
+<style>
+text{font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+.m{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+.b{font-weight:600}
+.cap{letter-spacing:.07em}
+.bg{fill:#fafafa;stroke:#e5e5e5}
+.n{fill:#ffffff;stroke:#d4d4d4}
+.na{fill:#eaf0fc;stroke:#315cbc}
+.soft{fill:#f0f0f0}
+.fa{fill:#315cbc}
+.fsa{fill:#eaf0fc}
+.t1{fill:#161616}
+.t2{fill:#474747}
+.t3{fill:#666666}
+.ta{fill:#2b52a8}
+.ton{fill:#ffffff}
+.ln{fill:none;stroke:#8f8f8f}
+.lna{fill:none;stroke:#315cbc}
+.hd{fill:#8f8f8f}
+.hda{fill:#315cbc}
+.rule{fill:none;stroke:#e3e3e3}
+</style>
+<rect x="0.5" y="0.5" width="539" height="485" rx="12" class="bg"/>
+<text x="20" y="34" font-size="13" class="t3 b cap">PRODUCT</text>
+<text x="271" y="34" font-size="13" class="t3 b cap" text-anchor="middle">WAYS IN</text>
+<text x="374" y="34" font-size="13" class="t3 b cap">YOU GET</text>
+<path d="M202 70L202 408" class="rule" stroke-width="1.5"/>
+<rect x="182" y="48" width="40" height="24" rx="12" class="soft"/>
+<text x="202" y="64.5" font-size="13" class="t2 b" text-anchor="middle">Web</text>
+<path d="M248 70L248 408" class="rule" stroke-width="1.5"/>
+<rect x="228" y="48" width="40" height="24" rx="12" class="soft"/>
+<text x="248" y="64.5" font-size="13" class="t2 b" text-anchor="middle">CLI</text>
+<path d="M294 70L294 408" class="rule" stroke-width="1.5"/>
+<rect x="274" y="48" width="40" height="24" rx="12" class="soft"/>
+<text x="294" y="64.5" font-size="13" class="t2 b" text-anchor="middle">API</text>
+<path d="M340 70L340 408" class="rule" stroke-width="1.5"/>
+<rect x="320" y="48" width="40" height="24" rx="12" class="soft"/>
+<text x="340" y="64.5" font-size="13" class="t2 b" text-anchor="middle">MCP</text>
+<text x="20" y="117" font-size="17" class="t1 b">Coding Agent</text>
+<text x="20" y="137" font-size="14" class="t3">plans, builds, verifies</text>
+<circle cx="202" cy="121" r="6.5" class="fa"/>
+<circle cx="248" cy="121" r="6.5" class="fa"/>
+<text x="374" y="117" font-size="15" class="t1">Pull requests,</text>
+<text x="374" y="137" font-size="15" class="t2">published apps</text>
+<path d="M20 154L520 154" class="rule" stroke-width="1"/>
+<text x="20" y="183" font-size="17" class="t1 b">Architect</text>
+<text x="20" y="203" font-size="14" class="t3">fast or deep specs</text>
+<circle cx="294" cy="187" r="6.5" class="fa"/>
+<circle cx="340" cy="187" r="6.5" class="fa"/>
+<text x="374" y="183" font-size="15" class="t1">Markdown and</text>
+<text x="374" y="203" font-size="15" class="t2">JSON specs</text>
+<path d="M20 220L520 220" class="rule" stroke-width="1"/>
+<text x="20" y="249" font-size="17" class="t1 b">Browser Agents</text>
+<text x="20" y="269" font-size="14" class="t3">tasks on live websites</text>
+<circle cx="294" cy="253" r="6.5" class="fa"/>
+<circle cx="340" cy="253" r="6.5" class="fa"/>
+<text x="374" y="249" font-size="15" class="t1">Results and an</text>
+<text x="374" y="269" font-size="15" class="t2">event timeline</text>
+<path d="M20 286L520 286" class="rule" stroke-width="1"/>
+<text x="20" y="315" font-size="17" class="t1 b">AI Gateway</text>
+<text x="20" y="335" font-size="14" class="t3">hundreds of models</text>
+<circle cx="294" cy="319" r="6.5" class="fa"/>
+<text x="374" y="315" font-size="15" class="t1">Model responses,</text>
+<text x="374" y="335" font-size="15" class="t2">OpenAI-compatible</text>
+<path d="M20 352L520 352" class="rule" stroke-width="1"/>
+<text x="20" y="381" font-size="17" class="t1 b">Payments, sign-in</text>
+<text x="20" y="401" font-size="14" class="t3">built into your apps</text>
+<circle cx="202" cy="385" r="6.5" class="fa"/>
+<text x="374" y="381" font-size="15" class="t1">Checkout, payouts,</text>
+<text x="374" y="401" font-size="15" class="t2">user accounts</text>
+<path d="M20 418L520 418" class="rule" stroke-width="1"/>
+<text x="20" y="446" font-size="14" class="t3">API: REST at api.pre.dev and the Node and Python SDKs.</text>
+<text x="20" y="466" font-size="14" class="t3">One pre.dev account works across every product.</text>
+</svg>

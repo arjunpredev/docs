@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="864" viewBox="0 0 540 864" role="img" aria-labelledby="title desc">
+<title id="title">How an RL task is made</title>
+<desc id="desc">Seven steps. A licensed private repository with its git history, cleaned of secrets and personal data, that passed the exposure check. One real commit becomes one task. The before-state is rebuilt as a Harbor task container; grading runs offline and the commit message is withheld. A graded verifier runs the code. QC checks: the reference solution scores 0.95 or more in a cold container, doing nothing scores 0.1 or less with no scored check passing, checks are audited for fairness, renamed internals keep the score while removing a specified behavior lowers it, cheat probes score 0.1 or less, and solver scores vary with checks ordered by difficulty. Calibration by solver runs: 0.1 to 0.8 is deliverable. Export as a .tar.gz with its SHA-256. A task that fails a check goes back for repair or does not ship.</desc>
+<style>
+text{font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+.m{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+.b{font-weight:600}
+.cap{letter-spacing:.07em}
+.bg{fill:#141416;stroke:#2a2a2e}
+.n{fill:#1c1c1f;stroke:#3b3b41}
+.na{fill:#1f2940;stroke:#a9bff6}
+.soft{fill:#232327}
+.fa{fill:#a9bff6}
+.fsa{fill:#1f2940}
+.t1{fill:#ededed}
+.t2{fill:#bdbdbd}
+.t3{fill:#9a9a9f}
+.ta{fill:#b9ccf9}
+.ton{fill:#0e0e10}
+.ln{fill:none;stroke:#76767d}
+.lna{fill:none;stroke:#a9bff6}
+.hd{fill:#76767d}
+.hda{fill:#a9bff6}
+.rule{fill:none;stroke:#2c2c31}
+</style>
+<rect x="0.5" y="0.5" width="539" height="863" rx="12" class="bg"/>
+<path d="M42 70L42 750" class="rule" stroke-width="2"/>
+<text x="70" y="34" font-size="13" class="t3 b cap">BUILD THE TASK</text>
+<circle cx="42" cy="70" r="12" class="n"/><text x="42" y="74.6" font-size="13" class="t2 b" text-anchor="middle">1</text>
+<text x="70" y="76" font-size="17" class="t1 b">A licensed repository</text>
+<text x="70" y="100" font-size="15" class="t2">Private production code with its git history,</text>
+<text x="70" y="120" font-size="15" class="t2">cleaned of secrets and personal data first.</text>
+<text x="70" y="140" font-size="15" class="t2">It has passed the exposure check.</text>
+<circle cx="42" cy="174" r="12" class="n"/><text x="42" y="178.6" font-size="13" class="t2 b" text-anchor="middle">2</text>
+<text x="70" y="180" font-size="17" class="t1 b">One real commit, one task</text>
+<text x="70" y="204" font-size="15" class="t2">Mechanical changes are dropped. Small neighboring</text>
+<text x="70" y="224" font-size="15" class="t2">commits in one module can be combined.</text>
+<circle cx="42" cy="258" r="12" class="n"/><text x="42" y="262.6" font-size="13" class="t2 b" text-anchor="middle">3</text>
+<text x="70" y="264" font-size="17" class="t1 b">The before-state, rebuilt</text>
+<text x="70" y="288" font-size="15" class="t2">A Harbor task container at the parent commit.</text>
+<text x="70" y="308" font-size="15" class="t2">Grading runs offline; the commit message is withheld.</text>
+<circle cx="42" cy="342" r="12" class="n"/><text x="42" y="346.6" font-size="13" class="t2 b" text-anchor="middle">4</text>
+<text x="70" y="348" font-size="17" class="t1 b">A graded verifier</text>
+<text x="70" y="372" font-size="15" class="t2">Checks run the code instead of scanning it. Fakes</text>
+<text x="70" y="392" font-size="15" class="t2">are used only at external service boundaries.</text>
+<text x="70" y="436" font-size="13" class="t3 b cap">PROVE IT, THEN SHIP IT</text>
+<rect x="70" y="446" width="450" height="186" rx="10" class="na"/>
+<circle cx="42" cy="472" r="12" class="fa"/><text x="42" y="476.6" font-size="13" class="ton b" text-anchor="middle">5</text>
+<text x="84" y="478" font-size="17" class="t1 b">QC checks</text>
+<circle cx="87" cy="497" r="2.5" class="fa"/>
+<text x="98" y="502" font-size="14" class="t2">Reference solution: 0.95 or more, in a cold container</text>
+<circle cx="87" cy="517" r="2.5" class="fa"/>
+<text x="98" y="522" font-size="14" class="t2">Doing nothing: 0.1 or less, with no scored check passing</text>
+<circle cx="87" cy="537" r="2.5" class="fa"/>
+<text x="98" y="542" font-size="14" class="t2">Checks audited for fairness against the instruction</text>
+<circle cx="87" cy="557" r="2.5" class="fa"/>
+<text x="98" y="562" font-size="14" class="t2">Renamed internals keep the score; removing a</text>
+<text x="98" y="582" font-size="14" class="t2">specified behavior lowers it</text>
+<circle cx="87" cy="597" r="2.5" class="fa"/>
+<text x="98" y="602" font-size="14" class="t2">Cheat probes: 0.1 or less</text>
+<circle cx="87" cy="617" r="2.5" class="fa"/>
+<text x="98" y="622" font-size="14" class="t2">Solver scores vary, and checks order by difficulty</text>
+<circle cx="42" cy="666" r="12" class="n"/><text x="42" y="670.6" font-size="13" class="t2 b" text-anchor="middle">6</text>
+<text x="70" y="672" font-size="17" class="t1 b">Calibration</text>
+<text x="70" y="696" font-size="15" class="t2">Solver runs set the band: 0.1 to 0.8 is deliverable.</text>
+<text x="70" y="716" font-size="15" class="t2">Easier and harder tasks go to separate tiers.</text>
+<circle cx="42" cy="750" r="12" class="n"/><text x="42" y="754.6" font-size="13" class="t2 b" text-anchor="middle">7</text>
+<text x="70" y="756" font-size="17" class="t1 b">Export</text>
+<text x="70" y="780" font-size="15" class="t2">One bundle per task, shipped as a .tar.gz</text>
+<text x="70" y="800" font-size="15" class="t2">with its SHA-256 checksum.</text>
+<path d="M30 472L18 472L18 342L23 342" class="lna" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="4 3"/><path d="M29 342L22 345.9L22 338.2Z" class="hda"/>
+<path d="M20 816L520 816" class="rule" stroke-width="1"/>
+<text x="20" y="842" font-size="14" class="t3">A task that fails a check goes back for repair, or does not ship.</text>
+</svg>

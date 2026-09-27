@@ -3,7 +3,6 @@ title: "Connect the MCP server"
 description: "Use pre.dev's specification and browser tools from Claude Code, Cursor, or another remote MCP client."
 ---
 
-import { ProtocolTrace } from "/snippets/protocol-trace.jsx";
 import McpUrl from "/snippets/mcp-url.mdx";
 import AuthHeaders from "/snippets/auth-headers.mdx";
 
@@ -70,9 +69,12 @@ Tool execution uses your account's credits and access. Connecting a server does 
 
 ## Connection lifecycle
 
-The client authenticates, initializes the connection, discovers tools, and calls one. Progress notifications can arrive before the tool result.
-
-<ProtocolTrace kind="mcp" />
+1. The client authenticates with browser sign-in (OAuth) or an API-key header.
+2. It sends `initialize`. pre.dev responds with its capabilities and the negotiated protocol version.
+3. It sends `notifications/initialized`.
+4. It calls `tools/list` to get the tool names and their input schemas.
+5. It calls `tools/call` with a tool's arguments. Progress notifications can arrive on the active response before the result.
+6. It reads the tool result. When the result carries an ID for unfinished work, the client retrieves the work later, for example with `get_spec`.
 
 Use a standard MCP client library to handle JSON-RPC initialization and response streams. For Streamable HTTP, requests should accept both `application/json` and `text/event-stream`.
 

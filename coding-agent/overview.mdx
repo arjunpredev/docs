@@ -3,22 +3,18 @@ title: "Coding Agent"
 description: "Build and maintain software in the web workspace or your local terminal."
 ---
 
-import { Workflow } from "/snippets/workflow.jsx";
-
 Describe a change, give the agent the project context it needs, and review the code and evidence it produces. pre.dev supports new apps, existing repositories, planning, implementation, browser verification, and publishing.
 
-The agent decides how to handle each request: it can answer a question, make a direct change, or plan a larger task before it builds. Ask for a plan in your message when you want to shape requirements and architecture first.
+## How a change moves
 
-<Workflow
-  label="From request to reviewed software"
-  steps={[
-    { title: "Describe the outcome", description: "Name the behavior, relevant context, and constraints." },
-    { title: "Shape the approach", description: "The agent decides whether to plan first. Review any plan it produces." },
-    { title: "Build and check", description: "Implement a concrete change and inspect the checks that ran." },
-    { title: "Review and ship", description: "Read the diff, try the preview, then merge or publish." }
-  ]}
-  note="The agent can also answer a question without changing code. Ask for a plan first when you want to settle requirements."
-/>
+<img className="block dark:hidden" src="/images/diagrams/life-of-a-change-light.svg" alt="Life of a change in five steps: you describe the change, the agent picks an approach, it builds on the session branch, an independent judge verifies the work and unproven criteria go back to the build, and you review and ship." />
+<img className="hidden dark:block" src="/images/diagrams/life-of-a-change-dark.svg" alt="Life of a change in five steps: you describe the change, the agent picks an approach, it builds on the session branch, an independent judge verifies the work and unproven criteria go back to the build, and you review and ship." />
+
+1. **You describe the change** in the web workspace or the CLI: the behavior you want, the context, and the constraints.
+2. **The agent picks an approach.** It answers a question, changes the code directly, or plans a larger task first. Ask for a plan in your message when you want to shape requirements and architecture before it builds. See [how the agent works](/coding-agent/building/build-modes).
+3. **It builds on the session's branch.** Every [session](/coding-agent/building/sessions-and-parallel-agents) has its own branch. Sprints set the scope of the work, and effort sets its depth.
+4. **It verifies the work.** An independent judge scores each acceptance criterion from the recorded run, and the agent fixes what is unproven. See [verification](/coding-agent/building/acceptance-criteria).
+5. **You review and ship.** Read the diff, the verification result, and the preview, then merge through a [pull request](/coding-agent/building/pull-requests) or [publish](/coding-agent/building/publish) the app.
 
 ## Make the first request useful
 

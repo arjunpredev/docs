@@ -18,7 +18,7 @@ npm run a11y
 npm run dev
 ```
 
-`check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, JSX syntax and imports, interactive response examples, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
+`check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, snippet imports, diagram pairs and their alt text, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
 
 When sibling product repositories are available, also run:
 
@@ -44,6 +44,8 @@ This compares public REST routes, AI Gateway routes (`routes/ai_gateway.ts` and 
 | CLI commands | `predev-agent/src/constants/slash_manifest.ts` plus actual `tui-v2/slash_commands.ts` handlers |
 | Web controls and connections | Current frontend handlers (the web slash menu is `TerminalChat/components/SlashCommandMenu.tsx`), ProjectConfigModal, and `components/Integrations/` |
 | Commercial plans | Live pricing page, `frontend/src/components/Pricing/prices.tsx`, `services/credit_core.ts`, and the entitlement checks |
+| Labs: RL task bundles | `predev-agent/src/helpers/rl_env/` (`export_env.ts`, `flat_verifier.ts`, `qc_bundle.ts`, `calibration_bands.ts`) and `scripts/export_final_env.ts` |
+| Labs: codebase deliveries | `services/CodeLicensing/` (`delivery_zip.ts`, `delivery_batch.ts`, `delivery_checks.ts`, `metadata_sheet.ts`, `anonymize_repo.ts`, `public_exposure_check.ts`, `token_count.ts`) |
 
 Source comments and type declarations can lag runtime behavior. Compare handlers, serializers, and published package code; identify differences instead of documenting an intended behavior as implemented. Use Doppler config `dev` or `prd` if an authorized check needs environment configuration, and never print secret values.
 
@@ -56,35 +58,36 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 - Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is `https://docs.pre.dev/mcp`, hosted by Mintlify. There is no pre.dev npm MCP-server package.
 - Match examples to a published SDK version. Check Python dictionary/object responses, file MIME types, stream termination, and terminal task outcomes.
 - Say each repeated fact once, in a `snippets/*.mdx` file imported where it is needed: key location (`api-key-location`), base URLs, auth headers, SDK install lines, MCP URL, credit value, the browser credit floor, and limits. Change the snippet, not a copy.
-- Use the native HTML/React visuals in `snippets/` for workflows, specification outlines, branch lanes, and request lifecycles. Keep essential facts in MDX prose or tables as well, so Markdown exports remain useful.
-- Put each page in `docs.json` under one of the four tabs: Start (entry points, quickstarts, authentication, errors, plans), Build with pre.dev (web workspace, CLI, building and shipping, integrations, what is built into apps), and API & SDKs (REST, AI Gateway, SDKs, MCP). Changelog is a navbar link. Group placement does not require moving a file: keep paths stable and move a file only when a merge or rename demands it.
+- Draw diagrams as SVG light and dark pairs with alt text (see [Visuals](#visuals)), and state every fact a diagram shows in the page's prose or a table, so Markdown exports carry the facts. Do not add JSX components: Markdown exports inline their source.
+- Put each page in `docs.json` under one of the four tabs: Start (entry points, quickstarts, authentication, errors, plans), Build with pre.dev (web workspace, CLI, building and shipping, integrations, what is built into apps), API & SDKs (REST, AI Gateway, SDKs, MCP), and Labs (RL Tasks and Codebases for AI labs). Changelog is a navbar link. Group placement does not require moving a file: keep paths stable and move a file only when a merge or rename demands it.
 - One page per shared topic: authentication, errors, and plans, credits, and pricing each have a single page; product pages link to them instead of restating them.
 - Preserve useful old URLs in both `docs.json` and `_redirects`; a redirect must never hide a real page.
 - Do not document the proposal-review endpoints or the media API (`/media/*`); both stay out of the public docs. The AI Gateway is described as pre.dev AI: never name the upstream router or providers, never call it a proxy or pass-through, never show dollar costs next to credit prices, and never state the margin.
 - The published build serves the static front end plus `/predev-ai`; server routes (checkout, webhooks, APIs) run in the project's sandbox. Do not claim otherwise.
 - Keep internal infrastructure, credentials, and private audit findings out of public pages.
+- Labs pages carry no counts of tasks, environments, or repositories, no prices or rates, and no names of labs, buyers, sellers, or source repositories. Samples are walked through on a call, never offered for download.
 - Add product-release changelog entries only for verified releases. Label documentation-only updates accordingly. No prices and no vendor or upstream names in the changelog. `node scripts/changelog-gaps.mjs` lists in-app changelog entries (`https://pre.dev/changelog.json`, or `--source-root ..` for a sibling checkout) dated after the latest docs entry; add `--details`, `--type feature,improvement`, `--since YYYY-MM-DD` or `--json`. It never edits files.
 - `llms.txt`, `skill.md`, and the AI Gateway OpenAPI file at the repo root and in `api-reference/` are written by hand and served in place of Mintlify's generated versions. When you add, move, or rename a page, add it to `llms.txt` under its tab with a unique title (`npm run check` fails otherwise), and update `skill.md` if a fact it states changes.
 - `agents.mdx` sorts first in the path-ordered `llms-full.txt` on purpose, so agents read it first; keep that path.
 
 ## Visuals
 
-`styles.css` defines a scoped `.pd-visual` system with light and dark palettes. Use the site's existing typography; reserve monospace for code, field names, and endpoints. Color communicates selection or status, with text labels supplying the same meaning. Layouts reflow on mobile without scaling text down to fit a diagram.
+Diagrams are SVG pairs in `images/diagrams/`: `<name>-light.svg` and `<name>-dark.svg`. Both are generated from one layout in `scripts/diagrams/diagrams.mjs`, so a pair differs only in its `<style>` block. Edit the source, then regenerate:
 
-| Component | Use for |
-| --- | --- |
-| `ProductPaths` | Product selection with plain descriptions of workflows and outputs |
-| `Workflow` | An ordered process with a short explanation per stage |
-| `SpecBlueprint` | Comparing Fast and Deep structure in a concrete example |
-| `LifecycleExplorer` | Inspecting async states, response excerpts, and next actions |
-| `SessionBranches` | Independent workstreams and review before integration |
-| `ProtocolTrace` | Requests, events, and message direction |
-| `ConnectionScope` | A project override and its workspace default |
-| `GraphExample` | Mapping graph IDs to a directed relationship |
+```bash
+npm run diagrams
+```
 
-Import named components directly from `/snippets/` in the page. [Mintlify's component environment](https://www.mintlify.com/docs/customize/react-components) provides React hooks and does not support cross-snippet or third-party imports. [Custom CSS](https://www.mintlify.com/docs/customize/custom-scripts) is loaded automatically. Keep state changes user-triggered, controls keyboard-accessible, and changing content announced with `aria-live`. Label synthetic output as an example and avoid API calls in educational visuals.
+Show a pair with Mintlify's theme classes and alt text that states what the figure shows:
 
-After changing a visual, inspect it at desktop and mobile widths in both themes, exercise every state with keyboard and pointer, and check the console. `check` validates the lifecycle examples against OpenAPI directly from the component's literal data.
+```mdx
+<img className="block dark:hidden" src="/images/diagrams/async-jobs-light.svg" alt="The async job pattern in four steps: submit, save the ID, poll or stream it, and read the result." />
+<img className="hidden dark:block" src="/images/diagrams/async-jobs-dark.svg" alt="The async job pattern in four steps: submit, save the ID, poll or stream it, and read the result." />
+```
+
+State every fact a diagram shows in the page's prose or a table as well. Screen readers and Markdown exports get the text, not the picture. Layouts are 540 units wide and stacked, so text stays legible at a 390px viewport; keep text at 13 units or larger. Colors are black, white, and neutral grays with one blue accent, and every text color keeps a contrast ratio of at least 4.5:1, which the generator enforces.
+
+`check` fails when a committed SVG differs from its source, a page shows only one file of a pair, the theme classes or alt text are missing, or a diagram is not used on any page. After changing a diagram, inspect it in both themes at desktop width and at 390px.
 
 ## Structure
 
@@ -100,5 +103,7 @@ Paths predate the four tabs and stay stable; `docs.json` decides where each page
 - `browser-agents/`: browser tasks, lifecycle, and streaming
 - `ai-gateway/`: AI Gateway guides and reference
 - `mcp/`: product tool reference
-- `scripts/`: offline documentation checks, and `changelog-gaps.mjs` for changelog upkeep
-- `snippets/`: shared fact snippets (`*.mdx`) and reusable visuals (`*.jsx`); `styles.css` styles the visuals
+- `scripts/`: offline documentation checks, `changelog-gaps.mjs` for changelog upkeep, and the diagram generator in `scripts/diagrams/`
+- `labs/`: RL Tasks and Codebases for AI labs
+- `snippets/`: shared fact snippets (`*.mdx`)
+- `images/diagrams/`: diagram SVG pairs, generated from `scripts/diagrams/`

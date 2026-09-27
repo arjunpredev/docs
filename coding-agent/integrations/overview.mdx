@@ -3,8 +3,6 @@ title: "Integrations"
 description: "Built-in services, provider accounts, agent skills, MCP servers, and API keys for your workspace and projects."
 ---
 
-import { ConnectionScope } from "/snippets/workflow.jsx";
-
 Workspace [Integrations](https://pre.dev/projects/integrations) manages reusable settings for your personal workspace; a team workspace has its own Integrations page. In a web project, `/integrations` opens **Project setup**, which has the same tabs for that project.
 
 | Tab | Purpose | Guide |
@@ -19,7 +17,12 @@ Workspace [Integrations](https://pre.dev/projects/integrations) manages reusable
 
 A personal project uses its personal workspace's connections. A team project uses its team's connections. Each workspace can connect multiple accounts for the same provider.
 
-<ConnectionScope />
+| Project setting | Account the project uses |
+| --- | --- |
+| No account pinned | The workspace default for that provider |
+| Account pinned | The pinned account, which takes precedence over the workspace default |
+
+In either case, connect or reauthorize the account if its connection is missing or expired.
 
 In **Connections**, leave a provider on **workspace default** or pin an account for this project. Connecting an account from Project setup selects it for that project.
 

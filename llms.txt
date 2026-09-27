@@ -114,3 +114,10 @@
 - [Python SDK](https://docs.pre.dev/architect-agent/sdks/python.md): The predev-api Python package.
 - [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): pre.dev's spec and browser tools in Claude Code, Cursor, or another MCP client.
 - [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The seven tools, exact input names, results, and deprecated aliases.
+
+## Labs
+
+- [pre.dev for AI labs](https://docs.pre.dev/labs/overview.md): RL Tasks and Codebases for AI labs, and how buying works.
+- [RL Tasks](https://docs.pre.dev/labs/rl-tasks.md): The task bundle, task.toml, the reward, QC checks, difficulty bands, and checking overlap.
+- [Codebases](https://docs.pre.dev/labs/codebases.md): The zip layout, pull request record, data card, catalog sheet, cleaning, pricing model, and delivery.
+- [Trust and data handling](https://docs.pre.dev/labs/trust.md): The exposure check, what is removed before delivery, and licensing.

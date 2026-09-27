@@ -4,7 +4,6 @@ sidebarTitle: "Introduction"
 description: "Build and publish software with the Coding Agent, generate specifications, run browser tasks, and call hundreds of AI models."
 ---
 
-import { ProductPaths } from "/snippets/product-paths.jsx";
 import BaseUrls from "/snippets/base-urls.mdx";
 
 pre.dev builds software and exposes the pieces behind it as APIs.
@@ -17,7 +16,10 @@ pre.dev builds software and exposes the pieces behind it as APIs.
 | AI Gateway | One OpenAI-compatible API for hundreds of models from every major lab, paid with pre.dev credits | [Call a model](/ai-gateway/quickstart) |
 | Payments and Authentication | Stripe payments and user sign-in, built into every app you build on pre.dev | [Built into every app](/coding-agent/built-in) |
 
-<ProductPaths />
+<img className="block dark:hidden" src="/images/diagrams/product-map-light.svg" alt="Five products and how to reach them. Coding Agent through the web workspace and the CLI, returning pull requests and published apps. Architect and Browser Agents through the API and MCP, returning specs and task results. AI Gateway through the API, returning model responses. Payments and sign-in built into apps made in the web workspace." />
+<img className="hidden dark:block" src="/images/diagrams/product-map-dark.svg" alt="Five products and how to reach them. Coding Agent through the web workspace and the CLI, returning pull requests and published apps. Architect and Browser Agents through the API and MCP, returning specs and task results. AI Gateway through the API, returning model responses. Payments and sign-in built into apps made in the web workspace." />
+
+The Coding Agent works in the web workspace and the CLI. Architect and Browser Agents are available over REST, the Node and Python SDKs, and MCP; the AI Gateway over REST. Payments and sign-in come built into apps you create in the web workspace.
 
 ## Choose your interface
 

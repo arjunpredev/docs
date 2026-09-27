@@ -3,13 +3,21 @@ title: "Understanding specs"
 description: "Read requirements, architecture, milestones, and the artifacts available to agents."
 ---
 
-import { SpecBlueprint } from "/snippets/spec-blueprint.jsx";
-
 A spec connects the project's goals to a proposed implementation. It supplies context for planning, coding, and review; it should be checked against the actual requirements and current codebase.
 
 A useful reading order is **goal → architecture → milestone → story → acceptance criteria**. Deep specifications can add implementation subtasks to a story.
 
-<SpecBlueprint />
+An illustrative outline, with the subtasks a Deep spec adds:
+
+```text
+Goal                  Keep a small team's work visible
+Architecture          Web app, API, and project data
+Milestone             A working issue board
+  Story               Filter issues by assignee
+    Acceptance        Only matching issues appear; an empty view explains why
+    Subtasks (Deep)   Add the filter control; apply the assignee predicate;
+                      check the matching and empty states
+```
 
 ## Read the artifacts
 

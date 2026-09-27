@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="564" viewBox="0 0 540 564" role="img" aria-labelledby="title desc">
+<title id="title">Browser task states and charges</title>
+<desc id="desc">Submitting a browser run charges 0.1 credits per task, refunded only if the submission fails before queueing. A task moves from PENDING to RUNNING with no further charge; a retry adds no charge. A SUCCESS is metered by the work the task did, at 0.1 credits or more. An unsuccessful task (BLOCKED, CAPTCHA_FAILED, TIMEOUT, LOOP, NO_TARGET, or ERROR) costs 0.1 credits and nothing more.</desc>
+<style>
+text{font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+.m{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+.b{font-weight:600}
+.cap{letter-spacing:.07em}
+.bg{fill:#fafafa;stroke:#e5e5e5}
+.n{fill:#ffffff;stroke:#d4d4d4}
+.na{fill:#eaf0fc;stroke:#315cbc}
+.soft{fill:#f0f0f0}
+.fa{fill:#315cbc}
+.fsa{fill:#eaf0fc}
+.t1{fill:#161616}
+.t2{fill:#474747}
+.t3{fill:#666666}
+.ta{fill:#2b52a8}
+.ton{fill:#ffffff}
+.ln{fill:none;stroke:#8f8f8f}
+.lna{fill:none;stroke:#315cbc}
+.hd{fill:#8f8f8f}
+.hda{fill:#315cbc}
+.rule{fill:none;stroke:#e3e3e3}
+</style>
+<rect x="0.5" y="0.5" width="539" height="563" rx="12" class="bg"/>
+<text x="20" y="32" font-size="13" class="t3 b cap">STATE</text>
+<text x="520" y="32" font-size="13" class="t3 b cap" text-anchor="end">CHARGE</text>
+<rect x="20" y="44" width="500" height="88" rx="10" class="n"/>
+<text x="36" y="72" font-size="16" class="t1 b">Submit</text>
+<text x="36" y="94" font-size="14" class="t3">POST /browser-agent checks, charges, and queues</text>
+<text x="504" y="72" font-size="15" class="ta b" text-anchor="end">0.1 credits per task</text>
+<text x="36" y="116" font-size="14" class="t3">Refunded only if the submission fails before queueing.</text>
+<path d="M270 134L270 148" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M270 154L266.2 147L273.9 147Z" class="hd"/>
+<rect x="20" y="156" width="500" height="64" rx="10" class="n"/>
+<text x="36" y="184" font-size="16" class="t1 b m">PENDING</text>
+<text x="36" y="206" font-size="14" class="t3">waiting to run</text>
+<text x="504" y="184" font-size="15" class="ta b" text-anchor="end">nothing more</text>
+<path d="M270 222L270 236" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M270 242L266.2 235L273.9 235Z" class="hd"/>
+<rect x="20" y="244" width="500" height="64" rx="10" class="n"/>
+<text x="36" y="272" font-size="16" class="t1 b m">RUNNING</text>
+<text x="36" y="294" font-size="14" class="t3">executing; a retry adds no charge</text>
+<text x="504" y="272" font-size="15" class="ta b" text-anchor="end">nothing more</text>
+<path d="M270 310L270 322L113 322L113 336" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M113 342L109.2 335L116.9 335Z" class="hd"/>
+<path d="M270 322L370 322L370 336" class="ln" stroke-width="1.5" stroke-linejoin="round"/><path d="M370 342L366.2 335L373.9 335Z" class="hd"/>
+<rect x="20" y="344" width="186" height="150" rx="10" class="na"/>
+<text x="34" y="372" font-size="16" class="t1 b m">SUCCESS</text>
+<text x="34" y="396" font-size="14" class="t2">Metered by the work</text>
+<text x="34" y="416" font-size="14" class="t2">the task did</text>
+<text x="34" y="448" font-size="15" class="ta b">0.1 credits</text>
+<text x="34" y="468" font-size="15" class="ta b">or more</text>
+<rect x="220" y="344" width="300" height="150" rx="10" class="n"/>
+<text x="234" y="372" font-size="16" class="t1 b">Unsuccessful</text>
+<text x="234" y="398" font-size="13" class="t2 m">BLOCKED</text>
+<text x="336" y="398" font-size="13" class="t2 m">CAPTCHA_FAILED</text>
+<text x="234" y="419" font-size="13" class="t2 m">TIMEOUT</text>
+<text x="336" y="419" font-size="13" class="t2 m">LOOP</text>
+<text x="234" y="440" font-size="13" class="t2 m">NO_TARGET</text>
+<text x="336" y="440" font-size="13" class="t2 m">ERROR</text>
+<text x="234" y="468" font-size="15" class="ta b">0.1 credits, nothing more</text>
+<text x="20" y="524" font-size="14" class="t3">A completed run can still contain unsuccessful</text>
+<text x="20" y="544" font-size="14" class="t3">tasks, so read each task’s status.</text>
+</svg>

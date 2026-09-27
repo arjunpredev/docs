@@ -4,7 +4,6 @@ sidebarTitle: "Generate a spec"
 description: "Generate a specification asynchronously, poll to completion, and read its Markdown and JSON."
 ---
 
-import { LifecycleExplorer } from "/snippets/lifecycle.jsx";
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
 
 By the end of this guide, you will have a saved specification ID and a completed implementation plan in Markdown and JSON.
@@ -49,9 +48,14 @@ curl --fail-with-body "https://api.pre.dev/spec-status/$SPEC_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Poll every few seconds with a deadline. Status moves through `pending` and `processing` to `completed` or `failed`. `progress` and `progressMessage` describe work in progress.
+Poll every few seconds with a deadline:
 
-<LifecycleExplorer kind="spec" />
+| `status` | Meaning | Next step |
+| --- | --- | --- |
+| `pending` | The request is saved | Keep polling the same ID |
+| `processing` | Generation is running; `progress` and `progressMessage` describe the work | Keep polling; do not submit another spec to check progress |
+| `completed` | The artifacts are ready | Stop polling and read the result |
+| `failed` | Generation did not complete | Stop polling and read `errorMessage`; an HTTP `200` status response does not mean generation succeeded |
 
 ## 3. Read the result
 

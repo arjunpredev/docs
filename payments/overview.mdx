@@ -32,6 +32,16 @@ That is the whole integration. See [built into every app](/coding-agent/built-in
 
 Payment code runs on your app's server, in the project's sandbox. A [published](/coding-agent/building/publish) app serves only its built front end, so checkout and webhook routes are not available at its published address.
 
+## Where money and events go
+
+<img className="block dark:hidden" src="/images/diagrams/money-flow-light.svg" alt="How money and events move for one Checkout: your app's server starts Checkout through api.pre.dev, the customer pays on Stripe's hosted page, Stripe settles the payment to your Stripe balance minus fees and pays out to your bank, and pre.dev relays the Stripe event to your app's webhook route." />
+<img className="hidden dark:block" src="/images/diagrams/money-flow-dark.svg" alt="How money and events move for one Checkout: your app's server starts Checkout through api.pre.dev, the customer pays on Stripe's hosted page, Stripe settles the payment to your Stripe balance minus fees and pays out to your bank, and pre.dev relays the Stripe event to your app's webhook route." />
+
+1. Your app's server starts Checkout with the Stripe SDK, through `api.pre.dev`, on your workspace's Stripe account.
+2. The customer pays on Stripe's hosted Checkout page.
+3. Stripe settles the payment to your Stripe balance, minus Stripe's processing fee and any pre.dev [platform fee](/payments/go-live#fees) on live payments, and pays out to your bank on your Stripe payout schedule.
+4. pre.dev relays the Stripe event to `POST /api/stripe/webhook` on your app's server, signed with `STRIPE_WEBHOOK_SECRET`. Your handler verifies it and marks the order paid. See [webhooks](/payments/webhooks).
+
 ## Test mode and going live
 
 While you build, payments run in Stripe test mode on an account pre.dev created for your workspace. Checkout accepts Stripe's test cards and nothing is charged.

@@ -3,8 +3,6 @@ title: "Verification"
 description: "Define acceptance criteria and read how an independent judge checks the work before a build finishes."
 ---
 
-import { Workflow } from "/snippets/workflow.jsx";
-
 Acceptance criteria describe observable behavior that should hold when the work is complete. Include them in the task or specification so implementation and review use the same definition of success.
 
 ```text
@@ -18,18 +16,7 @@ A failed request leaves the export button usable for retry.
 
 Before a build that changed code finishes, the agent submits the work to an independent judge. The judge reads the recorded commands, tool results, and browser checks from the run, never the agent's own summary, and scores every acceptance criterion. For criteria it cannot prove, a separate QA agent checks the app live. The agent then fixes what is still unproven and submits again.
 
-<Workflow
-  label="Implement acceptance criteria, check behavior, correct failures, and review evidence"
-  steps={[
-    { title: "Define success", description: "Write observable behavior into the task or specification." },
-    { title: "Implement and check", description: "Exercise the relevant tests and user flows." },
-    { title: "Judge the evidence", description: "An independent judge scores each criterion from the recorded run." },
-    { title: "Correct and recheck", description: "Fix unproven criteria and submit again until they hold." }
-  ]}
-  note="The Verify card in chat shows the result, for example 13/15 proven, 2 need proof, with each unproven criterion and why."
-/>
-
-The **Verify** card in the chat reads "Verifying…" while the judge runs and then shows the verdict. Each judge call uses credits like a turn and appears in the project's credit breakdown as the verification judge.
+The **Verify** card in the chat reads "Verifying…" while the judge runs and then shows the verdict, for example 13/15 proven and 2 needing proof, with each unproven criterion and why. Each judge call uses credits like a turn and appears in the project's credit breakdown as the verification judge.
 
 ## Evidence to inspect
 

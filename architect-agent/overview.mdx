@@ -3,8 +3,6 @@ title: "Architect API"
 description: "Generate software specifications with Markdown, structured JSON, architecture graphs, and implementation estimates."
 ---
 
-import { SpecBlueprint } from "/snippets/spec-blueprint.jsx";
-
 The Architect API turns a project description into an implementation plan. Choose **Fast Spec** for milestones and stories, or **Deep Spec** for a more detailed breakdown with subtasks. Both accept existing codebase context and reference documentation.
 
 <CardGroup cols={2}>
@@ -19,8 +17,6 @@ The Architect API turns a project description into an implementation plan. Choos
 ## From request to artifacts
 
 Send your requirements, optional codebase context, and any reference files or documentation URLs. The completed result offers the same plan in formats suited to different readers.
-
-<SpecBlueprint />
 
 The coding-agent variant focuses on requirements and implementation structure. The human variant adds personas, roles, and effort estimates. Graphs, an architecture infographic, and documentation archives are returned when available; integrations should tolerate absent optional artifacts.
 
