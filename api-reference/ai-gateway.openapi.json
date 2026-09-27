@@ -4393,30 +4393,38 @@
           },
           "input_references": {
             "type": "array",
-            "description": "Reference images for image-to-image models.",
+            "description": "Reference images for image-to-image models: each a URL or data: URL string, or an `image_url` object.",
             "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "image_url"
-              ],
-              "properties": {
-                "type": {
+              "oneOf": [
+                {
                   "type": "string",
-                  "const": "image_url"
+                  "description": "A URL or data: URL of the image."
                 },
-                "image_url": {
+                {
                   "type": "object",
                   "required": [
-                    "url"
+                    "type",
+                    "image_url"
                   ],
                   "properties": {
-                    "url": {
-                      "type": "string"
+                    "type": {
+                      "type": "string",
+                      "const": "image_url"
+                    },
+                    "image_url": {
+                      "type": "object",
+                      "required": [
+                        "url"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 }
-              }
+              ]
             }
           },
           "seed": {
@@ -4516,10 +4524,18 @@
           "input_references": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": true
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "A URL or data: URL of a reference image."
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              ]
             },
-            "description": "Reference images, audio or video, on models that accept them."
+            "description": "Reference images, audio or video, on models that accept them. An image can be a URL or data: URL string."
           },
           "generate_audio": {
             "type": "boolean"
