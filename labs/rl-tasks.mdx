@@ -42,8 +42,6 @@ The container's workspace is `/app`. The solver runs as the unprivileged `node` 
 
 ## task.toml
 
-{/* Pending predev-agent fix/rl-export-identity-and-tree-manifest: the opaque task name. */}
-
 ```toml
 schema_version = "1.1"
 
@@ -160,8 +158,6 @@ Solver runs set each task's band from its solver score:
 Only deliverable-band tasks count as tasks. A task whose solver runs score no better than doing nothing is treated as ungradeable, not hard, and goes back for repair. Frontier-model results from several model families can be run for a delivered set on request.
 
 ## Checking overlap with your corpus
-
-{/* Pending predev-agent fix/rl-export-identity-and-tree-manifest: bundles carry file_tree once it ships. */}
 
 `manifest.json` carries a `file_tree` for the repository at the before-state, the code the solver starts from:
 
