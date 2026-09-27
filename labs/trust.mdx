@@ -32,7 +32,7 @@ Every RL task bundle lists the SHA-256 of each file in its starting repository, 
 ## Data handling
 
 - **Cleaned before anything reads it.** Secrets and personal data are removed from the full git history before the code is counted, graded, delivered, or turned into tasks. Contributors become pseudonyms. See [how the history is cleaned](/labs/codebases#how-the-history-is-cleaned).
-- **Checked again at export.** An RL bundle, including its solver trajectories, is scanned for private keys, AWS access keys, and bearer tokens, and its task files and evidence for connection strings with embedded passwords. Any hit stops the export. A codebase zip is built only if it passes the [delivery checks](/labs/codebases#delivery-checks).
+- **Checked again at export.** When an RL task is exported, its files are scanned for private-key blocks, AWS access key IDs, and bearer tokens in `Authorization` headers. Before the final bundle ships, its task files and QA evidence are also scanned for MongoDB, Redis, PostgreSQL, MySQL, and AMQP connection URLs that carry credentials. Any hit stops the export. A codebase zip is built only if it passes the [delivery checks](/labs/codebases#delivery-checks).
 - **No names.** Codebases are delivered under catalog IDs, and the zip, its folder, and its README carry no owner or repository name. RL tasks carry opaque task IDs.
 - **Verifiable transfer.** RL tasks ship as `.tar.gz` archives with SHA-256 checksums. Codebases ship through signed download links that expire after seven days.
 
