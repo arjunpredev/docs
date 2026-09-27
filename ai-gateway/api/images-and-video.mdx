@@ -19,6 +19,15 @@ curl --fail-with-body https://api.pre.dev/v1/images \
 
 Pick another model from `GET /v1/images/models`; each row lists the parameters it accepts in `supported_parameters`, and some models edit an input image rather than start from a prompt.
 
+To edit an image or draw from one, pass it in `input_references`. Each item is a URL or data: URL string, or `{"type": "image_url", "image_url": {"url": "..."}}`.
+
+```bash
+curl --fail-with-body https://api.pre.dev/v1/images \
+  -H "Authorization: Bearer $PREDEV_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "google/gemini-3.1-flash-lite-image", "prompt": "The same lighthouse at night, under a sky full of stars", "input_references": ["https://example.com/lighthouse.png"]}'
+```
+
 Use `credits_per_image` or the other `predev` prices in the model row to estimate cost; the actual charge follows the call's metered usage, like every other call.
 
 ## Video
