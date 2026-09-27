@@ -3,7 +3,7 @@
   "info": {
     "title": "pre.dev AI Gateway API",
     "version": "1.0.0",
-    "description": "One OpenAI-compatible API for hundreds of models from every major lab, paid for in pre.dev credits.\n\n- **Base URL:** `https://api.pre.dev/v1` for the OpenAI SDKs. The Anthropic SDKs take `https://api.pre.dev` and add `/v1/messages` themselves.\n- **Auth:** the workspace API key (`pdk_…`) from Integrations → Built-in in the pre.dev dashboard, as `Authorization: Bearer <key>` or `x-api-key`. Keep it on a server: it spends the workspace's credits.\n- **Models:** send ids exactly as `GET /v1/models` lists them, such as `anthropic/claude-sonnet-5`.\n- **Charges:** each call is charged in credits from its metered cost. Non-streaming responses report the charge in `x-predev-credits-charged`; `GET /v1/generation` reports it for any call. A request is refused with `402` before it runs when the balance cannot cover it. Catalog, usage, generation and file reads are free.\n- **Limits:** 600 requests per minute per workspace, 30 on the free trial. A free workspace can spend 5 credits on AI calls in total, then gets `402 subscription_required`. Reads do not count toward the per-minute limit.\n- **Errors:** errors raised by pre.dev use the OpenAI error shape with a `predev` object (`GatewayError`). Errors from the model keep their HTTP status and message (`ModelError`). Every inference response carries `x-predev-request-id`.\n- **Streaming:** `stream: true` returns server-sent events in the native format of each endpoint. Lines that start with `:` are keep-alives.\n\nExample values are illustrative.",
+    "description": "One OpenAI-compatible API for hundreds of models from every major lab, paid for in pre.dev credits.\n\n- **Base URL:** `https://api.pre.dev/v1` for the OpenAI SDKs. The Anthropic SDKs take `https://api.pre.dev` and add `/v1/messages` themselves.\n- **Auth:** the workspace API key (`pdk_…`) from Integrations → Built-in in the pre.dev dashboard, as `Authorization: Bearer <key>` or `x-api-key`. Keep it on a server: it spends the workspace's credits.\n- **Models:** send ids exactly as `GET /v1/models` lists them, such as `anthropic/claude-sonnet-5`.\n- **Public directory:** `GET /v1/models/public` lists every model with no key and no prices.\n- **Charges:** each call is charged in credits from its metered cost. Non-streaming responses report the charge in `x-predev-credits-charged`; `GET /v1/generation` reports it for any call. A request is refused with `402` before it runs when the balance cannot cover it. Catalog, usage, generation and file reads are free.\n- **Limits:** 600 requests per minute per workspace, 30 on the free trial. A free workspace can spend 5 credits on AI calls in total, then gets `402 subscription_required`. Reads do not count toward the per-minute limit.\n- **Errors:** errors raised by pre.dev use the OpenAI error shape with a `predev` object (`GatewayError`). Errors from the model keep their HTTP status and message (`ModelError`). Every inference response carries `x-predev-request-id`.\n- **Streaming:** `stream: true` returns server-sent events in the native format of each endpoint. Lines that start with `:` are keep-alives.\n\nExample values are illustrative.",
     "contact": {
       "name": "pre.dev Support",
       "url": "https://pre.dev",
@@ -1885,6 +1885,134 @@
         }
       }
     },
+    "/v1/models/public": {
+      "get": {
+        "operationId": "listPublicModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "List models without a key",
+        "description": "Every model an app can call, with its lab, type and modalities, and no prices. Needs no API key, so a page can show the catalog. Credit prices are on `GET /v1/models`. Responses can be cached for 10 minutes; send the `ETag` back in `If-None-Match` to get `304` when nothing changed.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The `ETag` from an earlier response."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The model directory.",
+            "headers": {
+              "ETag": {
+                "description": "Changes when the catalog changes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "description": "`public, max-age=600, stale-while-revalidate=86400`",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelDirectory"
+                },
+                "example": {
+                  "object": "list",
+                  "updated_at": "2026-09-27T19:34:01.315Z",
+                  "total": 2,
+                  "counts": {
+                    "text": 1,
+                    "image": 0,
+                    "video": 0,
+                    "embeddings": 1
+                  },
+                  "labs": [
+                    {
+                      "id": "anthropic",
+                      "name": "Anthropic",
+                      "models": 1
+                    },
+                    {
+                      "id": "openai",
+                      "name": "OpenAI",
+                      "models": 1
+                    }
+                  ],
+                  "data": [
+                    {
+                      "id": "anthropic/claude-sonnet-5",
+                      "name": "Claude Sonnet 5",
+                      "lab": "anthropic",
+                      "type": "text",
+                      "input": [
+                        "text",
+                        "image",
+                        "file"
+                      ],
+                      "output": [
+                        "text"
+                      ],
+                      "context_length": 1000000,
+                      "created": 1782843083
+                    },
+                    {
+                      "id": "openai/text-embedding-3-small",
+                      "name": "Text Embedding 3 Small",
+                      "lab": "openai",
+                      "type": "embeddings",
+                      "input": [
+                        "text"
+                      ],
+                      "output": [
+                        "embeddings"
+                      ],
+                      "context_length": 8192,
+                      "created": 1761857455
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified since the `ETag` you sent."
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "description": "The catalog is refreshing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "The model catalog is refreshing. Try again in a minute.",
+                    "type": "server_error",
+                    "code": "catalog_unavailable",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/models/count": {
       "get": {
         "operationId": "countModels",
@@ -2779,9 +2907,10 @@
                   "not_found",
                   "not_ready",
                   "upstream_unavailable",
+                  "catalog_unavailable",
                   "internal_error"
                 ],
-                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `internal_error` | 500 | Unexpected error. |"
+                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 503 | `GET /v1/models/public` while the catalog refreshes. |\n| `internal_error` | 500 | Unexpected error. |"
               },
               "param": {
                 "type": "null"
@@ -4681,6 +4810,139 @@
           }
         },
         "additionalProperties": true
+      },
+      "ModelDirectory": {
+        "type": "object",
+        "required": [
+          "object",
+          "updated_at",
+          "total",
+          "counts",
+          "labs",
+          "data"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the catalog behind this list was last refreshed."
+          },
+          "total": {
+            "type": "integer"
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "text",
+              "image",
+              "video",
+              "embeddings"
+            ],
+            "properties": {
+              "text": {
+                "type": "integer"
+              },
+              "image": {
+                "type": "integer"
+              },
+              "video": {
+                "type": "integer"
+              },
+              "embeddings": {
+                "type": "integer"
+              }
+            }
+          },
+          "labs": {
+            "type": "array",
+            "description": "Labs by number of models, most first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "models"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "models": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "data": {
+            "type": "array",
+            "description": "Newest first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "lab",
+                "type",
+                "input",
+                "output",
+                "context_length",
+                "created"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The id to send as `model`."
+                },
+                "name": {
+                  "type": "string"
+                },
+                "lab": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "image",
+                    "video",
+                    "embeddings"
+                  ]
+                },
+                "input": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "output": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "context_length": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "created": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
       },
       "ModelCount": {
         "type": "object",
