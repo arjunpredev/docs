@@ -10,7 +10,7 @@ metadata:
 
 # pre.dev
 
-pre.dev is an AI product engineer: it plans, builds, verifies and ships software in a web workspace or a terminal. Its APIs are also usable on their own: Browser Agents, pre.dev AI (an OpenAI-compatible model API), specification generation, and Payments for apps built on pre.dev.
+pre.dev is an AI product engineer: it plans, builds, verifies and ships software in a web workspace or a terminal. Its APIs are also usable on their own: Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), specification generation, and payments for apps built on pre.dev.
 
 ## Authenticate
 
@@ -23,14 +23,14 @@ pre.dev is an AI product engineer: it plans, builds, verifies and ships software
 | Goal | Use |
 | --- | --- |
 | Read data from a website, or act on one | `POST https://api.pre.dev/browser-agent` |
-| Call a model: chat, embeddings, images, video, speech | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK |
+| Call a model (AI Gateway): chat, embeddings, images, video, speech | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK |
 | Plan software before building it | `POST https://api.pre.dev/fast-spec` or `/deep-spec`, or the `fast_spec` MCP tool |
 | Give an agent pre.dev tools | Product MCP server `https://api.pre.dev/mcp` |
 | Take payments in an app built on pre.dev | The Stripe SDK, pointed at `STRIPE_API_HOST` |
 | Build or change code | The coding agent, on the web or in the CLI (a person signs in) |
-| Search these docs | Docs MCP server `https://docs.pre.dev/mcp` |
+| Search these docs | Docs MCP server `https://docs.pre.dev/mcp` (no key) |
 
-Browser tasks and AI calls work on the Free plan: a free personal account can spend 2 credits on browser tasks, and a free workspace 5 credits on AI calls, before it needs a subscription. Specification generation, over REST or MCP, needs a paid plan or a team workspace: Premium, Pro and subscribed teams have full use, and Plus or an unsubscribed team gets 3 trial specifications.
+Browser tasks and AI calls work on every plan, Free included: a Free personal account can spend 2 credits on browser tasks, and a Free workspace 5 credits on AI calls, before it needs a plan. Specifications and the MCP server need Premium, Pro, Team or Enterprise; Plus and team workspaces without a plan get 3 trial specifications.
 
 ## Recipes
 
@@ -75,7 +75,7 @@ claude mcp add --transport http predev https://api.pre.dev/mcp \
   --header "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Then call `fast_spec` with `executiveSummary` (what to build, at least 10 characters) and optional `existingContext` and `docURLs`. If it returns before the spec is done, poll `get_spec` with the spec id every few seconds until the status is `completed` or `failed`. `get_spec` and `list_specs` are free. Interactive clients can add the same URL without the header and sign in with OAuth.
+Then call `fast_spec` with `executiveSummary` (what to build, at least 10 characters) and optional `existingContext` and `docURLs`. If it returns before the spec is done, poll `get_spec` with the spec id every few seconds until the status is `completed` or `failed`. `get_spec` and `list_specs` use no credits. Interactive clients can add the same URL without the header and sign in with OAuth.
 
 ### 4. Payments in an app built on pre.dev
 
@@ -110,14 +110,14 @@ curl -fsSL https://pre.dev/install | bash
 predev "add dark mode to the settings page"
 ```
 
-The CLI works in the current directory. A person signs in once in a browser; on a machine without a browser it prints a link to open on another device. There is no API-key or unattended mode.
+The CLI works in the current directory, on macOS and Linux. A person signs in once in a browser; on a machine without one it prints a link to open on another device. There is no unattended mode yet, so an agent cannot start the CLI on its own. Sign-in with an API key, for unattended runs, is coming.
 
 ## Rules for long-running work
 
 - Save every id (`id`, `specId`) as soon as you get it. A timeout or a dropped stream does not mean the work stopped: fetch it by id before submitting again.
 - Poll at a bounded interval, such as every 5 seconds, and stop on a terminal status. Do not infer completion from array lengths or counters.
 - Send `Idempotency-Key` on browser submissions you might retry.
-- Errors from pre.dev AI use the OpenAI error shape; branch on `error.code` (`insufficient_credits`, `subscription_required`, `rate_limit_exceeded`) and honor `Retry-After`.
+- AI Gateway errors use the OpenAI error shape; branch on `error.code` (`insufficient_credits`, `subscription_required`, `rate_limit_exceeded`) and honor `Retry-After`.
 
 ## Costs
 
@@ -127,9 +127,9 @@ The CLI works in the current directory. A person signs in once in a browser; on 
 
 ## References
 
-- Guide for agents: https://docs.pre.dev/for-agents
+- Guide for agents: https://docs.pre.dev/agents
 - Documentation index: https://docs.pre.dev/llms.txt
 - REST OpenAPI: https://docs.pre.dev/api-reference/openapi.json
-- pre.dev AI OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json
+- AI Gateway OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json
 - Product MCP: https://api.pre.dev/mcp (tool list at https://api.pre.dev/mcp/info)
 - Docs MCP: https://docs.pre.dev/mcp
