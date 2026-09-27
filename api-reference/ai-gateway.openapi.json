@@ -1,0 +1,4881 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "pre.dev AI Gateway API",
+    "version": "1.0.0",
+    "description": "One OpenAI-compatible API for hundreds of models from every major lab, paid for in pre.dev credits.\n\n- **Base URL:** `https://api.pre.dev/v1` for the OpenAI SDKs. The Anthropic SDKs take `https://api.pre.dev` and add `/v1/messages` themselves.\n- **Auth:** the workspace API key (`pdk_…`) from Integrations > Built-in in the pre.dev dashboard, as `Authorization: Bearer <key>` or `x-api-key`. Keep it on a server: it spends the workspace's credits.\n- **Models:** send ids exactly as `GET /v1/models` lists them, such as `anthropic/claude-sonnet-5`.\n- **Charges:** each call is charged in credits from its metered cost. Non-streaming responses report the charge in `x-predev-credits-charged`; `GET /v1/generation` reports it for any call. A request is refused with `402` before it runs when the balance cannot cover it. Catalog, usage, generation and file reads are free.\n- **Limits:** 600 requests per minute per workspace, 30 on the free trial. A free workspace can spend 5 credits on AI calls in total, then gets `402 subscription_required`. Reads do not count toward the per-minute limit.\n- **Errors:** errors raised by pre.dev use the OpenAI error shape with a `predev` object (`GatewayError`). Errors from the model keep their HTTP status and message (`ModelError`). Every inference response carries `x-predev-request-id`.\n- **Streaming:** `stream: true` returns server-sent events in the native format of each endpoint. Lines that start with `:` are keep-alives.\n\nExample values are illustrative.",
+    "contact": {
+      "name": "pre.dev Support",
+      "url": "https://pre.dev",
+      "email": "support@pre.dev"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://pre.dev/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.pre.dev",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    },
+    {
+      "xApiKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Chat",
+      "description": "Chat completions, text completions, Responses and Messages."
+    },
+    {
+      "name": "Embeddings",
+      "description": "Embeddings and rerank."
+    },
+    {
+      "name": "Images and video",
+      "description": "Image generation and asynchronous video jobs."
+    },
+    {
+      "name": "Audio",
+      "description": "Speech, music and transcription."
+    },
+    {
+      "name": "Files",
+      "description": "Documents stored for later chat requests."
+    },
+    {
+      "name": "Models",
+      "description": "The model catalog, with credit prices."
+    },
+    {
+      "name": "Usage",
+      "description": "Usage totals and per-call stats."
+    }
+  ],
+  "paths": {
+    "/v1/chat/completions": {
+      "post": {
+        "operationId": "createChatCompletion",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create a chat completion",
+        "description": "Runs a chat completion in the OpenAI format on any chat model in the catalog. Point an OpenAI SDK at `https://api.pre.dev/v1` and pass the pre.dev key.\n\nStandard fields such as `temperature`, `stop`, `seed`, `tools` and `response_format` work as in the OpenAI API. A `provider` object is removed before the request runs: choose a model, and use `models` for fallbacks.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatCompletionRequest"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "One question",
+                  "value": {
+                    "model": "anthropic/claude-sonnet-5",
+                    "max_tokens": 200,
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "Answer in one sentence."
+                      },
+                      {
+                        "role": "user",
+                        "content": "Why is the sky blue?"
+                      }
+                    ]
+                  }
+                },
+                "json_output": {
+                  "summary": "Structured JSON output",
+                  "value": {
+                    "model": "openai/gpt-6-luna",
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "Name three primary colors."
+                      }
+                    ],
+                    "response_format": {
+                      "type": "json_schema",
+                      "json_schema": {
+                        "name": "colors",
+                        "strict": true,
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "colors": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "colors"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    }
+                  }
+                },
+                "fallbacks": {
+                  "summary": "Fallback models",
+                  "value": {
+                    "models": [
+                      "anthropic/claude-sonnet-5",
+                      "openai/gpt-6-luna",
+                      "deepseek/deepseek-v4.1-flash"
+                    ],
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "Summarize the plot of Dune in two sentences."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The completion. With `stream: true`, server-sent chunks in the OpenAI format ending with `data: [DONE]`.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatCompletion"
+                },
+                "example": {
+                  "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
+                  "object": "chat.completion",
+                  "created": 1790500000,
+                  "model": "anthropic/claude-sonnet-5",
+                  "choices": [
+                    {
+                      "index": 0,
+                      "message": {
+                        "role": "assistant",
+                        "content": "Sunlight scatters off air molecules, and blue light scatters the most."
+                      },
+                      "finish_reason": "stop"
+                    }
+                  ],
+                  "usage": {
+                    "prompt_tokens": 21,
+                    "completion_tokens": 14,
+                    "total_tokens": 35
+                  },
+                  "system_fingerprint": null
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Sunlight scatters\"},\"finish_reason\":null}]}\n\n: processing\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"content\":\" off air molecules.\"},\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"anthropic/claude-sonnet-5\",\"system_fingerprint\":null,\"choices\":[],\"usage\":{\"prompt_tokens\":21,\"completion_tokens\":9,\"total_tokens\":30}}\n\ndata: [DONE]\n"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/chat/completions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\":\"anthropic/claude-sonnet-5\",\"max_tokens\":200,\"messages\":[{\"role\":\"system\",\"content\":\"Answer in one sentence.\"},{\"role\":\"user\",\"content\":\"Why is the sky blue?\"}]}'"
+          },
+          {
+            "lang": "Python",
+            "label": "Python (OpenAI SDK)",
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\ncompletion = client.chat.completions.create(\n    model=\"anthropic/claude-sonnet-5\",\n    max_tokens=200,\n    messages=[\n        {\"role\": \"system\", \"content\": \"Answer in one sentence.\"},\n        {\"role\": \"user\", \"content\": \"Why is the sky blue?\"},\n    ],\n)\nprint(completion.choices[0].message.content)"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "Node.js (OpenAI SDK)",
+            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst completion = await client.chat.completions.create({\n  model: 'anthropic/claude-sonnet-5',\n  max_tokens: 200,\n  messages: [\n    { role: 'system', content: 'Answer in one sentence.' },\n    { role: 'user', content: 'Why is the sky blue?' },\n  ],\n});\nconsole.log(completion.choices[0].message.content);"
+          }
+        ]
+      }
+    },
+    "/v1/completions": {
+      "post": {
+        "operationId": "createCompletion",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create a text completion",
+        "description": "Legacy text completion in the OpenAI format: a `prompt` string instead of `messages`. Prefer chat completions for new code.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionRequest"
+              },
+              "example": {
+                "model": "deepseek/deepseek-v4.1-flash",
+                "prompt": "The sky is blue because",
+                "max_tokens": 40
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The completion, or server-sent chunks when `stream` is true.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Completion"
+                },
+                "example": {
+                  "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
+                  "object": "text_completion",
+                  "created": 1790500000,
+                  "model": "deepseek/deepseek-v4.1-flash",
+                  "choices": [
+                    {
+                      "index": 0,
+                      "text": " sunlight scatters off air molecules.",
+                      "finish_reason": "stop"
+                    }
+                  ],
+                  "usage": {
+                    "prompt_tokens": 6,
+                    "completion_tokens": 7,
+                    "total_tokens": 13
+                  }
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        }
+      }
+    },
+    "/v1/responses": {
+      "post": {
+        "operationId": "createResponse",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create a response",
+        "description": "Runs a request in the OpenAI Responses format. Each request stands alone: responses are not stored, so send the full conversation in `input` rather than `previous_response_id`.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Responses event format (`response.created`, `response.output_text.delta`, `response.completed`, and so on).",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseRequest"
+              },
+              "example": {
+                "model": "openai/gpt-6-luna",
+                "input": "Write a one-line release note for a faster login page.",
+                "max_output_tokens": 100
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The response object, or Responses API events when `stream` is true.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                },
+                "example": {
+                  "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
+                  "object": "response",
+                  "created_at": 1790500000,
+                  "model": "openai/gpt-6-luna",
+                  "status": "completed",
+                  "output": [
+                    {
+                      "type": "message",
+                      "role": "assistant",
+                      "content": [
+                        {
+                          "type": "output_text",
+                          "text": "Login is now twice as fast."
+                        }
+                      ]
+                    }
+                  ],
+                  "usage": {
+                    "input_tokens": 18,
+                    "output_tokens": 8,
+                    "total_tokens": 26
+                  }
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        }
+      }
+    },
+    "/v1/messages": {
+      "post": {
+        "operationId": "createMessage",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create a message",
+        "description": "Runs a request in the Anthropic Messages format, for the Anthropic SDKs. Set the SDK base URL to `https://api.pre.dev` (the SDK adds `/v1/messages`) and pass the pre.dev key; the SDK's `x-api-key` header is accepted. The `anthropic-version` header is optional.\n\nUse catalog ids such as `anthropic/claude-sonnet-5`. Any chat model in the catalog works through this format, not only Anthropic models.\n\nWith `stream: true` the response is `text/event-stream`. Lines that start with `:` are keep-alive comments; ignore them. Credits settle when the stream ends, so streamed responses carry `x-predev-request-id` but not the credits headers; `GET /v1/generation?id=<id>` reports the charge afterwards. If the client disconnects, generation stops shortly after and the call is charged for what the model produced. Streams use the Anthropic event format (`message_start`, `content_block_delta`, `message_delta`, `message_stop`).",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageRequest"
+              },
+              "example": {
+                "model": "anthropic/claude-sonnet-5",
+                "max_tokens": 256,
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Give me a haiku about deploys."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The message, or Anthropic-style server-sent events when `stream` is true.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
+                  "type": "message",
+                  "role": "assistant",
+                  "model": "anthropic/claude-sonnet-5",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Green checks line up\nThe pipeline hums, then goes quiet\nProduction wakes up"
+                    }
+                  ],
+                  "stop_reason": "end_turn",
+                  "stop_sequence": null,
+                  "usage": {
+                    "input_tokens": 14,
+                    "output_tokens": 19
+                  }
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/messages \\\n  -H \"x-api-key: $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"anthropic/claude-sonnet-5\", \"max_tokens\": 256, \"messages\": [{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}]}'"
+          },
+          {
+            "lang": "Python",
+            "label": "Python (Anthropic SDK)",
+            "source": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(base_url=\"https://api.pre.dev\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nmessage = client.messages.create(\n    model=\"anthropic/claude-sonnet-5\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Give me a haiku about deploys.\"}],\n)\nprint(message.content[0].text)"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "Node.js (Anthropic SDK)",
+            "source": "import Anthropic from '@anthropic-ai/sdk';\n\nconst client = new Anthropic({ baseURL: 'https://api.pre.dev', apiKey: process.env.PREDEV_API_KEY });\n\nconst message = await client.messages.create({\n  model: 'anthropic/claude-sonnet-5',\n  max_tokens: 256,\n  messages: [{ role: 'user', content: 'Give me a haiku about deploys.' }],\n});\nconsole.log(message.content);"
+          }
+        ]
+      }
+    },
+    "/v1/embeddings": {
+      "post": {
+        "operationId": "createEmbeddings",
+        "tags": [
+          "Embeddings"
+        ],
+        "summary": "Create embeddings",
+        "description": "Embeds text in the OpenAI embeddings format. List embedding models with `GET /v1/embeddings/models`.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmbeddingsRequest"
+              },
+              "example": {
+                "model": "openai/text-embedding-3-small",
+                "input": [
+                  "pre.dev builds software from a spec",
+                  "credits pay for model calls"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One embedding per input, in input order.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingsResponse"
+                },
+                "example": {
+                  "object": "list",
+                  "data": [
+                    {
+                      "object": "embedding",
+                      "index": 0,
+                      "embedding": [
+                        0.0123,
+                        -0.0456,
+                        0.0789
+                      ]
+                    },
+                    {
+                      "object": "embedding",
+                      "index": 1,
+                      "embedding": [
+                        -0.0211,
+                        0.0302,
+                        0.0118
+                      ]
+                    }
+                  ],
+                  "model": "openai/text-embedding-3-small",
+                  "usage": {
+                    "prompt_tokens": 13,
+                    "total_tokens": 13
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/embeddings \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"openai/text-embedding-3-small\", \"input\": [\"pre.dev builds software from a spec\", \"credits pay for model calls\"]}'"
+          },
+          {
+            "lang": "Python",
+            "label": "Python (OpenAI SDK)",
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nresult = client.embeddings.create(\n    model=\"openai/text-embedding-3-small\",\n    input=[\"pre.dev builds software from a spec\", \"credits pay for model calls\"],\n)\nprint(len(result.data[0].embedding))"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "Node.js (OpenAI SDK)",
+            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst result = await client.embeddings.create({\n  model: 'openai/text-embedding-3-small',\n  input: ['pre.dev builds software from a spec', 'credits pay for model calls'],\n});\nconsole.log(result.data[0].embedding.length);"
+          }
+        ]
+      }
+    },
+    "/v1/rerank": {
+      "post": {
+        "operationId": "createRerank",
+        "tags": [
+          "Embeddings"
+        ],
+        "summary": "Rerank documents",
+        "description": "Orders `documents` by relevance to `query` and returns a score for each.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RerankRequest"
+              },
+              "example": {
+                "model": "cohere/rerank-v3.5",
+                "query": "How are AI calls billed?",
+                "documents": [
+                  "Credits are computed from each call's metered cost.",
+                  "Browser tasks have a 0.1-credit floor.",
+                  "Catalog reads are free."
+                ],
+                "top_n": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Results sorted by relevance.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RerankResponse"
+                },
+                "example": {
+                  "model": "cohere/rerank-v3.5",
+                  "results": [
+                    {
+                      "index": 0,
+                      "relevance_score": 0.91
+                    },
+                    {
+                      "index": 2,
+                      "relevance_score": 0.34
+                    }
+                  ],
+                  "usage": {
+                    "total_tokens": 41
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        }
+      }
+    },
+    "/v1/images": {
+      "post": {
+        "operationId": "createImage",
+        "tags": [
+          "Images and video"
+        ],
+        "summary": "Generate images",
+        "description": "Generates images from a prompt and returns them in the response. A request needs a balance of at least 1 credit. List image models, with a per-image credit price where the model has one, at `GET /v1/images/models`.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageRequest"
+              },
+              "example": {
+                "model": "bytedance-seed/seedream-5-0-lite",
+                "prompt": "A lighthouse at dawn, watercolor",
+                "aspect_ratio": "16:9"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated images as base64. With `stream: true` on a model that supports it, partial images arrive as server-sent events.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageResponse"
+                },
+                "example": {
+                  "created": 1790500000,
+                  "data": [
+                    {
+                      "b64_json": "iVBORw0KGgoAAAANSUhEUgAA…",
+                      "media_type": "image/png"
+                    }
+                  ]
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        }
+      }
+    },
+    "/v1/videos": {
+      "post": {
+        "operationId": "createVideo",
+        "tags": [
+          "Images and video"
+        ],
+        "summary": "Submit a video job",
+        "description": "Starts an asynchronous video job. Submitting needs a balance of at least 10 credits.\n\n1. `POST /v1/videos` returns the job with `status: \"pending\"` and a `polling_url`.\n2. Poll `polling_url` (`GET /v1/videos/{jobId}`) every few seconds until `status` is `completed`, `failed`, `cancelled` or `expired`.\n3. Download the video from `GET /v1/videos/{jobId}/content`.\n\nThe job is charged once, when it finishes: on the first poll that reports completion, on the download if you never polled, or by pre.dev shortly after if you stopped polling.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VideoRequest"
+              },
+              "example": {
+                "model": "bytedance/seedance-2.0-mini",
+                "prompt": "A paper boat drifting down a rain gutter",
+                "duration": 5,
+                "resolution": "720p"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The job was accepted.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoJob"
+                },
+                "example": {
+                  "id": "YCXWQa200sQEi5GSnlfP",
+                  "polling_url": "https://api.pre.dev/v1/videos/YCXWQa200sQEi5GSnlfP",
+                  "status": "pending"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "$ref": "#/components/responses/ModelUnavailable"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL (submit, poll, download)",
+            "source": "JOB=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"bytedance/seedance-2.0-mini\", \"prompt\": \"A paper boat drifting down a rain gutter\", \"duration\": 5}')\nPOLL=$(echo \"$JOB\" | jq -r .polling_url)\n\nwhile :; do\n  STATUS=$(curl --fail-with-body -s \"$POLL\" -H \"Authorization: Bearer $PREDEV_API_KEY\" | jq -r .status)\n  case \"$STATUS\" in completed|failed|cancelled|expired) break ;; esac\n  sleep 5\ndone\n\ncurl --fail-with-body \"$POLL/content\" -H \"Authorization: Bearer $PREDEV_API_KEY\" -o video.mp4"
+          }
+        ]
+      }
+    },
+    "/v1/videos/{jobId}": {
+      "get": {
+        "operationId": "getVideo",
+        "tags": [
+          "Images and video"
+        ],
+        "summary": "Get a video job",
+        "description": "Reports a video job's status. Use the job id from the submit response's `polling_url`. The poll that first sees the job finish charges it and returns `x-predev-credits-charged`. Jobs belong to the workspace that submitted them.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The last segment of `polling_url`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The job.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoJob"
+                },
+                "example": {
+                  "id": "YCXWQa200sQEi5GSnlfP",
+                  "polling_url": "https://api.pre.dev/v1/videos/YCXWQa200sQEi5GSnlfP",
+                  "status": "completed",
+                  "unsigned_urls": [
+                    "https://api.pre.dev/v1/videos/YCXWQa200sQEi5GSnlfP/content?index=0"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No job with this id belongs to the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No video job with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/videos/{jobId}/content": {
+      "get": {
+        "operationId": "getVideoContent",
+        "tags": [
+          "Images and video"
+        ],
+        "summary": "Download a video",
+        "description": "Streams the finished video. Call it after the job reports `completed`; before that it returns an error status. A download settles the job's charge if no poll has yet.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The video bytes. `Content-Type` names the format.",
+            "headers": {
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              }
+            },
+            "content": {
+              "video/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No job with this id belongs to the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No video job with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/audio/speech": {
+      "post": {
+        "operationId": "createSpeech",
+        "tags": [
+          "Audio"
+        ],
+        "summary": "Generate speech or music",
+        "description": "Turns text into speech, or a prompt into music, in the OpenAI speech format, so `client.audio.speech.create()` works unchanged. Speech models return WAV (24 kHz mono) by default, or raw PCM16 with `response_format: \"pcm16\"`. Music models (`google/lyria-3-clip-preview`, `google/lyria-3-pro-preview`) return MP3. The `x-predev-audio-format` header names the format. A request needs a balance of at least 1 credit.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeechRequest"
+              },
+              "examples": {
+                "speech": {
+                  "summary": "Speech",
+                  "value": {
+                    "model": "openai/gpt-audio-mini",
+                    "input": "Your build is ready.",
+                    "voice": "alloy"
+                  }
+                },
+                "music": {
+                  "summary": "Music",
+                  "value": {
+                    "model": "google/lyria-3-clip-preview",
+                    "input": "Upbeat lo-fi for a launch video"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The audio: `audio/wav` for speech, `audio/mpeg` for music, or `application/octet-stream` with raw PCM16 samples (24 kHz mono) when `response_format` is `pcm16`.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              },
+              "x-predev-audio-format": {
+                "$ref": "#/components/headers/AudioFormat"
+              }
+            },
+            "content": {
+              "audio/wav": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`model` or `input` is missing, the model does not produce audio, or the body is not valid JSON.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/GatewayError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidJsonBody"
+                    }
+                  ]
+                },
+                "examples": {
+                  "missing_fields": {
+                    "summary": "Missing model or input",
+                    "value": {
+                      "error": {
+                        "message": "`model` and `input` (the text to speak, or the music prompt) are required.",
+                        "type": "invalid_request_error",
+                        "code": "invalid_request",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  },
+                  "not_audio": {
+                    "summary": "Model does not produce audio",
+                    "value": {
+                      "error": {
+                        "message": "Model openai/tts-1 does not produce audio. Speech and music models available right now: google/lyria-3-pro-preview, google/lyria-3-clip-preview, openai/gpt-audio, openai/gpt-audio-mini.",
+                        "type": "invalid_request_error",
+                        "code": "invalid_request",
+                        "param": null,
+                        "predev": {
+                          "available_models": [
+                            "google/lyria-3-pro-preview",
+                            "google/lyria-3-clip-preview",
+                            "openai/gpt-audio",
+                            "openai/gpt-audio-mini"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "invalid_json": {
+                    "summary": "Body is not valid JSON",
+                    "value": {
+                      "error": "Invalid JSON body"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "description": "The model did not answer or returned no audio.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/GatewayError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ModelError"
+                    }
+                  ]
+                },
+                "examples": {
+                  "no_audio": {
+                    "summary": "No audio returned",
+                    "value": {
+                      "error": {
+                        "message": "The model returned no audio for this input.",
+                        "type": "server_error",
+                        "code": "upstream_unavailable",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  },
+                  "upstream_unavailable": {
+                    "summary": "No answer from the model",
+                    "value": {
+                      "error": {
+                        "message": "The model provider did not answer: timed out",
+                        "type": "server_error",
+                        "code": "upstream_unavailable",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/audio/speech \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"openai/gpt-audio-mini\", \"input\": \"Your build is ready.\", \"voice\": \"alloy\"}' \\\n  -o ready.wav"
+          },
+          {
+            "lang": "Python",
+            "label": "Python (OpenAI SDK)",
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nwith client.audio.speech.with_streaming_response.create(\n    model=\"openai/gpt-audio-mini\",\n    input=\"Your build is ready.\",\n    voice=\"alloy\",\n) as speech:\n    speech.stream_to_file(\"ready.wav\")"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "Node.js (OpenAI SDK)",
+            "source": "import fs from 'node:fs/promises';\nimport OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst speech = await client.audio.speech.create({\n  model: 'openai/gpt-audio-mini',\n  input: 'Your build is ready.',\n  voice: 'alloy',\n});\nawait fs.writeFile('ready.wav', Buffer.from(await speech.arrayBuffer()));"
+          }
+        ]
+      }
+    },
+    "/v1/audio/transcriptions": {
+      "post": {
+        "operationId": "createTranscription",
+        "tags": [
+          "Audio"
+        ],
+        "summary": "Transcribe audio",
+        "description": "Transcribes an audio file sent as `multipart/form-data`, in the OpenAI transcription format. The body can be up to 60 MB. A request needs a balance of at least 1 credit.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TranscriptionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The transcript.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "x-predev-credits-charged": {
+                "$ref": "#/components/headers/CreditsCharged"
+              },
+              "x-predev-credits-remaining": {
+                "$ref": "#/components/headers/CreditsRemaining"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transcription"
+                },
+                "example": {
+                  "text": "Welcome to the Monday planning call."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The model rejected the request, for example an unsupported audio format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelError"
+                },
+                "example": {
+                  "error": {
+                    "message": "Unsupported audio format",
+                    "code": 400
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/BalanceUnavailable"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/audio/transcriptions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -F \"model=openai/whisper-large-v3\" \\\n  -F \"file=@meeting.m4a\""
+          },
+          {
+            "lang": "Python",
+            "label": "Python (OpenAI SDK)",
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nwith open(\"meeting.m4a\", \"rb\") as audio:\n    transcript = client.audio.transcriptions.create(model=\"openai/whisper-large-v3\", file=audio)\nprint(transcript.text)"
+          }
+        ]
+      }
+    },
+    "/v1/files": {
+      "post": {
+        "operationId": "uploadFile",
+        "tags": [
+          "Files"
+        ],
+        "summary": "Upload a file",
+        "description": "Stores a document for use in later chat requests as a `file` content part with `file_id`. Files belong to the workspace that uploaded them. Uploads are not charged.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUpload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored file.",
+            "headers": {
+              "x-predev-request-id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                },
+                "examples": {
+                  "openai_style": {
+                    "summary": "OpenAI-style fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "object": "file",
+                      "bytes": 1024000,
+                      "created_at": 1790500000,
+                      "filename": "contract.pdf",
+                      "purpose": "user_data"
+                    }
+                  },
+                  "extended": {
+                    "summary": "Extended fields",
+                    "value": {
+                      "id": "file-8Kz3pQ",
+                      "type": "file",
+                      "filename": "contract.pdf",
+                      "mime_type": "application/pdf",
+                      "size_bytes": 1024000,
+                      "created_at": "2026-09-27T12:00:00Z",
+                      "downloadable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The file was rejected, for example an unsupported or empty file.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelError"
+                },
+                "example": {
+                  "error": {
+                    "message": "Unsupported file type",
+                    "code": 400
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --fail-with-body https://api.pre.dev/v1/files \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -F \"purpose=user_data\" \\\n  -F \"file=@contract.pdf\""
+          },
+          {
+            "lang": "Python",
+            "label": "Python (OpenAI SDK)",
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\nwith open(\"contract.pdf\", \"rb\") as handle:\n    uploaded = client.files.create(file=handle, purpose=\"user_data\")\nprint(uploaded.id)"
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listFiles",
+        "tags": [
+          "Files"
+        ],
+        "summary": "List files",
+        "description": "Lists files this workspace uploaded. Results are filtered to the workspace after paging, so a page can hold fewer files than `limit`.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "description": "Page size before filtering."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The workspace's files.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "file-8Kz3pQ",
+                      "object": "file",
+                      "bytes": 1024000,
+                      "created_at": 1790500000,
+                      "filename": "contract.pdf",
+                      "purpose": "user_data"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/files/{id}": {
+      "get": {
+        "operationId": "getFile",
+        "tags": [
+          "Files"
+        ],
+        "summary": "Get file metadata",
+        "description": "Returns one file's metadata. Another workspace's file id returns 404.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                },
+                "example": {
+                  "id": "file-8Kz3pQ",
+                  "object": "file",
+                  "bytes": 1024000,
+                  "created_at": 1790500000,
+                  "filename": "contract.pdf",
+                  "purpose": "user_data"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No file with this id belongs to the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No file with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteFile",
+        "tags": [
+          "Files"
+        ],
+        "summary": "Delete a file",
+        "description": "Deletes a file permanently.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file was deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileDeleted"
+                },
+                "example": {
+                  "id": "file-8Kz3pQ",
+                  "object": "file",
+                  "deleted": true
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No file with this id belongs to the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No file with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/files/{id}/content": {
+      "get": {
+        "operationId": "getFileContent",
+        "tags": [
+          "Files"
+        ],
+        "summary": "Download a file",
+        "description": "Returns a file's bytes. Only files with `downloadable: true` can be downloaded; uploaded files return 400.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file bytes.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The file cannot be downloaded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelError"
+                },
+                "example": {
+                  "error": {
+                    "message": "This file is not downloadable.",
+                    "code": 400
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No file with this id belongs to the workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No file with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "operationId": "listModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "List models",
+        "description": "Lists every chat, audio and embedding model you can call, each with a `predev` object of credit prices. Free, and not counted against the rate limit. The catalog refreshes every 15 minutes, so a model released since the last refresh can be callable before it is listed. Query parameters are ignored.",
+        "responses": {
+          "200": {
+            "description": "The catalog.",
+            "headers": {
+              "x-predev-catalog-age": {
+                "$ref": "#/components/headers/CatalogAge"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "anthropic/claude-sonnet-5",
+                      "canonical_slug": "anthropic/claude-sonnet-5",
+                      "name": "Anthropic: Claude Sonnet 5",
+                      "created": 1782843083,
+                      "context_length": 1000000,
+                      "architecture": {
+                        "modality": "text+image+file->text",
+                        "input_modalities": [
+                          "text",
+                          "image",
+                          "file"
+                        ],
+                        "output_modalities": [
+                          "text"
+                        ]
+                      },
+                      "supported_parameters": [
+                        "max_tokens",
+                        "reasoning",
+                        "response_format",
+                        "structured_outputs",
+                        "tools",
+                        "tool_choice"
+                      ],
+                      "predev": {
+                        "credits_per_m_input": 40,
+                        "credits_per_m_output": 200,
+                        "credits_per_m_cache_read": 4,
+                        "credits_per_m_cache_write": 50
+                      }
+                    }
+                  ],
+                  "total_count": 1
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/models/count": {
+      "get": {
+        "operationId": "countModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "Count models",
+        "description": "Returns the number of rows `GET /v1/models` lists. Free.",
+        "responses": {
+          "200": {
+            "description": "The count.",
+            "headers": {
+              "x-predev-catalog-age": {
+                "$ref": "#/components/headers/CatalogAge"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCount"
+                },
+                "example": {
+                  "data": {
+                    "count": 457
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/embeddings/models": {
+      "get": {
+        "operationId": "listEmbeddingModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "List embedding models",
+        "description": "Lists embedding models with credit prices. Free.",
+        "responses": {
+          "200": {
+            "description": "Embedding models.",
+            "headers": {
+              "x-predev-catalog-age": {
+                "$ref": "#/components/headers/CatalogAge"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "openai/text-embedding-3-small",
+                      "name": "OpenAI: Text Embedding 3 Small",
+                      "architecture": {
+                        "input_modalities": [
+                          "text"
+                        ],
+                        "output_modalities": [
+                          "embeddings"
+                        ]
+                      },
+                      "predev": {
+                        "credits_per_m_input": 0.25,
+                        "credits_per_m_output": 0
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/images/models": {
+      "get": {
+        "operationId": "listImageModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "List image models",
+        "description": "Lists image generation models. Where a model has a price, `predev` carries `credits_per_image` (or per-token rates) and a `billables` breakdown. Free.",
+        "responses": {
+          "200": {
+            "description": "Image models.",
+            "headers": {
+              "x-predev-catalog-age": {
+                "$ref": "#/components/headers/CatalogAge"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "bytedance-seed/seedream-5-0-lite",
+                      "name": "ByteDance Seed: Seedream 5.0 Lite",
+                      "architecture": {
+                        "input_modalities": [
+                          "text",
+                          "image"
+                        ],
+                        "output_modalities": [
+                          "image"
+                        ]
+                      },
+                      "supported_parameters": {
+                        "aspect_ratio": {
+                          "type": "enum",
+                          "values": [
+                            "1:1",
+                            "16:9",
+                            "9:16"
+                          ]
+                        },
+                        "n": {
+                          "type": "range",
+                          "min": 1,
+                          "max": 4
+                        }
+                      },
+                      "supports_streaming": false,
+                      "predev": {
+                        "credits_per_m_input": null,
+                        "credits_per_m_output": null,
+                        "credits_per_image": 0.5,
+                        "billables": [
+                          {
+                            "billable": "output_image",
+                            "unit": "image",
+                            "credits": 0.5
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/videos/models": {
+      "get": {
+        "operationId": "listVideoModels",
+        "tags": [
+          "Models"
+        ],
+        "summary": "List video models",
+        "description": "Lists video generation models with their supported durations, resolutions and aspect ratios. `predev.credits_per_second_output` is the per-second rate (the lowest across variants), or `credits_per_m_video_tokens` for token-priced models. Free.",
+        "responses": {
+          "200": {
+            "description": "Video models.",
+            "headers": {
+              "x-predev-catalog-age": {
+                "$ref": "#/components/headers/CatalogAge"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "bytedance/seedance-2.0-mini",
+                      "name": "ByteDance: Seedance 2.0 Mini",
+                      "supported_durations": [
+                        4,
+                        5,
+                        6,
+                        8,
+                        10
+                      ],
+                      "supported_resolutions": [
+                        "480p",
+                        "720p"
+                      ],
+                      "supported_aspect_ratios": [
+                        "16:9",
+                        "9:16",
+                        "1:1"
+                      ],
+                      "generate_audio": true,
+                      "predev": {
+                        "credits_per_m_input": null,
+                        "credits_per_m_output": null,
+                        "credits_per_m_video_tokens": 45
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "operationId": "getUsage",
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get usage",
+        "description": "Totals for the workspace over the last `days` days, broken down by model and endpoint. Free.",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90,
+              "default": 30
+            },
+            "description": "Window length. Values outside 1 to 90 are clamped."
+          },
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage totals.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usage"
+                },
+                "example": {
+                  "workspace": "org:66f2a1c9e4b0a1b2c3d4e5f6",
+                  "project": null,
+                  "credits_remaining": 412.5,
+                  "tier": "EnterprisePremium",
+                  "since": "2026-08-28T12:00:00.000Z",
+                  "totals": {
+                    "requests": 1840,
+                    "credits": 87.5
+                  },
+                  "by_model": [
+                    {
+                      "model": "anthropic/claude-sonnet-5",
+                      "path": "/messages",
+                      "requests": 138,
+                      "credits": 46.3,
+                      "prompt_tokens": 610000,
+                      "completion_tokens": 92000,
+                      "errors": 0
+                    },
+                    {
+                      "model": "deepseek/deepseek-v4.1-flash",
+                      "path": "/chat/completions",
+                      "requests": 1702,
+                      "credits": 41.2,
+                      "prompt_tokens": 9120000,
+                      "completion_tokens": 1410000,
+                      "errors": 3
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/generation": {
+      "get": {
+        "operationId": "getGeneration",
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get generation stats",
+        "description": "Stats and the credits charged for one call, by the `id` from its response body (`pdg-…`). Use it for streamed calls, which do not return the credits header. Stats can take a few seconds to appear after a call; retry on `not_ready`. Only this workspace's calls are visible.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The stats.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Generation"
+                },
+                "example": {
+                  "data": {
+                    "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
+                    "model": "anthropic/claude-sonnet-5",
+                    "created_at": "2026-09-27T12:00:00.000Z",
+                    "streamed": true,
+                    "cancelled": false,
+                    "latency": 1830,
+                    "generation_time": 1620,
+                    "finish_reason": "stop",
+                    "tokens_prompt": 21,
+                    "tokens_completion": 14,
+                    "native_tokens_prompt": 23,
+                    "native_tokens_completion": 14,
+                    "native_tokens_reasoning": 0,
+                    "native_tokens_cached": 0,
+                    "num_media_prompt": 0,
+                    "num_media_completion": 0,
+                    "num_search_results": 0,
+                    "credits": 0.005
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`id` is missing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "`id` is required.",
+                    "type": "invalid_request_error",
+                    "code": "missing_id",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No such call in this workspace, or its stats are not ready yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "examples": {
+                  "not_found": {
+                    "summary": "Unknown id",
+                    "value": {
+                      "error": {
+                        "message": "No generation with that id belongs to this workspace.",
+                        "type": "not_found_error",
+                        "code": "not_found",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  },
+                  "not_ready": {
+                    "summary": "Stats not ready yet",
+                    "value": {
+                      "error": {
+                        "message": "Generation stats are not available yet. Retry in a few seconds.",
+                        "type": "not_found_error",
+                        "code": "not_ready",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/AuthFailures"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "502": {
+            "description": "Stats could not be read. Retry in a few seconds.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "Generation stats are not available yet. Retry in a few seconds.",
+                    "type": "server_error",
+                    "code": "not_ready",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "pdk_ API key",
+        "description": "The workspace API key (`pdk_…`) from Integrations > Built-in in the pre.dev dashboard."
+      },
+      "xApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Alternative to `Authorization: Bearer`. The Anthropic SDKs send this header."
+      }
+    },
+    "parameters": {
+      "ProjectId": {
+        "name": "x-predev-project-id",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Attribute this call to one of the workspace's projects. An id the workspace does not own is ignored."
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "pre.dev id for this request (`pdr_…`). Quote it when you contact support.",
+        "schema": {
+          "type": "string",
+          "example": "pdr_043293a6-d1a8-4695-81fe-603ad4661ebb"
+        }
+      },
+      "CreditsCharged": {
+        "description": "Credits charged for this call. Streamed responses do not carry it because the charge settles after the stream ends; read `GET /v1/generation` for those.",
+        "schema": {
+          "type": "number",
+          "example": 0.005
+        }
+      },
+      "CreditsRemaining": {
+        "description": "Workspace credit balance after this call. Omitted on plans without a credit limit.",
+        "schema": {
+          "type": "number",
+          "example": 412.5
+        }
+      },
+      "CatalogAge": {
+        "description": "Seconds since the catalog was last refreshed. The catalog refreshes every 15 minutes.",
+        "schema": {
+          "type": "integer",
+          "example": 312
+        }
+      },
+      "RetryAfter": {
+        "description": "Seconds to wait before retrying.",
+        "schema": {
+          "type": "integer",
+          "example": 12
+        }
+      },
+      "AudioFormat": {
+        "description": "Format of the audio body: `wav`, `pcm16;rate=24000;channels=1`, or the container a music model returned (`mp3`, `ogg`, `flac`).",
+        "schema": {
+          "type": "string",
+          "example": "wav"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "The body is not valid JSON (checked before authentication), or the model rejected the request, for example an unknown model id. Errors from the model keep their status and use the `ModelError` shape.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/InvalidJsonBody"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelError"
+                }
+              ]
+            },
+            "examples": {
+              "invalid_json": {
+                "summary": "Body is not valid JSON",
+                "value": {
+                  "error": "Invalid JSON body"
+                }
+              },
+              "unknown_model": {
+                "summary": "Unknown model id",
+                "value": {
+                  "error": {
+                    "message": "nope/not-a-model is not a valid model ID",
+                    "code": 400
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Missing or invalid API key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "examples": {
+              "missing_api_key": {
+                "summary": "No key sent",
+                "value": {
+                  "error": {
+                    "message": "Send your pre.dev API key as `Authorization: Bearer <key>` or `x-api-key`. Find it under Integrations → API Keys.",
+                    "type": "authentication_error",
+                    "code": "missing_api_key",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              },
+              "invalid_api_key": {
+                "summary": "Unknown or retired key",
+                "value": {
+                  "error": {
+                    "message": "Invalid API key",
+                    "type": "authentication_error",
+                    "code": "invalid_api_key",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PaymentRequired": {
+        "description": "The workspace cannot pay for this request. Nothing was sent to the model and nothing was charged.",
+        "headers": {
+          "x-predev-credits-remaining": {
+            "$ref": "#/components/headers/CreditsRemaining"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "examples": {
+              "no_credits": {
+                "summary": "Balance is zero",
+                "value": {
+                  "error": {
+                    "message": "This pre.dev workspace has no credits left for AI calls. Top up at https://pre.dev/billing or enable auto-recharge.",
+                    "type": "insufficient_credits",
+                    "code": "insufficient_credits",
+                    "param": null,
+                    "predev": {
+                      "credits_remaining": 0,
+                      "estimated_credits": 0.05,
+                      "topup_url": "https://pre.dev/billing"
+                    }
+                  }
+                }
+              },
+              "below_estimate": {
+                "summary": "Balance is below the estimate",
+                "value": {
+                  "error": {
+                    "message": "This request needs about 10.00 credits and the workspace has 3.20 left. Top up at https://pre.dev/billing.",
+                    "type": "insufficient_credits",
+                    "code": "insufficient_credits",
+                    "param": null,
+                    "predev": {
+                      "credits_remaining": 3.2,
+                      "estimated_credits": 10,
+                      "topup_url": "https://pre.dev/billing"
+                    }
+                  }
+                }
+              },
+              "trial_used": {
+                "summary": "Free trial allowance used",
+                "value": {
+                  "error": {
+                    "message": "The free trial includes 5 credits of AI calls and this workspace has used them. Subscribe at https://pre.dev/billing to keep going.",
+                    "type": "subscription_required",
+                    "code": "subscription_required",
+                    "param": null,
+                    "predev": {
+                      "credits_remaining": 14.2,
+                      "trial_credits_used": 5.0132,
+                      "topup_url": "https://pre.dev/billing"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Too many requests. Wait `Retry-After` seconds when it is present. A `rate_limit_exceeded` refusal is per workspace per minute (600, or 30 on the free trial). An error from the model keeps the `ModelError` shape.",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelError"
+                }
+              ]
+            },
+            "examples": {
+              "rate_limit_exceeded": {
+                "summary": "Workspace rate limit",
+                "value": {
+                  "error": {
+                    "message": "Rate limit of 600 requests per minute exceeded for this workspace.",
+                    "type": "rate_limit_error",
+                    "code": "rate_limit_exceeded",
+                    "param": null,
+                    "predev": {
+                      "retry_after": 12
+                    }
+                  }
+                }
+              },
+              "too_many_auth_failures": {
+                "summary": "Failed key attempts from this IP",
+                "value": {
+                  "error": {
+                    "message": "Too many failed API key attempts from this address. Try again in a minute.",
+                    "type": "rate_limit_error",
+                    "code": "too_many_auth_failures",
+                    "param": null,
+                    "predev": {
+                      "retry_after": 60
+                    }
+                  }
+                }
+              },
+              "model_rate_limited": {
+                "summary": "The model is rate-limited",
+                "value": {
+                  "error": {
+                    "message": "The model returned an error",
+                    "code": 429,
+                    "metadata": {
+                      "raw": "deepseek/deepseek-v4.1-flash is temporarily rate-limited."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AuthFailures": {
+        "description": "More than 30 failed key attempts from this IP address in the current minute.",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "example": {
+              "error": {
+                "message": "Too many failed API key attempts from this address. Try again in a minute.",
+                "type": "rate_limit_error",
+                "code": "too_many_auth_failures",
+                "param": null,
+                "predev": {
+                  "retry_after": 60
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Unexpected error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "example": {
+              "error": {
+                "message": "The pre.dev AI gateway hit an unexpected error.",
+                "type": "server_error",
+                "code": "internal_error",
+                "param": null,
+                "predev": {}
+              }
+            }
+          }
+        }
+      },
+      "ModelUnavailable": {
+        "description": "The model did not answer. Retry with backoff, or send `models` fallbacks.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelError"
+                }
+              ]
+            },
+            "examples": {
+              "upstream_unavailable": {
+                "summary": "No answer from the model",
+                "value": {
+                  "error": {
+                    "message": "The model provider did not answer: timed out",
+                    "type": "server_error",
+                    "code": "upstream_unavailable",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              },
+              "model_error": {
+                "summary": "The model returned a non-JSON error",
+                "value": {
+                  "error": {
+                    "message": "The model provider returned an error (HTTP 502)",
+                    "code": 502
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "BalanceUnavailable": {
+        "description": "The credit balance could not be read, so nothing ran. Retry after `Retry-After` seconds.",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GatewayError"
+            },
+            "example": {
+              "error": {
+                "message": "Could not read this workspace's credit balance. Retry shortly.",
+                "type": "server_error",
+                "code": "balance_unavailable",
+                "param": null,
+                "predev": {
+                  "retry_after": 5
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "GatewayError": {
+        "type": "object",
+        "description": "An error raised by pre.dev, in the OpenAI error shape with an extra `predev` object. Branch on `error.code`.",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message",
+              "type",
+              "code",
+              "param",
+              "predev"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "What went wrong and what to do next."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "authentication_error",
+                  "insufficient_credits",
+                  "subscription_required",
+                  "invalid_request_error",
+                  "not_found_error",
+                  "rate_limit_error",
+                  "server_error"
+                ],
+                "description": "Error class. The OpenAI and Anthropic SDKs map the HTTP status to their own exception types."
+              },
+              "code": {
+                "type": "string",
+                "enum": [
+                  "missing_api_key",
+                  "invalid_api_key",
+                  "too_many_auth_failures",
+                  "insufficient_credits",
+                  "subscription_required",
+                  "rate_limit_exceeded",
+                  "balance_unavailable",
+                  "invalid_request",
+                  "missing_id",
+                  "not_found",
+                  "not_ready",
+                  "upstream_unavailable",
+                  "internal_error"
+                ],
+                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `internal_error` | 500 | Unexpected error. |"
+              },
+              "param": {
+                "type": "null"
+              },
+              "predev": {
+                "$ref": "#/components/schemas/GatewayErrorDetails"
+              }
+            }
+          }
+        }
+      },
+      "GatewayErrorDetails": {
+        "type": "object",
+        "description": "Extra fields for some error codes; an empty object for the rest.",
+        "properties": {
+          "credits_remaining": {
+            "type": "number",
+            "description": "Workspace balance. Sent with `insufficient_credits` and `subscription_required`."
+          },
+          "estimated_credits": {
+            "type": "number",
+            "description": "Estimated credits the request needs. Sent with `insufficient_credits`."
+          },
+          "trial_credits_used": {
+            "type": "number",
+            "description": "Credits the free trial has spent on AI calls. Sent with `subscription_required`."
+          },
+          "topup_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Where to add credits or subscribe."
+          },
+          "retry_after": {
+            "type": "integer",
+            "description": "Seconds to wait. Also sent as the `Retry-After` header."
+          },
+          "available_models": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Speech and music model ids. Sent with `invalid_request` from `/v1/audio/speech`."
+          }
+        }
+      },
+      "ModelError": {
+        "type": "object",
+        "description": "An error returned by the model for this request. The HTTP status is the model's own; `code` usually repeats it.",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "raw": {
+                    "type": "string",
+                    "description": "The model's own error text, when it adds detail."
+                  },
+                  "reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Moderation categories when the input was flagged."
+                  },
+                  "flagged_input": {
+                    "type": "string",
+                    "description": "The part of the input that was flagged."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidJsonBody": {
+        "type": "object",
+        "description": "The request body is not valid JSON. Checked before authentication.",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "const": "Invalid JSON body"
+          }
+        }
+      },
+      "ContentPart": {
+        "type": "object",
+        "description": "One part of a message. Common types: `text`, `image_url` (an https or base64 data URL), `file` (a URL, a base64 data URL, or a `file_id` from `POST /v1/files`), and `input_audio` (base64 audio with its format).",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "examples": [
+              "text",
+              "image_url",
+              "file",
+              "input_audio"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "object",
+            "required": [
+              "url"
+            ],
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "detail": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "low",
+                  "high"
+                ]
+              }
+            }
+          },
+          "file": {
+            "type": "object",
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "file_data": {
+                "type": "string",
+                "description": "A URL or a base64 data URL."
+              },
+              "file_id": {
+                "type": "string",
+                "description": "An id returned by `POST /v1/files`."
+              }
+            }
+          },
+          "input_audio": {
+            "type": "object",
+            "required": [
+              "data",
+              "format"
+            ],
+            "properties": {
+              "data": {
+                "type": "string",
+                "description": "Base64-encoded audio."
+              },
+              "format": {
+                "type": "string",
+                "examples": [
+                  "wav",
+                  "mp3"
+                ]
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ToolCall": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "function"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "const": "function"
+          },
+          "function": {
+            "type": "object",
+            "required": [
+              "name",
+              "arguments"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "arguments": {
+                "type": "string",
+                "description": "JSON-encoded arguments."
+              }
+            }
+          }
+        }
+      },
+      "Tool": {
+        "type": "object",
+        "required": [
+          "type",
+          "function"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "function"
+          },
+          "function": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "description": "JSON Schema for the arguments.",
+                "additionalProperties": true
+              },
+              "strict": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "system",
+              "developer",
+              "user",
+              "assistant",
+              "tool"
+            ]
+          },
+          "content": {
+            "description": "Text, or an array of content parts for images, files and audio.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContentPart"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            },
+            "description": "On `assistant` messages that called tools."
+          },
+          "tool_call_id": {
+            "type": "string",
+            "description": "On `tool` messages: the id of the call this message answers."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResponseFormat": {
+        "type": "object",
+        "description": "Ask for JSON. `json_schema` enforces a schema on models whose catalog row lists `structured_outputs` in `supported_parameters`.",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "json_object",
+              "json_schema"
+            ]
+          },
+          "json_schema": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "strict": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "ReasoningOptions": {
+        "type": "object",
+        "description": "Reasoning controls for models that support them. Reasoning tokens count as output tokens.",
+        "properties": {
+          "effort": {
+            "type": "string",
+            "enum": [
+              "max",
+              "xhigh",
+              "high",
+              "medium",
+              "low",
+              "minimal",
+              "none"
+            ]
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "Token budget for reasoning, on models that accept one."
+          },
+          "exclude": {
+            "type": "boolean",
+            "description": "Reason without returning the reasoning text."
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      },
+      "Plugin": {
+        "type": "object",
+        "description": "An extra capability for this call: `web` adds web search results, `file-parser` reads PDFs for models without native document input, `response-healing` repairs malformed JSON output, and `context-compression` shortens prompts that exceed the context window.",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "web",
+              "file-parser",
+              "response-healing",
+              "context-compression"
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
+      "ChatCompletionRequest": {
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "A model id exactly as listed by `GET /v1/models`. Required unless you send `models`.",
+            "example": "anthropic/claude-sonnet-5"
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fallback model ids, tried in order until one serves the request. The response `model` names the model that answered, and the charge follows that model."
+          },
+          "messages": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            }
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false,
+            "description": "Return server-sent events. The final chunk before `data: [DONE]` carries `usage`."
+          },
+          "stream_options": {
+            "type": "object",
+            "properties": {
+              "include_usage": {
+                "type": "boolean"
+              }
+            },
+            "description": "Optional. pre.dev turns `include_usage` on for every stream."
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Upper bound on output tokens."
+          },
+          "max_completion_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "top_p": {
+            "type": "number"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "stop": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tool"
+            }
+          },
+          "tool_choice": {
+            "description": "`auto`, `none`, `required`, or `{ \"type\": \"function\", \"function\": { \"name\": \"…\" } }`.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "none",
+                  "required"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "parallel_tool_calls": {
+            "type": "boolean"
+          },
+          "response_format": {
+            "$ref": "#/components/schemas/ResponseFormat"
+          },
+          "reasoning": {
+            "$ref": "#/components/schemas/ReasoningOptions"
+          },
+          "reasoning_effort": {
+            "type": "string",
+            "description": "Shorthand for `reasoning.effort`."
+          },
+          "modalities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "text",
+                "image",
+                "audio"
+              ]
+            },
+            "description": "Output modalities, for models that can return images or audio."
+          },
+          "plugins": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plugin"
+            }
+          },
+          "session_id": {
+            "type": "string",
+            "description": "Groups related requests, such as one conversation."
+          },
+          "user": {
+            "type": "string",
+            "description": "Your id for the end user. pre.dev prefixes it with a hash of your workspace."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ChatCompletion": {
+        "type": "object",
+        "required": [
+          "id",
+          "object",
+          "model",
+          "choices"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generation id (`pdg-…`). Pass it to `GET /v1/generation`."
+          },
+          "object": {
+            "type": "string",
+            "const": "chat.completion"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string",
+            "description": "The model that served the call."
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "index",
+                "message"
+              ],
+              "properties": {
+                "index": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "const": "assistant"
+                    },
+                    "content": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reasoning": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Reasoning text, on models that return it."
+                    },
+                    "tool_calls": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ToolCall"
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                },
+                "finish_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "examples": [
+                    "stop",
+                    "length",
+                    "tool_calls",
+                    "content_filter"
+                  ]
+                },
+                "logprobs": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/TokenUsage"
+          },
+          "system_fingerprint": {
+            "type": "null"
+          }
+        },
+        "additionalProperties": true
+      },
+      "TokenUsage": {
+        "type": "object",
+        "description": "Token counts for the call. Charges are reported in credits by the `x-predev-credits-charged` header and `GET /v1/generation`.",
+        "required": [
+          "prompt_tokens",
+          "completion_tokens",
+          "total_tokens"
+        ],
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "prompt_tokens_details": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "cached_tokens": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          },
+          "completion_tokens_details": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "reasoning_tokens": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "CompletionRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "prompt"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "deepseek/deepseek-v4.1-flash"
+          },
+          "prompt": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "stop": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": true
+      },
+      "Completion": {
+        "type": "object",
+        "required": [
+          "id",
+          "model",
+          "choices"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generation id (`pdg-…`)."
+          },
+          "object": {
+            "type": "string",
+            "const": "text_completion"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "finish_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/TokenUsage"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResponseRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "input"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "openai/gpt-6-luna"
+          },
+          "input": {
+            "description": "A string, or an array of input items (messages, function call outputs, and so on). Send the whole conversation: responses are not stored, and `previous_response_id` is not supported.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            ]
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "text": {
+            "type": "object",
+            "description": "Output format, for example `{ \"format\": { \"type\": \"json_schema\", … } }`.",
+            "additionalProperties": true
+          },
+          "reasoning": {
+            "$ref": "#/components/schemas/ReasoningOptions"
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": true
+      },
+      "Response": {
+        "type": "object",
+        "required": [
+          "id",
+          "object",
+          "model",
+          "status",
+          "output"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generation id (`pdg-…`)."
+          },
+          "object": {
+            "type": "string",
+            "const": "response"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "incomplete",
+              "in_progress",
+              "failed",
+              "cancelled",
+              "queued"
+            ]
+          },
+          "output": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Output items: messages with `output_text` parts, reasoning, and function calls."
+          },
+          "output_text": {
+            "type": "string",
+            "description": "The concatenated text output, when present."
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "input_tokens": {
+                "type": "integer"
+              },
+              "output_tokens": {
+                "type": "integer"
+              },
+              "total_tokens": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "MessageRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "messages"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "A catalog id such as `anthropic/claude-sonnet-5`, not a native Anthropic model name. Any chat model in the catalog works.",
+            "example": "anthropic/claude-sonnet-5"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The Anthropic SDKs require it."
+          },
+          "messages": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "role",
+                "content"
+              ],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "content": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  ],
+                  "description": "Text, or Anthropic content blocks (`text`, `image`, `document`, `tool_use`, `tool_result`)."
+                }
+              }
+            }
+          },
+          "system": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            ]
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Anthropic tool definitions (`name`, `description`, `input_schema`)."
+          },
+          "tool_choice": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "thinking": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Extended thinking, on models that support it."
+          },
+          "stop_sequences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": true
+      },
+      "Message": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "role",
+          "model",
+          "content"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generation id (`pdg-…`)."
+          },
+          "type": {
+            "type": "string",
+            "const": "message"
+          },
+          "role": {
+            "type": "string",
+            "const": "assistant"
+          },
+          "model": {
+            "type": "string"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "text",
+                    "tool_use",
+                    "thinking"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "stop_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "examples": [
+              "end_turn",
+              "max_tokens",
+              "stop_sequence",
+              "tool_use"
+            ]
+          },
+          "stop_sequence": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "input_tokens": {
+                "type": "integer"
+              },
+              "output_tokens": {
+                "type": "integer"
+              },
+              "cache_creation_input_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "cache_read_input_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "EmbeddingsRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "input"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "An id from `GET /v1/embeddings/models`.",
+            "example": "openai/text-embedding-3-small"
+          },
+          "input": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            ],
+            "description": "Text to embed, or an array of texts. Multimodal models also take content objects."
+          },
+          "dimensions": {
+            "type": "integer",
+            "description": "Output size, on models that support it."
+          },
+          "encoding_format": {
+            "type": "string",
+            "enum": [
+              "float",
+              "base64"
+            ]
+          },
+          "input_type": {
+            "type": "string",
+            "description": "For models that distinguish queries from documents, for example `search_query` or `search_document`."
+          }
+        },
+        "additionalProperties": true
+      },
+      "EmbeddingsResponse": {
+        "type": "object",
+        "required": [
+          "object",
+          "data",
+          "model"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "object",
+                "embedding"
+              ],
+              "properties": {
+                "object": {
+                  "type": "string",
+                  "const": "embedding"
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "embedding": {
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "description": "Floats, or a base64 string when `encoding_format` is `base64`."
+                }
+              }
+            }
+          },
+          "model": {
+            "type": "string"
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "prompt_tokens": {
+                "type": "integer"
+              },
+              "total_tokens": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "RerankRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "query",
+          "documents"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "A rerank model id. Rerank models are not listed by the catalog endpoints.",
+            "example": "cohere/rerank-v3.5"
+          },
+          "query": {
+            "type": "string"
+          },
+          "documents": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              ]
+            }
+          },
+          "top_n": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Return only the most relevant documents."
+          }
+        },
+        "additionalProperties": true
+      },
+      "RerankResponse": {
+        "type": "object",
+        "required": [
+          "model",
+          "results"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "results": {
+            "type": "array",
+            "description": "Sorted by relevance, most relevant first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "index",
+                "relevance_score"
+              ],
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "description": "Position of the document in your `documents` array."
+                },
+                "relevance_score": {
+                  "type": "number"
+                },
+                "document": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "total_tokens": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ImageRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "prompt"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "An id from `GET /v1/images/models`.",
+            "example": "bytedance-seed/seedream-5-0-lite"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "n": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Upper bound on images; a model can return fewer."
+          },
+          "size": {
+            "type": "string",
+            "description": "A tier such as `2K`, or exact pixels such as `1024x1024`."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "examples": [
+              "1:1",
+              "16:9",
+              "9:16"
+            ]
+          },
+          "quality": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "jpeg",
+              "webp",
+              "svg"
+            ]
+          },
+          "background": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "transparent",
+              "opaque"
+            ]
+          },
+          "input_references": {
+            "type": "array",
+            "description": "Reference images for image-to-image models.",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "image_url"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "image_url"
+                },
+                "image_url": {
+                  "type": "object",
+                  "required": [
+                    "url"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Stream partial images, on models whose catalog row has `supports_streaming: true`."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ImageResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "created": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "b64_json"
+              ],
+              "properties": {
+                "b64_json": {
+                  "type": "string",
+                  "description": "Base64-encoded image bytes."
+                },
+                "media_type": {
+                  "type": "string",
+                  "examples": [
+                    "image/png"
+                  ]
+                }
+              }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "VideoRequest": {
+        "type": "object",
+        "required": [
+          "model"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "An id from `GET /v1/videos/models`.",
+            "example": "bytedance/seedance-2.0-mini"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "What to generate. Optional for models that work from images alone."
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Seconds. See the model row's `supported_durations`."
+          },
+          "resolution": {
+            "type": "string",
+            "examples": [
+              "480p",
+              "720p",
+              "1080p"
+            ]
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "examples": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ]
+          },
+          "size": {
+            "type": "string",
+            "description": "Exact pixels, such as `1280x720`."
+          },
+          "frame_images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "First or last frame images, on models that list `supported_frame_images`."
+          },
+          "input_references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Reference images, audio or video, on models that accept them."
+          },
+          "generate_audio": {
+            "type": "boolean"
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      },
+      "VideoJob": {
+        "type": "object",
+        "required": [
+          "id",
+          "polling_url",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Job id."
+          },
+          "polling_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "`https://api.pre.dev/v1/videos/{jobId}` for this job. Poll this URL with your key."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "failed",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "generation_id": {
+            "type": "string"
+          },
+          "unsigned_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Present when the job has completed. Download through `GET /v1/videos/{jobId}/content`."
+          },
+          "error": {
+            "type": "string",
+            "description": "Why the job failed."
+          }
+        },
+        "additionalProperties": true
+      },
+      "SpeechRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "input"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "A catalog model whose `architecture.output_modalities` includes `audio`: speech models (`openai/gpt-audio-mini`, `openai/gpt-audio`) or music models (`google/lyria-3-clip-preview`, `google/lyria-3-pro-preview`).",
+            "example": "openai/gpt-audio-mini"
+          },
+          "input": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The text to speak, or for a music model, the style or mood to compose."
+          },
+          "voice": {
+            "type": "string",
+            "default": "alloy",
+            "description": "Speech voice, such as `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer` or `verse`. Music models ignore it."
+          },
+          "instructions": {
+            "type": "string",
+            "description": "How to deliver the text. By default the text is read verbatim. Music models ignore it."
+          },
+          "response_format": {
+            "type": "string",
+            "default": "wav",
+            "description": "`wav` (24 kHz mono) or `pcm16` (raw samples; `pcm` also works). Other values return WAV. Music models return their own container (MP3)."
+          }
+        },
+        "additionalProperties": true
+      },
+      "TranscriptionRequest": {
+        "type": "object",
+        "required": [
+          "file",
+          "model"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "The audio file. The format comes from the filename extension or the part's content type."
+          },
+          "model": {
+            "type": "string",
+            "description": "A transcription model id, such as `openai/whisper-large-v3`. Transcription models are not listed by the catalog endpoints."
+          },
+          "language": {
+            "type": "string",
+            "description": "ISO-639-1 code. Detected when omitted."
+          },
+          "response_format": {
+            "type": "string",
+            "enum": [
+              "json",
+              "verbose_json"
+            ],
+            "default": "json"
+          },
+          "temperature": {
+            "type": "number"
+          }
+        }
+      },
+      "Transcription": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "With `verbose_json`."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Seconds, with `verbose_json`."
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Timed segments, with `verbose_json`."
+          },
+          "usage": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "FileUpload": {
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Up to 60 MB. PDF, PNG, JPEG, GIF, WebP, DOCX, XLSX, PPTX, MP3, WAV, FLAC, OGG, or UTF-8 text. The type is read from the contents."
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Sent by the OpenAI SDKs, for example `user_data`."
+          }
+        }
+      },
+      "File": {
+        "type": "object",
+        "description": "File metadata. `id` and `filename` are always present. The other fields follow one of two styles: `object: \"file\"`, `bytes`, `purpose` and a Unix `created_at`, or `type: \"file\"`, `size_bytes`, `mime_type`, `downloadable` and an ISO `created_at`.",
+        "required": [
+          "id",
+          "filename"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Use it in a `file` content part as `file_id`."
+          },
+          "filename": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "const": "file"
+          },
+          "type": {
+            "type": "string",
+            "const": "file"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "downloadable": {
+            "type": "boolean",
+            "description": "Whether `GET /v1/files/{id}/content` can return the bytes."
+          }
+        },
+        "additionalProperties": true
+      },
+      "FileList": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/File"
+            },
+            "description": "Files this workspace uploaded."
+          }
+        },
+        "additionalProperties": true
+      },
+      "FileDeleted": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "CreditPrices": {
+        "type": "object",
+        "description": "Credit prices for the model. Charges are computed from each call's metered cost; these rates let you estimate.",
+        "properties": {
+          "credits_per_m_input": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Credits per million input tokens. `null` when the model is not priced per token."
+          },
+          "credits_per_m_output": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Credits per million output tokens. `null` when the model is not priced per token."
+          },
+          "credits_per_m_cache_read": {
+            "type": "number",
+            "description": "Credits per million cached input tokens read."
+          },
+          "credits_per_m_cache_write": {
+            "type": "number",
+            "description": "Credits per million tokens written to the cache."
+          },
+          "credits_per_image": {
+            "type": "number",
+            "description": "On chat model rows, per input image. On image model rows, per generated image."
+          },
+          "credits_per_request": {
+            "type": "number",
+            "description": "Per request, for models with a per-request price."
+          },
+          "credits_per_second_output": {
+            "type": "number",
+            "description": "Video models: per second of generated video. The base rate, or the lowest across resolutions and modes."
+          },
+          "credits_per_m_video_tokens": {
+            "type": "number",
+            "description": "Video models priced by video tokens."
+          },
+          "credits_per_m_output_image_tokens": {
+            "type": "number",
+            "description": "Image models priced by output image tokens."
+          },
+          "billables": {
+            "type": "array",
+            "description": "Image models: every priced component and its unit.",
+            "items": {
+              "type": "object",
+              "required": [
+                "billable",
+                "unit",
+                "credits"
+              ],
+              "properties": {
+                "billable": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string",
+                  "examples": [
+                    "image",
+                    "M tokens"
+                  ]
+                },
+                "credits": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Model": {
+        "type": "object",
+        "description": "A model row. Fields other than the ones listed here describe the model (limits, default parameters, and so on) and vary by modality.",
+        "required": [
+          "id",
+          "predev"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The id to send as `model`."
+          },
+          "canonical_slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "context_length": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "architecture": {
+            "type": "object",
+            "properties": {
+              "input_modalities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  [
+                    "text",
+                    "image",
+                    "file"
+                  ]
+                ]
+              },
+              "output_modalities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  [
+                    "text"
+                  ]
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          "supported_parameters": {
+            "description": "Request parameters the model accepts. A list of names on chat and embedding rows; an object of parameter ranges on image rows.",
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "predev": {
+            "$ref": "#/components/schemas/CreditPrices"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ModelList": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Model"
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Number of rows in `data`, on listings that report it."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ModelCount": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "count"
+            ],
+            "properties": {
+              "count": {
+                "type": "integer",
+                "description": "Rows in `GET /v1/models`."
+              }
+            }
+          }
+        }
+      },
+      "Usage": {
+        "type": "object",
+        "required": [
+          "workspace",
+          "project",
+          "credits_remaining",
+          "tier",
+          "since",
+          "totals",
+          "by_model"
+        ],
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "description": "The workspace the key belongs to (a personal account or a team)."
+          },
+          "project": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The project from `x-predev-project-id` when the workspace owns it, else `null`. The totals always cover the whole workspace."
+          },
+          "credits_remaining": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Current balance. `null` on plans without a credit limit."
+          },
+          "tier": {
+            "type": "string",
+            "description": "Plan tier, for example `Trial` or `SoloPro`."
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start of the window."
+          },
+          "totals": {
+            "type": "object",
+            "required": [
+              "requests",
+              "credits"
+            ],
+            "properties": {
+              "requests": {
+                "type": "integer"
+              },
+              "credits": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          },
+          "by_model": {
+            "type": "array",
+            "description": "One row per model and endpoint, most credits first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "model",
+                "path",
+                "requests",
+                "credits"
+              ],
+              "properties": {
+                "model": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The model that served the calls; `null` when none answered."
+                },
+                "path": {
+                  "type": "string",
+                  "examples": [
+                    "/chat/completions"
+                  ]
+                },
+                "requests": {
+                  "type": "integer"
+                },
+                "credits": {
+                  "type": "number"
+                },
+                "prompt_tokens": {
+                  "type": "integer"
+                },
+                "completion_tokens": {
+                  "type": "integer"
+                },
+                "errors": {
+                  "type": "integer",
+                  "description": "Calls that returned HTTP 400 or higher."
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "Generation": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "id",
+              "credits"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "streamed": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "cancelled": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "latency": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Total time in milliseconds."
+              },
+              "generation_time": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Generation time in milliseconds."
+              },
+              "finish_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tokens_prompt": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "tokens_completion": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "native_tokens_prompt": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Counted by the model's own tokenizer."
+              },
+              "native_tokens_completion": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "native_tokens_reasoning": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "native_tokens_cached": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "native_tokens_completion_images": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "num_media_prompt": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "num_media_completion": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "num_input_audio_prompt": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "num_search_results": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "credits": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Credits charged for the call."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
