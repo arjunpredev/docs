@@ -45,7 +45,7 @@ This compares public REST routes, AI Gateway routes (`routes/ai_gateway.ts` and 
 | Web controls and connections | Current frontend handlers (the web slash menu is `TerminalChat/components/SlashCommandMenu.tsx`), ProjectConfigModal, and `components/Integrations/` |
 | Commercial plans | Live pricing page, `frontend/src/components/Pricing/prices.tsx`, `services/credit_core.ts`, and the entitlement checks |
 | Labs: RL task bundles | `predev-agent/src/helpers/rl_env/` (`export_env.ts`, `flat_verifier.ts`, `qc_bundle.ts`, `calibration_bands.ts`) and `scripts/export_final_env.ts` |
-| Labs: codebase deliveries | `services/CodeLicensing/` (`delivery_zip.ts`, `delivery_batch.ts`, `metadata_sheet.ts`, `anonymize_repo.ts`, `public_exposure_check.ts`, `token_count.ts`) |
+| Labs: codebase deliveries | `services/CodeLicensing/` (`delivery_zip.ts`, `delivery_batch.ts`, `delivery_checks.ts`, `metadata_sheet.ts`, `anonymize_repo.ts`, `public_exposure_check.ts`, `token_count.ts`) |
 
 Source comments and type declarations can lag runtime behavior. Compare handlers, serializers, and published package code; identify differences instead of documenting an intended behavior as implemented. Use Doppler config `dev` or `prd` if an authorized check needs environment configuration, and never print secret values.
 

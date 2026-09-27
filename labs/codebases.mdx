@@ -22,8 +22,6 @@ Each codebase is a private production repository, licensed directly from the tea
 
 One zip per repository, named by its catalog ID (`PD-` and eight hex characters). The zip, its folder, and its README name the repository by that ID only.
 
-{/* Pending predev-app feat/codebase-delivery-checks: DATA_CARD.md ships in zips built after it merges. */}
-
 ```text
 PD-XXXXXXXX.zip
 └── PD-XXXXXXXX/
@@ -34,7 +32,7 @@ PD-XXXXXXXX.zip
     └── DATA_CARD.md                the measured facts, on one page
 ```
 
-`repo/` opens without a clone step. It has no `origin` remote: every branch is a local branch, so `git branch` and `git log --all` see the whole repository. The working tree starts on the host's default branch.
+New and rebuilt zips carry `DATA_CARD.md`. `repo/` opens without a clone step. It has no `origin` remote: every branch is a local branch, so `git branch` and `git log --all` see the whole repository. The working tree starts on the host's default branch.
 
 ## The pull request record
 
@@ -126,9 +124,7 @@ A codebase is priced per token of source code and per token of history. Each has
 
 A delivery comes as a batch of sheets that name repositories by catalog ID only: `links.csv` with a download link per zip, `metadata.csv` with the catalog columns, `listings.csv` with titles, descriptions, and prices, `manifest.csv` with each zip's counts, `checks.csv` with the result of every [delivery check](#delivery-checks), and a `README.md`. Download links are issued only after your license agreement is confirmed. They expire after seven days, and fresh links can be issued for the same files.
 
-{/* Pending predev-app feat/codebase-delivery-checks: the delivery-time re-check and duplicate hold. */}
-
-Before links go out, every repository in the batch goes through the [exposure check](/labs/trust#exposure-check) again. A repository found public, archived, forked, or published is held out of the sheets and links. So is a duplicate: the same code twice in one batch, or code already delivered to you. A person can release a hold only by recording a reason.
+Before links go out, every repository in the batch goes through the [exposure check](/labs/trust#exposure-check) again. A repository found public, archived, forked, or published is held out of the sheets and links. So is a duplicate: the same code twice in one batch, or code already delivered to you. A hold is released only with a recorded reason.
 
 A zip is rebuilt when the cleaning pipeline, the zip format, the stored repository, or its pull request record changes. A rebuilt zip keeps its name and download location, so a link already sent keeps working. When the cleaning itself changed, the rewritten history can carry different commit SHAs; the pull request record is always resolved against the history in the same zip.
 
