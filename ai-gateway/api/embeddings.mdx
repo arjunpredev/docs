@@ -48,15 +48,15 @@ The response is the standard embeddings response: `data[].embedding`, `model`, a
 curl --fail-with-body https://api.pre.dev/v1/rerank \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{
-    \"model\": \"$RERANK_MODEL\",
-    \"query\": \"how are gateway calls billed\",
-    \"documents\": [
-      \"Credits are computed from the model's metered cost per call.\",
-      \"Streams settle when they end.\",
-      \"Catalog reads are free.\"
+  -d '{
+    "model": "cohere/rerank-v3.5",
+    "query": "how are gateway calls billed",
+    "documents": [
+      "Credits are computed from the metered usage of each call.",
+      "Streams settle when they end.",
+      "Catalog reads are free."
     ]
-  }"
+  }'
 ```
 
-Set `RERANK_MODEL` to a rerank-capable id from the catalog. Rerank calls are billed like any other inference call.
+Rerank models are not returned by `GET /v1/models` or `GET /v1/models/public`. These ids work today: `cohere/rerank-v3.5`, `cohere/rerank-4-fast`, `cohere/rerank-4-pro`, `voyageai/rerank-2.5`, `voyageai/rerank-2.5-lite`, and `qwen/qwen3-reranker-8b`. Rerank calls are billed like any other inference call. See the [rerank reference](/ai-gateway/api/rerank).

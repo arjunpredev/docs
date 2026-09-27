@@ -767,7 +767,7 @@
           "Embeddings"
         ],
         "summary": "Rerank documents",
-        "description": "Orders `documents` by relevance to `query` and returns a score for each.",
+        "description": "Orders `documents` by relevance to `query` and returns a score for each.\n\nRerank models are not returned by `GET /v1/models` or `GET /v1/models/public`. These ids work today: `cohere/rerank-v3.5`, `cohere/rerank-4-fast`, `cohere/rerank-4-pro`, `voyageai/rerank-2.5`, `voyageai/rerank-2.5-lite`, and `qwen/qwen3-reranker-8b`.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -4251,7 +4251,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "description": "A rerank model id. Rerank models are not listed by the catalog endpoints.",
+            "description": "A rerank model id. `GET /v1/models` and `GET /v1/models/public` do not list rerank models; these work today: `cohere/rerank-v3.5`, `cohere/rerank-4-fast`, `cohere/rerank-4-pro`, `voyageai/rerank-2.5`, `voyageai/rerank-2.5-lite`, `qwen/qwen3-reranker-8b`.",
             "example": "cohere/rerank-v3.5"
           },
           "query": {
