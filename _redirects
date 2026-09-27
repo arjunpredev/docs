@@ -59,3 +59,10 @@
 /mcp-integration/overview /architect-agent/mcp-setup 301!
 /mcp-integration/setup /architect-agent/mcp-setup 301!
 /mcp-integration/usage /architect-agent/mcp-setup 301!
+/architect-agent/proposals /architect-agent/overview 301!
+/architect-agent/api/upload-proposal /architect-agent/overview 301!
+/architect-agent/api/list-proposals /architect-agent/overview 301!
+/architect-agent/api/get-proposal /architect-agent/overview 301!
+/architect-agent/api/vet-proposal /architect-agent/overview 301!
+/architect-agent/api/list-vetted-proposals /architect-agent/overview 301!
+/architect-agent/api/get-vetted-proposal /architect-agent/overview 301!

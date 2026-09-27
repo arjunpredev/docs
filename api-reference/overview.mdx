@@ -1,6 +1,6 @@
 ---
 title: "API overview"
-description: "The public REST API for specifications, browser automation, proposal review, and credit balances."
+description: "The public REST API for specifications, browser automation, AI model calls, and credit balances."
 ---
 
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
@@ -34,26 +34,13 @@ Send the key as `Authorization: Bearer $PREDEV_API_KEY`. Read [authentication](/
 | GET | `/browser-agent-status` | [Your queue and in-flight limit](/browser-agents/api/queue-status) |
 | GET | `/browser-agent-capacity` | [Service capacity](/browser-agents/api/capacity) |
 
-## Proposals
-
-Upload a proposal, compare it with a generated specification, and retrieve the assessment. Start with the [proposal workflow](/architect-agent/proposals).
-
-| Method | Path | Reference |
-| --- | --- | --- |
-| POST | `/upload-proposal` | [Upload a proposal](/architect-agent/api/upload-proposal) |
-| GET | `/list-proposals` | [List proposals](/architect-agent/api/list-proposals) |
-| GET | `/get-proposal/{proposalId}` | [Retrieve a proposal](/architect-agent/api/get-proposal) |
-| POST | `/vet-proposal` | [Review a proposal against a spec](/architect-agent/api/vet-proposal) |
-| GET | `/list-vetted-proposals` | [List assessments for a spec](/architect-agent/api/list-vetted-proposals) |
-| GET | `/get-vetted-proposal/{vettedProposalId}` | [Retrieve an assessment](/architect-agent/api/get-vetted-proposal) |
-
 ## AI Gateway
 
 The [AI Gateway](/ai-gateway/overview) is the one API mounted under a prefix: **`https://api.pre.dev/v1`** is an OpenAI-compatible API for hundreds of models from every major lab, with the same key and credits. It covers chat completions, the Anthropic Messages shape, embeddings, images, video, audio, files, and a model catalog with credit prices. Point the stock OpenAI, Vercel AI, or Anthropic SDK at that base URL; see the [quickstart](/ai-gateway/quickstart) and [pricing](/ai-gateway/pricing).
 
 ## SDKs and MCP
 
-The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including proposal review, live browser URLs, existing-run SSE, and browser idempotency keys.
+The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including live browser URLs, existing-run SSE, and browser idempotency keys.
 
 The [MCP server](/architect-agent/mcp-setup) exposes seven primary tools and three deprecated browser aliases. MCP uses JSON-RPC over HTTP; its parameter names and result envelopes differ from REST. See the [tool reference](/mcp/tools).
 

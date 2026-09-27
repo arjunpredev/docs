@@ -32,7 +32,7 @@ This compares public REST route coverage and MCP registrations with `predev-app`
 
 | Contract | Implementation |
 | --- | --- |
-| Architect/proposal REST | `predev-app/backend/src/routes/api_endpoints.ts` and `helpers/api/` |
+| Architect REST | `predev-app/backend/src/routes/api_endpoints.ts` and `helpers/api/` |
 | Authentication | `routes/api_endpoint/helpers.ts` and `unified_api_key_auth.ts` |
 | Browser REST | `routes/browser_agents.ts` and `services/BrowserAgents/` |
 | MCP | `routes/mcp.ts` and `services/MCP/` |
@@ -81,7 +81,7 @@ After changing a visual, inspect it at desktop and mobile widths in both themes,
 - `overview.mdx`, `for-agents.mdx`: entry points for humans and agents
 - `api-reference/`: shared REST guidance and OpenAPI
 - `mcp/`: product tool reference
-- `architect-agent/`: specifications, proposals, and SDK usage
+- `architect-agent/`: specifications and SDK usage
 - `browser-agents/`: browser tasks, lifecycle, streaming, and SDK usage
 - `coding-agent/`, `cli/`: web and terminal workflows
 - `scripts/`: offline documentation checks

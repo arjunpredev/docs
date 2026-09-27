@@ -28,7 +28,6 @@ Each plan includes everything in the plans above it. A team workspace without a 
 | Images, video, and audio the agent generates | Charged per generation |
 | Fast and Deep specs | Variable; see the [Architect overview](/architect-agent/overview) for estimates |
 | Browser tasks | Every task is charged a 0.1-credit floor at submission, including tasks that fail; successful tasks can cost more |
-| Proposal assessment | 100 credits per vetting request; [validate inputs before submitting](/architect-agent/proposals) |
 | AI calls from your apps | Each call at the model's credit price from [`GET /v1/models`](/ai-gateway/api/models); Free workspaces can spend 5 credits on these calls in total. See [AI Gateway pricing](/ai-gateway/pricing). |
 
 Browser submission charges the 0.1-credit floor for each task before execution. When a task finishes, a successful task is charged any usage above the floor, and a failed task keeps the floor. A submission can be rejected because of an account limit even when the overall balance is positive. Browser trial limits and in-flight caps are separate from your credit allowance.

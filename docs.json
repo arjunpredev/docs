@@ -265,6 +265,34 @@
     {
       "source": "/mcp-integration/usage",
       "destination": "/architect-agent/mcp-setup"
+    },
+    {
+      "source": "/architect-agent/proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/upload-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/list-proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/get-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/vet-proposal",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/list-vetted-proposals",
+      "destination": "/architect-agent/overview"
+    },
+    {
+      "source": "/architect-agent/api/get-vetted-proposal",
+      "destination": "/architect-agent/overview"
     }
   ],
   "navigation": {
@@ -484,18 +512,6 @@
               "architect-agent/api/list-specs",
               "architect-agent/api/find-specs",
               "architect-agent/api/credits-balance"
-            ]
-          },
-          {
-            "group": "Proposals",
-            "pages": [
-              "architect-agent/proposals",
-              "architect-agent/api/upload-proposal",
-              "architect-agent/api/list-proposals",
-              "architect-agent/api/get-proposal",
-              "architect-agent/api/vet-proposal",
-              "architect-agent/api/list-vetted-proposals",
-              "architect-agent/api/get-vetted-proposal"
             ]
           },
           {

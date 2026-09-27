@@ -189,12 +189,18 @@ if (sourceIndex !== -1) {
   const sourceRoot = path.resolve(process.argv[sourceIndex+1] || '..');
   const sources = await Promise.all(['api_endpoints.ts','browser_agents.ts'].map(f => fs.readFile(path.join(sourceRoot,'predev-app/backend/src/routes',f),'utf8')));
   const routes = new Set(sources.flatMap(source => [...source.matchAll(/router\.(get|post|put|patch|delete)\(\s*['"]([^'"]+)/g)].map(([,method,url]) => `${method.toUpperCase()} ${url.replace(/:([\w]+)/g, '{$1}')}`)));
-  // Internal screenshot upload is an agent implementation endpoint, not public REST.
+  // Internal agent media uploads (screenshots, browser-flow recordings) are
+  // implementation endpoints, not public REST.
   routes.delete('POST /api/upload-agent-screenshot');
+  routes.delete('POST /api/agent-flow-recording');
+  // Product directive: the proposal-vetting suite stays out of the public docs.
+  // The endpoints stay live; only their documentation was removed.
+  for (const route of ['POST /upload-proposal', 'GET /list-proposals', 'GET /get-proposal/{proposalId}', 'POST /vet-proposal', 'GET /list-vetted-proposals', 'GET /get-vetted-proposal/{vettedProposalId}']) routes.delete(route);
   for (const operation of routes) check(operations.has(operation), `Undocumented source route: ${operation}`);
   for (const operation of operations) check(routes.has(operation), `Documented route absent from source: ${operation}`);
   const registry = await fs.readFile(path.join(sourceRoot,'predev-app/backend/src/services/MCP/server.ts'),'utf8');
-  const names = [...registry.matchAll(/registerTool\(\s*['"]([^'"]+)/g)].map(m => m[1]);
+  // Tools register through a small `register(name, ...)` wrapper around registerTool.
+  const names = [...registry.matchAll(/(?:registerTool|register)\(\s*['"]([^'"]+)/g)].map(m => m[1]);
   const reference = pages.get('mcp/tools');
   for (const name of names) check(reference.includes('`'+name+'`'), `Undocumented MCP tool: ${name}`);
   console.log(`Source coverage: ${routes.size} REST operations and ${names.length} MCP registrations`);
