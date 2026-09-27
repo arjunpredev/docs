@@ -3,8 +3,6 @@ title: "Inputs and outputs"
 description: "Provide context and files, then consume specifications, estimates, graphs, and documentation archives."
 ---
 
-import { GraphExample } from "/snippets/spec-blueprint.jsx";
-
 Fast and Deep Spec share the same REST input fields and output formats. The [OpenAPI schema](/api-reference/openapi.json) defines their machine-readable shapes.
 
 ## Describe a project or a change
@@ -65,9 +63,7 @@ Request [spec status](/architect-agent/api/spec-status) for full bodies. [List](
 }
 ```
 
-In this example, the web app sends HTTPS requests to the API. The edge points from the node named by `source` to the node named by `target`:
-
-<GraphExample />
+In this example, the web app sends HTTPS requests to the API. The edge points from the node named by `source` to the node named by `target`, so `source: "web"` and `target: "api"` read as Web app → API. Node labels supply the readable names.
 
 Node `level` can be a number, a string, or null: user-flow graphs can use numeric depth, while architecture graphs use levels such as `C1` and `C2`. `architectureInfographicUrl` is an optional rendered diagram. `enrichedTechStack` explains technology choices, uses, alternatives, and helpful links.
 

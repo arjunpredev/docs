@@ -4,8 +4,6 @@ openapi: "/api-reference/openapi.json GET /browser-agent/{id}/stream"
 description: "Attach to an existing browser run with an initial snapshot, live SSE updates, and terminal status."
 ---
 
-import { ProtocolTrace } from "/snippets/protocol-trace.jsx";
-
 Submit with `async: true`, save the run ID, then attach to this endpoint. This lets your application recover results even if the stream disconnects.
 
 ```bash
@@ -25,8 +23,6 @@ curl --fail-with-body -N "https://api.pre.dev/browser-agent/$BATCH_ID/stream" \
 | `error` | `{ error }` | The stream cannot continue |
 
 The existing-run stream's **`done` contains status only**. Fetch [the run](/browser-agents/api/task-status) after `done` for final data and credit usage. This differs from the [submission stream](/browser-agents/api/run-task#streaming), whose `done` contains the full batch.
-
-<ProtocolTrace kind="browser" />
 
 ## Reconnect and recover
 

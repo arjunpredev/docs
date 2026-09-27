@@ -3,7 +3,6 @@ title: "Browser Agents"
 description: "Run browser workflows and extract structured data through REST, SDKs, or MCP."
 ---
 
-import { Workflow } from "/snippets/workflow.jsx";
 import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
 
 Give Browser Agents a starting URL and a task. It navigates pages, interacts with forms and controls, and returns task outcomes with data and an optional execution timeline.
@@ -29,20 +28,16 @@ Provide an explicit `output` when downstream code expects a particular structure
 
 ## Request lifecycle
 
-<Workflow
-  label="Submit browser tasks and retrieve each outcome"
-  steps={[
-    { title: "Submit tasks", description: "Send URLs, instructions, and the output shape you need." },
-    { title: "Save the run ID", description: "After credit and queue checks, tasks can start or wait." },
-    { title: "Follow the run", description: "Poll the saved ID or stream available progress events." },
-    { title: "Read each outcome", description: "Check every task’s status before consuming its data." }
-  ]}
-  note="A completed run can include failed tasks. A rejected submission returns an error; inspect its code and next action before retrying."
-/>
+1. **Submit tasks.** Send URLs, instructions, and the output shape you need.
+2. **Save the run ID.** After credit and queue checks, tasks can start or wait.
+3. **Follow the run.** Poll the saved ID or stream available progress events.
+4. **Read each outcome.** Check every task's status before consuming its data.
+
+A completed run can include failed tasks. A rejected submission returns an error; inspect its code and next action before retrying.
 
 One request creates one **run**, also called a **batch** in response types. A run contains one or more tasks. Use its `id` to retrieve progress and results; each task has its own status and credit usage.
 
-The [status guide](/browser-agents/api/task-status#batch-and-task-states) includes an interactive example of queued, running, completed, and failed work.
+The [status guide](/browser-agents/api/task-status#batch-and-task-states) shows each task state and what it costs.
 
 ## Choose how to receive results
 

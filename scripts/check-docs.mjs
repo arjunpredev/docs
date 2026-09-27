@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import ts from 'typescript';
+import { staleDiagrams } from './diagrams/build.mjs';
 
 const root = process.cwd();
 const read = file => fs.readFile(path.join(root, file), 'utf8');
@@ -60,7 +60,6 @@ const gatewayReferenced = new Map();
 check([].concat(config.api?.openapi ?? []).includes(gatewaySpecPath), `docs.json api.openapi must list ${gatewaySpecPath}`);
 let jsonExamples = 0;
 let curlExamples = 0;
-let visualExamples = 0;
 const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
 const transform = value => JSON.parse(JSON.stringify(value).replaceAll('#/components/schemas/', '#/$defs/'));
@@ -128,51 +127,30 @@ check(llmsPages.length === new Set(llmsPages).size, 'llms.txt lists a page twice
 const llmsTitles = [...llms.matchAll(/^- \[([^\]]+)\]\(https:\/\/docs\.pre\.dev\/[^)\s]+\.md\)/gm)].map(m => m[1]);
 check(llmsTitles.length === new Set(llmsTitles).size, 'llms.txt link titles must be unique');
 
-// Custom visuals must compile, and links inside them need the same coverage as MDX.
-const snippets = files.filter(file => file.startsWith('snippets/') && file.endsWith('.jsx'));
-for (const file of snippets) {
-  const source = await read(file);
-  const compiled = ts.transpileModule(source, {fileName: file, reportDiagnostics: true, compilerOptions: {jsx: ts.JsxEmit.Preserve, target: ts.ScriptTarget.ES2022}});
-  for (const diagnostic of compiled.diagnostics || []) failures.push(`${file}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`);
-  for (const match of source.matchAll(/\bhref=["'](\/[^"']+)["']/g)) {
-    const target = match[1].split(/[?#]/)[0].slice(1);
-    check(pages.has(target) || files.includes(target) || redirects.has('/'+target), `Broken snippet link: ${file} → ${match[1]}`);
+// Diagrams are SVG light and dark pairs generated from scripts/diagrams. Each
+// committed SVG must match its source, and a page shows both files of a pair
+// with Mintlify's theme classes and alt text that states what the figure shows.
+for (const problem of staleDiagrams()) failures.push(problem);
+const diagramNames = new Set(files.filter(f => /^images\/diagrams\/[\w-]+-light\.svg$/.test(f)).map(f => f.slice('images/diagrams/'.length, -'-light.svg'.length)));
+const diagramUse = new Map();
+for (const [slug, text] of pages) {
+  for (const [tag] of text.replace(/```[\s\S]*?```/g, '').matchAll(/<img\b[^>]*>/g)) {
+    const src = tag.match(/\bsrc="\/images\/diagrams\/([\w-]+)-(light|dark)\.svg"/);
+    if (!src) continue;
+    const [, name, theme] = src;
+    const wanted = theme === 'light' ? 'block dark:hidden' : 'hidden dark:block';
+    check(tag.match(/\bclassName="([^"]*)"/)?.[1] === wanted, `Diagram ${name}-${theme} on ${slug} needs className="${wanted}"`);
+    check((tag.match(/\balt="([^"]*)"/)?.[1] || '').trim().length >= 40, `Diagram ${name}-${theme} on ${slug} needs alt text that states what it shows`);
+    const bySlug = diagramUse.get(name) || new Map();
+    bySlug.set(slug, [...(bySlug.get(slug) || []), theme]);
+    diagramUse.set(name, bySlug);
   }
 }
-
-// Read literal example data from the actual interactive component, without
-// executing JSX or maintaining a second copy of its response fixtures.
-const literal = node => {
-  if (ts.isStringLiteral(node)) return node.text;
-  if (ts.isNumericLiteral(node)) return Number(node.text);
-  if (ts.isArrayLiteralExpression(node)) return node.elements.map(literal);
-  if (ts.isObjectLiteralExpression(node)) return Object.fromEntries(node.properties.map(property => {
-    assert.ok(ts.isPropertyAssignment(property), 'Visual examples must use literal properties');
-    return [property.name.text, literal(property.initializer)];
-  }));
-  if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
-  if (node.kind === ts.SyntaxKind.FalseKeyword) return false;
-  if (node.kind === ts.SyntaxKind.NullKeyword) return null;
-  throw new Error('Visual examples must use literal data');
-};
-const lifecycle = ts.createSourceFile('lifecycle.jsx', await read('snippets/lifecycle.jsx'), ts.ScriptTarget.ES2022, true, ts.ScriptKind.JSX);
-function checkVisualExamples(node) {
-  if (ts.isVariableDeclaration(node) && ['specExamples', 'browserExamples'].includes(node.name.getText(lifecycle))) {
-    const browser = node.name.getText(lifecycle) === 'browserExamples';
-    for (const example of literal(node.initializer)) {
-      // Browser excerpts omit the saved ID to keep the visual readable.
-      const value = browser ? {id: '507f1f77bcf86cd799439011', ...example.response} : example.response;
-      const specSchema = example.label === 'pending'
-        ? api.paths['/fast-spec'].post.responses['200'].content['application/json'].schema
-        : api.paths['/spec-status/{specId}'].get.responses['200'].content['application/json'].schema;
-      validate(browser ? {$ref: '#/components/schemas/BatchResult'} : specSchema, value, `Visual ${browser ? 'browser' : 'spec'} ${example.label}`);
-      visualExamples++;
-    }
-  }
-  ts.forEachChild(node, checkVisualExamples);
+for (const name of diagramNames) check(diagramUse.has(name), `Diagram not shown on any page: ${name}`);
+for (const [name, bySlug] of diagramUse) {
+  check(diagramNames.has(name), `Page shows a missing diagram: ${name}`);
+  for (const [slug, themes] of bySlug) check(themes.includes('light') && themes.includes('dark'), `Diagram ${name} on ${slug} must show both its light and dark file`);
 }
-checkVisualExamples(lifecycle);
-check(visualExamples === 8, 'Expected four spec and four browser state examples');
 
 // Validate examples consumed by Mintlify's generated request/response panels.
 // Every JSON response, errors included, carries at least one example.
@@ -255,4 +233,4 @@ if (sourceIndex !== -1) {
   console.log(`Source coverage: ${routes.size} REST operations, ${gatewayRoutes.size} AI Gateway operations and ${names.length} MCP registrations`);
 }
 assert.equal(failures.length, 0, failures.join('\n'));
-console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} REST and ${gatewayOperations.size} AI Gateway operations, ${openapiExamples} schema-checked OpenAPI examples, ${snippets.length} visual components, ${visualExamples} schema-checked visual states, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests, ${llmsPages.length} llms.txt pages`);
+console.log(`Docs checks passed: ${pages.size} pages, ${operations.size} REST and ${gatewayOperations.size} AI Gateway operations, ${openapiExamples} schema-checked OpenAPI examples, ${diagramNames.size} diagram pairs, ${jsonExamples} JSON examples, ${curlExamples} schema-checked curl requests, ${llmsPages.length} llms.txt pages`);

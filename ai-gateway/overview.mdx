@@ -27,6 +27,16 @@ The pre.dev AI Gateway is an OpenAI-compatible API for hundreds of models from e
   </Card>
 </CardGroup>
 
+## How a call is handled
+
+<img className="block dark:hidden" src="/images/diagrams/gateway-routing-light.svg" alt="How the AI Gateway handles a call: it authenticates your pre.dev key, admits the call only with enough credits and under the rate limit, routes it to the model you named or your fallback list, and charges credits when the response finishes." />
+<img className="hidden dark:block" src="/images/diagrams/gateway-routing-dark.svg" alt="How the AI Gateway handles a call: it authenticates your pre.dev key, admits the call only with enough credits and under the rate limit, routes it to the model you named or your fallback list, and charges credits when the response finishes." />
+
+1. **Authenticate.** Your pre.dev key, sent as `Authorization: Bearer` or `x-api-key`, identifies the workspace. A missing or invalid key returns `401`.
+2. **Admit.** The call needs enough credits and must stay under the workspace rate limit. Otherwise it returns `402` or `429`, and no model runs.
+3. **Route.** The model you named answers, or the models in your [`models` list](/ai-gateway/routing-and-fallbacks#fallback-models), tried in order. You choose the model; pre.dev chooses how to serve it.
+4. **Charge.** Credits for the call's metered usage are charged once the response or stream finishes. See [response headers](#response-headers) for how the charge is reported.
+
 ## What you send
 
 Model ids are `<author>/<slug>` strings exactly as listed by [`GET /v1/models`](/ai-gateway/api/models), for example `anthropic/claude-sonnet-5`, `deepseek/deepseek-v4.1-flash`, `google/gemini-3.8-flash`, or `openai/gpt-6-luna`. There are no separate pre.dev-specific model names.

@@ -44,6 +44,19 @@ Read [authentication](/api-reference/authentication) and [errors](/api-reference
 
 The [AI Gateway](/ai-gateway/overview) is an OpenAI-compatible API for hundreds of models from every major lab, with the same key and credits. It covers chat completions, the Anthropic Messages shape, embeddings, images, video, audio, files, and a model catalog with credit prices. Point the stock OpenAI, Vercel AI, or Anthropic SDK at that base URL; see the [quickstart](/ai-gateway/quickstart) and [pricing](/coding-agent/plans-and-credits#ai-gateway-calls).
 
+## Long-running jobs
+
+Specifications, browser runs, and video generation run as jobs. All three follow one pattern: submit the job, save the ID it returns, poll or stream that ID, and read the result once the status is terminal.
+
+<img className="block dark:hidden" src="/images/diagrams/async-jobs-light.svg" alt="The async job pattern in four steps for specs, browser runs, and video jobs: submit the job, save the ID it returns, poll or stream it, and stop at a terminal status to read the result." />
+<img className="hidden dark:block" src="/images/diagrams/async-jobs-dark.svg" alt="The async job pattern in four steps for specs, browser runs, and video jobs: submit the job, save the ID it returns, poll or stream it, and stop at a terminal status to read the result." />
+
+| Job | Submit | Save | Poll or stream | Terminal status |
+| --- | --- | --- | --- | --- |
+| Specification | `POST /fast-spec` or `/deep-spec` with `async: true` | `specId` | `GET /spec-status/{specId}` | `completed` returns the Markdown, JSON, and available graphs; `failed` returns `errorMessage` |
+| Browser run | `POST /browser-agent` with `async: true` | `id` | `GET /browser-agent/{id}`, or stream `GET /browser-agent/{id}/stream` | `completed` or `failed`; read each task's `status` before its data |
+| Video | `POST /v1/videos` | `id` | `GET /v1/videos/{jobId}` | `completed`, then download `GET /v1/videos/{jobId}/content`; or `failed` |
+
 ## SDKs and MCP
 
 The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including live browser URLs, existing-run SSE, and browser idempotency keys.

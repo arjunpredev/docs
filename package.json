@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "mint dev --no-open",
     "check": "node scripts/check-docs.mjs",
+    "diagrams": "node scripts/diagrams/build.mjs",
     "validate": "mint validate",
     "links": "mint broken-links --check-anchors --check-redirects --check-snippets",
     "a11y": "mint a11y",

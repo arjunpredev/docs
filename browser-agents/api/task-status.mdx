@@ -4,7 +4,7 @@ openapi: "/api-reference/openapi.json GET /browser-agent/{id}"
 description: "Retrieve a browser run, individual task outcomes, retry counts, and optional execution timelines."
 ---
 
-import { LifecycleExplorer } from "/snippets/lifecycle.jsx";
+import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
 
 Use the `id` returned by [task submission](/browser-agents/api/run-task). A run is also called a batch in the API and SDK types.
 
@@ -17,19 +17,22 @@ curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID" \
 
 Batch `status` is `processing`, `completed`, or `failed`. Stop polling on either terminal state. A completed batch may contain unsuccessful tasks.
 
-<LifecycleExplorer kind="browser" />
+<img className="block dark:hidden" src="/images/diagrams/browser-task-states-light.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS is metered at the floor or more, and every unsuccessful status keeps the floor and nothing more." />
+<img className="hidden dark:block" src="/images/diagrams/browser-task-states-dark.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS is metered at the floor or more, and every unsuccessful status keeps the floor and nothing more." />
 
-| Task status | Meaning |
-| --- | --- |
-| `PENDING` | Waiting to run |
-| `RUNNING` | Execution has started |
-| `SUCCESS` | The task succeeded |
-| `BLOCKED` | The site blocked the task |
-| `CAPTCHA_FAILED` | A challenge could not be completed |
-| `TIMEOUT` | The execution budget expired |
-| `LOOP` | Repeated actions prevented progress |
-| `NO_TARGET` | The requested target or usable result was not found |
-| `ERROR` | Another execution failure; read `error` |
+| Task status | Meaning | Charge |
+| --- | --- | --- |
+| `PENDING` | Waiting to run | The floor, charged at submission |
+| `RUNNING` | Execution has started | Nothing more; a retried attempt adds no charge |
+| `SUCCESS` | The task succeeded | The floor, plus any usage above it |
+| `BLOCKED` | The site blocked the task | The floor and nothing more |
+| `CAPTCHA_FAILED` | A challenge could not be completed | The floor and nothing more |
+| `TIMEOUT` | The execution budget expired | The floor and nothing more |
+| `LOOP` | Repeated actions prevented progress | The floor and nothing more |
+| `NO_TARGET` | The requested target or usable result was not found | The floor and nothing more |
+| `ERROR` | Another execution failure; read `error` | The floor and nothing more |
+
+<BrowserCreditFloor />
 
 ## In-progress results
 
