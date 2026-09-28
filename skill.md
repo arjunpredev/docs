@@ -27,7 +27,7 @@ pre.dev is the coding agent built for long-horizon tasks: it plans, builds, veri
 | Plan software before building it | `POST https://api.pre.dev/fast-spec` or `/deep-spec`, or the `fast_spec` MCP tool |
 | Give an agent pre.dev tools | Product MCP server `https://api.pre.dev/mcp` |
 | Take payments in an app built on pre.dev | The Stripe SDK, pointed at `STRIPE_API_HOST` |
-| Build or change code | The coding agent, on the web or in the CLI (a person signs in) |
+| Build or change code | The coding agent, on the web or in the CLI; `predev run` with `PREDEV_API_KEY` runs one task unattended |
 | Search these docs | Docs MCP server `https://docs.pre.dev/mcp` (no key) |
 
 Browser tasks and AI calls work on every plan, Free included: a Free personal account can spend 2 credits on browser tasks, and a Free workspace 5 credits on AI calls, before it needs a plan. Specifications and the MCP server need Premium, Pro, Team or Enterprise; Plus and team workspaces without a plan get 3 trial specifications.
@@ -103,14 +103,16 @@ export async function createCheckout(priceId: string, origin: string) {
 
 Payments run in Stripe test mode while you build (card `4242 4242 4242 4242`). The preview runs the app in a frame, so open Checkout in a new tab when framed. Stripe events are delivered to `/api/stripe/webhook`, signed with `STRIPE_WEBHOOK_SECRET`.
 
-### 5. Coding agent in a terminal
+### 5. Coding agent in a repository, unattended
 
 ```bash
-curl -fsSL https://pre.dev/install | bash
-predev "add dark mode to the settings page"
+curl -fsSL https://pre.dev/install | PREDEV_NO_AUTORUN=1 bash
+export PREDEV_API_KEY="pdk_..."
+cd path/to/repo
+~/.predev/bin/predev run "add input validation to the signup form with a test"
 ```
 
-The CLI works in the current directory, on macOS and Linux. A person signs in once in a browser; on a machine without one it prints a link to open on another device. There is no unattended mode yet, so an agent cannot start the CLI on its own. Sign-in with an API key, for unattended runs, is coming.
+`predev run` sends one request to the agent in the current directory, prints one `[predev]` line per step and then the agent's final message, and exits: `0` finished, `1` failed or stopped, `2` not signed in or key rejected (do not retry a `2` with the same key). With no prompt argument it reads the prompt from stdin. If the output ends with a question, answer it with another `predev run` in the same directory. Set the key in the environment, not in a `.env` file; a saved browser login wins over it, so run `predev logout` first on a machine where someone signed in. In CI, set `CI=true` where the service does not (Jenkins, Azure Pipelines, AWS CodeBuild), and use `predev run --new` for parallel jobs on one checkout path. Review the changes with `git diff`. The CLI runs on macOS and Linux. See [Run one task without the app](https://docs.pre.dev/cli/overview#run-one-task-without-the-app).
 
 ## Rules for long-running work
 

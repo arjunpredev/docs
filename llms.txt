@@ -10,6 +10,7 @@
 - [REST API OpenAPI](https://docs.pre.dev/api-reference/openapi.json): Specifications, browser tasks, and the credit balance at `https://api.pre.dev`.
 - [AI Gateway OpenAPI](https://docs.pre.dev/api-reference/ai-gateway.openapi.json): Every operation under `https://api.pre.dev/v1`, with error examples.
 - Product MCP server: `https://api.pre.dev/mcp` (Streamable HTTP; OAuth, or `Authorization: Bearer <key>`). Tools: https://api.pre.dev/mcp/info
+- Coding agent from a script or CI: `PREDEV_API_KEY=pdk_… predev run "<task>"` in the repository; exit code `0` done, `1` failed, `2` not signed in. See https://docs.pre.dev/cli/overview#run-one-task-without-the-app
 - Docs MCP server: `https://docs.pre.dev/mcp` searches and reads these docs, with no key.
 - Full text: https://docs.pre.dev/llms-full.txt. Any page as Markdown: add `.md` to its URL.
 
@@ -32,7 +33,7 @@
 - [Create a project](https://docs.pre.dev/coding-agent/projects/creating-a-project.md): Start from a prompt or an existing repository.
 - [Import a repository](https://docs.pre.dev/coding-agent/projects/importing-repos.md): Build on an existing GitHub codebase and its conventions.
 - [GitHub integration](https://docs.pre.dev/coding-agent/projects/github-integration.md): Connect GitHub, import code, and review branch changes.
-- [pre.dev CLI](https://docs.pre.dev/cli/overview.md): Install the CLI and use the coding agent in a local directory.
+- [pre.dev CLI](https://docs.pre.dev/cli/overview.md): Install the CLI, use the coding agent in a local directory, sign in with `PREDEV_API_KEY`, and run one task with `predev run`.
 - [CLI commands](https://docs.pre.dev/cli/commands.md): Terminal commands, keys, and launch flags.
 - [Work on an existing repo](https://docs.pre.dev/cli/existing-repos.md): Map a local codebase and make changes you review with Git.
 - [Fast vs Deep specs](https://docs.pre.dev/coding-agent/specifications/fast-vs-deep.md): Choose planning depth.
