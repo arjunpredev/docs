@@ -1598,7 +1598,7 @@
           "Files"
         ],
         "summary": "List files",
-        "description": "Lists the files this workspace uploaded through the gateway, newest first by default. To page, pass `last_id` as `after` while `has_more` is true.\n\nA page can hold fewer than `limit` files when a file cannot be read in time: each file has 5 seconds and the whole call 10 seconds. The ids of skipped files are listed in `predev.skipped`, which appears only when something was skipped; fetch those with `GET /v1/files/{id}`.\n\nThis call counts toward the per-minute request limit.",
+        "description": "Lists the files this workspace uploaded through the gateway, newest first by default. To page, pass `last_id` as `after` while `has_more` is true.\n\nA page can hold fewer than `limit` files: a file whose read fails or takes more than 5 seconds is skipped, and a call that reaches 10 seconds leaves the rest for the next page. The ids of skipped files are listed in `predev.skipped`, which appears only when something was skipped; fetch those with `GET /v1/files/{id}`.\n\nThis call counts toward the per-minute request limit.",
         "parameters": [
           {
             "name": "limit",
@@ -1674,7 +1674,7 @@
                     }
                   },
                   "skipped": {
-                    "summary": "A file could not be read in time",
+                    "summary": "A file could not be read",
                     "value": {
                       "object": "list",
                       "data": [
@@ -4938,7 +4938,7 @@
                 "items": {
                   "type": "string"
                 },
-                "description": "Ids of files that could not be read in time. Fetch each with `GET /v1/files/{id}`."
+                "description": "Ids of files whose read failed or took more than 5 seconds. Fetch each with `GET /v1/files/{id}`."
               }
             }
           }

@@ -65,7 +65,7 @@ curl --fail-with-body -X DELETE "https://api.pre.dev/v1/files/$FILE_ID" \
   -H "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-The [list](/ai-gateway/api/list-files) has only files this workspace uploaded through the gateway, newest first (`order=asc` for oldest first), 20 per page by default and at most 50 (`limit`). To page, pass `last_id` as `after` while `has_more` is true; `after` must be one of this workspace's files, otherwise the call returns `404`. `purpose` lists only files with that purpose. A page can hold fewer than `limit` files when a file cannot be read in time (each file has 5 seconds, the call 10 seconds); their ids are in `predev.skipped`, which appears only when something was skipped, and `GET /v1/files/{id}` fetches them.
+The [list](/ai-gateway/api/list-files) has only files this workspace uploaded through the gateway, newest first (`order=asc` for oldest first), 20 per page by default and at most 50 (`limit`). To page, pass `last_id` as `after` while `has_more` is true; `after` must be one of this workspace's files, otherwise the call returns `404`. `purpose` lists only files with that purpose. A page can hold fewer than `limit` files: a file whose read fails or takes more than 5 seconds is skipped, and a call that reaches 10 seconds leaves the rest for the next page. Skipped ids are in `predev.skipped`, which appears only when something was skipped; `GET /v1/files/{id}` fetches them.
 
 Only files whose metadata says `downloadable: true` can be downloaded; a file you uploaded returns `400` from `/content`. In the SDKs these are `client.files.list()`, `client.files.retrieve(id)`, `client.files.content(id)`, and `client.files.delete(id)` (Node `client.files.del(id)` on older versions).
 
