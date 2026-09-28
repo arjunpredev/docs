@@ -34,28 +34,28 @@ Use `credits_per_image` or the other `predev` prices in the model row to estimat
 
 Video generation is asynchronous:
 
-1. [`POST /v1/videos`](/ai-gateway/api/video-jobs) submits the job and returns it with a `polling_url`.
-2. [`GET /v1/videos/{jobId}`](/ai-gateway/api/video-status), the `polling_url`, reports status.
-3. [`GET /v1/videos/{jobId}/content`](/ai-gateway/api/video-content) returns the finished video.
+1. [`POST /v1/videos`](/ai-gateway/api/video-jobs) submits the job and returns it with its `id` and a `polling_url`.
+2. [`GET /v1/videos/{id}`](/ai-gateway/api/video-status) reports status. `polling_url` is this same URL, ending with the job's `id`, so polling either one works.
+3. [`GET /v1/videos/{id}/content`](/ai-gateway/api/video-content) returns the finished video.
 
 ```bash
-POLL=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
+ID=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \
   -H "Authorization: Bearer $PREDEV_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model": "bytedance/seedance-2.0-mini", "prompt": "A paper boat drifting down a rain gutter", "duration": 4, "resolution": "480p"}' | jq -r '.polling_url')
+  -d '{"model": "bytedance/seedance-2.0-mini", "prompt": "A paper boat drifting down a rain gutter", "duration": 4, "resolution": "480p"}' | jq -r '.id')
 
 # poll until the status is terminal
 while :; do
-  STATUS=$(curl --fail-with-body -s "$POLL" -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.status')
+  STATUS=$(curl --fail-with-body -s "https://api.pre.dev/v1/videos/$ID" -H "Authorization: Bearer $PREDEV_API_KEY" | jq -r '.status')
   case "$STATUS" in completed|failed|cancelled|expired) break ;; esac
   sleep 5
 done
 
 # then download
-curl --fail-with-body "$POLL/content" \
+curl --fail-with-body "https://api.pre.dev/v1/videos/$ID/content" \
   -H "Authorization: Bearer $PREDEV_API_KEY" -o video.mp4
 ```
 
-Submitting a job needs at least 10 credits available. The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (`completed`, `failed`, `cancelled` or `expired`) before reading `/content`. Use the `polling_url` from the submit response as the job's address.
+Submitting a job needs at least 10 credits available. The job is charged once it finishes, not at submission: on the first status poll that reports completion, on the `/content` download if you never polled, or by pre.dev afterwards if you stopped polling. Poll until the status is terminal (`completed`, `failed`, `cancelled` or `expired`) before reading `/content`. Poll and download with the job's `id` from the submit response.
 
 Jobs belong to the workspace that created them; another workspace's job id returns `404`.

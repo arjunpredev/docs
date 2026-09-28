@@ -91,13 +91,13 @@
 - [Embeddings](https://docs.pre.dev/ai-gateway/api/embeddings.md): POST /v1/embeddings.
 - [Rerank](https://docs.pre.dev/ai-gateway/api/rerank.md): POST /v1/rerank: order documents by relevance to a query.
 - [Generate images](https://docs.pre.dev/ai-gateway/api/images-and-video.md): POST /v1/images, and how video jobs work.
-- [Submit a video job](https://docs.pre.dev/ai-gateway/api/video-jobs.md): POST /v1/videos, then poll its polling_url.
+- [Submit a video job](https://docs.pre.dev/ai-gateway/api/video-jobs.md): POST /v1/videos, then poll it by its id.
 - [Get a video job](https://docs.pre.dev/ai-gateway/api/video-status.md): GET /v1/videos/{jobId}; the poll that sees it finish charges it.
 - [Download a video](https://docs.pre.dev/ai-gateway/api/video-content.md): GET /v1/videos/{jobId}/content.
 - [Speech and music](https://docs.pre.dev/ai-gateway/api/audio.md): POST /v1/audio/speech.
 - [Transcribe audio](https://docs.pre.dev/ai-gateway/api/transcriptions.md): POST /v1/audio/transcriptions, as multipart/form-data.
 - [Upload a file](https://docs.pre.dev/ai-gateway/api/files.md): POST /v1/files, for use in chat requests.
-- [List files](https://docs.pre.dev/ai-gateway/api/list-files.md): GET /v1/files.
+- [List files](https://docs.pre.dev/ai-gateway/api/list-files.md): GET /v1/files, one page of this workspace's files.
 - [Get file metadata](https://docs.pre.dev/ai-gateway/api/get-file.md): GET /v1/files/{id}.
 - [Download a file](https://docs.pre.dev/ai-gateway/api/file-content.md): GET /v1/files/{id}/content, for downloadable files.
 - [Delete a file](https://docs.pre.dev/ai-gateway/api/delete-file.md): DELETE /v1/files/{id}.

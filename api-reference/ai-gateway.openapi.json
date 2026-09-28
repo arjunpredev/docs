@@ -952,7 +952,7 @@
           "Images and video"
         ],
         "summary": "Submit a video job",
-        "description": "Starts an asynchronous video job. Submitting needs a balance of at least 10 credits.\n\n1. `POST /v1/videos` returns the job with `status: \"pending\"` and a `polling_url`.\n2. Poll `polling_url` (`GET /v1/videos/{jobId}`) every few seconds until `status` is `completed`, `failed`, `cancelled` or `expired`.\n3. Download the video from `GET /v1/videos/{jobId}/content`.\n\nThe job is charged once, when it finishes: on the first poll that reports completion, on the download if you never polled, or by pre.dev shortly after if you stopped polling.",
+        "description": "Starts an asynchronous video job. Submitting needs a balance of at least 10 credits.\n\n1. `POST /v1/videos` returns the job with its `id`, `status: \"pending\"`, and a `polling_url`.\n2. Poll `GET /v1/videos/{id}` (the `polling_url`) every few seconds until `status` is `completed`, `failed`, `cancelled` or `expired`.\n3. Download the video from `GET /v1/videos/{id}/content`.\n\nThe job is charged once, when it finishes: on the first poll that reports completion, on the download if you never polled, or by pre.dev shortly after if you stopped polling.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -1030,7 +1030,7 @@
           {
             "lang": "cURL",
             "label": "cURL (submit, poll, download)",
-            "source": "JOB=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"bytedance/seedance-2.0-mini\", \"prompt\": \"A paper boat drifting down a rain gutter\", \"duration\": 4, \"resolution\": \"480p\"}')\nPOLL=$(echo \"$JOB\" | jq -r .polling_url)\n\nwhile :; do\n  STATUS=$(curl --fail-with-body -s \"$POLL\" -H \"Authorization: Bearer $PREDEV_API_KEY\" | jq -r .status)\n  case \"$STATUS\" in completed|failed|cancelled|expired) break ;; esac\n  sleep 5\ndone\n\ncurl --fail-with-body \"$POLL/content\" -H \"Authorization: Bearer $PREDEV_API_KEY\" -o video.mp4"
+            "source": "JOB=$(curl --fail-with-body -s https://api.pre.dev/v1/videos \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"bytedance/seedance-2.0-mini\", \"prompt\": \"A paper boat drifting down a rain gutter\", \"duration\": 4, \"resolution\": \"480p\"}')\nID=$(echo \"$JOB\" | jq -r .id)\n\nwhile :; do\n  STATUS=$(curl --fail-with-body -s \"https://api.pre.dev/v1/videos/$ID\" -H \"Authorization: Bearer $PREDEV_API_KEY\" | jq -r .status)\n  case \"$STATUS\" in completed|failed|cancelled|expired) break ;; esac\n  sleep 5\ndone\n\ncurl --fail-with-body \"https://api.pre.dev/v1/videos/$ID/content\" -H \"Authorization: Bearer $PREDEV_API_KEY\" -o video.mp4"
           }
         ]
       }
@@ -1042,7 +1042,7 @@
           "Images and video"
         ],
         "summary": "Get a video job",
-        "description": "Reports a video job's status. Use the job id from the submit response's `polling_url`. The poll that first sees the job finish charges it and returns `x-predev-credits-charged`. Jobs belong to the workspace that submitted them.",
+        "description": "Reports a video job's status. Use the job's `id` from the submit response; `polling_url` is this same URL. The poll that first sees the job finish charges it and returns `x-predev-credits-charged`. Jobs belong to the workspace that submitted them.",
         "parameters": [
           {
             "name": "jobId",
@@ -1051,7 +1051,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The last segment of `polling_url`."
+            "description": "The job's `id` from the submit response. `polling_url` ends with the same id, so polling either one works."
           }
         ],
         "responses": {
@@ -1127,7 +1127,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "The job's `id` from the submit response. `polling_url` ends with the same id, so polling either one works."
           }
         ],
         "responses": {
@@ -4686,12 +4687,12 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Job id."
+            "description": "Job id. Poll `GET /v1/videos/{id}` and download from `GET /v1/videos/{id}/content`."
           },
           "polling_url": {
             "type": "string",
             "format": "uri",
-            "description": "`https://api.pre.dev/v1/videos/{jobId}` for this job. Poll this URL with your key."
+            "description": "`https://api.pre.dev/v1/videos/{id}` for this job: the status URL, ending with the job's `id`."
           },
           "status": {
             "type": "string",
