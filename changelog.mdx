@@ -9,6 +9,12 @@ to get notified on every SDK bump.
 
 ## 2026-09-27
 
+### CLI: sign in with an API key, and run one task with `predev run`
+
+- **Sign in without a browser.** Set `PREDEV_API_KEY` to your workspace API key and the CLI signs in with it when the computer has no saved login, as in CI, coding agents and fresh machines. A saved browser login still wins. See [Sign in without a browser](/cli/overview#sign-in-without-a-browser).
+- **`predev run "<prompt>"`** sends one request to the agent in the current directory, prints the result, and exits: `0` finished, `1` failed or stopped, `2` not signed in or the key was rejected. With no prompt argument it reads the prompt from stdin. See [Run one task without the app](/cli/overview#run-one-task-without-the-app).
+- **`predev logout`** forgets the saved login on this computer, so the CLI signs in with `PREDEV_API_KEY` when it is set.
+
 ### Documentation for agents
 
 *Documentation update. No product change.*
@@ -19,11 +25,14 @@ to get notified on every SDK bump.
 - **The AI Gateway has an OpenAPI file**, [ai-gateway.openapi.json](https://docs.pre.dev/api-reference/ai-gateway.openapi.json), covering all 25 `/v1` operations with error examples. Every operation has a reference page, and every REST response in [openapi.json](https://docs.pre.dev/api-reference/openapi.json) now has an example.
 - The docs search server for agents is at `https://docs.pre.dev/mcp`.
 
-### AI Gateway: a model list without a key, and prices in credits only
+### AI Gateway: a model list without a key, credit-only prices, and workspace-scoped files
 
 - [`GET /v1/models/public`](/ai-gateway/api/public-models) lists every model an app can call, with its lab, type and modalities, and needs no API key. Credit prices stay on `GET /v1/models`.
 - The catalog listings carry prices in credits only, in each row's `predev` object. When the catalog cannot be read, they answer `502` with code `catalog_unavailable`.
 - [`GET /v1/usage`](/ai-gateway/api/usage) reports requests, credits and tokens only, and `workspace` is an opaque `ws_…` id.
+- [`GET /v1/files`](/ai-gateway/api/list-files) lists only files this workspace uploaded, 20 per page by default and at most 50, paged with `after`.
+- Video jobs are polled and downloaded by the `id` their submit response returns.
+- A request that refers to another workspace's file, response, or video job returns `404` before anything runs.
 
 ### MCP tools say what they do and cost
 

@@ -15,7 +15,7 @@ This page is written for AI agents and the people who set them up. Each recipe r
 
 <BaseUrls />
 
-Two more ways in: the **CLI**, `predev`, runs the coding agent in a local repository and needs a person to sign in; the **docs MCP server**, `https://docs.pre.dev/mcp`, searches and reads this documentation with no key.
+Two more ways in: the **CLI**, `predev`, runs the coding agent in a local repository, and `predev run` does one task there without the app, signed in with `PREDEV_API_KEY`; the **docs MCP server**, `https://docs.pre.dev/mcp`, searches and reads this documentation with no key.
 
 | Machine-readable resource | Use it for |
 | --- | --- |
@@ -53,6 +53,7 @@ Browser tasks and AI Gateway calls work on every plan, Free included: a Free per
 | Search specification input | `GET /find-specs` | Use REST |
 | Check available credits | `GET /credits-balance` | Use REST |
 | Call a model | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK | Use REST |
+| Change code in a local repository | No endpoint; run the CLI: [`predev run`](#recipe-5-run-the-coding-agent-in-a-repository) | Use the CLI |
 
 Both official SDKs are named **`predev-api`**: `from predev_api import PredevAPI` in Python and `import { PredevAPI } from 'predev-api'` in Node. They cover specifications and browser tasks.
 
@@ -198,15 +199,23 @@ app.listen(Number(process.env.PORT) || 3000);
 
 Payments run in Stripe test mode while you build; use card `4242 4242 4242 4242`. The preview shows the app in a frame, where Checkout will not render, so open `url` in a new tab when framed. Server routes like these run in the project's sandbox, including after you publish. See [payments](/payments/overview) and [webhooks](/payments/webhooks).
 
-## Recipe 5: use the coding agent from a terminal
+## Recipe 5: run the coding agent in a repository
+
+The REST API has no coding-session endpoint. To change code in a local repository, run the CLI without its app:
 
 ```bash
-curl -fsSL https://pre.dev/install | bash   # macOS and Linux
-cd your-repo
-predev "add dark mode to the settings page"
+curl -fsSL https://pre.dev/install | PREDEV_NO_AUTORUN=1 bash
+export PREDEV_API_KEY="pdk_..."
+cd path/to/repo
+~/.predev/bin/predev run "add input validation to the signup form with a test"
 ```
 
-A person signs in once in a browser; on a machine without one, the CLI prints a link to open on another device. There is no unattended mode yet, so an agent cannot start the CLI on its own. Sign-in with an API key, for unattended runs, is coming. See [the CLI](/cli/overview).
+1. Set `PREDEV_API_KEY` in the environment, not in a `.env` file. Copy the key from **Integrations → Built-in** in the dashboard. On a machine where someone signed in with the browser, the saved login is used instead; run `predev logout` to use the key.
+2. Read standard output: `[predev]` progress lines, then the agent's final message. Errors are on standard error.
+3. Check the exit code: `0` finished, `1` failed or stopped, `2` not signed in or key rejected. Do not retry a `2` with the same key.
+4. If the output ends with a question, answer it with another `predev run` in the same directory.
+5. Review the changes with `git status` and `git diff`. With `CI` set, the checkout stays the source of truth: no files from earlier runs are pulled into it. Set `CI=true` yourself on CI services that don't (Jenkins, Azure Pipelines, AWS CodeBuild).
+6. Run parallel jobs on one checkout path with `predev run --new`.
 
 ## Keep names distinct
 
@@ -257,4 +266,4 @@ The AI Gateway also refuses more than 30 failed key attempts a minute from one I
 
 ## What the API does not do
 
-The public REST API has no endpoint to start a coding session, deploy, cancel work, register webhooks, or schedule runs. Build with the [coding agent](/coding-agent/overview) on the web or in the [CLI](/cli/overview), and schedule API calls in your own application. Browser tasks do not expose a reusable login session or cookie profile.
+The public REST API has no general coding-session, deployment, cancellation, webhook-registration, or recurring-schedule endpoint. For coding tasks, use [`predev run`](/cli/overview#run-one-task-without-the-app) or the [Coding Agent](/coding-agent/overview), and schedule API calls in your own application when needed. Browser tasks do not expose a reusable login-session or cookie-profile API.

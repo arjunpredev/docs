@@ -72,7 +72,7 @@ Errors from `https://api.pre.dev/v1` use the OpenAI error shape with an extra `p
 | `invalid_api_key` | `401` | Key unknown, or rotated more than 15 minutes ago | | Copy the current key from **Integrations → Built-in** |
 | `insufficient_credits` | `402` | The balance cannot cover the call; nothing was sent to the model | `credits_remaining`, `estimated_credits`, `topup_url` | Add credits or enable auto-recharge |
 | `subscription_required` | `402` | A Free workspace used its 5-credit gateway allowance | `credits_remaining`, `trial_credits_used`, `topup_url` | Subscribe |
-| `not_found` | `404` | Unknown path, or a file, job, or generation that belongs to another workspace | | Check the path and id |
+| `not_found` | `404` | Unknown path, or a file, job, response, or generation that belongs to another workspace, including one a request refers to; nothing ran | | Check the path and id |
 | `not_ready` | `404` or `502` | The generation's stats are not recorded yet (`404`), or could not be read (`502`) | | Retry in a few seconds |
 | `rate_limit_exceeded` | `429` | More than the per-minute request limit | `retry_after` | Wait `Retry-After` seconds, then retry |
 | `too_many_auth_failures` | `429` | Too many failed key attempts from one address | `retry_after` | Check the key, then retry after a minute |
