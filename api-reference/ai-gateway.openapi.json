@@ -2557,7 +2557,7 @@
           "Usage"
         ],
         "summary": "Get generation stats",
-        "description": "Stats and the credits charged for one call, by the `id` from its response body (`pdg-…`). Use it for streamed calls, which do not return the credits header. Stats can take a few seconds to appear after a call; retry on `not_ready`. Only this workspace's calls are visible.",
+        "description": "Stats and the credits charged for one call, by the `id` from its response body (`pdg-…`). Use it for streamed calls, which do not return the credits header: pass a chunk's `id` after the stream ends. Stats can take a few seconds to appear after a call; retry on `not_ready`. Only this workspace's calls are visible.",
         "parameters": [
           {
             "name": "id",
@@ -2625,7 +2625,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "404": {
-            "description": "No such call in this workspace, or its stats are not ready yet.",
+            "description": "`not_found`: no call with that id in this workspace, a call that recorded no stats (a failed call, for example), or a streamed call that is still running. `not_ready`: the call is found, but its stats are not available yet.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2637,6 +2637,18 @@
                     "value": {
                       "error": {
                         "message": "No generation with that id belongs to this workspace.",
+                        "type": "not_found_error",
+                        "code": "not_found",
+                        "param": null,
+                        "predev": {}
+                      }
+                    }
+                  },
+                  "no_stats": {
+                    "summary": "Call recorded no stats",
+                    "value": {
+                      "error": {
+                        "message": "No generation stats were recorded for that id.",
                         "type": "not_found_error",
                         "code": "not_found",
                         "param": null,
@@ -3181,7 +3193,7 @@
                   "catalog_unavailable",
                   "internal_error"
                 ],
-                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job, response or generation that belongs to another workspace, including one a request refers to. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 502 or 503 | The model catalog could not be read: 502 from the catalog listings, 503 from `GET /v1/models/public`. Retry shortly. |\n| `internal_error` | 500 | Unexpected error. |"
+                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job, response or generation that belongs to another workspace, including one a request refers to. On `/v1/generation`, also a call that recorded no stats (a failed call, for example) or a streamed call that is still running. |\n| `not_ready` | 404 or 502 | `/v1/generation` found the call, but its stats are not available yet (404) or could not be read (502). |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 502 or 503 | The model catalog could not be read: 502 from the catalog listings, 503 from `GET /v1/models/public`. Retry shortly. |\n| `internal_error` | 500 | Unexpected error. |"
               },
               "param": {
                 "type": "null"
