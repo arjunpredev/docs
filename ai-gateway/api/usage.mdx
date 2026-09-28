@@ -69,7 +69,7 @@ curl --fail-with-body "https://api.pre.dev/v1/usage?days=30" \
 
 ## One generation
 
-[`GET /v1/generation?id=<id>`](/ai-gateway/api/generation) returns the record of one call, using the `pdg-…` id from the response body or a stream chunk. Only this workspace's generations are visible. Stats can take a few seconds to appear after a call; a `404` with code `not_ready` means retry shortly.
+[`GET /v1/generation?id=<id>`](/ai-gateway/api/generation) returns the record of one call, using the `pdg-…` id from the response body, or from a stream chunk once the stream ends. Only this workspace's generations are visible. Stats can take a few seconds to appear after a call; a `404` with code `not_ready` means retry shortly.
 
 ```bash
 curl --fail-with-body "https://api.pre.dev/v1/generation?id=pdg-7c1e4b52-9a3d-4f8e-b0c6-2d5a8e913f47" \
