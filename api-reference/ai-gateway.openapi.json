@@ -3,7 +3,7 @@
   "info": {
     "title": "pre.dev AI Gateway API",
     "version": "1.0.0",
-    "description": "One OpenAI-compatible API for hundreds of models from every major lab, paid for in pre.dev credits.\n\n- **Base URL:** `https://api.pre.dev/v1` for the OpenAI SDKs. The Anthropic SDKs take `https://api.pre.dev` and add `/v1/messages` themselves.\n- **Auth:** the workspace API key (`pdk_…`) from Integrations → Built-in in the pre.dev dashboard, as `Authorization: Bearer <key>` or `x-api-key`. Keep it on a server: it spends the workspace's credits.\n- **Models:** send ids exactly as `GET /v1/models` lists them, such as `anthropic/claude-sonnet-5`.\n- **Public directory:** `GET /v1/models/public` lists every model with no key and no prices.\n- **Charges:** each call is charged in credits from its metered cost. Non-streaming responses report the charge in `x-predev-credits-charged`; `GET /v1/generation` reports it for any call. A request is refused with `402` before it runs when the balance cannot cover it. Catalog, usage, generation and file reads are free.\n- **Limits:** 600 requests per minute per workspace, 30 on the free trial. A free workspace can spend 5 credits on AI calls in total, then gets `402 subscription_required`. Reads do not count toward the per-minute limit.\n- **Errors:** errors raised by pre.dev use the OpenAI error shape with a `predev` object (`GatewayError`). Errors from the model keep their HTTP status and message (`ModelError`). Every inference response carries `x-predev-request-id`.\n- **Streaming:** `stream: true` returns server-sent events in the native format of each endpoint. Lines that start with `:` are keep-alives.\n\nExample values are illustrative.",
+    "description": "One OpenAI-compatible API for hundreds of models from every major lab, paid for in pre.dev credits.\n\n- **Base URL:** `https://api.pre.dev/v1` for the OpenAI SDKs. The Anthropic SDKs take `https://api.pre.dev` and add `/v1/messages` themselves.\n- **Auth:** the workspace API key (`pdk_…`) from Integrations → Built-in in the pre.dev dashboard, as `Authorization: Bearer <key>` or `x-api-key`. Keep it on a server: it spends the workspace's credits.\n- **Models:** send ids exactly as `GET /v1/models` lists them, such as `anthropic/claude-sonnet-5`.\n- **Public directory:** `GET /v1/models/public` lists every model with no key and no prices.\n- **Charges:** each call is charged in credits from its metered cost. Non-streaming responses report the charge in `x-predev-credits-charged`; `GET /v1/generation` reports it for any call. A request is refused with `402` before it runs when the balance cannot cover it. Catalog, usage, generation and file reads are free.\n- **Limits:** 600 requests per minute per workspace, 30 on the free trial. A free workspace can spend 5 credits on AI calls in total, then gets `402 subscription_required`. Reads other than `GET /v1/files` do not count toward the per-minute limit.\n- **Errors:** errors raised by pre.dev use the OpenAI error shape with a `predev` object (`GatewayError`). Errors from the model keep their HTTP status and message (`ModelError`). Every inference response carries `x-predev-request-id`.\n- **Streaming:** `stream: true` returns server-sent events in the native format of each endpoint. Lines that start with `:` are keep-alives.\n\nExample values are illustrative.",
     "contact": {
       "name": "pre.dev Support",
       "url": "https://pre.dev",
@@ -1597,7 +1597,7 @@
           "Files"
         ],
         "summary": "List files",
-        "description": "Lists files this workspace uploaded. Results are filtered to the workspace after paging, so a page can hold fewer files than `limit`.",
+        "description": "Lists the files this workspace uploaded through the gateway, newest first by default. To page, pass `last_id` as `after` while `has_more` is true.\n\nA page can hold fewer than `limit` files when a file cannot be read in time: each file has 5 seconds and the whole call 10 seconds. The ids of skipped files are listed in `predev.skipped`, which appears only when something was skipped; fetch those with `GET /v1/files/{id}`.\n\nThis call counts toward the per-minute request limit.",
         "parameters": [
           {
             "name": "limit",
@@ -1606,23 +1606,57 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 1000
+              "maximum": 50,
+              "default": 20
             },
-            "description": "Page size before filtering."
+            "description": "Files per page, 1 to 50."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ],
+              "default": "desc"
+            },
+            "description": "`desc` for newest first, `asc` for oldest first."
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "A file id from an earlier page, usually its `last_id`. It must be one of this workspace's files, or the call returns 404 `not_found`."
+          },
+          {
+            "name": "purpose",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Only files with this `purpose`, for example `user_data`."
           }
         ],
         "responses": {
           "200": {
-            "description": "The workspace's files.",
+            "description": "One page of files.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FileList"
                 },
                 "examples": {
-                  "openai_style": {
-                    "summary": "OpenAI-style fields",
+                  "page": {
+                    "summary": "A page",
                     "value": {
+                      "object": "list",
                       "data": [
                         {
                           "id": "file-8Kz3pQ",
@@ -1632,23 +1666,34 @@
                           "filename": "contract.pdf",
                           "purpose": "user_data"
                         }
-                      ]
+                      ],
+                      "first_id": "file-8Kz3pQ",
+                      "last_id": "file-8Kz3pQ",
+                      "has_more": false
                     }
                   },
-                  "extended": {
-                    "summary": "Extended fields",
+                  "skipped": {
+                    "summary": "A file could not be read in time",
                     "value": {
+                      "object": "list",
                       "data": [
                         {
                           "id": "file-8Kz3pQ",
-                          "type": "file",
+                          "object": "file",
+                          "bytes": 1024000,
+                          "created_at": 1790500000,
                           "filename": "contract.pdf",
-                          "mime_type": "application/pdf",
-                          "size_bytes": 1024000,
-                          "created_at": "2026-09-27T12:00:00Z",
-                          "downloadable": false
+                          "purpose": "user_data"
                         }
-                      ]
+                      ],
+                      "first_id": "file-8Kz3pQ",
+                      "last_id": "file-8Kz3pQ",
+                      "has_more": true,
+                      "predev": {
+                        "skipped": [
+                          "file-2Lm9Rt"
+                        ]
+                      }
                     }
                   }
                 }
@@ -1658,8 +1703,69 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "404": {
+            "description": "`after` is not one of this workspace's files.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "message": "No file with that id belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              }
+            }
+          },
           "429": {
-            "$ref": "#/components/responses/AuthFailures"
+            "description": "Over the per-minute request limit for the workspace, or too many failed key attempts from this IP address. Wait `Retry-After` seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "examples": {
+                  "rate_limit_exceeded": {
+                    "summary": "Workspace rate limit",
+                    "value": {
+                      "error": {
+                        "message": "Rate limit of 600 requests per minute exceeded for this workspace.",
+                        "type": "rate_limit_error",
+                        "code": "rate_limit_exceeded",
+                        "param": null,
+                        "predev": {
+                          "retry_after": 12
+                        }
+                      }
+                    }
+                  },
+                  "too_many_auth_failures": {
+                    "summary": "Failed key attempts from this IP",
+                    "value": {
+                      "error": {
+                        "message": "Too many failed API key attempts from this address. Try again in a minute.",
+                        "type": "rate_limit_error",
+                        "code": "too_many_auth_failures",
+                        "param": null,
+                        "predev": {
+                          "retry_after": 60
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/ServerError"
@@ -2853,16 +2959,40 @@
         }
       },
       "ModelNotFound": {
-        "description": "The model could not serve this request. The status and message are the model's own, in the `ModelError` shape.",
+        "description": "The request refers to a file, response or video job that is not this workspace's (`not_found` from pre.dev; nothing ran and nothing was charged), or the model could not serve the request (its own status and message, in the `ModelError` shape).",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ModelError"
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelError"
+                }
+              ]
             },
-            "example": {
-              "error": {
-                "message": "No endpoints found matching your data policy.",
-                "code": 404
+            "examples": {
+              "foreign_reference": {
+                "summary": "A file that is not this workspace's",
+                "value": {
+                  "error": {
+                    "message": "No file with id file-2Lm9Rt belongs to this workspace.",
+                    "type": "not_found_error",
+                    "code": "not_found",
+                    "param": null,
+                    "predev": {}
+                  }
+                }
+              },
+              "model_not_found": {
+                "summary": "The model cannot serve the request",
+                "value": {
+                  "error": {
+                    "message": "No endpoints found matching your data policy.",
+                    "code": 404
+                  }
+                }
               }
             }
           }
@@ -3050,7 +3180,7 @@
                   "catalog_unavailable",
                   "internal_error"
                 ],
-                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job or generation that belongs to another workspace. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 502 or 503 | The model catalog could not be read: 502 from the catalog listings, 503 from `GET /v1/models/public`. Retry shortly. |\n| `internal_error` | 500 | Unexpected error. |"
+                "description": "| Code | HTTP | Meaning |\n| --- | --- | --- |\n| `missing_api_key` | 401 | No `Authorization: Bearer` or `x-api-key` header. |\n| `invalid_api_key` | 401 | The key is unknown, or was rotated more than 15 minutes ago. |\n| `too_many_auth_failures` | 429 | More than 30 failed key attempts from this IP address in a minute. |\n| `insufficient_credits` | 402 | The balance is zero or below the estimate for this request. Nothing ran. |\n| `subscription_required` | 402 | A free workspace used its 5 credits of AI calls. |\n| `rate_limit_exceeded` | 429 | Over the per-minute request limit for the workspace. |\n| `balance_unavailable` | 503 | The balance could not be read. Nothing ran. |\n| `invalid_request` | 400 | `/v1/audio/speech` is missing `model` or `input`, or the model does not produce audio. |\n| `missing_id` | 400 | `/v1/generation` was called without `id`. |\n| `not_found` | 404 | Unknown path, or a file, video job, response or generation that belongs to another workspace, including one a request refers to. |\n| `not_ready` | 404 or 502 | Generation stats are not available yet. |\n| `upstream_unavailable` | 502 | The model did not answer, or returned no audio. |\n| `catalog_unavailable` | 502 or 503 | The model catalog could not be read: 502 from the catalog listings, 503 from `GET /v1/models/public`. Retry shortly. |\n| `internal_error` | 500 | Unexpected error. |"
               },
               "param": {
                 "type": "null"
@@ -4760,19 +4890,58 @@
       },
       "FileList": {
         "type": "object",
+        "description": "One page of this workspace's files. To read the next page, pass `last_id` as `after` while `has_more` is true.",
         "required": [
-          "data"
+          "object",
+          "data",
+          "first_id",
+          "last_id",
+          "has_more"
         ],
         "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
           "data": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/File"
             },
-            "description": "Files this workspace uploaded."
+            "description": "Files this workspace uploaded through the gateway, in the requested order."
+          },
+          "first_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Id of the first file in `data`; `null` when the page is empty."
+          },
+          "last_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Id of the last file in `data`; pass it as `after` for the next page. `null` when the page is empty."
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "More files remain after this page."
+          },
+          "predev": {
+            "type": "object",
+            "description": "Present only when files were skipped.",
+            "properties": {
+              "skipped": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Ids of files that could not be read in time. Fetch each with `GET /v1/files/{id}`."
+              }
+            }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "FileDeleted": {
         "type": "object",
