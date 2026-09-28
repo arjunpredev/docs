@@ -43,6 +43,47 @@ predev --help
 
 `predev open` brings an existing project, for example one you started on the web, into the current folder: its files are pulled here and it runs on this machine.
 
+## Sign in without a browser
+
+Set `PREDEV_API_KEY` to your workspace API key and the CLI signs in with it when the computer has no saved login, as in CI, coding agents and fresh machines. A saved browser login always wins, so exporting the key for the AI Gateway does not change who you are in the CLI. To use the key on a computer with a saved login, run `predev logout` first. Copy the key from **Integrations → Built-in** in the dashboard (the **AI** card).
+
+```bash
+export PREDEV_API_KEY="pdk_..."
+predev
+```
+
+The CLI checks the key with pre.dev when it starts and keeps it in memory only. It never writes the key to `~/.predev/auth.json`. A rejected key stops the CLI with `PREDEV_API_KEY was rejected (revoked or wrong key)` and exit code 2; the CLI does not fall back to the browser.
+
+Set the key in your shell or CI environment. The CLI never reads its own settings from a project's `.env` file. The CLI says which identity it is using at startup (the email, never the key). `/login` works as usual, and the saved login it creates wins over the key.
+
+## Run one task without the app
+
+`predev run` sends one request to the agent in the current directory, prints the result, and exits. It works on the same project as `predev` in that directory, needs no browser, and never waits for input.
+
+```bash
+predev run "add a health check endpoint with a test"
+echo "fix the failing test in src/date.test.ts" | predev run
+predev run --new "scaffold a command-line tool in Go"
+```
+
+- With no prompt argument, `predev run` reads the prompt from stdin, to the end of input or until 10 seconds pass without input. `--new` before the prompt creates a fresh project for the directory.
+- Standard output has one `[predev]` line per step, then the agent's final message. Errors go to standard error.
+- Before it exits, the command waits up to two minutes for the run's edits to sync to pre.dev, and it stops processes the agent started, such as dev servers.
+- The run takes the directory's session for this computer, like `predev` does. Afterwards the session stays assigned to this computer and shows as offline on the web, as after quitting `predev`.
+- The directory as it is on disk is the source of truth. `predev run` pulls the session's files from pre.dev only into a directory that synced this session before, and never when the `CI` environment variable is set, so a CI checkout never picks up files that earlier runs created on other commits. Most CI services set `CI` for you. Jenkins, Azure Pipelines and AWS CodeBuild do not: set `CI=true` there, above all on agents that keep their home directory between jobs.
+- In CI, the account email in the output is masked.
+- Parallel jobs that share one checkout path use `predev run --new`, which gives each job its own project.
+- If the directory's session runs in the cloud or on another computer that is online, or a run is already in progress there, the command exits with code 1 and changes nothing. Open `predev` in the directory (type `/local` to bring a cloud session back), or use `predev run --new`. A session left on a computer that is offline moves to this one, so CI runners with a fresh home directory can run `predev run` every time.
+- Ctrl-C stops the run. Press it again to quit at once.
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | The run finished. If the agent asked a question, the question follows the final message, with how to answer it. |
+| `1` | The run failed or was stopped. |
+| `2` | Not signed in, or `PREDEV_API_KEY` was rejected. |
+
+To answer a question, run `predev run "<your answer>"` in the same directory. The conversation continues from there.
+
 ## Work in the terminal
 
 The agent decides whether to answer, plan, or build. Use `/sprint <feature>` for a dedicated sprint and `/fork <task>` for a separate session. `/kanban`, `/roadmap`, and `/arch` open project views in the terminal. `/usage` shows what the project's credits went on, and `/publish` puts the app at its permanent address.
