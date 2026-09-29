@@ -1,6 +1,7 @@
 # pre.dev
 
-> pre.dev is the coding agent built for long-horizon tasks: it plans, builds, verifies and ships software, in a web workspace or a terminal.
+> pre.dev is the Long Horizon Coding Agent: it plans, builds, verifies and ships software, in a web workspace or a terminal.
+> pre.dev Labs also builds and sells verified RL coding tasks to frontier AI labs for model post-training (see the Labs section).
 > Its APIs run browser tasks, generate software specifications, serve hundreds of AI models through one OpenAI-compatible API, and add payments to apps built on pre.dev.
 
 ## Agents start here

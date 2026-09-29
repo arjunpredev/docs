@@ -671,7 +671,7 @@
       "discord": "https://discord.gg/ejVTRJ6WXS"
     }
   },
-  "description": "Documentation for pre.dev: the coding agent on the web and in the terminal, Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), built-in payments, and the REST and MCP APIs.",
+  "description": "Documentation for pre.dev: the Long Horizon Coding Agent on the web and in the terminal, Browser Agents, the AI Gateway (hundreds of models from every major lab through one OpenAI-compatible API), built-in payments, the REST and MCP APIs, and pre.dev Labs, which sells verified RL coding tasks to frontier AI labs.",
   "seo": {
     "metatags": {
       "twitter:site": "@predotdev"
