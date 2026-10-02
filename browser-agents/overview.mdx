@@ -57,8 +57,17 @@ Task counts, account in-flight limits, and per-run concurrency are different con
 
 Read [billing and limits](/browser-agents/api/run-task#billing-and-limits) for details.
 
-## Benchmark
+## Benchmarks
 
-Explore the [interactive benchmark report](https://pre.dev/browser-agents-benchmark.html) for task results, costs, timings, and execution traces. The [reproduction repository](https://github.com/predotdev/browser-agents-benchmark) includes task definitions and scoring rules.
+Our runs on two public benchmarks of tasks on live websites, next to the numbers TinyFish publishes for its own runs:
+
+| Benchmark | Browser Agents | TinyFish, published |
+| --- | --- | --- |
+| WebVoyager, 641 tasks | 95.5% | 91.1% |
+| Online-Mind2Web, 300 tasks | 64.3% | 89.9% |
+
+The WebVoyager figure is from our run of the full 641-task set; under a stricter rule that needs a screenshot showing each claim, it is 89.7%. TinyFish's numbers come from its own runs, with a different harness, patch set, and grader, and we did not re-run them. On Online-Mind2Web, Browser Agents trails TinyFish's published number.
+
+The [benchmark report](https://pre.dev/browser-agents-benchmark.html) covers the protocol, results by site and level, the patched tasks and why, and a CSV of every task result.
 
 Browser tasks do not expose persistent login profiles, reusable cookie sessions, or a recurring-schedule API. Schedule submissions in your own application and provide the inputs each task needs.
