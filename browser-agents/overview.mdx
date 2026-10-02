@@ -63,11 +63,11 @@ Our runs on two public benchmarks of tasks on live websites, next to the numbers
 
 | Benchmark | Browser Agents | TinyFish, published |
 | --- | --- | --- |
-| WebVoyager, 641 tasks | 95.5% | 91.1% |
-| Online-Mind2Web, 300 tasks | 64.3% | 89.9% |
+| WebVoyager, 641 tasks | 93.2% | 91.1% |
+| Online-Mind2Web, 300 tasks | 62.8% | 89.9% |
 
-The WebVoyager figure is from our run of the full 641-task set; under a stricter rule that needs a screenshot showing each claim, it is 89.7%. TinyFish's numbers come from its own runs, with a different harness, patch set, and grader, and we did not re-run them. On Online-Mind2Web, Browser Agents trails TinyFish's published number.
+The Browser Agents figures are the mean of two full runs of each benchmark: 95.5% and 91.0% on WebVoyager, 64.3% and 61.3% on Online-Mind2Web. Under a stricter WebVoyager rule that needs a screenshot showing each claim, the mean is 88.2%. TinyFish's numbers come from its own runs, with a different harness, patch set, and grader, and we did not re-run them. On Online-Mind2Web, Browser Agents trails TinyFish's published number.
 
-The [benchmark report](https://pre.dev/browser-agents-benchmark.html) covers the protocol, results by site and level, the patched tasks and why, and a CSV of every task result.
+The [benchmark report](https://pre.dev/browser-agents-benchmark.html) covers the protocol, results by site and level, the patched tasks and why, and a CSV of every task result from both runs.
 
 Browser tasks do not expose persistent login profiles, reusable cookie sessions, or a recurring-schedule API. Schedule submissions in your own application and provide the inputs each task needs.
