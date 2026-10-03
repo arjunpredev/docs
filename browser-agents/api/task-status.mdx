@@ -31,6 +31,7 @@ Batch `status` is `processing`, `completed`, or `failed`. Stop polling on either
 | `LOOP` | Repeated actions prevented progress | The floor and nothing more |
 | `NO_TARGET` | The requested target or usable result was not found | The floor and nothing more |
 | `ERROR` | Another execution failure; read `error` | The floor and nothing more |
+| `EXHAUSTED` | The run stopped responding before it finished, and no retry could finish it in time | The floor and nothing more |
 
 <BrowserCreditFloor />
 
