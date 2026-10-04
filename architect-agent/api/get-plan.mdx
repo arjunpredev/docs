@@ -1,0 +1,63 @@
+---
+title: "Get a project's plan"
+openapi: "/api-reference/openapi.json GET /get-plan"
+description: "What a project is for, each feature's status from pre.dev's checks, progress, Ready to launch, and where things live in the code."
+---
+
+Every project a spec creates gets a verified plan as soon as the spec completes, and pre.dev keeps it current as the project is built. Read it before you change a project built with pre.dev: it says what is built, what is proven to work, what is left, and where to look in the code.
+
+Pass exactly one of `specId` (from [Fast Spec](/architect-agent/api/fast-spec) or [Deep Spec](/architect-agent/api/deep-spec)) or `projectId`.
+
+```bash
+curl --fail-with-body "https://api.pre.dev/get-plan?specId=$SPEC_ID" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+Add `format=markdown` to receive only the Markdown summary, ready to hand to a coding agent:
+
+```bash
+curl --fail-with-body "https://api.pre.dev/get-plan?projectId=$PROJECT_ID&format=markdown" \
+  -H "Authorization: Bearer $PREDEV_API_KEY"
+```
+
+An organization key reads its organization's projects; any other key reads only its own. Someone else's ID returns `404`, the same as an ID that does not exist.
+
+## What the plan says
+
+| Field | Meaning |
+| --- | --- |
+| `intent` | What the app is for, in one paragraph. `proposedByPredev` is true until the owner edits it. |
+| `progress` | `built`, `provenWorking` and `total`, plus `left` and `percent`. `basis` says what is counted: `features`, `stories` for a project whose tasks are not grouped into features yet, or `none`. Suggested features (`proposed`) are not counted until the owner confirms them. |
+| `features` | Each feature with its `status`, the words pre.dev shows for it, and its story counts. |
+| `readyToLaunch` | What is left before the app can go live, each item with a plain `fix`. |
+| `appMap` | Screens, API routes and stored data, each with its file and line (`anchor`). Each list holds at most 25 items; `count` is the full number. |
+| `lastRun` | The last run that changed the code: the files it changed and what it added, changed or removed. |
+| `codeVersion` | The code version the plan was computed at. |
+
+A feature's `status` comes from pre.dev's checks:
+
+| Status | Meaning |
+| --- | --- |
+| `works` | A check of this feature passed at the current code |
+| `built_not_checked` | The code is there; nothing has proven it yet |
+| `changed_since_check` | Its files changed after its check passed |
+| `needs_a_look` | Its check failed the last time it ran |
+| `not_working` | Its check keeps failing |
+| `in_progress`, `planned` | Not built yet |
+| `out_of_scope` | Set outside the project's scope; listed, not counted |
+| `removed` | Taken out because the owner asked; listed, not counted |
+
+A spec that has just completed reads as all `planned`, with no `appMap` or `lastRun` until code exists. `plan` is null while a project has nothing planned or built yet. Keys appear by name only (for example, in a Ready to launch item that names a missing key), never their values.
+
+[Spec status](/architect-agent/api/spec-status) carries the same `plan` once a spec is completed, and the MCP server has a matching [`get_plan` tool](/mcp/tools#get_plan).
+
+## Errors
+
+| Status | When |
+| --- | --- |
+| `400` | Neither or both of `specId` and `projectId`, or an ID that is not valid |
+| `401` | Missing or invalid key, or a personal key without a paid plan |
+| `404` | An ID that is not yours, a spec with no project yet, or plans are turned off |
+| `500` | Unexpected error |
+
+Each status has an example body in the response examples. See [errors and retries](/api-reference/errors).

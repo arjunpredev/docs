@@ -1,13 +1,13 @@
 ---
 title: "MCP tool reference"
-description: "The seven primary pre.dev tools, exact input names, result formats, and deprecated aliases."
+description: "The eight primary pre.dev tools, exact input names, result formats, and deprecated aliases."
 ---
 
 import McpUrl from "/snippets/mcp-url.mdx";
 
 <McpUrl />
 
-Connect once to use specification generation and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
+Connect once to use specification generation, project plans and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
 
 Call **`tools/list`** after initialization for the live input schemas. `GET /mcp/info` is a human-readable service inventory; it is not the protocol's tool-discovery method.
 
@@ -19,6 +19,7 @@ Call **`tools/list`** after initialization for the live input schemas. `GET /mcp
 | `deep_spec` | Generate a detailed specification | Text with artifact links or a `get_spec` handoff |
 | `get_spec` | Retrieve a specification and its status | Text and, on success, `structuredContent` |
 | `list_specs` | Paginated specification history | Text and, for a nonempty page, `structuredContent` |
+| `get_plan` | A project's verified plan | Markdown text and `structuredContent` |
 | `browser_agent` | Run browser tasks | Text summary or an async run ID |
 | `browser_agent_get` | Retrieve browser task results | JSON text and `structuredContent` |
 | `browser_agent_list` | Paginated browser history | Text and `structuredContent` |
@@ -57,6 +58,8 @@ Generation results are text, not the REST `SpecResponse` JSON envelope. A progre
 
 `output` is specification Markdown, preferring the coding-agent variant. Status is `pending`, `processing`, `completed`, `failed`, or `unknown`. Optional values may be absent while generation is running.
 
+A `completed` result also carries `plan` when its project has one: the project's verified plan (the same object `get_plan` returns), and the text ends with the plan as Markdown.
+
 ## list_specs
 
 | Parameter | Type | Default | Values |
@@ -69,6 +72,29 @@ Generation results are text, not the REST `SpecResponse` JSON envelope. A progre
 For nonempty pages, `structuredContent` contains `specs`, `total`, `hasMore`, `skip`, and `limit`. Each entry uses **`specId`**, not REST's `_id`. Use `get_spec` for the full body. An empty page returns a text-only result.
 
 There is no `find_specs` MCP tool; use [REST search](/architect-agent/api/find-specs).
+
+## get_plan
+
+```json
+{ "specId": "507f1f77bcf86cd799439011" }
+```
+
+Pass exactly one of `specId` (from generation or listing) or `projectId`. The result is the project's verified plan: what the app is for, each feature's status from pre.dev's checks, progress, what is left, whether it is ready to launch with a plain fix for each open item, where screens, API routes and stored data live in the code (file and line), and what the last change did.
+
+The text content is the plan as Markdown, written for a coding agent to read before working on the project. `structuredContent` contains `projectId`, `specId`, `plan` and `markdown`; `plan` has the same fields as the [REST plan](/architect-agent/api/get-plan) and is null while the project has nothing planned or built yet.
+
+| Feature status | Meaning |
+| --- | --- |
+| `works` | A check of this feature passed at the current code |
+| `built_not_checked` | The code is there; nothing has proven it yet |
+| `changed_since_check` | Its files changed after its check passed |
+| `needs_a_look` | Its check failed the last time it ran |
+| `not_working` | Its check keeps failing |
+| `in_progress`, `planned` | Not built yet |
+| `out_of_scope` | Set outside the project's scope; listed, not counted |
+| `removed` | Taken out because the owner asked; listed, not counted |
+
+An organization key reads its organization's projects; any other key reads only its own. Another account's ID returns an error result (`isError: true`), the same as an ID that does not exist. Retrieval does not use credits.
 
 ## browser_agent
 

@@ -477,6 +477,7 @@
               "architect-agent/api/fast-spec",
               "architect-agent/api/deep-spec",
               "architect-agent/api/spec-status",
+              "architect-agent/api/get-plan",
               "architect-agent/api/list-specs",
               "architect-agent/api/find-specs"
             ]

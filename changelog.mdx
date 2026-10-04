@@ -7,6 +7,15 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-05
+
+### Project plans through the API and MCP
+
+- **[`GET /get-plan`](/architect-agent/api/get-plan)** returns a project's verified plan by `specId` or `projectId`: what the app is for, each feature's status from pre.dev's checks, progress, Ready to launch with a plain fix for each open item, and where screens, API routes and stored data live in the code. Add `format=markdown` to get the Markdown summary alone.
+- **The MCP server has a `get_plan` tool** with the same plan, for a coding agent to read before it works on a project. See [get_plan](/mcp/tools#get_plan).
+- [Spec status](/architect-agent/api/spec-status) and `get_spec` carry the plan as `plan` once a spec is completed.
+- Reading a plan uses no credits.
+
 ## 2026-09-27
 
 ### CLI: sign in with an API key, and run one task with `predev run`
