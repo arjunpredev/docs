@@ -3096,7 +3096,7 @@
           },
           "creditsUsed": {
             "type": "number",
-            "description": "Settled task charge: every task keeps the 0.1-credit floor charged at submission; a SUCCESS adds any usage above it."
+            "description": "Settled task charge: every task keeps the 0.1-credit floor charged at submission; every status except ERROR and EXHAUSTED adds any usage above it."
           },
           "durationMs": {
             "type": "integer",

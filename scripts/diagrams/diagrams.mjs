@@ -222,32 +222,32 @@ function browserTaskStates() {
   b.push(arrow([[cx, y + 2], [cx, y + 22]])); y += 24;
   row(y, 64, 'RUNNING', 'executing; a retry adds no charge', 'nothing more');
   y += 64;
-  // Split into the two terminal outcomes.
-  const lx = PAD, lw = 186, rx = PAD + lw + 14, rw = W - PAD - rx;
+  // Split into the two terminal outcomes: metered, or the floor only.
+  const lx = PAD, lw = 300, rx = PAD + lw + 14, rw = W - PAD - rx;
   b.push(arrow([[cx, y + 2], [cx, y + 14], [lx + lw / 2, y + 14], [lx + lw / 2, y + 34]]));
   b.push(arrow([[cx, y + 14], [rx + rw / 2, y + 14], [rx + rw / 2, y + 34]]));
   y += 36;
   const th = 171;
   b.push(rect(lx, y, lw, th, 'na', 10));
-  b.push(text(lx + 14, y + 28, 'SUCCESS', { size: 16, bold: true, mono: true }));
-  b.push(lines(lx + 14, y + 52, ['Metered by the work', 'the task did'], { size: 14, cls: 't2' }));
-  b.push(text(lx + 14, y + 125, '0.1 credits', { size: 15, bold: true, cls: 'ta' }));
-  b.push(text(lx + 14, y + 145, 'or more', { size: 15, bold: true, cls: 'ta' }));
-  b.push(rect(rx, y, rw, th, 'n', 10));
-  b.push(text(rx + 14, y + 28, 'Unsuccessful', { size: 16, bold: true }));
-  const codes = [['BLOCKED', 'CAPTCHA_FAILED'], ['TIMEOUT', 'LOOP'], ['NO_TARGET', 'ERROR'], ['EXHAUSTED', '']];
-  codes.forEach(([a, c], i) => {
-    b.push(text(rx + 14, y + 54 + i * 21, a, { size: 13, mono: true, cls: 't2' }));
-    if (c) b.push(text(rx + 116, y + 54 + i * 21, c, { size: 13, mono: true, cls: 't2' }));
+  b.push(text(lx + 14, y + 28, 'Metered by the work done', { size: 16, bold: true }));
+  const metered = [['SUCCESS', 'BLOCKED'], ['CAPTCHA_FAILED', 'TIMEOUT'], ['LOOP', 'NO_TARGET']];
+  metered.forEach(([a, c], i) => {
+    b.push(text(lx + 14, y + 54 + i * 21, a, { size: 13, mono: true, cls: 't2' }));
+    b.push(text(lx + 146, y + 54 + i * 21, c, { size: 13, mono: true, cls: 't2' }));
   });
-  b.push(text(rx + 14, y + 145, '0.1 credits, nothing more', { size: 15, bold: true, cls: 'ta' }));
+  b.push(text(lx + 14, y + 145, '0.1 credits or more', { size: 15, bold: true, cls: 'ta' }));
+  b.push(rect(rx, y, rw, th, 'n', 10));
+  b.push(text(rx + 14, y + 28, 'Execution failed', { size: 16, bold: true }));
+  ['ERROR', 'EXHAUSTED'].forEach((a, i) => b.push(text(rx + 14, y + 54 + i * 21, a, { size: 13, mono: true, cls: 't2' })));
+  b.push(text(rx + 14, y + 125, '0.1 credits,', { size: 15, bold: true, cls: 'ta' }));
+  b.push(text(rx + 14, y + 145, 'nothing more', { size: 15, bold: true, cls: 'ta' }));
   y += th;
   b.push(text(PAD, y + 30, 'A completed run can still contain unsuccessful', { size: 14, cls: 't3' }));
   b.push(text(PAD, y + 50, 'tasks, so read each task’s status.', { size: 14, cls: 't3' }));
   return {
     h: y + 70,
     title: 'Browser task states and charges',
-    desc: 'Submitting a browser run charges 0.1 credits per task, refunded only if the submission fails before queueing. A task moves from PENDING to RUNNING with no further charge; a retry adds no charge. A SUCCESS is metered by the work the task did, at 0.1 credits or more. An unsuccessful task (BLOCKED, CAPTCHA_FAILED, TIMEOUT, LOOP, NO_TARGET, ERROR, or EXHAUSTED) costs 0.1 credits and nothing more.',
+    desc: 'Submitting a browser run charges 0.1 credits per task, refunded only if the submission fails before queueing. A task moves from PENDING to RUNNING with no further charge; a retry adds no charge. A SUCCESS, BLOCKED, CAPTCHA_FAILED, TIMEOUT, LOOP, or NO_TARGET task is metered by the work it did, at 0.1 credits or more. An ERROR or EXHAUSTED task costs 0.1 credits and nothing more.',
     body: b.join('\n'),
   };
 }
