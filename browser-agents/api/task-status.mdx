@@ -17,19 +17,19 @@ curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID" \
 
 Batch `status` is `processing`, `completed`, or `failed`. Stop polling on either terminal state. A completed batch may contain unsuccessful tasks.
 
-<img className="block dark:hidden" src="/images/diagrams/browser-task-states-light.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS is metered at the floor or more, and every unsuccessful status keeps the floor and nothing more." />
-<img className="hidden dark:block" src="/images/diagrams/browser-task-states-dark.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS is metered at the floor or more, and every unsuccessful status keeps the floor and nothing more." />
+<img className="block dark:hidden" src="/images/diagrams/browser-task-states-light.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS, BLOCKED, CAPTCHA_FAILED, TIMEOUT, LOOP, and NO_TARGET are metered at the floor or more, and ERROR and EXHAUSTED keep the floor and nothing more." />
+<img className="hidden dark:block" src="/images/diagrams/browser-task-states-dark.svg" alt="Browser task states and charges: submission charges the per-task floor, PENDING and RUNNING add nothing, SUCCESS, BLOCKED, CAPTCHA_FAILED, TIMEOUT, LOOP, and NO_TARGET are metered at the floor or more, and ERROR and EXHAUSTED keep the floor and nothing more." />
 
 | Task status | Meaning | Charge |
 | --- | --- | --- |
 | `PENDING` | Waiting to run | The floor, charged at submission |
 | `RUNNING` | Execution has started | Nothing more; a retried attempt adds no charge |
 | `SUCCESS` | The task succeeded | The floor, plus any usage above it |
-| `BLOCKED` | The site blocked the task | The floor and nothing more |
-| `CAPTCHA_FAILED` | A challenge could not be completed | The floor and nothing more |
-| `TIMEOUT` | The execution budget expired | The floor and nothing more |
-| `LOOP` | Repeated actions prevented progress | The floor and nothing more |
-| `NO_TARGET` | The requested target or usable result was not found | The floor and nothing more |
+| `BLOCKED` | The site blocked the task | The floor, plus any usage above it |
+| `CAPTCHA_FAILED` | A challenge could not be completed | The floor, plus any usage above it |
+| `TIMEOUT` | The execution budget expired | The floor, plus any usage above it |
+| `LOOP` | Repeated actions prevented progress | The floor, plus any usage above it |
+| `NO_TARGET` | The requested target or usable result was not found | The floor, plus any usage above it |
 | `ERROR` | Another execution failure; read `error` | The floor and nothing more |
 | `EXHAUSTED` | The run stopped responding before it finished, and no retry could finish it in time | The floor and nothing more |
 
