@@ -24,7 +24,7 @@ Two more ways in: the **CLI**, `predev`, runs the coding agent in a local reposi
 | Any page URL plus `.md` | One page as Markdown, for example [agents.md](https://docs.pre.dev/agents.md) |
 | [REST OpenAPI](https://docs.pre.dev/api-reference/openapi.json) | Specifications, browser tasks, and credits |
 | [AI Gateway OpenAPI](https://docs.pre.dev/api-reference/ai-gateway.openapi.json) | Every `/v1` operation, with error examples |
-| [MCP tools](/mcp/tools) and [`/mcp/info`](https://api.pre.dev/mcp/info) | Tool inputs and results; the live list comes from `tools/list` |
+| [MCP tools](/mcp/tools) and [`/mcp/info`](https://api.pre.dev/mcp/info) | Tool inputs and results; the live list comes from `tools/list`. The local server, `@predotdev/mcp`, adds the [`chrome_*` tools](/browser-agents/local#tools) |
 | [skill.md](https://docs.pre.dev/skill.md) | A short capability summary. Install it with `npx skills add https://docs.pre.dev` |
 
 ## Get a key
@@ -131,14 +131,22 @@ Use model ids exactly as [`GET /v1/models`](/ai-gateway/api/models) lists them; 
 
 ## Recipe 3: generate a specification over MCP
 
-Add the MCP server with the key in a header. This works headless, with no browser sign-in:
+Add the pre.dev MCP server with the key in its environment. This works headless, with no browser sign-in, and needs Node.js 22 or later:
+
+```bash
+claude mcp add --scope user predev -e PREDEV_API_KEY="$PREDEV_API_KEY" -- npx -y @predotdev/mcp
+```
+
+The local server carries every pre.dev tool plus `chrome_*` tools for the user's own Chrome. Any MCP client that runs local servers connects the same way: command `npx`, arguments `-y @predotdev/mcp`, environment `PREDEV_API_KEY`. For an interactive install in every agent on a Mac, run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell the user what to click.
+
+Without Node.js, add the hosted server with the key in a header:
 
 ```bash
 claude mcp add --transport http predev https://api.pre.dev/mcp \
   --header "Authorization: Bearer $PREDEV_API_KEY"
 ```
 
-Any MCP client that can send a header connects the same way. Then call `fast_spec`:
+Then call `fast_spec`:
 
 ```json
 {

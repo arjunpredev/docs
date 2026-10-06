@@ -7,7 +7,7 @@ import McpUrl from "/snippets/mcp-url.mdx";
 
 <McpUrl />
 
-Connect once to use specification generation, project plans and browser automation. [Setup instructions](/architect-agent/mcp-setup) cover authentication and client configuration.
+Connect once to use specification generation, project plans and browser automation: run `npx -y @predotdev/mcp setup` to add the local server to every coding agent on your Mac, or connect the hosted server. [Setup instructions](/architect-agent/mcp-setup) cover both, with authentication and client configuration.
 
 Call **`tools/list`** after initialization for the live input schemas. `GET /mcp/info` is a human-readable service inventory; it is not the protocol's tool-discovery method.
 
@@ -27,7 +27,7 @@ Call **`tools/list`** after initialization for the live input schemas. `GET /mcp
 Generation and browser execution consume credits. Retrieval and listing do not launch new work. The server marks browser execution as potentially destructive because a task can click, submit forms, or change data on external sites.
 
 <Note>
-The `browser_agent` tools run tasks on pre.dev's cloud browsers. To let your coding agent drive the Chrome on your own computer, with your profiles and logins, use [Browser Agents Local](/browser-agents/local): a separate, open-source MCP server that runs on your machine and provides its own `chrome_*` tools.
+The local pre.dev MCP server (`npx -y @predotdev/mcp setup`) lists these tools, passed through on your key, alongside 17 `chrome_*` tools that drive the Chrome on your own computer, with your profiles and logins; see [Browser Agents Local](/browser-agents/local#tools). The `browser_agent` tools always run tasks on pre.dev's cloud browsers.
 </Note>
 
 ## fast_spec and deep_spec
@@ -236,4 +236,4 @@ Browser failures return `isError: true` when the tool call itself fails. Specifi
 | `browser_task_get` | `browser_agent_get` |
 | `browser_task_list` | `browser_agent_list` |
 
-The aliases remain registered for compatibility. Use the current names in new integrations. Credits, queue status, and live browser URL retrieval are available through REST rather than dedicated MCP tools.
+The aliases remain registered for compatibility; the local server keeps them callable but does not list them. Use the current names in new integrations. Credits, queue status, and live browser URL retrieval are available through REST rather than dedicated MCP tools.

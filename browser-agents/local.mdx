@@ -1,19 +1,21 @@
 ---
 title: "Browser Agents Local"
 sidebarTitle: "Local: your own Chrome"
-description: "Let Claude Code, Codex, Cursor, or any local MCP client use the Chrome you already have open: every profile, your logins, and your tabs. Free and open source."
+description: "Let Claude Code, Codex, Cursor, or any local MCP client use the Chrome you already have open: every profile, your logins, and your tabs. Part of the free, open-source pre.dev MCP server."
 ---
 
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
 import CreditValue from "/snippets/credit-value.mdx";
 
-Browser Agents Local is the local edition of Browser Agents: a free, open-source MCP server that lets the coding agent on your computer drive the Google Chrome you already have open. Your agent can open a tab in your work profile, read a dashboard you are signed in to, fill in a form, click through a flow, and screenshot the result. There is no second browser to set up and no site to sign in to again.
+Browser Agents Local is the local edition of Browser Agents: it lets the coding agent on your computer drive the Google Chrome you already have open. Your agent can open a tab in your work profile, read a dashboard you are signed in to, fill in a form, click through a flow, and screenshot the result. There is no second browser to set up and no site to sign in to again.
+
+It is part of the free, open-source pre.dev MCP server, `@predotdev/mcp`, which shows up as `predev` in your agent. The same server also carries pre.dev's cloud tools: cloud Browser Agents, specifications, and project plans. One command sets up both.
 
 It works with any MCP client that runs local servers: Claude Code, Codex, Cursor, Windsurf, VS Code (Copilot agent mode), Gemini CLI, OpenCode, Claude Desktop, and others. Run as many agents as you like at the same time. They share one connection to Chrome, so Chrome asks you to allow it once each time Chrome starts.
 
 <CardGroup cols={2}>
-  <Card title="Source on GitHub" icon="github" href="https://github.com/predotdev/chrome-mcp">
-    `predotdev/chrome-mcp`, MIT licensed.
+  <Card title="Source on GitHub" icon="github" href="https://github.com/predotdev/mcp">
+    `predotdev/mcp`, MIT licensed. On npm as `@predotdev/mcp`.
   </Card>
   <Card title="Cloud Browser Agents" icon="cloud" href="/browser-agents/overview">
     Run tasks on pre.dev's browsers through REST, the SDKs, or the hosted MCP server.
@@ -25,30 +27,30 @@ It works with any MCP client that runs local servers: Claude Code, Codex, Cursor
 | | Cloud | Local |
 | --- | --- | --- |
 | Browser | pre.dev's browsers | Your own Chrome, every profile |
-| How it runs | You send a task and a URL by REST, the SDKs, or the hosted MCP tool, and get structured data back | Your coding agent drives Chrome step by step with MCP tools |
+| How it runs | You send a task and a URL by REST, the SDKs, or the `browser_agent` MCP tool, and get structured data back | Your coding agent drives Chrome step by step with the `chrome_*` tools |
 | Sites | Public pages; no persistent login profiles | Accounts you are already signed in to: dashboards, internal tools, anything behind a login |
 | Scale | Many tasks in parallel | One Chrome on your computer, shared by all your agents |
 | Setup | None | One command, `setup`, for every agent on your Mac |
 | Credits | Per task | Only for plain-words actions; everything else is free |
 
-Use Cloud to run browser work from your application or at volume. Use Local when your coding agent needs the Chrome you already use.
+Use Cloud to run browser work from your application or at volume. Use Local when your coding agent needs the Chrome you already use. With the pre.dev MCP server, your agent has both and picks per task.
 
 ## Quick start
 
 You need macOS, Google Chrome, and Node.js 22 or later (check with `node --version`). Run one command:
 
 ```bash
-npx -y github:predotdev/chrome-mcp setup
+npx -y @predotdev/mcp setup
 ```
 
 It walks you through everything:
 
 <Steps>
   <Step title="Sign in to pre.dev">
-    Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve **Sign in to pre.dev Browser Agents Local**. Setup saves your workspace API key for every agent, so there is nothing to copy.
+    Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve. Setup saves your workspace API key for every agent, so there is nothing to copy.
   </Step>
   <Step title="Add it to every coding agent on your Mac">
-    Setup installs a stable copy and registers it, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, and Claude Desktop. Codex gets a 120-second tool timeout. If a different server named `chrome` already exists, setup leaves it alone and registers this one as `predev-chrome`. It backs up each JSON config once, as `<file>.bak-chrome-mcp`.
+    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, and Claude Desktop. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
   </Step>
   <Step title="Connect to Chrome">
     The first time, setup asks you to turn on remote debugging at `chrome://inspect/#remote-debugging` and copies the address for you. Then Chrome asks **Allow remote debugging?**: click **Allow**. Setup lists your Chrome profiles once it is connected.
@@ -66,17 +68,17 @@ It walks you through everything:
 **Or let your agent do it.** Paste this into Claude Code or any coding agent:
 
 ```text
-Run `npx -y github:predotdev/chrome-mcp setup` with a 10 minute timeout and tell me what to click.
+Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to click.
 ```
 </Note>
 
-Setup is safe to run again, and running it again updates to the latest version. Chrome asks **Allow remote debugging?** once each time it starts, and again after an update.
+Setup is safe to run again, and running it again updates to the newest version. Chrome asks **Allow remote debugging?** once each time it starts, and again after an update.
 
 ## Manual setup
 
-`setup` does this for you. To add the server by hand, for example to an agent setup does not know, turn on remote debugging at `chrome://inspect/#remote-debugging` once, then give your agent the command `npx -y github:predotdev/chrome-mcp`.
+`setup` does this for you. To add the server by hand, for example to an agent setup does not know, turn on remote debugging at `chrome://inspect/#remote-debugging` once, then give your agent a server named `predev` with the command `npx -y @predotdev/mcp`.
 
-A key is needed only for plain-words actions. Sign in once with `npx -y github:predotdev/chrome-mcp login` and leave the key out of the config, or put your workspace API key in the agent's `PREDEV_API_KEY`.
+The key is optional: without one, the server lists only the Chrome tools. For plain-words actions and the cloud tools, sign in once with `npx -y @predotdev/mcp login` and leave the key out of the config, or put your workspace API key in the agent's `PREDEV_API_KEY`.
 
 <ApiKeyLocation />
 
@@ -85,22 +87,22 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
 <Tabs>
   <Tab title="Claude Code">
     ```bash
-    claude mcp add --scope user chrome -e PREDEV_API_KEY=your_key -- npx -y github:predotdev/chrome-mcp
+    claude mcp add --scope user predev -e PREDEV_API_KEY=your_key -- npx -y @predotdev/mcp
     ```
   </Tab>
   <Tab title="Codex">
     ```bash
-    codex mcp add chrome --env PREDEV_API_KEY=your_key -- npx -y github:predotdev/chrome-mcp
+    codex mcp add predev --env PREDEV_API_KEY=your_key -- npx -y @predotdev/mcp
     ```
 
-    Or add this to `~/.codex/config.toml`. The longer timeout gives slow pages time to load:
+    Or add this to `~/.codex/config.toml`. The longer timeout gives specs and cloud runs time to finish:
 
     ```toml
-    [mcp_servers.chrome]
+    [mcp_servers.predev]
     command = "npx"
-    args = ["-y", "github:predotdev/chrome-mcp"]
+    args = ["-y", "@predotdev/mcp"]
     env = { PREDEV_API_KEY = "your_key" }
-    tool_timeout_sec = 120
+    tool_timeout_sec = 900
     ```
   </Tab>
   <Tab title="Cursor">
@@ -109,9 +111,9 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     ```json
     {
       "mcpServers": {
-        "chrome": {
+        "predev": {
           "command": "npx",
-          "args": ["-y", "github:predotdev/chrome-mcp"],
+          "args": ["-y", "@predotdev/mcp"],
           "env": { "PREDEV_API_KEY": "your_key" }
         }
       }
@@ -124,9 +126,9 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     ```json
     {
       "mcpServers": {
-        "chrome": {
+        "predev": {
           "command": "npx",
-          "args": ["-y", "github:predotdev/chrome-mcp"],
+          "args": ["-y", "@predotdev/mcp"],
           "env": { "PREDEV_API_KEY": "your_key" }
         }
       }
@@ -139,10 +141,10 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     ```json
     {
       "servers": {
-        "chrome": {
+        "predev": {
           "type": "stdio",
           "command": "npx",
-          "args": ["-y", "github:predotdev/chrome-mcp"],
+          "args": ["-y", "@predotdev/mcp"],
           "env": { "PREDEV_API_KEY": "your_key" }
         }
       }
@@ -155,9 +157,9 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     ```json
     {
       "mcpServers": {
-        "chrome": {
+        "predev": {
           "command": "npx",
-          "args": ["-y", "github:predotdev/chrome-mcp"],
+          "args": ["-y", "@predotdev/mcp"],
           "env": { "PREDEV_API_KEY": "your_key" }
         }
       }
@@ -170,9 +172,9 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     ```json
     {
       "mcp": {
-        "chrome": {
+        "predev": {
           "type": "local",
-          "command": ["npx", "-y", "github:predotdev/chrome-mcp"],
+          "command": ["npx", "-y", "@predotdev/mcp"],
           "environment": { "PREDEV_API_KEY": "your_key" },
           "enabled": true
         }
@@ -184,19 +186,19 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     Desktop apps do not load your shell's `PATH`, so they need full paths. `setup` registers them for you. By hand, install once, then print the two paths you need:
 
     ```bash
-    npm install -g github:predotdev/chrome-mcp
+    npm install -g @predotdev/mcp
     which node
-    echo "$(npm root -g)/@predotdev/chrome-mcp/src/bridge.mjs"
+    echo "$(npm root -g)/@predotdev/mcp/src/bridge.mjs"
     ```
 
-    Add the `chrome` entry under `mcpServers` in `~/Library/Application Support/Claude/claude_desktop_config.json`. Set `command` to the `which node` output and the one argument to the second path, then restart Claude Desktop:
+    Add the `predev` entry under `mcpServers` in `~/Library/Application Support/Claude/claude_desktop_config.json`. Set `command` to the `which node` output and the one argument to the second path, then restart Claude Desktop:
 
     ```json
     {
       "mcpServers": {
-        "chrome": {
+        "predev": {
           "command": "/opt/homebrew/bin/node",
-          "args": ["/opt/homebrew/lib/node_modules/@predotdev/chrome-mcp/src/bridge.mjs"],
+          "args": ["/opt/homebrew/lib/node_modules/@predotdev/mcp/src/bridge.mjs"],
           "env": { "PREDEV_API_KEY": "your_key" }
         }
       }
@@ -206,7 +208,7 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
     The same setup works for any app that cannot find `npx` or `node`.
   </Tab>
   <Tab title="Other clients">
-    Add a local (stdio) server with command `npx` and arguments `-y github:predotdev/chrome-mcp`. Add the environment variable `PREDEV_API_KEY` unless you signed in with `login`. If the client cannot find `npx`, run `setup`, or use the full-path setup from the Claude Desktop tab.
+    Add a local (stdio) server named `predev` with command `npx` and arguments `-y @predotdev/mcp`. Add the environment variable `PREDEV_API_KEY` unless you signed in with `login`. If the client cannot find `npx`, run `setup`, or use the full-path setup from the Claude Desktop tab.
   </Tab>
 </Tabs>
 
@@ -215,18 +217,18 @@ Restart your agent. The first time it uses Chrome, Chrome shows **Allow remote d
 ## Check your setup
 
 ```bash
-npx -y github:predotdev/chrome-mcp check
+npx -y @predotdev/mcp check
 ```
 
 The check confirms remote debugging is on, connects to Chrome, lists your profiles, and checks your key: the one saved by `login`, or `PREDEV_API_KEY` when it is set. It ends by naming anything left to fix.
 
 ## Commands
 
-Run each as `npx -y github:predotdev/chrome-mcp <command>`.
+Run each as `npx -y @predotdev/mcp <command>`.
 
 | Command | What it does |
 | --- | --- |
-| `setup` | Sign in, add the server to every coding agent on your Mac, and connect to Chrome. Run it again to update |
+| `setup` | Sign in, add the server to every coding agent on your Mac, and connect to Chrome. Run it again to update to the newest version |
 | `check` | Check your setup, list your Chrome profiles, and check your key |
 | `login` | Sign in to pre.dev again. Agents use the new key on their next call, with no restart |
 | `logout` | Forget the saved key |
@@ -234,6 +236,8 @@ Run each as `npx -y github:predotdev/chrome-mcp <command>`.
 | `uninstall` | Remove the server from every agent setup added it to, stop it, and delete its files and saved key |
 
 ## Tools
+
+The Chrome tools run on your computer:
 
 | Tool | What it does |
 | --- | --- |
@@ -254,6 +258,8 @@ Run each as `npx -y github:predotdev/chrome-mcp <command>`.
 | `chrome_show` | Bring a tab to the front so you can watch or take over |
 | `chrome_close` | Close a tab |
 | `chrome_act` | Click or type into an element described in plain words, in one call; needs you to be signed in |
+
+When you are signed in, the same server also lists pre.dev's cloud tools, passed through on your key: `browser_agent`, `browser_agent_get`, `browser_agent_list`, `fast_spec`, `deep_spec`, `get_spec`, `list_specs`, and `get_plan`. They work as on the hosted server, with the same credits and [plan access](/coding-agent/plans-and-credits#api-and-mcp-access); see the [MCP tool reference](/mcp/tools).
 
 A snapshot labels every tab with the profile it belongs to, so the agent always knows which account it is acting as:
 
@@ -276,7 +282,7 @@ Two tools use your pre.dev account to understand the page, through the key saved
 
 ### Credits
 
-Plain-words actions are the only part of Browser Agents Local that calls pre.dev. Each one costs a small fraction of a credit. Free workspaces get 20 credits of plain-words actions, separate from the AI Gateway trial, which covers more than a thousand actions. When they run out, your agent tells you and offers to open the billing page in your Chrome so you can subscribe; every other tool keeps working. They share the [rate limits](/coding-agent/plans-and-credits#limits) of your other API calls. Every other tool runs on your computer, never calls pre.dev, and is free.
+Among the Chrome tools, plain-words actions are the only ones that call pre.dev. Each one costs a small fraction of a credit. Free workspaces get 20 credits of plain-words actions, separate from the AI Gateway trial, which covers more than a thousand actions. When they run out, your agent tells you and offers to open the billing page in your Chrome so you can subscribe; every other tool keeps working. They share the [rate limits](/coding-agent/plans-and-credits#limits) of your other API calls. Every other Chrome tool runs on your computer, never calls pre.dev, and is free.
 
 <CreditValue />
 
@@ -284,7 +290,7 @@ Plain-words actions are the only part of Browser Agents Local that calls pre.dev
 
 ## Configuration
 
-`setup` and `login` save your workspace API key in `~/.predev/chrome-mcp/credentials.json`, a file only you can read, and every agent uses it. It is the same key you use for the API, the AI Gateway, and cloud Browser Agents. The server reads the file on every call, so signing in again needs no restart.
+`setup` and `login` save your workspace API key in `~/.predev/mcp/credentials.json`, a file only you can read, and every agent uses it. It is the same key you use for the API, the AI Gateway, and cloud Browser Agents. The server reads the file on every call, so signing in again needs no restart.
 
 To change that for one agent, set these in the `env` of its MCP entry:
 
@@ -294,7 +300,7 @@ To change that for one agent, set these in the `env` of its MCP entry:
 | `PREDEV_API_URL` | The pre.dev API to call. Default `https://api.pre.dev` |
 | `CHROME_MCP_USER_DATA_DIR` | Use a different Chrome data folder, such as Chrome Beta or a Chrome you started yourself |
 
-State, logs, the stable copy setup installs (`~/.predev/chrome-mcp/app`), and the saved key are kept in `~/.predev/chrome-mcp/`.
+State, logs, the stable copy setup installs (`~/.predev/mcp/app`), and the saved key are kept in `~/.predev/mcp/`.
 
 To turn access off, run `stop` or turn remote debugging off at `chrome://inspect/#remote-debugging`. To remove everything, run `uninstall`.
 
@@ -314,16 +320,17 @@ Browser Agents Local drives your real, signed-in Chrome. Read this before you tu
 | `Chrome remote debugging is off` | Open `chrome://inspect/#remote-debugging` in Chrome and turn it on |
 | Chrome is asking **Allow remote debugging?** | Click **Allow** in Chrome, then ask your agent to try again |
 | Chrome asks to allow again | Expected after Chrome restarts or after the server updates |
-| `Plain-words actions need a pre.dev account` | Run `npx -y github:predotdev/chrome-mcp login`. No restart needed |
-| `pre.dev rejected the saved key`, or a plain-words action returns `401` | Run `npx -y github:predotdev/chrome-mcp login` again. If the agent sets `PREDEV_API_KEY`, update it there too, since it overrides the saved key |
+| `Plain-words actions need a pre.dev account`, or the cloud tools are missing | Run `npx -y @predotdev/mcp login`. No restart needed |
+| `pre.dev rejected the saved key`, or a plain-words action returns `401` | Run `npx -y @predotdev/mcp login` again. If the agent sets `PREDEV_API_KEY`, update it there too, since it overrides the saved key |
 | The agent cannot start the server, or `npx` or `node` is not found | Run `setup`: it registers full paths that work in desktop apps |
-| You already have a different server named `chrome` | Setup leaves it alone and registers this one as `predev-chrome` |
-| Codex says a tool call timed out | Run `setup`, which sets `tool_timeout_sec = 120`, or set it in `~/.codex/config.toml` |
+| Another server already uses the name `predev` | Setup leaves it alone and registers this one as `pre-dev` |
+| You had the hosted pre.dev MCP or an older Browser Agents Local install (`chrome` or `predev-chrome`) | Setup replaced it. This server carries all of its tools |
+| Codex says a tool call timed out | Run `setup`, which sets `tool_timeout_sec = 900`, or set it in `~/.codex/config.toml` |
 | A plain-words action returns `402` with `subscription_required` | The free plan's 20 credits of plain-words actions are used up. Subscribe with the link in the error; your agent can open it in your Chrome |
 | A plain-words action returns `402` with `insufficient_credits` | Add credits with the top-up link in the error |
 | A plain-words action returns `429`, rate limited or busy | Wait a few seconds and retry, or use `chrome_snapshot` refs with `chrome_click` and `chrome_type` |
-| Anything else | Run the [setup check](#check-your-setup) and read `~/.predev/chrome-mcp/chrome-mcp.log` |
+| Anything else | Run the [setup check](#check-your-setup) and read `~/.predev/mcp/predev-mcp.log` |
 
 ## Platform support
 
-macOS is supported and tested. Linux and Windows are not tested yet: the server looks for Chrome's data in the standard places, and on those systems a profile needs an open Chrome window before the agent can use it. Reports and pull requests are welcome on [GitHub](https://github.com/predotdev/chrome-mcp).
+macOS is supported and tested. Linux and Windows are not tested yet: the server looks for Chrome's data in the standard places, and on those systems a profile needs an open Chrome window before the agent can use it. Reports and pull requests are welcome on [GitHub](https://github.com/predotdev/mcp).
