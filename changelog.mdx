@@ -16,6 +16,12 @@ to get notified on every SDK bump.
 - [Spec status](/architect-agent/api/spec-status) and `get_spec` carry the plan as `plan` once a spec is completed.
 - Reading a plan uses no credits.
 
+### Progress counts features, and "works" comes from checks
+
+- Progress now counts the features of your plan (for example **3 of 4 built**), and the **App map** shows each feature's status, from **Planned, not built** to **Works, checked … ago**. See [How progress is counted](/coding-agent/building/progress-tracking#how-progress-is-counted).
+- A card after each run shows what changed, whether the app runs and builds, and which features its checks confirmed.
+- **Build next** picks the next feature from the plan, and work a sprint builds stays **Built, not checked yet** until a check confirms it.
+
 ## 2026-09-27
 
 ### CLI: sign in with an API key, and run one task with `predev run`
