@@ -853,6 +853,342 @@
         }
       }
     },
+    "/get-plan": {
+      "get": {
+        "operationId": "getPlan",
+        "tags": [
+          "Specifications"
+        ],
+        "summary": "Get a project's plan",
+        "description": "The verified plan of a project you own, by specId or projectId: what it is for, each feature's status from pre.dev's checks, progress, Ready to launch, and where screens, API routes and stored data live in the code. Pass exactly one of specId or projectId.",
+        "parameters": [
+          {
+            "name": "specId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "A specId from fast-spec or deep-spec.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          },
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "A pre.dev project ID.",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "markdown"
+              ],
+              "default": "json",
+              "description": "markdown returns the Markdown alone as text/markdown."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The plan, or plan null while the project has none yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPlanResponse"
+                },
+                "example": {
+                  "projectId": "507f191e810c19729de860ea",
+                  "specId": null,
+                  "plan": {
+                    "projectId": "507f191e810c19729de860ea",
+                    "name": "Recipe Box",
+                    "computedAt": "2026-10-02T14:00:00.000Z",
+                    "codeVersion": {
+                      "tree": "a36fd496594c6417aa3ab8c6e534f2d7537d4a2e",
+                      "short": "a36fd49"
+                    },
+                    "intent": {
+                      "text": "Recipe Box is for people who keep a small collection of recipes. They can browse recipes, add new ones, and mark a recipe as cooked.",
+                      "proposedByPredev": true,
+                      "removedSince": []
+                    },
+                    "progress": {
+                      "basis": "features",
+                      "built": 2,
+                      "provenWorking": 1,
+                      "total": 3,
+                      "left": 1,
+                      "percent": 67,
+                      "proposed": 0
+                    },
+                    "features": [
+                      {
+                        "id": "feat_1a2b3c4d5e6f7a8b",
+                        "name": "Browse recipes",
+                        "status": "works",
+                        "statusText": "Works, checked 2 h ago",
+                        "scope": "confirmed",
+                        "addedByAgent": false,
+                        "stories": {
+                          "done": 2,
+                          "total": 2
+                        },
+                        "counted": true,
+                        "removedParts": []
+                      },
+                      {
+                        "id": "feat_2b3c4d5e6f7a8b9c",
+                        "name": "Add a recipe",
+                        "status": "built_not_checked",
+                        "statusText": "Built, not checked yet",
+                        "scope": "confirmed",
+                        "addedByAgent": false,
+                        "stories": {
+                          "done": 1,
+                          "total": 1
+                        },
+                        "counted": true,
+                        "removedParts": []
+                      },
+                      {
+                        "id": "feat_3c4d5e6f7a8b9c0d",
+                        "name": "Mark a recipe as cooked",
+                        "status": "planned",
+                        "statusText": "Planned, not built",
+                        "scope": "confirmed",
+                        "addedByAgent": false,
+                        "stories": {
+                          "done": 0,
+                          "total": 1
+                        },
+                        "counted": true,
+                        "removedParts": []
+                      }
+                    ],
+                    "readyToLaunch": {
+                      "ready": false,
+                      "items": [
+                        {
+                          "id": "features_built",
+                          "label": "Everything you asked for is built",
+                          "state": "needs_fix",
+                          "detail": "1 of 3 features is not built yet: Mark a recipe as cooked",
+                          "fix": null
+                        },
+                        {
+                          "id": "data_persisted",
+                          "label": "Data is saved beyond one browser",
+                          "state": "ok",
+                          "detail": "Saved in a SQLite file on the server",
+                          "fix": null
+                        },
+                        {
+                          "id": "live_current",
+                          "label": "Not published yet",
+                          "state": "needs_fix",
+                          "detail": null,
+                          "fix": {
+                            "action": "Publish",
+                            "how": "Publish the project from its page on pre.dev."
+                          }
+                        }
+                      ]
+                    },
+                    "appMap": {
+                      "codeVersion": "a36fd49",
+                      "mappedAt": "2026-10-02T13:59:00.000Z",
+                      "screens": {
+                        "count": 2,
+                        "items": [
+                          {
+                            "name": "Home",
+                            "path": "/",
+                            "anchor": "server/index.js:22"
+                          },
+                          {
+                            "name": "New Recipe",
+                            "path": "/new",
+                            "anchor": "server/index.js:34"
+                          }
+                        ]
+                      },
+                      "endpoints": {
+                        "count": 1,
+                        "items": [
+                          {
+                            "name": "POST /new",
+                            "anchor": "server/index.js:38",
+                            "writes": true
+                          }
+                        ]
+                      },
+                      "storage": {
+                        "count": 1,
+                        "items": [
+                          {
+                            "name": "Recipes",
+                            "kind": "table (SQL)",
+                            "where": "in the database",
+                            "anchor": "server/db.js"
+                          }
+                        ]
+                      }
+                    },
+                    "lastRun": {
+                      "runId": "6abfb8ac0e1670226a1ecd9b",
+                      "kind": "chat",
+                      "endedAt": "2026-10-02T13:56:00.000Z",
+                      "codeVersion": {
+                        "before": "e82c333",
+                        "after": "a36fd49"
+                      },
+                      "filesChanged": {
+                        "count": 1,
+                        "paths": [
+                          "server/views.js"
+                        ]
+                      },
+                      "appMap": {
+                        "added": [
+                          {
+                            "kind": "screen",
+                            "name": "/new"
+                          }
+                        ],
+                        "removed": [],
+                        "changed": []
+                      }
+                    }
+                  },
+                  "markdown": "# Plan for Recipe Box\n\nComputed 2026-10-02 14:00 UTC at code version a36fd49.\n\n## What it is for\n\nRecipe Box is for people who keep a small collection of recipes. ...\n\n## Progress\n\n2 of 3 features built (67%), 1 proven working by a check, 1 left.\n..."
+                }
+              },
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "# Plan for Recipe Box\n\nComputed 2026-10-02 14:00 UTC at code version a36fd49.\n\n## What it is for\n\nRecipe Box is for people who keep a small collection of recipes. ...\n\n## Progress\n\n2 of 3 features built (67%), 1 proven working by a check, 1 left.\n..."
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "one_id": {
+                    "summary": "Neither or both IDs",
+                    "value": {
+                      "error": "Invalid request",
+                      "message": "Pass exactly one of specId (from fast-spec or deep-spec) or projectId"
+                    }
+                  },
+                  "invalid_id": {
+                    "summary": "Malformed ID",
+                    "value": {
+                      "error": "Invalid ID",
+                      "message": "Please provide a valid specId or projectId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or ineligible authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_key": {
+                    "summary": "No key sent",
+                    "value": {
+                      "error": "Missing API key",
+                      "message": "Please provide an API key via Authorization: Bearer <token> header or x-api-key header"
+                    }
+                  },
+                  "invalid_key": {
+                    "summary": "Unknown key",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "Invalid API key"
+                    }
+                  },
+                  "no_subscription": {
+                    "summary": "Personal key without a paid plan",
+                    "value": {
+                      "error": "Authentication failed",
+                      "message": "An active subscription is required for this endpoint"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not your project, no project yet, or plans are turned off.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "not_found": {
+                    "summary": "Not your project or spec",
+                    "value": {
+                      "error": "Project not found",
+                      "message": "The project does not exist or you do not have access to it"
+                    }
+                  },
+                  "no_project": {
+                    "summary": "The spec has no project yet",
+                    "value": {
+                      "error": "No project yet",
+                      "message": "The spec has no project yet. Check /spec-status and try again once it is processing."
+                    }
+                  },
+                  "not_available": {
+                    "summary": "Plans are turned off",
+                    "value": {
+                      "error": "Not available",
+                      "message": "Plans are turned off right now."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Failed to fetch plan",
+                  "message": "Retry the request."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/credits-balance": {
       "get": {
         "operationId": "getCreditsBalance",
@@ -2206,6 +2542,10 @@
                 "type": "null"
               }
             ]
+          },
+          "plan": {
+            "$ref": "#/components/schemas/ProjectPlan",
+            "description": "The project's verified plan, once the spec is completed and its project has something planned or built. Absent otherwise."
           }
         },
         "description": "Full specification/status record. Fields may be absent or null until available. Terminal status is completed or failed. executionTime is milliseconds."
@@ -3659,6 +3999,715 @@
             "type": "string",
             "description": "Credential-bearing WebSocket URL. Keep private and use only for the requested batch.",
             "format": "uri"
+          }
+        }
+      },
+      "ProjectPlanFeature": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "statusText",
+          "scope",
+          "addedByAgent",
+          "stories",
+          "counted",
+          "removedParts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "The feature in the owner's words."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "works",
+              "built_not_checked",
+              "changed_since_check",
+              "needs_a_look",
+              "not_working",
+              "in_progress",
+              "planned",
+              "out_of_scope",
+              "removed"
+            ],
+            "description": "From pre.dev's checks. works: a check of this feature passed at the current code. built_not_checked: the code is there, nothing has proven it. changed_since_check: its files changed after its check passed. needs_a_look: its check failed the last time it ran. not_working: its check keeps failing. in_progress, planned: not built yet. out_of_scope: set outside the project's scope, not counted. removed: taken out because the owner asked, not counted."
+          },
+          "statusText": {
+            "type": "string",
+            "description": "The words pre.dev shows, for example \"Works, checked 2 h ago\"."
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "proposed",
+              "out_of_scope"
+            ],
+            "description": "proposed: suggested by pre.dev and not counted until the owner confirms it."
+          },
+          "addedByAgent": {
+            "type": "boolean"
+          },
+          "stories": {
+            "type": "object",
+            "required": [
+              "done",
+              "total"
+            ],
+            "properties": {
+              "done": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            }
+          },
+          "counted": {
+            "type": "boolean",
+            "description": "Counted in progress."
+          },
+          "removedParts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Parts the owner asked to take out of this feature."
+          },
+          "partOf": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "description": "Set on work added to a feature that was already built: the feature it belongs to. The addition counts as its own item, listed right after that feature, until it is built, then folds back into the feature. null on a feature."
+          }
+        }
+      },
+      "ProjectPlanLaunchItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "state",
+          "detail",
+          "fix"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "For example features_built, env_keys, data_persisted, sign_in, sample_data, publish_build, live_current, live_saves."
+          },
+          "label": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "needs_fix",
+              "unknown",
+              "not_needed"
+            ]
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fix": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "action",
+                  "how"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string"
+                  },
+                  "how": {
+                    "type": "string",
+                    "description": "What to do in plain words: where to click on pre.dev, or what to ask a coding agent to do."
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ProjectPlan": {
+        "type": "object",
+        "description": "A project's verified plan: what it is for, each feature's status from pre.dev's checks, progress, Ready to launch, where things live in the code, and the last change.",
+        "required": [
+          "projectId",
+          "name",
+          "computedAt",
+          "codeVersion",
+          "intent",
+          "progress",
+          "features",
+          "readyToLaunch",
+          "appMap",
+          "lastRun"
+        ],
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "computedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "codeVersion": {
+            "type": "object",
+            "required": [
+              "tree",
+              "short"
+            ],
+            "description": "The code version the plan was computed at; null before any code exists.",
+            "properties": {
+              "tree": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "short": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "intent": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "text",
+                  "proposedByPredev",
+                  "removedSince"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "What the app is for, in one paragraph."
+                  },
+                  "proposedByPredev": {
+                    "type": "boolean",
+                    "description": "Proposed by pre.dev from the request and not edited by the owner yet."
+                  },
+                  "removedSince": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Taken out since, as the owner asked."
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "progress": {
+            "type": "object",
+            "required": [
+              "basis",
+              "built",
+              "provenWorking",
+              "total",
+              "left",
+              "percent",
+              "proposed"
+            ],
+            "properties": {
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "features",
+                  "stories",
+                  "none"
+                ]
+              },
+              "built": {
+                "type": "integer"
+              },
+              "provenWorking": {
+                "type": "integer",
+                "description": "Built and proven working by a check at the current code."
+              },
+              "total": {
+                "type": "integer"
+              },
+              "left": {
+                "type": "integer"
+              },
+              "percent": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "proposed": {
+                "type": "integer",
+                "description": "Suggested features, not counted until confirmed."
+              }
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectPlanFeature"
+            }
+          },
+          "readyToLaunch": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "ready",
+                  "items"
+                ],
+                "properties": {
+                  "ready": {
+                    "type": "boolean"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ProjectPlanLaunchItem"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "appMap": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "codeVersion",
+                  "mappedAt",
+                  "screens",
+                  "endpoints",
+                  "storage"
+                ],
+                "description": "Where things live in the code. Each list holds at most 25 items; count is the full number.",
+                "properties": {
+                  "codeVersion": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mappedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "screens": {
+                    "type": "object",
+                    "required": [
+                      "count",
+                      "items"
+                    ],
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "anchor",
+                            "path"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "anchor": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "description": "File and line in the code, for example server/routes.js:42, or the file alone."
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "path": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "endpoints": {
+                    "type": "object",
+                    "required": [
+                      "count",
+                      "items"
+                    ],
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "anchor",
+                            "writes"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "anchor": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "description": "File and line in the code, for example server/routes.js:42, or the file alone."
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "writes": {
+                              "type": "boolean",
+                              "description": "The route changes stored data."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "storage": {
+                    "type": "object",
+                    "required": [
+                      "count",
+                      "items"
+                    ],
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "anchor",
+                            "kind",
+                            "where"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "anchor": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "description": "File and line in the code, for example server/routes.js:42, or the file alone."
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "kind": {
+                              "type": "string"
+                            },
+                            "where": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lastRun": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "runId",
+                  "kind",
+                  "endedAt",
+                  "codeVersion",
+                  "filesChanged",
+                  "appMap"
+                ],
+                "description": "The last run that changed the code.",
+                "properties": {
+                  "runId": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "description": "chat (an ask) or sprint (a build of planned work)."
+                  },
+                  "endedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "codeVersion": {
+                    "type": "object",
+                    "required": [
+                      "before",
+                      "after"
+                    ],
+                    "properties": {
+                      "before": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "after": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "filesChanged": {
+                    "type": "object",
+                    "required": [
+                      "count",
+                      "paths"
+                    ],
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "paths": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "appMap": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "added",
+                          "removed",
+                          "changed"
+                        ],
+                        "properties": {
+                          "added": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "kind",
+                                "name"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "removed": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "kind",
+                                "name"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "changed": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "kind",
+                                "name"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "GetPlanResponse": {
+        "type": "object",
+        "required": [
+          "projectId",
+          "specId",
+          "plan",
+          "markdown"
+        ],
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "specId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{24}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "markdown": {
+            "type": "string",
+            "description": "The plan as Markdown for a coding agent."
           }
         }
       }

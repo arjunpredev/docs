@@ -24,6 +24,7 @@ Read [authentication](/api-reference/authentication) and [errors](/api-reference
 | POST | `/fast-spec` | [Generate a Fast Spec](/architect-agent/api/fast-spec) |
 | POST | `/deep-spec` | [Generate a Deep Spec](/architect-agent/api/deep-spec) |
 | GET | `/spec-status/{specId}` | [Status and full artifacts](/architect-agent/api/spec-status) |
+| GET | `/get-plan` | [A project's verified plan](/architect-agent/api/get-plan) |
 | GET | `/list-specs` | [List specifications](/architect-agent/api/list-specs) |
 | GET | `/find-specs` | [Search specifications](/architect-agent/api/find-specs) |
 | GET | `/credits-balance` | [Credit balance](/architect-agent/api/credits-balance) |
@@ -61,6 +62,6 @@ Specifications, browser runs, and video generation run as jobs. All three follow
 
 The [Node SDK](/architect-agent/sdks/node) and [Python SDK](/architect-agent/sdks/python) wrap specification and browser operations. Use direct HTTP for endpoints or headers without a wrapper, including live browser URLs, existing-run SSE, and browser idempotency keys.
 
-The [MCP server](/architect-agent/mcp-setup) exposes seven primary tools and three deprecated browser aliases. MCP uses JSON-RPC over HTTP; its parameter names and result envelopes differ from REST. See the [tool reference](/mcp/tools).
+The [MCP server](/architect-agent/mcp-setup) exposes eight primary tools and three deprecated browser aliases. MCP uses JSON-RPC over HTTP; its parameter names and result envelopes differ from REST. See the [tool reference](/mcp/tools).
 
 Two OpenAPI 3.1 files describe the public API, for code generation or agent ingestion: [openapi.json](/api-reference/openapi.json) covers specifications, browser tasks, and the credit balance, and [ai-gateway.openapi.json](/api-reference/ai-gateway.openapi.json) covers every AI Gateway `/v1` operation.

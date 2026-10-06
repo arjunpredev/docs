@@ -30,6 +30,10 @@ Full results can include both specification variants as JSON and Markdown, downl
 
 A successful status lookup is HTTP `200` even when the generation status is `failed`.
 
+## The project's plan
+
+Once a spec is `completed`, the response can also carry `plan`: the project's verified plan, with what the app is for, each feature's status from pre.dev's checks, progress, Ready to launch, and where things live in the code. It is the same object [get a project's plan](/architect-agent/api/get-plan) returns. `plan` is absent before the spec completes and while its project has nothing planned or built.
+
 ## Errors
 
 | Status | When |

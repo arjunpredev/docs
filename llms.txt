@@ -69,6 +69,7 @@
 - [Generate a Fast Spec](https://docs.pre.dev/architect-agent/api/fast-spec.md): POST /fast-spec: architecture, milestones, user stories, and acceptance criteria.
 - [Generate a Deep Spec](https://docs.pre.dev/architect-agent/api/deep-spec.md): POST /deep-spec: a detailed specification with subtasks.
 - [Get specification status](https://docs.pre.dev/architect-agent/api/spec-status.md): Progress, failures, or the finished specification.
+- [Get a project's plan](https://docs.pre.dev/architect-agent/api/get-plan.md): GET /get-plan: what is built, what works, what is left, and where it lives in the code.
 - [List specifications](https://docs.pre.dev/architect-agent/api/list-specs.md): Specification summaries with filters and pagination.
 - [Search specifications](https://docs.pre.dev/architect-agent/api/find-specs.md): Search specification inputs.
 - [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP.
@@ -115,7 +116,7 @@
 - [Node.js SDK](https://docs.pre.dev/architect-agent/sdks/node.md): The predev-api TypeScript client.
 - [Python SDK](https://docs.pre.dev/architect-agent/sdks/python.md): The predev-api Python package.
 - [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): pre.dev's spec and browser tools in Claude Code, Cursor, or another MCP client.
-- [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The seven tools, exact input names, results, and deprecated aliases.
+- [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The eight tools, exact input names, results, and deprecated aliases.
 
 ## Labs
 
