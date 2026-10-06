@@ -267,4 +267,4 @@ The AI Gateway also refuses more than 30 failed key attempts a minute from one I
 
 ## What the API does not do
 
-The public REST API has no general coding-session, deployment, cancellation, webhook-registration, or recurring-schedule endpoint. For coding tasks, use [`predev run`](/cli/overview#run-one-task-without-the-app) or the [Coding Agent](/coding-agent/overview), and schedule API calls in your own application when needed. Browser tasks do not expose a reusable login-session or cookie-profile API.
+The public REST API has no general coding-session, deployment, cancellation, webhook-registration, or recurring-schedule endpoint. For coding tasks, use [`predev run`](/cli/overview#run-one-task-without-the-app) or the [Coding Agent](/coding-agent/overview), and schedule API calls in your own application when needed. Browser tasks do not expose a reusable login-session or cookie-profile API; for sites behind a login, [Browser Agents Local](/browser-agents/local) lets a local coding agent use the Chrome the user is already signed in to.

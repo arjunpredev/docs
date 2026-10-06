@@ -26,6 +26,7 @@ pre.dev is the Long Horizon Coding Agent: it plans, builds, verifies and ships s
 | Call a model (AI Gateway): chat, embeddings, images, video, speech | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK |
 | Plan software before building it | `POST https://api.pre.dev/fast-spec` or `/deep-spec`, or the `fast_spec` MCP tool |
 | Give an agent pre.dev tools | Product MCP server `https://api.pre.dev/mcp` |
+| Let a local coding agent use your own Chrome, profiles, and logins | Browser Agents Local, a local MCP server: `npx -y github:predotdev/chrome-mcp`. See https://docs.pre.dev/browser-agents/local.md |
 | Take payments in an app built on pre.dev | The Stripe SDK, pointed at `STRIPE_API_HOST` |
 | Build or change code | The coding agent, on the web or in the CLI; `predev run` with `PREDEV_API_KEY` runs one task unattended |
 | Search these docs | Docs MCP server `https://docs.pre.dev/mcp` (no key) |

@@ -7,6 +7,16 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-06
+
+### Browser Agents Local: your coding agent in your own Chrome
+
+- **[Browser Agents Local](/browser-agents/local)** is a free, open-source MCP server ([predotdev/chrome-mcp](https://github.com/predotdev/chrome-mcp), MIT) that lets any local coding agent drive the Google Chrome you already have open: every profile, your logins, and your open tabs. It works with Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, Claude Desktop, and any other MCP client.
+- All your agents share one connection, so Chrome asks **Allow remote debugging?** once each time it starts.
+- Install with one command per agent, for example `claude mcp add --scope user chrome -e PREDEV_API_KEY=your_key -- npx -y github:predotdev/chrome-mcp`. `npx -y github:predotdev/chrome-mcp check` confirms the setup.
+- **Plain-words actions**: `chrome_act` clicks or types into an element you describe, and `chrome_wait` can wait for a plain-words `condition`. They use your workspace API key and credits, and appear in [`GET /v1/usage`](/ai-gateway/api/usage) as `browser-agents-local`. Every other tool runs on your computer and never calls pre.dev.
+- Cloud Browser Agents is unchanged. See [Cloud or Local](/browser-agents/local#cloud-or-local) to choose.
+
 ## 2026-10-05
 
 ### Project plans through the API and MCP
