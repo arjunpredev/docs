@@ -276,7 +276,7 @@ Two tools use your pre.dev account to understand the page, through the key saved
 
 ### Credits
 
-Plain-words actions are the only part of Browser Agents Local that calls pre.dev. Each one costs a small fraction of a credit, and the free trial's credits cover more than a thousand actions. They count toward the same trial allowance and [rate limits](/coding-agent/plans-and-credits#limits) as your other API calls. Every other tool runs on your computer, never calls pre.dev, and is free.
+Plain-words actions are the only part of Browser Agents Local that calls pre.dev. Each one costs a small fraction of a credit. Free workspaces get 20 credits of plain-words actions, separate from the AI Gateway trial, which covers more than a thousand actions. When they run out, your agent tells you and offers to open the billing page in your Chrome so you can subscribe; every other tool keeps working. They share the [rate limits](/coding-agent/plans-and-credits#limits) of your other API calls. Every other tool runs on your computer, never calls pre.dev, and is free.
 
 <CreditValue />
 
@@ -319,7 +319,7 @@ Browser Agents Local drives your real, signed-in Chrome. Read this before you tu
 | The agent cannot start the server, or `npx` or `node` is not found | Run `setup`: it registers full paths that work in desktop apps |
 | You already have a different server named `chrome` | Setup leaves it alone and registers this one as `predev-chrome` |
 | Codex says a tool call timed out | Run `setup`, which sets `tool_timeout_sec = 120`, or set it in `~/.codex/config.toml` |
-| A plain-words action returns `402` with `subscription_required` | The free trial allowance is used up. Subscribe with the link in the error |
+| A plain-words action returns `402` with `subscription_required` | The free plan's 20 credits of plain-words actions are used up. Subscribe with the link in the error; your agent can open it in your Chrome |
 | A plain-words action returns `402` with `insufficient_credits` | Add credits with the top-up link in the error |
 | A plain-words action returns `429`, rate limited or busy | Wait a few seconds and retry, or use `chrome_snapshot` refs with `chrome_click` and `chrome_type` |
 | Anything else | Run the [setup check](#check-your-setup) and read `~/.predev/chrome-mcp/chrome-mcp.log` |
