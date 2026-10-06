@@ -3,13 +3,15 @@ title: "Roadmap and progress"
 description: "Inspect planned work, active sessions, and completion evidence."
 ---
 
+Open **Plan** in your project. Its tabs describe the same app at the same moment: **Overview** (what the app is for, progress, each feature with its status, and what is left before launch), **Roadmap**, **Architecture**, **Spec**, **App map** (the screens, routes and data in the code) and **Changes** (what changed since yesterday or the start). A tab shows only when there is something behind it, and Roadmap, Architecture and Spec each say when they last changed.
+
 The roadmap organizes available planning artifacts into milestones, stories, and subtasks. Use `/kanban` or `/roadmap`, or open **Plan → Roadmap**. A project needs roadmap data for this view; a direct build may not have generated it.
 
 ## How progress is counted
 
 Progress counts the features of your plan, not tasks. Stories that build the same feature are grouped under it, and the number reads as features built out of features planned, for example **3 of 4 built**. Work you set aside or take out of scope does not count against it. Work you add to a feature that is already built shows under that feature as **Added: …** and counts as its own item until it is built, so the number grows instead of dropping.
 
-Open **App map** in your project to see each feature with its status:
+**Plan → Overview** lists each feature with its status:
 
 | Status | Meaning |
 | --- | --- |
@@ -23,7 +25,9 @@ Open **App map** in your project to see each feature with its status:
 | Stopped working | Its check passed before and fails now |
 | Out of scope | Taken out of the plan |
 
-"Works" only ever comes from a passing check. A feature a run built but nothing has checked stays **Built, not checked yet**. The map also shows what changed since the start or since yesterday, the screens in your app, and **Ready to launch**: what is still open before you publish, each with a plain fix.
+"Works" only ever comes from a passing check. A feature a run built but nothing has checked stays **Built, not checked yet**. The Overview also shows the one next step (build the next feature, resume a paused build, or watch the one running) and **Before you launch**: what is still open before you publish, each with a plain fix.
+
+Each feature links to its stories in the Roadmap, and each Roadmap card links back to its feature. The Spec lists what was added after it was written and what it plans that is not built yet.
 
 ## After each run
 
@@ -40,11 +44,13 @@ A run cannot report a task as done while a check that passed when the run starte
 | Column | Meaning |
 | --- | --- |
 | Backlog | Planned work that is not prioritized |
-| Next Tasks | Upcoming work, including stories you prioritize |
-| In Progress | Work that is active, or built and waiting for a check |
-| Done | Work confirmed complete |
+| Next Tasks | Upcoming work, including stories you prioritize, and work whose own check failed (Build next picks it again) |
+| In Progress | Work a run is building, or that a run started and did not finish |
+| Done | Built work |
 
-Where editing is enabled for your role and project, drag cards, reorder upcoming work, and open stories to edit their details. Some transitions are restricted during active builds. Status changes and incoming updates are reflected in the board.
+Each card shows its status in the Overview's words (**Built, not checked yet**, **Works**, **Needs a look**, **Not working**) and the feature it is part of. A feature that stops working after it was built keeps its cards in Done with that status; ask pre.dev to fix it from the run card or the chat. A story that takes something out of the app reads **Removed** once its run has taken it out, and **Not removed yet** before.
+
+Where editing is enabled for your role and project, drag cards, reorder upcoming work, and open stories to edit their details. Cards keep the place you give them in Backlog and Next Tasks; where built work and work in progress sit follows the plan. Some transitions are restricted during active builds. Status changes and incoming updates are reflected in the board.
 
 A manually changed status records a planning decision. Use the run's messages, diff, and [verification evidence](/coding-agent/building/acceptance-criteria) to establish what was implemented and tested.
 
