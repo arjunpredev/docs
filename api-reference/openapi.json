@@ -4079,6 +4079,25 @@
               "type": "string"
             },
             "description": "Parts the owner asked to take out of this feature."
+          },
+          "partOf": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "description": "Set on work added to a feature that was already built: the feature it belongs to. The addition counts as its own item, listed right after that feature, until it is built, then folds back into the feature. null on a feature."
           }
         }
       },

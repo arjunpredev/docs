@@ -28,7 +28,7 @@ An organization key reads its organization's projects; any other key reads only 
 | --- | --- |
 | `intent` | What the app is for, in one paragraph. `proposedByPredev` is true until the owner edits it. |
 | `progress` | `built`, `provenWorking` and `total`, plus `left` and `percent`. `basis` says what is counted: `features`, `stories` for a project whose tasks are not grouped into features yet, or `none`. Suggested features (`proposed`) are not counted until the owner confirms them. |
-| `features` | Each feature with its `status`, the words pre.dev shows for it, and its story counts. |
+| `features` | Each feature with its `status`, the words pre.dev shows for it, and its story counts. Work added to a feature that was already built is listed right after that feature with `partOf` naming it, and counts as its own item until it is built; on a feature, `partOf` is null. |
 | `readyToLaunch` | What is left before the app can go live, each item with a plain `fix`. |
 | `appMap` | Screens, API routes and stored data, each with its file and line (`anchor`). Each list holds at most 25 items; `count` is the full number. |
 | `lastRun` | The last run that changed the code: the files it changed and what it added, changed or removed. |
