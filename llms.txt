@@ -72,7 +72,8 @@
 - [Get a project's plan](https://docs.pre.dev/architect-agent/api/get-plan.md): GET /get-plan: what is built, what works, what is left, and where it lives in the code.
 - [List specifications](https://docs.pre.dev/architect-agent/api/list-specs.md): Specification summaries with filters and pagination.
 - [Search specifications](https://docs.pre.dev/architect-agent/api/find-specs.md): Search specification inputs.
-- [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP.
+- [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP, in the cloud or in your own Chrome.
+- [Browser Agents Local](https://docs.pre.dev/browser-agents/local.md): A free, open-source MCP server that lets any local coding agent use the Chrome you already have open, with your profiles and logins.
 - [Run browser tasks](https://docs.pre.dev/browser-agents/api/run-task.md): POST /browser-agent: JSON, an async run ID, or a live SSE stream.
 - [Get run status and results](https://docs.pre.dev/browser-agents/api/task-status.md): A run's task outcomes, retries, and optional timeline.
 - [Stream an existing run](https://docs.pre.dev/browser-agents/api/stream-task.md): Snapshot, live SSE updates, and terminal status.

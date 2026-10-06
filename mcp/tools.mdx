@@ -26,6 +26,10 @@ Call **`tools/list`** after initialization for the live input schemas. `GET /mcp
 
 Generation and browser execution consume credits. Retrieval and listing do not launch new work. The server marks browser execution as potentially destructive because a task can click, submit forms, or change data on external sites.
 
+<Note>
+The `browser_agent` tools run tasks on pre.dev's cloud browsers. To let your coding agent drive the Chrome on your own computer, with your profiles and logins, use [Browser Agents Local](/browser-agents/local): a separate, open-source MCP server that runs on your machine and provides its own `chrome_*` tools.
+</Note>
+
 ## fast_spec and deep_spec
 
 Both tools accept the same parameters:

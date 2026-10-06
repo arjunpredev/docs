@@ -1,11 +1,13 @@
 ---
 title: "Browser Agents"
-description: "Run browser workflows and extract structured data through REST, SDKs, or MCP."
+description: "Run browser workflows and extract structured data through REST, SDKs, or MCP, or let your coding agent use your own Chrome."
 ---
 
 import BrowserCreditFloor from "/snippets/browser-credit-floor.mdx";
 
 Give Browser Agents a starting URL and a task. It navigates pages, interacts with forms and controls, and returns task outcomes with data and an optional execution timeline.
+
+Browser Agents comes in two editions. **Cloud**, covered on this page, runs tasks on pre.dev's browsers: send a task by REST, the SDKs, or the hosted MCP tool and get structured data back, with many tasks in parallel and nothing to set up. **Local** is a free, open-source MCP server that lets your coding agent drive the Chrome you already have open, with your profiles and the accounts you are signed in to. See [Browser Agents Local](/browser-agents/local).
 
 <CardGroup cols={2}>
   <Card title="Run your first task" icon="play" href="/browser-agents/quickstart">
@@ -13,6 +15,9 @@ Give Browser Agents a starting URL and a task. It navigates pages, interacts wit
   </Card>
   <Card title="Use an MCP tool" icon="plug" href="/mcp/tools#browser_agent">
     Give your assistant browser automation and structured results.
+  </Card>
+  <Card title="Use your own Chrome" icon="laptop" href="/browser-agents/local">
+    Let a local coding agent work in your profiles, logins, and tabs.
   </Card>
 </CardGroup>
 
@@ -70,4 +75,4 @@ The Browser Agents figures are the mean of two full runs of each benchmark: 93.1
 
 The [benchmark report](https://pre.dev/browser-agents-benchmark.html) covers the protocol, results by site and level, the patched tasks and why, and a CSV of every task result from both runs.
 
-Browser tasks do not expose persistent login profiles, reusable cookie sessions, or a recurring-schedule API. Schedule submissions in your own application and provide the inputs each task needs.
+Cloud browser tasks do not expose persistent login profiles, reusable cookie sessions, or a recurring-schedule API. Schedule submissions in your own application and provide the inputs each task needs. For work behind a login, use [Browser Agents Local](/browser-agents/local): your coding agent works in the Chrome you are already signed in to.

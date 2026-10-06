@@ -486,6 +486,7 @@
             "group": "Browser Agents",
             "pages": [
               "browser-agents/overview",
+              "browser-agents/local",
               "browser-agents/api/run-task",
               "browser-agents/api/task-status",
               "browser-agents/api/stream-task",
