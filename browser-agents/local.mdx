@@ -11,7 +11,7 @@ Browser Agents Local is the local edition of Browser Agents: it lets the coding 
 
 It is part of the free, open-source pre.dev MCP server, `@predotdev/mcp`, which shows up as `predev` in your agent. The same server also carries pre.dev's cloud tools: cloud Browser Agents, specifications, and project plans. One command sets up both.
 
-It works with any MCP client that runs local servers: Claude Code, Codex, Cursor, Windsurf, VS Code (Copilot agent mode), Gemini CLI, OpenCode, Claude Desktop, and others. Run as many agents as you like at the same time. They share one connection to Chrome, so Chrome asks you to allow it once each time Chrome starts.
+It works with any coding agent: Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, GitHub Copilot, Cline, Gemini CLI and Antigravity, OpenCode, Zed, Goose, and more than 20 others, plus any agent that can run a shell command. Run as many agents as you like at the same time. They share one connection to Chrome, so Chrome asks you to allow it once each time Chrome starts.
 
 <CardGroup cols={2}>
   <Card title="Source on GitHub" icon="github" href="https://github.com/predotdev/mcp">
@@ -50,7 +50,7 @@ It walks you through everything:
     Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve. Setup saves your workspace API key for every agent, so there is nothing to copy. Already signed in to the [pre.dev CLI](/cli/overview)? Setup uses that login.
   </Step>
   <Step title="Add it to every coding agent on your Mac">
-    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, Claude Desktop, and the pre.dev CLI, which gets only the Chrome tools because it has the cloud tools built in. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
+    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, Windsurf, GitHub Copilot CLI, Antigravity, Gemini CLI, Cline, Kiro, Qwen Code, Factory Droid, Augment, Amp, Kilo Code, Kimi Code, Junie, Warp, Rovo Dev, OpenHands, LM Studio, OpenCode, VS Code, VS Code Insiders, Claude Desktop, and the pre.dev CLI, which gets only the Chrome tools because it has the cloud tools built in. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
   </Step>
   <Step title="Connect to Chrome">
     The first time, setup asks you to turn on remote debugging at `chrome://inspect/#remote-debugging` and copies the address for you. Then Chrome asks **Allow remote debugging?**: click **Allow**. Setup lists your Chrome profiles once it is connected.
@@ -219,8 +219,34 @@ The examples below set the key. If you signed in with `login`, leave it out: dro
 
     The same setup works for any app that cannot find `npx` or `node`.
   </Tab>
+  <Tab title="Hermes">
+    ```bash
+    hermes mcp add predev --command npx --args -y @predotdev/mcp
+    hermes config set mcp_servers.predev.timeout 900
+    ```
+
+    Answer `Y` to turn on its tools. In a running chat, `/reload-mcp` picks it up.
+  </Tab>
+  <Tab title="Pi">
+    ```bash
+    pi mcp add predev -- npx -y @predotdev/mcp
+    pi mcp list
+    ```
+
+    `pi mcp list` should show `predev: connected`. `pi mcp add` needs Pi 0.99 or newer. On an older Pi, run `pi install npm:pi-mcp-adapter` and add the `predev` entry to `~/.pi/agent/mcp.json` by hand.
+  </Tab>
   <Tab title="Other clients">
-    Add a local (stdio) server named `predev` with command `npx` and arguments `-y @predotdev/mcp`. Add the environment variable `PREDEV_API_KEY` unless you signed in with `login`. If the client cannot find `npx`, run `setup`, or use the full-path setup from the Claude Desktop tab.
+    Add a local (stdio) server named `predev` with command `npx` and arguments `-y @predotdev/mcp`. Add the environment variable `PREDEV_API_KEY` unless you signed in with `login`. If the client cannot find `npx`, run `setup`, or use the full-path setup from the Claude Desktop tab. The [setup guide](https://github.com/predotdev/mcp#setup-for-every-agent) has the command or file for GitHub Copilot CLI, Cline, Kiro, Qwen Code, Factory Droid, Augment, Amp, OpenClaw, Zed, Goose, Continue, Crush and more.
+  </Tab>
+  <Tab title="No MCP">
+    Every tool also runs from a shell, so any agent that can run commands (Aider, scripts, CI) can drive your Chrome:
+
+    ```bash
+    npx -y @predotdev/mcp tools
+    npx -y @predotdev/mcp call chrome_open '{"profile":"Personal","url":"https://example.com"}'
+    ```
+
+    Text goes to stdout, a screenshot is saved to a file and its path is printed, and the exit code is 1 when the tool failed.
   </Tab>
 </Tabs>
 

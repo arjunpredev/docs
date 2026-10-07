@@ -14,7 +14,7 @@ One command adds the pre.dev MCP server to every coding agent on your Mac, with 
 npx -y @predotdev/mcp setup
 ```
 
-Setup signs you in to pre.dev in the browser, or creates a free account, and saves your key for every agent. It registers the server as `predev` in Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, Claude Desktop, and the [pre.dev CLI](/cli/overview) (Chrome tools only, since the CLI has the rest built in), then connects to Chrome. Already signed in to the pre.dev CLI? Setup uses that login. From the pre.dev CLI, `predev mcp setup` runs the same setup. It replaces any pre.dev server you added before, such as the hosted one, because the local server carries all of its tools. Run it again at any time to update to the newest version.
+Setup signs you in to pre.dev in the browser, or creates a free account, and saves your key for every agent. It registers the server as `predev` in every coding agent it finds, including Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, GitHub Copilot CLI, Cline, Gemini CLI, OpenCode, Claude Desktop, and the [pre.dev CLI](/cli/overview) (Chrome tools only, since the CLI has the rest built in), then connects to Chrome. See [Browser Agents Local](/browser-agents/local#manual-setup) for every agent and for agents without MCP. Already signed in to the pre.dev CLI? Setup uses that login. From the pre.dev CLI, `predev mcp setup` runs the same setup. It replaces any pre.dev server you added before, such as the hosted one, because the local server carries all of its tools. Run it again at any time to update to the newest version.
 
 You need Node.js 22 or later, and Google Chrome for the Chrome tools. Setup is tested on macOS.
 
