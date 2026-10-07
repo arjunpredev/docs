@@ -487,6 +487,7 @@
             "pages": [
               "browser-agents/overview",
               "browser-agents/local",
+              "browser-agents/switch-from-claude-in-chrome",
               "browser-agents/api/run-task",
               "browser-agents/api/task-status",
               "browser-agents/api/stream-task",

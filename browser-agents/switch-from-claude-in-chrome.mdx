@@ -1,0 +1,110 @@
+---
+title: "Switch from Claude in Chrome"
+sidebarTitle: "Switch from Claude in Chrome"
+description: "Move your coding agent from Claude in Chrome to Browser Agents Local in two steps. Your Chrome profiles, tabs, and logins carry over."
+---
+
+[Browser Agents Local](/browser-agents/local) does for your coding agent what Claude in Chrome does: it drives the Chrome you already have open, signed in to everything you use. It is part of the free, open-source pre.dev MCP server, works in Claude Code and every other coding agent, and reads pages as short text with refs, so most steps need no screenshot.
+
+Nothing moves: it uses the same Chrome, the same profiles, and the same logins. You can leave the Claude in Chrome extension installed.
+
+## Switch in two steps
+
+<Steps>
+  <Step title="Run setup">
+    ```bash
+    npx -y @predotdev/mcp setup
+    ```
+
+    It signs you in to pre.dev, or creates a free account, adds the server as `predev` to Claude Code and every other coding agent on your Mac, and connects to Chrome. The first time, turn on remote debugging at `chrome://inspect/#remote-debugging` when it asks, then click **Allow** when Chrome asks **Allow remote debugging?**. You need macOS, Google Chrome, and Node.js 22 or later.
+  </Step>
+  <Step title="Turn Claude in Chrome off in Claude Code">
+    In Claude Code, run `/chrome` and turn off **Enabled by default**. If you start Claude Code with `claude --chrome`, drop the flag. To turn it off for one session, start with `claude --no-chrome`.
+
+    Restart Claude Code and try:
+
+    ```text
+    List my Chrome profiles and the tabs I have open.
+    ```
+  </Step>
+</Steps>
+
+<Note>
+**Or let Claude Code do it.** Paste this into Claude Code:
+
+```text
+Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to click.
+```
+</Note>
+
+## In the pre.dev CLI
+
+Install the [pre.dev CLI](/cli/overview):
+
+```bash
+curl -fsSL https://pre.dev/install | bash
+```
+
+Then type `/chrome`. It uses your CLI login, so there is nothing else to sign in to. If you already ran `setup`, the CLI has it too.
+
+## Keep both
+
+If you keep Claude in Chrome on, tell your agent which one to use. Add a line like this to your `CLAUDE.md`, or `AGENTS.md` for other agents:
+
+```text
+For browser work, use the predev chrome_* tools. Use Claude in Chrome only to read console logs or network requests, or to record a GIF.
+```
+
+## Skip the permission prompts
+
+Claude Code asks before it runs a tool from an MCP server unless you allow it. To let every pre.dev tool run without asking, add `mcp__predev` to the allow list in `~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp__predev"]
+  }
+}
+```
+
+That includes `chrome_eval`, which runs JavaScript in your pages, and the cloud tools, which use credits. Read [Safety](/browser-agents/local#safety) first.
+
+## Tool by tool
+
+Claude in Chrome works in the tabs of its own tab group. The pre.dev tools work in any tab of any Chrome profile, and a snapshot names the profile each tab belongs to.
+
+| Claude in Chrome | pre.dev MCP |
+| --- | --- |
+| `tabs_context_mcp` | `chrome_tabs` lists open tabs in every profile; `chrome_profiles` lists the profiles |
+| `tabs_create_mcp` | `chrome_open`, in any profile, in the background by default |
+| `tabs_close_mcp` | `chrome_close` |
+| `navigate` | `chrome_navigate`, including back, forward, and reload |
+| `read_page` | `chrome_snapshot`: the interactive elements as refs (`[e1]`, `[e2]`, …), plus headings and any open dialog |
+| `get_page_text` | `chrome_read` |
+| `find` | `chrome_act` with `action: "find"` reports the element you describe; without it, `chrome_act` clicks or types into it in one call |
+| `computer`: `left_click`, `double_click` | `chrome_click` by ref, CSS selector, visible text, or coordinates; `double: true` for a double click |
+| `computer`: `type` | `chrome_type`, or `chrome_act` with `action: "type"` |
+| `computer`: `key` | `chrome_press` |
+| `computer`: `scroll`, `scroll_to` | `chrome_scroll` |
+| `computer`: `screenshot` | `chrome_screenshot`, the visible area or the full page |
+| `computer`: `wait` | `chrome_wait` for text, a CSS selector, a URL, or a plain-words condition |
+| `form_input` | `chrome_type` for inputs, text areas, rich editors, and dropdowns; `chrome_click` for checkboxes |
+| `javascript_tool` | `chrome_eval` |
+| `file_upload` | `chrome_upload` |
+| `list_connected_browsers`, `select_browser`, `switch_browser` | Not needed: every Chrome profile is available at once. Pass `profile` to `chrome_open` |
+| `browser_batch` | No batch tool. Each call is one step |
+| `upload_image` | No equivalent. `chrome_upload` attaches files from your computer |
+| `computer`: `right_click`, `triple_click`, `hover`, `left_click_drag`, `zoom` | No equivalent yet |
+| `read_console_messages`, `read_network_requests` | No equivalent yet |
+| `resize_window` | No equivalent yet |
+| `gif_creator` | No equivalent yet |
+| `shortcuts_list`, `shortcuts_execute` | No equivalent |
+
+Two tools have no Claude in Chrome counterpart: `chrome_show` brings a tab to the front so you can watch or take over, and `chrome_wait` with a plain-words `condition` waits until a statement about the page is true.
+
+## What else changes
+
+- **Chrome asks once per start.** Chrome shows **Allow remote debugging?** once each time it starts, and again after an update. Click **Allow**.
+- **Plain-words actions use credits.** `chrome_act` and `chrome_wait` conditions use your pre.dev account; every other Chrome tool runs on your computer and is free. See [Credits](/browser-agents/local#credits).
+- **It works in every agent.** Codex, Cursor, Hermes, Pi, and the other agents setup finds get the same tools. See [Browser Agents Local](/browser-agents/local) for every agent and for agents without MCP.
+- **macOS is tested.** Linux and Windows are not tested yet. See [Platform support](/browser-agents/local#platform-support).

@@ -74,6 +74,7 @@
 - [Search specifications](https://docs.pre.dev/architect-agent/api/find-specs.md): Search specification inputs.
 - [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP, in the cloud or in your own Chrome.
 - [Browser Agents Local](https://docs.pre.dev/browser-agents/local.md): Let any local coding agent use the Chrome you already have open, with your profiles and logins. Part of the pre.dev MCP server, set up with `npx -y @predotdev/mcp setup`.
+- [Switch from Claude in Chrome](https://docs.pre.dev/browser-agents/switch-from-claude-in-chrome.md): Move a coding agent from Claude in Chrome to Browser Agents Local in two steps, with a tool-by-tool map.
 - [Run browser tasks](https://docs.pre.dev/browser-agents/api/run-task.md): POST /browser-agent: JSON, an async run ID, or a live SSE stream.
 - [Get run status and results](https://docs.pre.dev/browser-agents/api/task-status.md): A run's task outcomes, retries, and optional timeline.
 - [Stream an existing run](https://docs.pre.dev/browser-agents/api/stream-task.md): Snapshot, live SSE updates, and terminal status.

@@ -13,6 +13,10 @@ It is part of the free, open-source pre.dev MCP server, `@predotdev/mcp`, which 
 
 It works with any coding agent: Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, GitHub Copilot, Cline, Gemini CLI and Antigravity, OpenCode, Zed, Goose, and more than 20 others, plus any agent that can run a shell command. Run as many agents as you like at the same time. They share one connection to Chrome, so Chrome asks you to allow it once each time Chrome starts.
 
+<Tip>
+**Coming from Claude in Chrome?** [Switch in two steps](/browser-agents/switch-from-claude-in-chrome). Your Chrome profiles, tabs, and logins carry over.
+</Tip>
+
 <CardGroup cols={2}>
   <Card title="Source on GitHub" icon="github" href="https://github.com/predotdev/mcp">
     `predotdev/mcp`, MIT licensed. On npm as `@predotdev/mcp`.
@@ -80,6 +84,12 @@ In the [pre.dev CLI](/cli/overview), type:
 
 ```text
 /chrome
+```
+
+No CLI yet? Install it with:
+
+```bash
+curl -fsSL https://pre.dev/install | bash
 ```
 
 From your next message, the agent can open tabs, read pages, click, and type in your own Chrome with the same tools, named `predev_chrome_*` there. It uses your CLI login, so there is nothing else to sign in to, and it adds only the Chrome tools because the CLI has pre.dev's cloud tools built in. It needs Node.js 22 or later. The first time, Chrome asks **Allow remote debugging?** as above. Screenshots are saved as files on your computer, and the agent gets their paths. `/chrome off` turns it off.
@@ -320,7 +330,7 @@ Two tools use your pre.dev account to understand the page, through the key saved
 
 ### Credits
 
-Among the Chrome tools, plain-words actions are the only ones that call pre.dev. Each one costs a small fraction of a credit. Free workspaces get 20 credits of plain-words actions, separate from the AI Gateway trial, which covers more than a thousand actions. When they run out, your agent tells you and offers to open the billing page in your Chrome so you can subscribe; every other tool keeps working. They share the [rate limits](/coding-agent/plans-and-credits#limits) of your other API calls. Every other Chrome tool runs on your computer, never calls pre.dev, and is free.
+Among the Chrome tools, plain-words actions are the only ones that call pre.dev. Each one costs a small fraction of a credit. Free workspaces get 10 credits of plain-words actions, enough for hundreds of them, separate from the AI Gateway trial. When they run out, your agent tells you and offers to open the billing page in your Chrome so you can subscribe; every other tool keeps working. They share the [rate limits](/coding-agent/plans-and-credits#limits) of your other API calls. Every other Chrome tool runs on your computer, never calls pre.dev, and is free.
 
 <CreditValue />
 
@@ -365,8 +375,8 @@ Browser Agents Local drives your real, signed-in Chrome. Read this before you tu
 | Another server already uses the name `predev` | Setup leaves it alone and registers this one as `pre-dev` |
 | You had the hosted pre.dev MCP or an older Browser Agents Local install (`chrome` or `predev-chrome`) | Setup replaced it. This server carries all of its tools |
 | Codex says a tool call timed out | Run `setup`, which sets `tool_timeout_sec = 900`, or set it in `~/.codex/config.toml` |
-| A plain-words action returns `402` with `subscription_required` | The free plan's 20 credits of plain-words actions are used up. Subscribe with the link in the error; your agent can open it in your Chrome |
-| A plain-words action returns `402` with `insufficient_credits` | Add credits with the top-up link in the error |
+| A plain-words action returns `402` with `subscription_required` | The free plan's 10 credits of plain-words actions are used up. Subscribe with the link in the error; your agent can open it in your Chrome |
+| A plain-words action returns `402` with `insufficient_credits` | Your workspace is out of credits. Open the link in the error: on the free plan, subscribe; on a paid plan, add credits or turn on auto-recharge |
 | A plain-words action returns `429`, rate limited or busy | Wait a few seconds and retry, or use `chrome_snapshot` refs with `chrome_click` and `chrome_type` |
 | Anything else | Run the [setup check](#check-your-setup) and read `~/.predev/mcp/predev-mcp.log` |
 
