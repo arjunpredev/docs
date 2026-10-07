@@ -30,7 +30,7 @@ It works with any MCP client that runs local servers: Claude Code, Codex, Cursor
 | How it runs | You send a task and a URL by REST, the SDKs, or the `browser_agent` MCP tool, and get structured data back | Your coding agent drives Chrome step by step with the `chrome_*` tools |
 | Sites | Public pages; no persistent login profiles | Accounts you are already signed in to: dashboards, internal tools, anything behind a login |
 | Scale | Many tasks in parallel | One Chrome on your computer, shared by all your agents |
-| Setup | None | One command, `setup`, for every agent on your Mac |
+| Setup | None | One command, `setup`, for every agent on your Mac, or `/chrome` in the pre.dev CLI |
 | Credits | Per task | Only for plain-words actions; everything else is free |
 
 Use Cloud to run browser work from your application or at volume. Use Local when your coding agent needs the Chrome you already use. With the pre.dev MCP server, your agent has both and picks per task.
@@ -47,10 +47,10 @@ It walks you through everything:
 
 <Steps>
   <Step title="Sign in to pre.dev">
-    Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve. Setup saves your workspace API key for every agent, so there is nothing to copy.
+    Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve. Setup saves your workspace API key for every agent, so there is nothing to copy. Already signed in to the [pre.dev CLI](/cli/overview)? Setup uses that login.
   </Step>
   <Step title="Add it to every coding agent on your Mac">
-    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, and Claude Desktop. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
+    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, Claude Desktop, and the pre.dev CLI, which gets only the Chrome tools because it has the cloud tools built in. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
   </Step>
   <Step title="Connect to Chrome">
     The first time, setup asks you to turn on remote debugging at `chrome://inspect/#remote-debugging` and copies the address for you. Then Chrome asks **Allow remote debugging?**: click **Allow**. Setup lists your Chrome profiles once it is connected.
@@ -73,6 +73,18 @@ Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to c
 </Note>
 
 Setup is safe to run again, and running it again updates to the newest version. Chrome asks **Allow remote debugging?** once each time it starts, and again after an update.
+
+## Use it in the CLI
+
+In the [pre.dev CLI](/cli/overview), type:
+
+```text
+/chrome
+```
+
+From your next message, the agent can open tabs, read pages, click, and type in your own Chrome with the same tools, named `predev_chrome_*` there. It uses your CLI login, so there is nothing else to sign in to, and it adds only the Chrome tools because the CLI has pre.dev's cloud tools built in. It needs Node.js 22 or later. The first time, Chrome asks **Allow remote debugging?** as above. Screenshots are saved as files on your computer, and the agent gets their paths. `/chrome off` turns it off.
+
+If you already ran `setup`, there is nothing to do: setup adds the server to the CLI too.
 
 ## Manual setup
 
@@ -290,7 +302,7 @@ Among the Chrome tools, plain-words actions are the only ones that call pre.dev.
 
 ## Configuration
 
-`setup` and `login` save your workspace API key in `~/.predev/mcp/credentials.json`, a file only you can read, and every agent uses it. It is the same key you use for the API, the AI Gateway, and cloud Browser Agents. The server reads the file on every call, so signing in again needs no restart.
+`setup` and `login` save your workspace API key in `~/.predev/mcp/credentials.json`, a file only you can read, and every agent uses it. Without a saved key, the server uses your pre.dev CLI login. It is the same key you use for the API, the AI Gateway, and cloud Browser Agents. The server reads the file on every call, so signing in again needs no restart.
 
 To change that for one agent, set these in the `env` of its MCP entry:
 
@@ -298,6 +310,7 @@ To change that for one agent, set these in the `env` of its MCP entry:
 | --- | --- |
 | `PREDEV_API_KEY` | A workspace API key (`pdk_…`). Overrides the saved key |
 | `PREDEV_API_URL` | The pre.dev API to call. Default `https://api.pre.dev` |
+| `PREDEV_MCP_CLOUD` | `off` lists only the Chrome tools, without pre.dev's cloud tools |
 | `CHROME_MCP_USER_DATA_DIR` | Use a different Chrome data folder, such as Chrome Beta or a Chrome you started yourself |
 
 State, logs, the stable copy setup installs (`~/.predev/mcp/app`), and the saved key are kept in `~/.predev/mcp/`.

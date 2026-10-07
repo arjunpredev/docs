@@ -7,6 +7,15 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-07
+
+### Your own Chrome in the pre.dev CLI
+
+- **`/chrome`** in the [pre.dev CLI](/cli/overview) lets the agent open tabs, read pages, click, and type in the Chrome you already use, in every profile and signed in as you. It uses your CLI login and needs Node.js 22 or later. `/chrome off` turns it off. See [Browser Agents Local in the CLI](/browser-agents/local#use-it-in-the-cli).
+- **`predev mcp setup`** adds the [pre.dev MCP server](/architect-agent/mcp-setup) to your other coding agents, such as Claude Code, Codex, and Cursor.
+- `npx -y @predotdev/mcp setup` now adds the server to the pre.dev CLI too, and uses your CLI login when you are signed in there.
+- When a local MCP server returns an image, such as a screenshot, the CLI saves it as a file and gives the agent its path.
+
 ## 2026-10-06
 
 ### The pre.dev MCP server: one command, every pre.dev tool, and your own Chrome
