@@ -71,6 +71,8 @@ client = PredevAPI(api_key=os.environ["PREDEV_API_KEY"])
 
 ## MCP sign-in
 
+`npx -y @predotdev/mcp setup` signs you in to pre.dev in the browser and saves the workspace key in `~/.predev/mcp/credentials.json`, readable only by you, for every local coding agent. See [Connect the MCP server](/architect-agent/mcp-setup).
+
 <McpUrl />
 
-Add it to your client's remote HTTP servers, then use the client's authentication flow. The browser asks you to sign in and choose the personal account or team to connect. [MCP setup](/architect-agent/mcp-setup) covers client configuration and troubleshooting.
+To connect the hosted server instead, add it to your client's remote HTTP servers, then use the client's authentication flow. The browser asks you to sign in and choose the personal account or team to connect. [MCP setup](/architect-agent/mcp-setup) covers client configuration and troubleshooting.

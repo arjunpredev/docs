@@ -702,7 +702,7 @@
       "Agents: start with https://docs.pre.dev/agents.md, which has complete recipes, plan access, polling rules, errors and limits.",
       "Authenticate with the workspace API key (pdk_…) from Integrations → Built-in, sent as Authorization: Bearer <key>.",
       "REST API: https://api.pre.dev (OpenAPI: https://docs.pre.dev/api-reference/openapi.json). AI Gateway: https://api.pre.dev/v1, OpenAI-compatible (OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json).",
-      "pre.dev MCP server: https://api.pre.dev/mcp. Search these docs over MCP at https://docs.pre.dev/mcp."
+      "pre.dev MCP server: npx -y @predotdev/mcp setup adds it to every local coding agent with every pre.dev tool plus the user's own Chrome; the hosted server is https://api.pre.dev/mcp. Search these docs over MCP at https://docs.pre.dev/mcp."
     ]
   }
 }

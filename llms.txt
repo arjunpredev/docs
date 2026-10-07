@@ -10,7 +10,7 @@
 - [skill.md](https://docs.pre.dev/skill.md): Short capability summary for agents. Install it with `npx skills add https://docs.pre.dev`.
 - [REST API OpenAPI](https://docs.pre.dev/api-reference/openapi.json): Specifications, browser tasks, and the credit balance at `https://api.pre.dev`.
 - [AI Gateway OpenAPI](https://docs.pre.dev/api-reference/ai-gateway.openapi.json): Every operation under `https://api.pre.dev/v1`, with error examples.
-- Product MCP server: `https://api.pre.dev/mcp` (Streamable HTTP; OAuth, or `Authorization: Bearer <key>`). Tools: https://api.pre.dev/mcp/info
+- Product MCP server: `npx -y @predotdev/mcp setup` adds it to every local coding agent, with every pre.dev tool plus the user's own Chrome (headless: command `npx -y @predotdev/mcp`, env `PREDEV_API_KEY`). Hosted: `https://api.pre.dev/mcp` (Streamable HTTP; OAuth, or `Authorization: Bearer <key>`). Tools: https://api.pre.dev/mcp/info
 - Coding agent from a script or CI: `PREDEV_API_KEY=pdk_… predev run "<task>"` in the repository; exit code `0` done, `1` failed, `2` not signed in. See https://docs.pre.dev/cli/overview#run-one-task-without-the-app
 - Docs MCP server: `https://docs.pre.dev/mcp` searches and reads these docs, with no key.
 - Full text: https://docs.pre.dev/llms-full.txt. Any page as Markdown: add `.md` to its URL.
@@ -73,7 +73,7 @@
 - [List specifications](https://docs.pre.dev/architect-agent/api/list-specs.md): Specification summaries with filters and pagination.
 - [Search specifications](https://docs.pre.dev/architect-agent/api/find-specs.md): Search specification inputs.
 - [Browser Agents overview](https://docs.pre.dev/browser-agents/overview.md): Run browser workflows and extract structured data through REST, SDKs, or MCP, in the cloud or in your own Chrome.
-- [Browser Agents Local](https://docs.pre.dev/browser-agents/local.md): A free, open-source MCP server that lets any local coding agent use the Chrome you already have open, with your profiles and logins. Set up with `npx -y github:predotdev/chrome-mcp setup`.
+- [Browser Agents Local](https://docs.pre.dev/browser-agents/local.md): Let any local coding agent use the Chrome you already have open, with your profiles and logins. Part of the pre.dev MCP server, set up with `npx -y @predotdev/mcp setup`.
 - [Run browser tasks](https://docs.pre.dev/browser-agents/api/run-task.md): POST /browser-agent: JSON, an async run ID, or a live SSE stream.
 - [Get run status and results](https://docs.pre.dev/browser-agents/api/task-status.md): A run's task outcomes, retries, and optional timeline.
 - [Stream an existing run](https://docs.pre.dev/browser-agents/api/stream-task.md): Snapshot, live SSE updates, and terminal status.
@@ -116,7 +116,7 @@
 - [SDK overview](https://docs.pre.dev/architect-agent/sdks/overview.md): The Node.js and Python SDKs for specifications and browser tasks.
 - [Node.js SDK](https://docs.pre.dev/architect-agent/sdks/node.md): The predev-api TypeScript client.
 - [Python SDK](https://docs.pre.dev/architect-agent/sdks/python.md): The predev-api Python package.
-- [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): pre.dev's spec and browser tools in Claude Code, Cursor, or another MCP client.
+- [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): One command adds every pre.dev tool, plus the user's own Chrome, to every coding agent; or connect the hosted server.
 - [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The eight tools, exact input names, results, and deprecated aliases.
 
 ## Labs

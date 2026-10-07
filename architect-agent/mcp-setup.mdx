@@ -1,18 +1,44 @@
 ---
 title: "Connect the MCP server"
-description: "Use pre.dev's specification and browser tools from Claude Code, Cursor, or another remote MCP client."
+description: "Add every pre.dev tool, plus your own Chrome, to Claude Code, Codex, Cursor, and your other coding agents with one command, or connect the hosted server."
 ---
 
 import McpUrl from "/snippets/mcp-url.mdx";
 import AuthHeaders from "/snippets/auth-headers.mdx";
 
+One command adds the pre.dev MCP server to every coding agent on your Mac, with every pre.dev tool plus your own Chrome. Without Node.js, [connect the hosted server](#no-node-js-connect-the-hosted-server) instead.
+
+## Set up with one command
+
+```bash
+npx -y @predotdev/mcp setup
+```
+
+Setup signs you in to pre.dev in the browser, or creates a free account, and saves your key for every agent. It registers the server as `predev` in Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode, and Claude Desktop, then connects to Chrome. It replaces any pre.dev server you added before, such as the hosted one, because the local server carries all of its tools. Run it again at any time to update to the newest version.
+
+You need Node.js 22 or later, and Google Chrome for the Chrome tools. Setup is tested on macOS.
+
+<Note>
+**Or let your agent do it.** Paste this into Claude Code or any coding agent:
+
+```text
+Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to click.
+```
+</Note>
+
+| Tools | What they do |
+| --- | --- |
+| [`fast_spec`, `deep_spec`, `get_spec`, `list_specs`, `get_plan`](/mcp/tools) | Specifications and project plans |
+| [`browser_agent`, `browser_agent_get`, `browser_agent_list`](/mcp/tools#browser_agent) | Cloud Browser Agents: tasks on pre.dev's browsers with structured results |
+| [`chrome_*`](/browser-agents/local#tools) | Browser Agents Local: your agent drives the Chrome you already have open, with your profiles and logins |
+
+The specification, plan, and cloud browser tools are the hosted server's tools, passed through on your key. They accept personal accounts on a paid plan and team workspaces; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access). The Chrome tools run on your computer. For manual configuration of each agent, commands such as `check`, `login`, and `uninstall`, and troubleshooting, see [Browser Agents Local](/browser-agents/local).
+
+## No Node.js? Connect the hosted server
+
 <McpUrl />
 
-One connection exposes [eight primary tools](/mcp/tools) for specifications, project plans and browser automation. It accepts personal accounts on a paid plan and team workspaces; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
-
-Its browser tools run on pre.dev's cloud browsers. To let your coding agent use the Chrome on your own computer, add [Browser Agents Local](/browser-agents/local), a separate local MCP server.
-
-## Connect your client
+One connection exposes [eight primary tools](/mcp/tools) for specifications, project plans and cloud browser automation, without the Chrome tools. It accepts the same accounts as the local server.
 
 <Tabs>
   <Tab title="Claude Code">
@@ -46,7 +72,7 @@ Its browser tools run on pre.dev's cloud browsers. To let your coding agent use 
 
     <AuthHeaders />
 
-    No pre.dev npm MCP server package is required. See [authentication](/api-reference/authentication) for the key.
+    The hosted server needs no package. See [authentication](/api-reference/authentication) for the key.
   </Tab>
 </Tabs>
 
@@ -67,9 +93,17 @@ Use pre.dev browser_agent to read https://example.com and extract
 its main heading. Fetch the complete structured result afterward.
 ```
 
-Tool execution uses your account's credits and access. Connecting a server does not change your plan. A Free account can use browser REST but cannot authenticate to MCP; see [authentication](/api-reference/authentication#which-accounts-each-interface-accepts).
+With the local server, try [your own Chrome](/browser-agents/local):
+
+```text
+List my Chrome profiles and the tabs I have open.
+```
+
+Tool execution uses your account's credits and access. Connecting a server does not change your plan. A Free account can use browser REST and the local Chrome tools, but not the hosted tools; see [authentication](/api-reference/authentication#which-accounts-each-interface-accepts).
 
 ## Connection lifecycle
+
+This section and the next describe the hosted server. The local server talks to it the same way on your behalf.
 
 1. The client authenticates with browser sign-in (OAuth) or an API-key header.
 2. It sends `initialize`. pre.dev responds with its capabilities and the negotiated protocol version.
@@ -101,6 +135,8 @@ The current transport does not create a persistent MCP session ID or provide a s
 | Opening `/mcp` in a browser returns `405` | Open [service metadata](https://api.pre.dev/mcp/info); configure the MCP client to POST |
 | Authentication fails | Reauthenticate in the client; check the selected account, key, and plan |
 | Tools are missing | Restart or refresh the client, then rediscover `tools/list` |
+| The local server lists only `chrome_*` tools | Sign in with `npx -y @predotdev/mcp login`, then check your plan's [MCP access](/coding-agent/plans-and-credits#api-and-mcp-access) |
+| Chrome or setup problems with the local server | See [Browser Agents Local troubleshooting](/browser-agents/local#troubleshooting) |
 | A spec tool returns before the spec is ready | Save its ID and poll `get_spec` |
 | A browser result contains only a summary | Call `browser_agent_get` for full data |
 | Progress is missing | Logging support varies by client; progress notifications require a `progressToken` |

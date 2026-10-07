@@ -25,8 +25,7 @@ pre.dev is the Long Horizon Coding Agent: it plans, builds, verifies and ships s
 | Read data from a website, or act on one | `POST https://api.pre.dev/browser-agent` |
 | Call a model (AI Gateway): chat, embeddings, images, video, speech | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK |
 | Plan software before building it | `POST https://api.pre.dev/fast-spec` or `/deep-spec`, or the `fast_spec` MCP tool |
-| Give an agent pre.dev tools | Product MCP server `https://api.pre.dev/mcp` |
-| Let a local coding agent use your own Chrome, profiles, and logins | Browser Agents Local, a local MCP server. `npx -y github:predotdev/chrome-mcp setup` signs in to pre.dev and adds it to every coding agent on the Mac (run it with a 10 minute timeout and tell the user what to click). See https://docs.pre.dev/browser-agents/local.md |
+| Give an agent pre.dev tools, plus the user's own Chrome, profiles, and logins | The pre.dev MCP server: `npx -y @predotdev/mcp setup` signs in to pre.dev and adds it to every coding agent on the Mac (run it with a 10 minute timeout and tell the user what to click). Without Node.js, the hosted server `https://api.pre.dev/mcp` has every tool except the Chrome ones. See https://docs.pre.dev/browser-agents/local.md |
 | Take payments in an app built on pre.dev | The Stripe SDK, pointed at `STRIPE_API_HOST` |
 | Build or change code | The coding agent, on the web or in the CLI; `predev run` with `PREDEV_API_KEY` runs one task unattended |
 | Search these docs | Docs MCP server `https://docs.pre.dev/mcp` (no key) |
@@ -72,11 +71,12 @@ Use model ids exactly as `GET https://api.pre.dev/v1/models` lists them. Each ca
 ### 3. Specification over MCP, headless
 
 ```bash
-claude mcp add --transport http predev https://api.pre.dev/mcp \
-  --header "Authorization: Bearer $PREDEV_API_KEY"
+claude mcp add --scope user predev -e PREDEV_API_KEY="$PREDEV_API_KEY" -- npx -y @predotdev/mcp
 ```
 
-Then call `fast_spec` with `executiveSummary` (what to build, at least 10 characters) and optional `existingContext` and `docURLs`. If it returns before the spec is done, poll `get_spec` with the spec id every few seconds until the status is `completed` or `failed`. `get_spec` and `list_specs` use no credits. Interactive clients can add the same URL without the header and sign in with OAuth.
+This local server (Node.js 22 or later) carries every pre.dev tool plus `chrome_*` tools for the user's own Chrome. Without Node.js, add the hosted server instead: `claude mcp add --transport http predev https://api.pre.dev/mcp --header "Authorization: Bearer $PREDEV_API_KEY"`.
+
+Then call `fast_spec` with `executiveSummary` (what to build, at least 10 characters) and optional `existingContext` and `docURLs`. If it returns before the spec is done, poll `get_spec` with the spec id every few seconds until the status is `completed` or `failed`. `get_spec` and `list_specs` use no credits. Interactive clients can add the hosted URL without the header and sign in with OAuth.
 
 ### 4. Payments in an app built on pre.dev
 
@@ -134,5 +134,5 @@ cd path/to/repo
 - Documentation index: https://docs.pre.dev/llms.txt
 - REST OpenAPI: https://docs.pre.dev/api-reference/openapi.json
 - AI Gateway OpenAPI: https://docs.pre.dev/api-reference/ai-gateway.openapi.json
-- Product MCP: https://api.pre.dev/mcp (tool list at https://api.pre.dev/mcp/info)
+- Product MCP: `npx -y @predotdev/mcp setup` (https://github.com/predotdev/mcp), or hosted at https://api.pre.dev/mcp (tool list at https://api.pre.dev/mcp/info)
 - Docs MCP: https://docs.pre.dev/mcp
