@@ -135,7 +135,7 @@ The current transport does not create a persistent MCP session ID or provide a s
 | Opening `/mcp` in a browser returns `405` | Open [service metadata](https://api.pre.dev/mcp/info); configure the MCP client to POST |
 | Authentication fails | Reauthenticate in the client; check the selected account, key, and plan |
 | Tools are missing | Restart or refresh the client, then rediscover `tools/list` |
-| The local server lists only `chrome_*` tools | Sign in with `npx -y @predotdev/mcp login`, then check your plan's [MCP access](/coding-agent/plans-and-credits#api-and-mcp-access) |
+| A cloud tool on the local server says it needs a pre.dev account or plan | Sign in with `npx -y @predotdev/mcp login`, then check your plan's [MCP access](/coding-agent/plans-and-credits#api-and-mcp-access) |
 | Chrome or setup problems with the local server | See [Browser Agents Local troubleshooting](/browser-agents/local#troubleshooting) |
 | A spec tool returns before the spec is ready | Save its ID and poll `get_spec` |
 | A browser result contains only a summary | Call `browser_agent_get` for full data |

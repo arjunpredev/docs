@@ -54,7 +54,7 @@ It walks you through everything:
     Your browser opens pre.dev with a short code. Sign in, or create a free account, and approve. Setup saves your workspace API key for every agent, so there is nothing to copy. Already signed in to the [pre.dev CLI](/cli/overview)? Setup uses that login.
   </Step>
   <Step title="Add it to every coding agent on your Mac">
-    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, Windsurf, GitHub Copilot CLI, Antigravity, Gemini CLI, Cline, Kiro, Qwen Code, Factory Droid, Augment, Amp, Kilo Code, Kimi Code, Junie, Warp, Rovo Dev, OpenHands, LM Studio, OpenCode, VS Code, VS Code Insiders, Claude Desktop, and the pre.dev CLI, which gets only the Chrome tools because it has the cloud tools built in. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
+    Setup installs a stable copy and registers it as `predev`, with full paths that also work in desktop apps, in each agent it finds: Claude Code, Codex, Hermes, Pi, OpenClaw, Cursor, Windsurf, GitHub Copilot CLI, Antigravity, Gemini CLI, Cline, Kiro, Qwen Code, Factory Droid, Augment, Amp, Kilo Code, Zed, Kimi Code, Junie, Warp, Rovo Dev, OpenHands, LM Studio, OpenCode, VS Code, VS Code Insiders, Claude Desktop, and the pre.dev CLI, which gets only the Chrome tools because it has the cloud tools built in. Codex gets a 900-second tool timeout, so specs and cloud runs can finish. Setup replaces any existing pre.dev entry, such as the hosted server at `https://api.pre.dev/mcp` under any name or an older Browser Agents Local install, because this server carries all of their tools. If an unrelated server already uses the name `predev`, setup leaves it alone and registers this one as `pre-dev`. It backs up each JSON config once, as `<file>.bak-predev`.
   </Step>
   <Step title="Connect to Chrome">
     The first time, setup asks you to turn on remote debugging at `chrome://inspect/#remote-debugging` and copies the address for you. Then Chrome asks **Allow remote debugging?**: click **Allow**. Setup lists your Chrome profiles once it is connected.
@@ -94,13 +94,13 @@ curl -fsSL https://pre.dev/install | bash
 
 From your next message, the agent can open tabs, read pages, click, and type in your own Chrome with the same tools, named `predev_chrome_*` there. It uses your CLI login, so there is nothing else to sign in to, and it adds only the Chrome tools because the CLI has pre.dev's cloud tools built in. It needs Node.js 22 or later. The first time, Chrome asks **Allow remote debugging?** as above. Screenshots are saved as files on your computer, and the agent gets their paths. `/chrome off` turns it off.
 
-If you already ran `setup`, there is nothing to do: setup adds the server to the CLI too.
+If you ran `setup` after installing the CLI, there is nothing to do: setup adds the server to the CLI too.
 
 ## Manual setup
 
 `setup` does this for you. To add the server by hand, for example to an agent setup does not know, turn on remote debugging at `chrome://inspect/#remote-debugging` once, then give your agent a server named `predev` with the command `npx -y @predotdev/mcp`.
 
-The key is optional: without one, the server lists only the Chrome tools. For plain-words actions and the cloud tools, sign in once with `npx -y @predotdev/mcp login` and leave the key out of the config, or put your workspace API key in the agent's `PREDEV_API_KEY`.
+The key is optional: without one, the Chrome tools work, and plain-words actions and the cloud tools say how to sign in. To turn them on, sign in once with `npx -y @predotdev/mcp login` and leave the key out of the config, or put your workspace API key in the agent's `PREDEV_API_KEY`.
 
 <ApiKeyLocation />
 
@@ -282,6 +282,8 @@ Run each as `npx -y @predotdev/mcp <command>`.
 | `logout` | Forget the saved key |
 | `stop` | Stop the background process. It starts again on the next tool call |
 | `uninstall` | Remove the server from every agent setup added it to, stop it, and delete its files and saved key |
+| `tools` | List every tool and its arguments |
+| `call <tool> '<json>'` | Run one tool from a shell, for agents without MCP. See the **No MCP** tab in [Manual setup](#manual-setup) |
 
 ## Tools
 
@@ -307,7 +309,7 @@ The Chrome tools run on your computer:
 | `chrome_close` | Close a tab |
 | `chrome_act` | Click or type into an element described in plain words, in one call; needs you to be signed in |
 
-When you are signed in, the same server also lists pre.dev's cloud tools, passed through on your key: `browser_agent`, `browser_agent_get`, `browser_agent_list`, `fast_spec`, `deep_spec`, `get_spec`, `list_specs`, and `get_plan`. They work as on the hosted server, with the same credits and [plan access](/coding-agent/plans-and-credits#api-and-mcp-access); see the [MCP tool reference](/mcp/tools).
+The same server also lists pre.dev's cloud tools, passed through on your key: `browser_agent`, `browser_agent_get`, `browser_agent_list`, `fast_spec`, `deep_spec`, `get_spec`, `list_specs`, and `get_plan`. They work as on the hosted server, with the same credits and [plan access](/coding-agent/plans-and-credits#api-and-mcp-access); see the [MCP tool reference](/mcp/tools). Until you sign in, or on a plan without them, each one says how to turn it on.
 
 A snapshot labels every tab with the profile it belongs to, so the agent always knows which account it is acting as:
 
@@ -369,7 +371,8 @@ Browser Agents Local drives your real, signed-in Chrome. Read this before you tu
 | `Chrome remote debugging is off` | Open `chrome://inspect/#remote-debugging` in Chrome and turn it on |
 | Chrome is asking **Allow remote debugging?** | Click **Allow** in Chrome, then ask your agent to try again |
 | Chrome asks to allow again | Expected after Chrome restarts or after the server updates |
-| `Plain-words actions need a pre.dev account`, or the cloud tools are missing | Run `npx -y @predotdev/mcp login`. No restart needed |
+| `Plain-words actions need a pre.dev account`, or a cloud tool says it needs a free pre.dev account | Run `npx -y @predotdev/mcp login`. No restart needed |
+| A cloud tool says it needs a pre.dev plan | Your account's plan does not include the cloud tools. See [plan access](/coding-agent/plans-and-credits#api-and-mcp-access); your agent can open the subscribe link in your Chrome |
 | `pre.dev rejected the saved key`, or a plain-words action returns `401` | Run `npx -y @predotdev/mcp login` again. If the agent sets `PREDEV_API_KEY`, update it there too, since it overrides the saved key |
 | The agent cannot start the server, or `npx` or `node` is not found | Run `setup`: it registers full paths that work in desktop apps |
 | Another server already uses the name `predev` | Setup leaves it alone and registers this one as `pre-dev` |
