@@ -401,6 +401,7 @@
             "group": "Work locally",
             "pages": [
               "cli/overview",
+              "cli/chat-only-projects",
               "cli/commands",
               "cli/existing-repos"
             ]

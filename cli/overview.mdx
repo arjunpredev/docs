@@ -32,7 +32,7 @@ If your shell has not picked up the PATH change, open a new terminal or run `~/.
 
 Sign in through the browser when prompted, then return to the terminal. The CLI stores its credential in `~/.predev/auth.json`; `/login` signs in again or switches accounts, and `/logout` signs this machine out.
 
-The CLI resolves a project for the directory and resumes it on subsequent launches. Use `predev --new` to create a fresh project association. An existing codebase can be mapped with `/reverse` before you request changes.
+The CLI resolves a project for the directory and resumes it on subsequent launches. A folder with code starts as a full project. A folder without code starts [chat only](/cli/chat-only-projects): the agent and all its tools, with no keys, database, or file sync until you build something there or type `/project`. Use `predev --new` to create a fresh project association. An existing codebase can be mapped with `/reverse` before you request changes.
 
 ```bash
 predev "add an empty state to the reports page"
@@ -41,7 +41,7 @@ predev --version
 predev --help
 ```
 
-`predev open` brings an existing project, for example one you started on the web, into the current folder: its files are pulled here and it runs on this machine.
+`predev open` brings an existing project, for example one you started on the web, into the current folder: its files are pulled here and it runs on this machine. A chat-only project opens in the folder it last ran in.
 
 ## Sign in without a browser
 

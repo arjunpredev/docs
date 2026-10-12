@@ -76,7 +76,7 @@ Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to c
 ```
 </Note>
 
-Setup is safe to run again, and running it again updates to the newest version. Chrome asks **Allow remote debugging?** once each time it starts, and again after an update.
+Setup is safe to run again. The copy it installs keeps itself up to date, and running setup again also updates it. Chrome asks **Allow remote debugging?** once each time Chrome starts; updates keep the approved connection.
 
 ## Use it in the CLI
 
@@ -370,7 +370,7 @@ Browser Agents Local drives your real, signed-in Chrome. Read this before you tu
 | --- | --- |
 | `Chrome remote debugging is off` | Open `chrome://inspect/#remote-debugging` in Chrome and turn it on |
 | Chrome is asking **Allow remote debugging?** | Click **Allow** in Chrome, then ask your agent to try again |
-| Chrome asks to allow again | Expected after Chrome restarts or after the server updates |
+| Chrome asks to allow again | Normal after Chrome restarts. Updates keep the approved connection, except a rare one that changes how the background process talks to Chrome |
 | `Plain-words actions need a pre.dev account`, or a cloud tool says it needs a free pre.dev account | Run `npx -y @predotdev/mcp login`. No restart needed |
 | A cloud tool says it needs a pre.dev plan | Your account's plan does not include the cloud tools. See [plan access](/coding-agent/plans-and-credits#api-and-mcp-access); your agent can open the subscribe link in your Chrome |
 | `pre.dev rejected the saved key`, or a plain-words action returns `401` | Run `npx -y @predotdev/mcp login` again. If the agent sets `PREDEV_API_KEY`, update it there too, since it overrides the saved key |

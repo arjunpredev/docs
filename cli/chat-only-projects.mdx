@@ -1,0 +1,66 @@
+---
+title: "Chat-only and full projects"
+description: "Why a folder without code starts as a chat, and what changes when you start building."
+---
+
+Every folder you run `predev` in is a project. What differs is how much of pre.dev it switches on:
+
+- A folder that already has code (a git repo, an app manifest such as `package.json`, or source files) starts as a **full project**.
+- Any other folder starts **chat only**. You get the agent and all of its tools, and nothing else is set up until you build something.
+
+When a folder starts chat only, the CLI says so in one line, and its top bar shows **chat only** until the project is full.
+
+## What each one does
+
+| | Chat only | Full project |
+| --- | --- | --- |
+| Agent chat, shell, file edits, `/chrome`, MCP servers, skills | Yes | Yes |
+| Chat history, resumable in this folder and on the web | Yes | Yes |
+| Listed in your Projects on pre.dev | Yes | Yes |
+| Plan, Code, and Preview on the web | No | Yes |
+| Project keys written to the folder's `.env` | No | Yes |
+| Local database, file sync, and hand-over to the cloud when you quit | No | Yes |
+| Build suggestions | No | Yes |
+
+Both are billed the same way: by the credits the agent uses.
+
+## When it becomes a full project
+
+A chat-only project becomes a full project as soon as building starts:
+
+- the agent writes code into the folder (source files or an app manifest),
+- a plan or a build starts, including `/plan`, `/sprint`, `/reverse`, and `/publish`,
+- you type `/project`, or choose **Make it a full project** on the project's page or in its menu on the web.
+
+The CLI says so in one line, then starts what was off. Files a chat leaves behind as an answer, such as notes, an HTML page, a SQL query, a shell script, or data files, keep it chat only. A folder that gets code some other way, for example a `git clone`, opens as a full project the next time you run `predev` there.
+
+A full project made from a chat-only one gets only the keys you set for the project in its `.env`.
+
+## Folders that stay chat only
+
+Your home folder, Desktop, Downloads, and Documents are always chat only, so pre.dev never syncs them. `/project` there tells you to make a folder for the app:
+
+```bash
+mkdir my-app && cd my-app
+predev
+```
+
+## On the web
+
+Chat-only projects are in the same Projects list as every other project, with a **Chat only** tag and where they run, such as **On your Mac** or **Mac offline**. A chat-only project you opened but never wrote in stays out of the list.
+
+Its page has a **Chat only** tag beside the name and shows **Plan**, **Code**, and **Preview** switched off, with a **Make it a full project** button for the owner. When it becomes a full project, from the CLI, the web, or a cloud run, they switch on in the open page by themselves.
+
+You can keep the chat going from the web or your phone. Messages run on the computer the project runs on:
+
+| The computer is | What happens to a message you send |
+| --- | --- |
+| Online | It runs there, and the reply streams to the web |
+| Offline | It waits for up to 7 days and runs when `predev` opens there again |
+
+While the computer is offline, **Open on my Mac** opens the project there (`predev open <project>`), in the folder it last ran in, or in a fresh folder in your home directory when that folder is gone. **Run in the cloud instead** runs the message in the cloud; it becomes a full project once that run builds something.
+
+<CardGroup cols={2}>
+  <Card title="pre.dev CLI" icon="terminal" href="/cli/overview">Install the CLI and work in a local folder.</Card>
+  <Card title="CLI commands" icon="list" href="/cli/commands">Every command, key, and launch flag.</Card>
+</CardGroup>
