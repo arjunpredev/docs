@@ -7,6 +7,15 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-12
+
+### Chat-only projects, in one Projects list
+
+- Every folder you run `predev` in is a project. A folder without code starts **chat only**: the agent and all of its tools, with no keys, database, or file sync until you build something there. It becomes a **full project**, with Plan, Code, and Preview, when the agent writes code, a plan or build starts, or you type `/project`. See [Chat-only and full projects](/cli/chat-only-projects).
+- On the web, chat-only projects are in your Projects list with a **Chat only** tag and where they run, and the separate Sessions list is gone. A chat-only project you opened but never wrote in stays out of the list.
+- A chat-only project's page says **Chat only**, its menu has **Make it a full project**, and Plan, Code, and Preview appear on the open page when it becomes one.
+- In the CLI, the top bar shows **chat only** until the project is full, the first line says what that means, and `predev --help` describes both.
+
 ## 2026-10-11
 
 ### Sessions that move to the cloud can build

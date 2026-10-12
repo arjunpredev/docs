@@ -35,6 +35,7 @@
 - [Import a repository](https://docs.pre.dev/coding-agent/projects/importing-repos.md): Build on an existing GitHub codebase and its conventions.
 - [GitHub integration](https://docs.pre.dev/coding-agent/projects/github-integration.md): Connect GitHub, import code, and review branch changes.
 - [pre.dev CLI](https://docs.pre.dev/cli/overview.md): Install the CLI, use the coding agent in a local directory, sign in with `PREDEV_API_KEY`, and run one task with `predev run`.
+- [Chat-only and full projects](https://docs.pre.dev/cli/chat-only-projects.md): Why a folder without code starts as a chat, and what changes when you start building.
 - [CLI commands](https://docs.pre.dev/cli/commands.md): Terminal commands, keys, and launch flags.
 - [Work on an existing repo](https://docs.pre.dev/cli/existing-repos.md): Map a local codebase and make changes you review with Git.
 - [Fast vs Deep specs](https://docs.pre.dev/coding-agent/specifications/fast-vs-deep.md): Choose planning depth.
