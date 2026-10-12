@@ -7,6 +7,65 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-11
+
+### Sessions that move to the cloud can build
+
+- When a session's message runs in the cloud (**Run in the cloud instead** on the web), its cloud workspace starts with it. Once the agent writes code or starts a build there, the session becomes a project and **Code** and **Preview** appear.
+
+## 2026-10-10
+
+### CLI: sessions and projects
+
+- **A folder without code opens a session.** `predev` in a folder with no code, or in your home folder, Desktop, Downloads, or Documents, starts a session: a chat tied to that folder, with all of the agent's tools, `/chrome` and `!` commands included. A session writes no keys to `.env`, starts no local database, syncs no files, sets up no git, makes no build suggestions, and does not appear in Projects. See the [pre.dev CLI](/cli/overview).
+- A folder that holds code (a git repo, an app manifest, or source files), a folder already linked to a project, and `predev open <project>` open a project as before.
+- **A session becomes a project when building starts**: the agent writes code into the folder, a plan or build starts, or you run `/publish` or `/project`. The CLI says so in one line and starts what was off.
+- A project made from a session, or with `/project` in an empty folder, gets only the keys you set for the project in its `.env`.
+- `predev open <session>` opens a session in the folder it last ran in, or in `~/predev-sessions/<name>` when that folder is gone.
+
+### Sessions on the web
+
+- A **Sessions** page, next to Projects, lists your CLI sessions with where each one is (working, online, offline, or in the cloud), messages waiting for it, its last message, and a search.
+- **New session** starts pre.dev on your computer, or shows the command to run. Each session can be opened on your computer, renamed, made a project, or deleted.
+- A session's page is the agent chat alone: no Plan, Code, Preview, or Publish until it becomes a project. Messages sent while your computer is offline wait for up to 7 days and run when the CLI opens again, or choose **Run in the cloud instead**.
+- An answer to the agent's question given on the web goes to the computer that asked it and closes the question there.
+
+### Browser Agents Local in the CLI starts faster
+
+- [`@predotdev/mcp`](https://www.npmjs.com/package/@predotdev/mcp) 2.2.2 adds `npx -y @predotdev/mcp install-app`, which installs or updates the self-updating copy with no sign-in and no change to your agents' settings. The CLI runs it in the background, so `/chrome` starts without an npm lookup. See [Browser Agents Local in the CLI](/browser-agents/local#use-it-in-the-cli).
+- In the CLI, the agent is no longer offered screenshot tools from local MCP servers, since it receives their text only.
+- `!cmd` keeps square brackets exactly as typed.
+
+## 2026-10-09
+
+### pre.dev MCP 2.1.6 to 2.2.1
+
+- **Setup works before you sign in.** `npx -y @predotdev/mcp setup` installs the server, adds it to your agents, and connects to Chrome first, then asks you to sign in. Press Enter to skip; `chrome_act`, plain-words waits, and the cloud tools work after `npx -y @predotdev/mcp login`. See [Browser Agents Local](/browser-agents/local#quick-start).
+- **Pages are loaded when tools return.** `chrome_open` and `chrome_navigate` wait for the new page, clicks and key presses give it up to 2 seconds to update, and `chrome_wait` with only a tab waits until the page stops changing. Open and navigate end with **Page loaded**, or say the page is still loading after 20 seconds.
+- **Leaner reads.** `chrome_read` leaves out site menus, footers, off-screen panels, and the options of long dropdowns (`full=true` keeps them). `selector` reads only the matching elements and `links` adds their URLs. Link URLs lose tracking parameters, and sponsored redirects resolve to where they lead.
+- A `chrome_read` selector that matches nothing, or a `chrome_wait` selector that times out, lists the page's repeated items with selectors that work.
+- Results name the Chrome profile, and a call without `tab` uses the tab this agent last worked in.
+- **The installed copy updates itself.** It checks npm at most every 6 hours and verifies the download, and the running server uses the new version from its next call. Set `PREDEV_MCP_AUTO_UPDATE=off` to turn this off.
+
+### CLI
+
+- Text pasted on the first screen (**What do you want to build?**) no longer disappears.
+
+## 2026-10-08
+
+### pre.dev MCP 2.1.4 and 2.1.5
+
+- Agents finish a browser task with the closest answer the pages show, and say what differs, instead of stopping to ask. They still ask you for sign-ins, passwords, and payments.
+- `chrome_snapshot` lists the URL each link goes to.
+- Updates no longer make Chrome ask **Allow remote debugging?** again, and tool fixes reach a running server without reconnecting.
+- `chrome_act` takes `target`, or `description`, `instruction`, `element`, or `query`; `chrome_wait` takes `condition` or `until`. Both say what they need when given nothing.
+
+### `/chrome` in the CLI
+
+- The agent uses your signed-in Chrome for real websites and its own headless browser for the app it is building.
+- Plain-words actions work whether you signed in to the CLI in the browser or with `PREDEV_API_KEY`.
+- `/chrome` is listed in `predev --help`.
+
 ## 2026-10-07
 
 ### Your own Chrome in the pre.dev CLI
@@ -25,6 +84,26 @@ to get notified on every SDK bump.
 
 - **[Switch from Claude in Chrome](/browser-agents/switch-from-claude-in-chrome)**: move your coding agent to Browser Agents Local in two steps, with a tool-by-tool map from Claude in Chrome's tools to the `chrome_*` tools. Your Chrome profiles, tabs, and logins carry over.
 
+### pre.dev MCP 2.1.2 and 2.1.3
+
+- `chrome_open` and `chrome_navigate` read `localhost:3000` and other host-and-port addresses as hosts, and open local and private-network addresses over http.
+- Plain-words waits see the page's fields, as `chrome_act` does.
+- Plain-words actions mask password, card, security code, one-time code, and secret-named fields, and drop token-like values from URLs, before anything is sent to pre.dev. See [Safety](/browser-agents/local#safety).
+- The server's files under `~/.predev/mcp` are readable only by you, and `chrome_upload` and `file://` opens refuse SSH keys, cloud credentials, `.env` files, the saved pre.dev key, and Chrome's own data.
+
+### AI Gateway: auto-recharge before a 402
+
+- When a `/v1` call finds the workspace short of credits and auto-recharge is on, pre.dev refills first and runs the call instead of answering `402`. See [Errors](/api-reference/errors).
+- The `topup_url` in an `insufficient_credits` error, `https://pre.dev/billing`, now opens the plans for a free account and credits for a subscriber.
+- `insufficient_credits` carries `trial_blocked` when the workspace's free credits are on hold, for example until its email is verified. Plain-words actions then say to verify the email.
+
+### Plan mode on every plan, and one stop at 0 credits
+
+- `/plan` works on free plans too, in the web workspace and the CLI. At 0 credits a plan is refused before any work starts, with **Subscribe** or **Buy credits** next to it.
+- The composer's plan chip shows only while plan mode is on, to turn it off; turn plan mode on with `/plan`.
+- Out of credits, the chat shows one card with one line and one button: **Subscribe** or **Buy credits** while the balance is empty, then **Resume** once credits are back. A refused message, a paused preview, and a stopped publish name the same fix.
+- On a project another account pays for (its owner, or a team), the chat checks and shows that account's balance.
+
 ## 2026-10-06
 
 ### The pre.dev MCP server: one command, every pre.dev tool, and your own Chrome
@@ -34,6 +113,18 @@ to get notified on every SDK bump.
 - **[Browser Agents Local](/browser-agents/local): your own Chrome.** 17 `chrome_*` tools let your coding agent drive the Google Chrome you already have open: every profile, your logins, and your open tabs. All your agents share one connection, so Chrome asks **Allow remote debugging?** once each time it starts. See [Cloud or Local](/browser-agents/local#cloud-or-local) to choose.
 - **Plain-words actions**: `chrome_act` clicks or types into an element you describe, and `chrome_wait` can wait for a plain-words `condition`. They use your workspace credits and appear in [`GET /v1/usage`](/ai-gateway/api/usage) as `browser-agents-local`. Every other Chrome tool runs on your computer and never calls pre.dev.
 - Free and open source under MIT: [`@predotdev/mcp`](https://www.npmjs.com/package/@predotdev/mcp) on npm, source at [predotdev/mcp](https://github.com/predotdev/mcp). `check` confirms the setup, `login` signs in again, and `uninstall` removes it from every agent.
+
+### Plans list additions under their feature
+
+- In [`GET /get-plan`](/architect-agent/api/get-plan), the MCP [`get_plan`](/mcp/tools#get_plan) tool, and the `plan` in [spec status](/architect-agent/api/spec-status) and `get_spec`, work added to a feature that was already built is listed right after that feature, with `partOf` naming it, and counts as its own item until it is built. On a feature, `partOf` is `null`.
+- The Markdown summary says `(added to <feature>)` and counts features and additions separately.
+
+### Plan mode is back on the web
+
+- On paid plans, the **Plan** chip and `/plan` turn on plan mode in the web workspace again, and `/auto` turns it off.
+- Plan mode now stays on until you leave it. Each message changes the plan instead of the code and ends with a **Plan updated** card: the stories added, changed, or removed, the spec version, and the credits used. **Build it** leaves plan mode and starts building. `/plan` in the CLI works the same way.
+- A first message that asks for a plan and no build yet, such as "Plan only, don't build yet: a habit tracker", plans the app without building it and opens the Plan view on a **Plan ready** card.
+- The Plan view's tabs (Overview, Document, Roadmap, Architecture, Spec, App map, and Changes) read the same plan, and each says when it last changed.
 
 ## 2026-10-05
 
