@@ -6,7 +6,7 @@ import { source, pageSlug } from '@/lib/source';
 import { extractOperation, parseOpenAPIRef, readSpec } from '@/lib/openapi';
 import { docsJson, siteUrl } from '@/lib/docs-config';
 import { getMDXComponents } from '@/components/mdx';
-import { OpenAPIPage } from '@/components/api-page';
+import { OpenAPIPage } from '@/components/api-page-lazy';
 import { forInteractivePage } from '@/components/api-spec';
 import { PageActions } from '@/components/page-actions';
 import { Feedback } from '@/components/feedback';
