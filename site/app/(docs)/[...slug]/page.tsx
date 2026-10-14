@@ -4,13 +4,47 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layo
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { source, pageSlug } from '@/lib/source';
 import { extractOperation, parseOpenAPIRef, readSpec } from '@/lib/openapi';
-import { siteUrl } from '@/lib/docs-config';
+import { docsJson, siteUrl } from '@/lib/docs-config';
 import { getMDXComponents } from '@/components/mdx';
 import { OpenAPIPage } from '@/components/api-page';
 import { PageActions } from '@/components/page-actions';
 import { Feedback } from '@/components/feedback';
 import { EndpointBar } from '@/components/endpoint-bar';
-import { groupOf } from '@/lib/groups';
+import { placeOf } from '@/lib/groups';
+import { lastModified } from '@/lib/last-modified';
+import { PageFooter } from '@/components/page-footer';
+import { ImageZoom } from '@/components/image-zoom';
+
+/** schema.org data for the page: an article (or API reference) and its breadcrumb trail. */
+function structuredData(page: { title: string; description?: string; slug: string; api: boolean; modified?: string }) {
+  const place = placeOf(page.slug);
+  const url = `${siteUrl}/${page.slug}`;
+  const crumbs = [
+    { name: docsJson.name, item: `${siteUrl}/overview` },
+    ...(place && place.tabPage !== 'overview' ? [{ name: place.tab, item: `${siteUrl}/${place.tabPage}` }] : []),
+    ...(place?.group && place.group !== place.tab ? [{ name: place.group }] : []),
+    { name: page.title, item: url },
+  ];
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': page.api ? 'APIReference' : 'TechArticle',
+        headline: page.title,
+        description: page.description,
+        url,
+        inLanguage: 'en',
+        ...(page.modified ? { dateModified: page.modified } : {}),
+        isPartOf: { '@type': 'WebSite', name: docsJson.name, url: siteUrl },
+        publisher: { '@type': 'Organization', ...docsJson.seo?.organization },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, ...crumb })),
+      },
+    ],
+  };
+}
 
 export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await props.params;
@@ -24,11 +58,25 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const pathSlug = pageSlug(page);
 
   return (
-    <DocsPage toc={page.data.toc} full={Boolean(ref)}>
+    <DocsPage toc={page.data.toc} full={Boolean(ref)} breadcrumb={{ enabled: false }} id="main-content">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            structuredData({
+              title: page.data.title,
+              description: page.data.description,
+              slug: pathSlug,
+              api: Boolean(ref),
+              modified: lastModified(page.path),
+            }),
+          ),
+        }}
+      />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="mb-1 text-sm font-medium text-fd-primary/70">{groupOf(pathSlug)}</p>
-          <DocsTitle>{page.data.title}</DocsTitle>
+          <p className="mb-1 text-sm font-medium text-fd-primary/70">{placeOf(pathSlug)?.group}</p>
+          <DocsTitle className="text-3xl leading-tight sm:text-[2.25rem]">{page.data.title}</DocsTitle>
         </div>
         <PageActions markdownUrl={`/${pathSlug}.md`} pageUrl={`${siteUrl}/${pathSlug}`} />
       </div>
@@ -47,6 +95,8 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
         ) : null}
       </DocsBody>
       <Feedback page={page.url} />
+      <PageFooter file={page.path} />
+      <ImageZoom container="main-content" />
     </DocsPage>
   );
 }
@@ -68,7 +118,22 @@ export async function generateMetadata(props: { params: Promise<{ slug: string[]
       canonical: `/${pathSlug}`,
       types: { 'text/markdown': `/${pathSlug}.md` },
     },
-    openGraph: { url: `/${pathSlug}`, images: { url: image, width: 1200, height: 630 } },
-    twitter: { images: { url: image, width: 1200, height: 630 } },
+    // page metadata replaces the root layout's openGraph and twitter objects, so repeat the shared fields
+    openGraph: {
+      type: 'article',
+      siteName: docsJson.name,
+      url: `/${pathSlug}`,
+      title: page.data.title,
+      description: page.data.description,
+      images: { url: image, width: 1200, height: 630 },
+      ...(lastModified(page.path) ? { modifiedTime: lastModified(page.path) } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: docsJson.seo?.metatags?.['twitter:site'],
+      title: page.data.title,
+      description: page.data.description,
+      images: { url: image, width: 1200, height: 630 },
+    },
   };
 }

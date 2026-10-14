@@ -50,6 +50,9 @@ export const docsJson: DocsJson = JSON.parse(fs.readFileSync(path.join(repoRoot,
 
 export const siteUrl = 'https://docs.pre.dev';
 
+/** Source repository; pages link to their file here ("Suggest edits"). */
+export const repoUrl = 'https://github.com/arjunpredev/docs';
+
 export function openapiFiles(): string[] {
   const value = docsJson.api?.openapi ?? [];
   return Array.isArray(value) ? value : [value];

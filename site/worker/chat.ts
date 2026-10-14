@@ -26,6 +26,7 @@ const MAX_MESSAGE_CHARS = 4000;
 // Jev route: candidates in, a few whole sections out
 const SEARCH_CANDIDATES = 10;
 const PAGE_CANDIDATES = 8;
+const LINKED_CANDIDATES = 6;
 const EXCERPT_CHARS = 280;
 const MAX_PICKED = 4;
 const SECTION_CHARS = 4000;
@@ -63,6 +64,7 @@ const SYSTEM_PROMPT = `You are the assistant on the pre.dev documentation site (
 Answer questions about pre.dev using only the documentation excerpts provided below.
 - Link every page you rely on as a Markdown link with the exact URL given in the excerpts.
 - If the excerpts do not answer the question, say so plainly, then point to the closest page or to support@pre.dev. Never invent endpoints, fields, prices, limits or behavior.
+- Write a URL, path, field, header, command or code sample only when it appears in the excerpts. When the reader asks for code the excerpts do not contain, say so and link the page that covers it instead of writing your own.
 - Keep answers short and practical. Use fenced code blocks with a language for code. Do not use em dashes.
 - Only answer questions about pre.dev and building with it. Politely decline anything else.`;
 
@@ -147,20 +149,38 @@ function block(section: SectionHit, limit: number): string {
   return `## ${section.title}\nURL: ${section.url}\n\n${content}\n\n`;
 }
 
-/** Keyword hits for the latest question (and, for a follow-up, the one before it), then the reader's page. */
+async function pageSections(env: Env, page: string): Promise<SectionHit[]> {
+  const text = await readDocsFile(env, `/${page}.mdx`);
+  return text ? splitPage(`/${page}.mdx`, text) : [];
+}
+
+/** Sections the previous answer linked to: the anchored section, or the start of a page linked without one. */
+async function linkedSections(env: Env, answer: string | undefined): Promise<SectionHit[]> {
+  if (!answer) return [];
+  const links = [...answer.matchAll(/https:\/\/docs\.pre\.dev\/([a-z0-9/-]+)(?:#([a-z0-9-]+))?/g)].slice(0, 4);
+  const out: SectionHit[] = [];
+  for (const [, page, anchor] of links) {
+    const sections = await pageSections(env, page);
+    const match = anchor ? sections.find((s) => s.url.endsWith(`#${anchor}`)) : undefined;
+    out.push(...(match ? [match] : sections.slice(0, 2)));
+  }
+  return out.slice(0, LINKED_CANDIDATES);
+}
+
+/** Keyword hits for the latest question (and, for a follow-up, the one before it), what the last answer linked, then the reader's page. */
 async function gatherCandidates(env: Env, messages: ChatMessage[], page?: string): Promise<SectionHit[]> {
   const asked = messages.filter((m) => m.role === 'user').map((m) => m.content);
   const question = asked.at(-1)!;
-  const [hits, followUp, pageSections] = await Promise.all([
+  const lastAnswer = messages.findLast((m) => m.role === 'assistant')?.content;
+  const [hits, followUp, linked, onPage] = await Promise.all([
     searchSections(env, question.slice(0, 500), SEARCH_CANDIDATES),
     asked.length > 1 ? searchSections(env, `${asked.at(-2)} ${question}`.slice(0, 500), 4) : Promise.resolve([]),
-    page
-      ? readDocsFile(env, `/${page}.mdx`).then((text) => (text ? splitPage(`/${page}.mdx`, text).slice(0, PAGE_CANDIDATES) : []))
-      : Promise.resolve([]),
+    linkedSections(env, lastAnswer),
+    page ? pageSections(env, page).then((sections) => sections.slice(0, PAGE_CANDIDATES)) : Promise.resolve([]),
   ]);
   const seen = new Set<string>();
   const out: SectionHit[] = [];
-  for (const s of [...hits, ...followUp, ...pageSections]) {
+  for (const s of [...hits, ...followUp, ...linked, ...onPage]) {
     if (seen.has(s.url)) continue;
     seen.add(s.url);
     out.push({ title: s.title, url: s.url, page: s.page, content: s.content });
@@ -317,7 +337,13 @@ export async function handleChat(request: Request, env: Env, ctx: ExecutionConte
   // one chip per page: its best-ranked section
   const byPage = new Map<string, { title: string; url: string }>();
   for (const s of plan.sources) if (!byPage.has(s.url.split('#')[0])) byPage.set(s.url.split('#')[0], { title: s.title, url: s.url });
-  const sources = [...byPage.values()].slice(0, 5);
+  // two pages can have a section with the same title; label the later ones with their page
+  const titles = new Set<string>();
+  const sources = [...byPage.values()].slice(0, 5).map((s) => {
+    const title = titles.has(s.title) ? `${s.title} (${s.url.split('#')[0].split('/').pop()})` : s.title;
+    titles.add(s.title);
+    return { ...s, title };
+  });
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();

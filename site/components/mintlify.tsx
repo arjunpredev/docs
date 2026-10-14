@@ -7,10 +7,11 @@ import { Tab as FdTab, Tabs as FdTabs } from 'fumadocs-ui/components/tabs';
 import { CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from 'fumadocs-ui/components/codeblock';
 import { Children, Fragment, cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 import { NavIcon } from './icons';
+import { mintlifySlug } from '../lib/slug.mjs';
 
 export function Note({ children, title }: { children: ReactNode; title?: string }) {
   return (
-    <Callout type="info" title={title}>
+    <Callout type="info" title={title} className="callout-tinted">
       {children}
     </Callout>
   );
@@ -22,7 +23,7 @@ export function Info(props: { children: ReactNode; title?: string }) {
 
 export function Warning({ children, title }: { children: ReactNode; title?: string }) {
   return (
-    <Callout type="warning" title={title}>
+    <Callout type="warning" title={title} className="callout-tinted">
       {children}
     </Callout>
   );
@@ -30,7 +31,7 @@ export function Warning({ children, title }: { children: ReactNode; title?: stri
 
 export function Tip({ children, title }: { children: ReactNode; title?: string }) {
   return (
-    <Callout type="idea" title={title}>
+    <Callout type="idea" title={title} className="callout-tinted">
       {children}
     </Callout>
   );
@@ -38,7 +39,7 @@ export function Tip({ children, title }: { children: ReactNode; title?: string }
 
 export function Check({ children, title }: { children: ReactNode; title?: string }) {
   return (
-    <Callout type="success" title={title}>
+    <Callout type="success" title={title} className="callout-tinted">
       {children}
     </Callout>
   );
@@ -89,13 +90,16 @@ export function Step({ title, children }: { title?: string; children?: ReactNode
 
 type TabElement = ReactElement<{ title?: string; children?: ReactNode }>;
 
+// Every panel is rendered (inactive ones hidden by CSS) so the server HTML has
+// all of them, and each panel's id is the anchor Mintlify gave the tab
+// (#cursor, #node-js); opening the page with that hash selects the tab.
 export function Tabs({ children }: { children: ReactNode }) {
   const tabs = Children.toArray(children).filter(isValidElement) as TabElement[];
   const items = tabs.map((tab, i) => tab.props.title ?? `Tab ${i + 1}`);
   return (
     <FdTabs items={items}>
       {tabs.map((tab, i) => (
-        <FdTab key={items[i]} value={items[i]}>
+        <FdTab key={items[i]} value={items[i]} id={mintlifySlug(items[i]) || undefined} forceMount>
           {tab.props.children}
         </FdTab>
       ))}
@@ -146,7 +150,7 @@ export function CodeGroup({ children }: { children: ReactNode }) {
         ))}
       </CodeBlockTabsList>
       {tabs.map(({ value, block }) => (
-        <CodeBlockTab key={value} value={value}>
+        <CodeBlockTab key={value} value={value} forceMount className="data-[state=inactive]:hidden">
           {block}
         </CodeBlockTab>
       ))}

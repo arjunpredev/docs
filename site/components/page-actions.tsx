@@ -27,7 +27,7 @@ export function PageActions({ markdownUrl, pageUrl }: { markdownUrl: string; pag
 
   const links: { id: string; label: string; description: string; href: string; icon: ReactNode }[] = [
     { id: 'view', label: 'View as Markdown', description: 'View this page as plain text', href: markdownUrl, icon: <FileText className="size-4" /> },
-    { id: 'chatgpt', label: 'Open in ChatGPT', description: 'Ask questions about this page', href: `https://chatgpt.com/?hints=search&prompt=${q}`, icon: <ExternalLink className="size-4" /> },
+    { id: 'chatgpt', label: 'Open in ChatGPT', description: 'Ask questions about this page', href: `https://chatgpt.com/?hints=search&q=${q}`, icon: <ExternalLink className="size-4" /> },
     { id: 'claude', label: 'Open in Claude', description: 'Ask questions about this page', href: `https://claude.ai/new?q=${q}`, icon: <ExternalLink className="size-4" /> },
     { id: 'perplexity', label: 'Open in Perplexity', description: 'Ask questions about this page', href: `https://www.perplexity.ai/search/new?q=${q}`, icon: <ExternalLink className="size-4" /> },
     { id: 'cursor', label: 'Connect to Cursor', description: 'Install the docs MCP server in Cursor', href: `cursor://anysphere.cursor-deeplink/mcp/install?name=pre.dev&config=${cursorConfig}`, icon: <Plug className="size-4" /> },
@@ -55,7 +55,7 @@ export function PageActions({ markdownUrl, pageUrl }: { markdownUrl: string; pag
             </span>
           </button>
           {links.map((link) => (
-            <a key={link.id} href={link.href} target={link.id === 'view' ? undefined : '_blank'} rel="noreferrer noopener" className={item}>
+            <a key={link.id} href={link.href} target="_blank" rel="noreferrer noopener" className={item}>
               <span className="mt-0.5">{link.icon}</span>
               <span>
                 <span className="block font-medium text-fd-foreground">{link.label}</span>

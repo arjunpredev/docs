@@ -1,5 +1,5 @@
 'use client';
-import posthog from 'posthog-js';
+import { track } from '@/lib/track';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useState } from 'react';
 
@@ -7,7 +7,7 @@ export function Feedback({ page }: { page: string }) {
   const [sent, setSent] = useState<boolean | null>(null);
 
   function send(helpful: boolean) {
-    posthog.capture?.('docs_feedback', { page, helpful });
+    track('docs_feedback', { page, helpful });
     setSent(helpful);
   }
 

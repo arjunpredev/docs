@@ -1,13 +1,9 @@
 'use client';
 // Ask AI: navbar button (Cmd/Ctrl+I), a question bar at the bottom of each page,
 // and a side panel that streams answers from /api/chat.
-import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import type { Root } from 'hast';
-import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
-import { ArrowUp, Loader2, RotateCcw, Sparkles, X } from 'lucide-react';
+import { ArrowUp, Loader2, Maximize2, Minimize2, RotateCcw, Sparkles, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import posthog from 'posthog-js';
 import {
   createContext,
   useCallback,
@@ -16,15 +12,20 @@ import {
   useMemo,
   useRef,
   useState,
-  type ComponentProps,
   type FormEvent,
   type ReactNode,
 } from 'react';
-import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
-import { remark } from 'remark';
-import remarkGfm from 'remark-gfm';
-import remarkRehype from 'remark-rehype';
+import { track } from '@/lib/track';
 import { getTurnstileToken } from './turnstile';
+
+// The answer renderer (Markdown + code highlighting) loads when the panel first shows an answer.
+const Markdown = dynamic(() => import('./ask-ai-markdown'), {
+  ssr: false,
+  loading: () => <Loader2 className="size-4 animate-spin text-fd-muted-foreground" />,
+});
+
+/** Dispatch on window with a question as `detail` to open Ask AI and ask it. */
+export const ASK_EVENT = 'docs:ask-ai';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -45,27 +46,6 @@ function useAskAI() {
   const ctx = useContext(Context);
   if (!ctx) throw new Error('useAskAI outside <AskAIProvider>');
   return ctx;
-}
-
-const processor = remark().use(remarkGfm).use(remarkRehype);
-
-function Pre(props: ComponentProps<'pre'>) {
-  const code = props.children as { props?: { className?: string; children?: unknown } } | undefined;
-  const lang = code?.props?.className?.replace('language-', '') ?? 'text';
-  return <DynamicCodeBlock lang={lang} code={String(code?.props?.children ?? '').trimEnd()} />;
-}
-
-function Markdown({ text }: { text: string }) {
-  const node = useMemo(() => {
-    const hast = processor.runSync(processor.parse(text)) as Root;
-    return toJsxRuntime(hast, {
-      Fragment,
-      jsx,
-      jsxs,
-      components: { ...defaultMdxComponents, pre: Pre, img: undefined },
-    });
-  }, [text]);
-  return <div className="prose prose-sm max-w-none text-sm [&_p]:my-2">{node}</div>;
 }
 
 function currentPage(pathname: string | null): string | undefined {
@@ -144,7 +124,7 @@ export function AskAIProvider({ children }: { children: ReactNode }) {
       const text = question.trim();
       if (!text || busy) return;
       setOpen(true);
-      posthog.capture?.('docs_ask_ai_question', { page: currentPage(pathname) });
+      track('docs_ask_ai_question', { page: currentPage(pathname) });
       // Drop exchanges that failed, so a retry does not repeat the question
       const kept: Message[] = [];
       for (const m of messages) {
@@ -171,6 +151,16 @@ export function AskAIProvider({ children }: { children: ReactNode }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // Other parts of the page (the search dialog) hand a question over with this event.
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const question = (e as CustomEvent<string>).detail;
+      if (typeof question === 'string' && question.trim()) ask(question);
+    };
+    window.addEventListener(ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ASK_EVENT, onAsk);
+  }, [ask]);
 
   const value = useMemo(() => ({ open, setOpen, ask }), [open, ask]);
 
@@ -269,6 +259,7 @@ function AskAIBar() {
 
 function Panel({ messages, busy, onClose, onReset }: { messages: Message[]; busy: boolean; onClose: () => void; onReset: () => void }) {
   const end = useRef<HTMLDivElement>(null);
+  const [wide, setWide] = useState(false);
   useEffect(() => {
     end.current?.scrollIntoView({ block: 'end' });
   }, [messages]);
@@ -276,11 +267,19 @@ function Panel({ messages, busy, onClose, onReset }: { messages: Message[]; busy
   return (
     <aside
       aria-label="Ask AI"
-      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-s bg-fd-background shadow-2xl sm:w-[440px]"
+      className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col border-s bg-fd-background shadow-2xl ${wide ? 'sm:w-[min(760px,100vw)]' : 'sm:w-[440px]'}`}
     >
       <header className="flex items-center gap-2 border-b px-4 py-3">
         <Sparkles className="size-4" />
         <p className="flex-1 text-sm font-medium">Ask AI</p>
+        <button
+          type="button"
+          onClick={() => setWide(!wide)}
+          aria-label={wide ? 'Narrow the panel' : 'Widen the panel'}
+          className="rounded-md p-1.5 text-fd-muted-foreground hover:bg-fd-accent max-sm:hidden"
+        >
+          {wide ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+        </button>
         <button type="button" onClick={onReset} aria-label="New conversation" className="rounded-md p-1.5 text-fd-muted-foreground hover:bg-fd-accent">
           <RotateCcw className="size-4" />
         </button>
@@ -323,7 +322,7 @@ function Panel({ messages, busy, onClose, onReset }: { messages: Message[]; busy
         <div ref={end} />
       </div>
       <div className="border-t p-3">
-        <QuestionInput placeholder="Ask a follow-up..." autoFocus disabled={busy} />
+        <QuestionInput placeholder={messages.length ? 'Ask a follow-up...' : 'Ask a question...'} autoFocus disabled={busy} />
         <p className="mt-2 text-center text-xs text-fd-muted-foreground">AI answers can be wrong. Check the linked pages.</p>
       </div>
     </aside>

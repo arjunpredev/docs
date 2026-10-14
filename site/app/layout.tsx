@@ -32,6 +32,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:border focus:bg-fd-background focus:px-3 focus:py-2 focus:text-sm focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
+        {/* For agents that read page text: where the index and Markdown live (hidden from people) */}
+        <div hidden>
+          Documentation index: {siteUrl}/llms.txt. Full text: {siteUrl}/llms-full.txt. Add .md to any page URL for its Markdown.
+        </div>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <Provider defaultTheme={docsJson.appearance?.default ?? 'dark'}>{children}</Provider>
         <Analytics apiKey={posthog?.apiKey} apiHost={posthog?.apiHost} />
