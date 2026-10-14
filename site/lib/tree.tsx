@@ -4,14 +4,25 @@ import type * as PageTree from 'fumadocs-core/page-tree';
 import { docsJson, type NavGroup } from './docs-config';
 import { getPageBySlug } from './source';
 import { NavIcon } from '@/components/icons';
+import { MethodBadge } from '@/components/method-badge';
 
 function pageNode(slug: string): PageTree.Item {
   const page = getPageBySlug(slug);
   if (!page) throw new Error(`docs.json lists "${slug}" but no ${slug}.mdx exists`);
+  const title = page.data.sidebarTitle ?? page.data.title;
+  // API endpoint pages lead with their HTTP method, as on the Mintlify site
+  const method = page.data.openapi?.trim().split(/\s+/)[1];
   return {
     $id: slug,
     type: 'page',
-    name: page.data.sidebarTitle ?? page.data.title,
+    name: method ? (
+      <span className="flex items-center gap-2">
+        <MethodBadge method={method} size="sm" />
+        <span>{title}</span>
+      </span>
+    ) : (
+      title
+    ),
     url: page.url,
     icon: page.data.icon ? <NavIcon name={page.data.icon} /> : undefined,
   };

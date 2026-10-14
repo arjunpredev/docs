@@ -6,13 +6,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "node scripts/prepare.mjs && next dev --port 3100",
-    "build": "node scripts/prepare.mjs && next build && node scripts/postbuild.mjs",
+    "dev": "node patches/fumadocs-openapi.mjs && node scripts/prepare.mjs && next dev --port 3100",
+    "build": "node patches/fumadocs-openapi.mjs && node scripts/prepare.mjs && next build && node scripts/postbuild.mjs",
     "preview": "wrangler dev --port 8799",
     "check:out": "node scripts/check-out.mjs",
     "check:worker": "wrangler types worker/worker-configuration.d.ts > /dev/null && tsc -p worker/tsconfig.json",
     "test:mcp": "node scripts/test-mcp.mjs",
-    "postinstall": "fumadocs-mdx"
+    "postinstall": "node patches/fumadocs-openapi.mjs && fumadocs-mdx"
   },
   "dependencies": {
     "fumadocs-core": "16.15.17",
