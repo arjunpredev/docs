@@ -6,9 +6,18 @@ import { handleSearch } from './search';
 
 export interface Env {
   ASSETS: Fetcher;
-  /** pre.dev AI Gateway key used by Ask AI (secret) */
+  /** Ask AI provider key (secret) */
   ASK_AI_KEY?: string;
+  /** OpenAI-compatible chat completions URL for the writer model (secret) */
+  ASK_AI_CHAT_URL?: string;
+  /** Jev key; without it Ask AI answers from keyword search alone (secret) */
+  ASK_AI_JEV_KEY?: string;
+  /** Model that writes Ask AI answers */
   ASK_AI_MODEL?: string;
+  /** Decision model that triages Ask AI questions */
+  ASK_AI_JEV_MODEL?: string;
+  /** "off" skips the decision model and answers from keyword search alone */
+  ASK_AI_JEV?: string;
   /** Turnstile secret; when set, Ask AI requires a token (secret) */
   TURNSTILE_SECRET?: string;
   CHAT_LIMITER?: RateLimit;

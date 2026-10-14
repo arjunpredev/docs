@@ -18,7 +18,9 @@
     { "name": "MCP_LIMITER", "namespace_id": "4102", "simple": { "limit": 120, "period": 60 } }
   ],
   "vars": {
-    "ASK_AI_MODEL": "deepseek/deepseek-v4.1-flash"
+    "ASK_AI_MODEL": "deepseek/deepseek-v4.1-flash",
+    "ASK_AI_JEV_MODEL": "jev-1.13.0",
+    "ASK_AI_JEV": "on"
   },
   // docs.pre.dev is added here at the DNS switch from Mintlify
   "routes": [{ "pattern": "docs-next.pre.dev", "custom_domain": true }],

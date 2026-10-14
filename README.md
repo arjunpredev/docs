@@ -42,9 +42,9 @@ What it keeps from Mintlify, and where:
 - Heading anchors follow Mintlify's slug rule (`lib/slug.mjs`), so existing deep links keep working.
 - `openapi:` frontmatter renders the operation with an interactive playground (`fumadocs-openapi`).
 - Every page has a Markdown twin at `/<page>.md`, also served for `Accept: text/markdown` and to AI fetchers. `llms-full.txt` is generated; `llms.txt` and `skill.md` are served as written.
-- The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs through the pre.dev AI Gateway, with a per-IP rate limit and Turnstile.
+- The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs with two models: Jev, a decision model, turns away off-topic questions and picks the sections that answer the rest, and DeepSeek V4.1 Flash writes the answer from those sections. It has a per-IP rate limit and Turnstile.
 
-Worker secrets (`wrangler secret put`): `ASK_AI_KEY` (the workspace key Ask AI uses) and `TURNSTILE_SECRET`. The GitHub workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets and a `TURNSTILE_SITE_KEY` variable.
+Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets and a `TURNSTILE_SITE_KEY` variable.
 
 When sibling product repositories are available, also run:
 
