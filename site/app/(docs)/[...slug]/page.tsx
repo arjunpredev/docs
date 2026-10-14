@@ -7,6 +7,7 @@ import { extractOperation, parseOpenAPIRef, readSpec } from '@/lib/openapi';
 import { siteUrl } from '@/lib/docs-config';
 import { getMDXComponents } from '@/components/mdx';
 import { OpenAPIPage } from '@/components/api-page';
+import { forInteractivePage } from '@/components/api-spec';
 import { PageActions } from '@/components/page-actions';
 import { Feedback } from '@/components/feedback';
 import { EndpointBar } from '@/components/endpoint-bar';
@@ -41,7 +42,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
             <OpenAPIPage
               document={ref.document}
               operations={[{ path: ref.path, method: ref.method as never }]}
-              preloaded={{ docs: { [ref.document]: spec as never } }}
+              preloaded={{ docs: { [ref.document]: forInteractivePage(spec) as never } }}
             />
           </div>
         ) : null}
