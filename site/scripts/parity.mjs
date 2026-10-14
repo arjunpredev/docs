@@ -69,7 +69,8 @@ await Promise.all(
       const [a, b] = await Promise.all([probe(reference, check), probe(candidate, check)]);
       done++;
       const sameStatus = a.status === b.status || (a.status >= 300 && a.status < 400 && b.status >= 300 && b.status < 400);
-      const sameType = a.type === b.type || a.status >= 300;
+      const xml = (t) => (t === 'application/xml' ? 'text/xml' : t);
+      const sameType = xml(a.type) === xml(b.type) || a.status >= 300;
       const sameLocation = a.location === b.location;
       if (!sameStatus || !sameType || !sameLocation) failures.push({ ...check, reference: a, candidate: b });
     }

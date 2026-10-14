@@ -245,14 +245,25 @@ function QuestionInput({ placeholder, autoFocus, disabled }: { placeholder: stri
 }
 
 function AskAIBar() {
-  const { open } = useAskAI();
+  const { open, setOpen } = useAskAI();
   if (open) return null;
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 max-md:hidden">
-      <div className="pointer-events-auto w-full max-w-xl">
-        <QuestionInput placeholder="Ask a question..." />
+    <>
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 max-md:hidden">
+        <div className="pointer-events-auto w-full max-w-xl">
+          <QuestionInput placeholder="Ask a question..." />
+        </div>
       </div>
-    </div>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Ask AI"
+        className="fixed right-4 bottom-4 z-30 inline-flex items-center gap-2 rounded-full bg-fd-primary px-4 py-2.5 text-sm font-medium text-fd-primary-foreground shadow-lg md:hidden"
+      >
+        <Sparkles className="size-4" />
+        Ask AI
+      </button>
+    </>
   );
 }
 
