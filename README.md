@@ -1,6 +1,6 @@
 # pre.dev documentation
 
-Source for [docs.pre.dev](https://docs.pre.dev). Pages, `docs.json`, snippets and redirects use Mintlify's format; [`site/`](#the-site) renders them as a static Fumadocs build served by a Cloudflare Worker. Changes on `main` deploy automatically; use a feature branch and review before publishing. Each pull request gets a preview URL.
+Source for [docs.pre.dev](https://docs.pre.dev). Pages, `docs.json`, snippets and redirects use Mintlify's format; [`site/`](#the-site) renders them as a static Fumadocs build served by a Cloudflare Worker. Changes on `main` deploy automatically; use a feature branch and review before publishing. Every pull request builds and checks the site; preview it locally with `npm run preview`.
 
 ## Preview and validate
 
@@ -44,7 +44,7 @@ What it keeps from Mintlify, and where:
 - Every page has a Markdown twin at `/<page>.md`, also served for `Accept: text/markdown` and to AI fetchers. `llms-full.txt` is generated; `llms.txt` and `skill.md` are served as written.
 - The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs with two models: Jev, a decision model, turns away off-topic questions and picks the sections that answer the rest, and DeepSeek V4.1 Flash writes the answer from those sections. It has a per-IP rate limit and Turnstile.
 
-Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets and a `TURNSTILE_SITE_KEY` variable.
+Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow deploys from `main` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets in the `production` environment, which only `main` can use, and reads the `TURNSTILE_SITE_KEY` repository variable.
 
 When sibling product repositories are available, also run:
 
