@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "predev-docs",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
+  },
+  "observability": { "enabled": true },
+  // Per-IP limits for the two routes that do work per request
+  "ratelimits": [
+    { "name": "CHAT_LIMITER", "namespace_id": "4101", "simple": { "limit": 10, "period": 60 } },
+    { "name": "MCP_LIMITER", "namespace_id": "4102", "simple": { "limit": 120, "period": 60 } }
+  ],
+  "vars": {
+    "ASK_AI_MODEL": "deepseek/deepseek-v4.1-flash"
+  },
+  // docs.pre.dev is added here at the DNS switch from Mintlify
+  "routes": [{ "pattern": "docs-next.pre.dev", "custom_domain": true }],
+  "workers_dev": true,
+  "preview_urls": true
+}
