@@ -43,7 +43,8 @@ export default defineConfig({
     },
     rehypePlugins: (plugins) => [...plugins, rehypeSmartQuotes],
     rehypeCodeOptions: {
-      themes: { light: 'github-light', dark: 'github-dark' },
+      // github-dark's comment gray is hard to read on the near-black code background
+      themes: { light: 'github-light', dark: 'github-dark-default' },
     },
   },
 });
