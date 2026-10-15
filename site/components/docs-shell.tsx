@@ -5,18 +5,16 @@ import { docsJson } from '@/lib/docs-config';
 import { getTree } from '@/lib/tree';
 import { NavIcon } from '@/components/icons';
 import { AskAITrigger } from '@/components/ask-ai';
+import { BrandMark } from '@/components/brand-mark';
 import { ChevronRight } from 'lucide-react';
 
+/** Same lockup as the pre.dev header: the brain mark at 34x24 and the name in Inter, in the text color. */
 function Logo() {
-  const { logo, name } = docsJson;
-  if (!logo) return <span className="font-semibold">{name}</span>;
   return (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={logo.light} alt={name} className="h-7 w-auto dark:hidden" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={logo.dark} alt={name} className="hidden h-7 w-auto dark:block" />
-    </>
+    <span className="-ml-0.5 inline-flex items-center gap-2 text-lg font-normal">
+      <BrandMark className="h-6 w-[34px]" />
+      {docsJson.name}
+    </span>
   );
 }
 
@@ -64,7 +62,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
           href={primary.href}
           target="_blank"
           rel="noreferrer noopener"
-          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg bg-fd-primary px-3 py-1.5 text-sm font-medium text-fd-primary-foreground hover:opacity-90 dark:bg-neutral-500 dark:text-white"
+          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-fd-foreground px-3.5 py-1.5 text-sm font-medium text-fd-background hover:opacity-90"
         >
           {primary.label}
           <ChevronRight className="size-3.5" />
