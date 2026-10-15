@@ -22,9 +22,11 @@
     "ASK_AI_JEV_MODEL": "jev-1.13.0",
     "ASK_AI_JEV": "on"
   },
-  // A custom domain: Cloudflare owns the DNS record and the certificate, and it takes precedence over
-  // the zone's *.pre.dev/* route. A deploy removes custom domains missing from this list.
-  "routes": [{ "pattern": "docs.pre.dev", "custom_domain": true }],
+  // A zone route on the proxied docs.pre.dev record, a placeholder (AAAA 100::) with no origin behind it:
+  // the Worker answers every request. The route must stay more specific than the zone's *.pre.dev/*
+  // catch-all. Not a custom domain: attaching one means deleting the record first, and resolvers cache
+  // that gap as "no such host" for up to 30 minutes.
+  "routes": [{ "pattern": "docs.pre.dev/*", "zone_name": "pre.dev" }],
   "workers_dev": false,
   "preview_urls": false
 }
