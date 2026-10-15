@@ -22,12 +22,9 @@
     "ASK_AI_JEV_MODEL": "jev-1.13.0",
     "ASK_AI_JEV": "on"
   },
-  // docs.pre.dev: a zone route on the proxied docs.pre.dev DNS record. It must stay more specific than
-  // the zone's *.pre.dev/* catch-all. docs-next.pre.dev stays as a preview host (noindex).
-  "routes": [
-    { "pattern": "docs.pre.dev/*", "zone_name": "pre.dev" },
-    { "pattern": "docs-next.pre.dev", "custom_domain": true }
-  ],
-  "workers_dev": true,
-  "preview_urls": true
+  // A custom domain: Cloudflare owns the DNS record and the certificate, and it takes precedence over
+  // the zone's *.pre.dev/* route. A deploy removes custom domains missing from this list.
+  "routes": [{ "pattern": "docs.pre.dev", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
 }
