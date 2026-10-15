@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, type ComponentProps, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ComponentProps, type ReactNode } from 'react';
 import { useComponents } from 'fumadocs-openapi';
 import { useCodeUsage, useOperation } from 'fumadocs-openapi/operation';
 import type { CodeUsageGeneratorRegistry } from 'fumadocs-openapi/requests/generators';
@@ -48,7 +48,10 @@ interface SampleTab {
 /**
  * Request samples: the spec's own samples (x-codeSamples) first and selected,
  * then a generated sample for each language they don't cover. Every panel is
- * rendered so the server HTML holds all of them.
+ * rendered so the server HTML holds all of them, but only the selected one is
+ * highlighted: the rest show as plain text in the same frame until opened.
+ * Highlighting all seven languages at load cost ~650 ms of main thread on a
+ * throttled phone.
  */
 function UsageTabs({ registry }: { registry: CodeUsageGeneratorRegistry }) {
   const { operation } = useOperation();
@@ -74,10 +77,11 @@ function UsageTabs({ registry }: { registry: CodeUsageGeneratorRegistry }) {
     if (curatedIds.has(id) || covered.has(kindOf(id)) || covered.has(kindOf(generator.lang))) continue;
     tabs.push({ value: unique(kindOf(id)), label: generator.label ?? generator.lang, lang: generator.lang, generator: id });
   }
+  const [active, setActive] = useState(tabs[0]?.value);
   if (tabs.length === 0) return null;
 
   return (
-    <CodeBlockTabs defaultValue={tabs[0].value}>
+    <CodeBlockTabs value={active} onValueChange={setActive}>
       <CodeBlockTabsList className="flex-wrap">
         {tabs.map((tab) => (
           <CodeBlockTabsTrigger key={tab.value} value={tab.value}>
@@ -87,7 +91,11 @@ function UsageTabs({ registry }: { registry: CodeUsageGeneratorRegistry }) {
       </CodeBlockTabsList>
       {tabs.map((tab) => (
         <CodeBlockTab key={tab.value} value={tab.value} forceMount className="data-[state=inactive]:hidden">
-          {tab.code !== undefined ? <Sample lang={tab.lang} code={tab.code} /> : <GeneratedSample id={tab.generator!} lang={tab.lang} />}
+          {tab.code !== undefined ? (
+            <Sample lang={tab.value === active ? tab.lang : 'text'} code={tab.code} />
+          ) : (
+            <GeneratedSample id={tab.generator!} lang={tab.lang} highlight={tab.value === active} />
+          )}
         </CodeBlockTab>
       ))}
     </CodeBlockTabs>
@@ -100,11 +108,11 @@ function Sample({ lang, code }: { lang: string; code: string }) {
 }
 
 /** A sample built from the playground's request; an empty bearer token shows a placeholder instead. */
-function GeneratedSample({ id, lang }: { id: string; lang: string }) {
+function GeneratedSample({ id, lang, highlight }: { id: string; lang: string; highlight: boolean }) {
   const code = useCodeUsage(id);
   if (!code) return null;
   const token = kindOf(lang) === 'curl' ? '$PREDEV_API_KEY' : '<token>';
-  return <Sample lang={lang} code={code.replace(/Bearer (?=["'`])/g, `Bearer ${token}`)} />;
+  return <Sample lang={highlight ? lang : 'text'} code={code.replace(/Bearer (?=["'`])/g, `Bearer ${token}`)} />;
 }
 
 /** The parts of an API page laid out around the operation: the title block and the page's own text. */
