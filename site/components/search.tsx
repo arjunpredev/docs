@@ -15,7 +15,7 @@ import { useDocsSearch } from 'fumadocs-core/search/client';
 import { fetchClient } from 'fumadocs-core/search/client/fetch';
 import { track } from '@/lib/track';
 import { Sparkles } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ASK_EVENT } from './ask-ai';
 
 // Search runs in the Worker (/api/search?query=...), so the browser never downloads the index.
@@ -24,12 +24,18 @@ const client = fetchClient({ api: '/api/search' });
 export default function DocsSearchDialog(props: SharedProps) {
   const { search, setSearch, query } = useDocsSearch({ client });
 
-  // Mintlify's dashboard showed search terms; keep that signal in PostHog.
+  // Search terms and how many pages they found, once the reader pauses (results: 0 = a content gap).
+  const tracked = useRef('');
   useEffect(() => {
-    if (search.trim().length < 3) return;
-    const id = setTimeout(() => track('docs_search', { query: search.trim() }), 1000);
+    const term = search.trim();
+    if (term.length < 3 || term === tracked.current || query.isLoading || !Array.isArray(query.data)) return;
+    const results = query.data.filter((item) => item.type === 'page').length;
+    const id = setTimeout(() => {
+      tracked.current = term;
+      track('docs_search', { query: term, results });
+    }, 1000);
     return () => clearTimeout(id);
-  }, [search]);
+  }, [search, query.data, query.isLoading]);
 
   return (
     <SearchDialog search={search} onSearchChange={setSearch} isLoading={query.isLoading} {...props}>
@@ -46,6 +52,7 @@ export default function DocsSearchDialog(props: SharedProps) {
             <button
               type="button"
               onClick={() => {
+                track('docs_search_ask_ai', { query: search.trim() });
                 props.onOpenChange(false);
                 window.dispatchEvent(new CustomEvent(ASK_EVENT, { detail: search.trim() }));
               }}

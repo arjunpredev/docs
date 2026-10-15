@@ -1,5 +1,6 @@
 // Serves the static docs build and the few dynamic routes Mintlify provided:
 // Markdown for agents, the docs MCP server at /mcp, and Ask AI at /api/chat.
+import { agentOf, capture } from './analytics';
 import { handleMcp } from './mcp';
 import { handleChat } from './chat';
 import { handleSearch, searchSections } from './search';
@@ -28,6 +29,7 @@ const PROD_HOST = 'docs.pre.dev';
 const SITE = `https://${PROD_HOST}`;
 
 const LINK = [
+  '</.well-known/api-catalog>; rel="api-catalog"',
   '</llms.txt>; rel="llms-txt"',
   '</llms-full.txt>; rel="llms-full-txt"',
   '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
@@ -158,6 +160,14 @@ async function route(request: Request, env: Env, ctx: ExecutionContext, url: URL
     const card = await env.ASSETS.fetch(new Request(new URL('/.well-known/mcp.json', url), request));
     return withHeaders(card, { 'Content-Type': 'application/json' });
   }
+  // RFC 9727 API catalog: the public APIs with their OpenAPI descriptions and docs (built by prepare.mjs)
+  if (pathname === '/.well-known/api-catalog') {
+    const catalog = await env.ASSETS.fetch(new Request(new URL('/.well-known/api-catalog.json', url), request));
+    return withHeaders(catalog, {
+      'Content-Type': 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
+      Link: '</.well-known/api-catalog>; rel="api-catalog"',
+    });
+  }
 
   const markdown = (request.method === 'GET' || request.method === 'HEAD') && wantsMarkdown(request);
   if (markdown && isPagePath(pathname)) {
@@ -199,6 +209,22 @@ function finish(response: Response, url: URL, secure: boolean): Response {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
+/**
+ * Counts docs reads by AI agents and HTTP clients in PostHog (docs_agent_read), the share of
+ * traffic browser analytics never sees: pages, their Markdown, llms files and discovery files.
+ */
+function countAgentRead(request: Request, response: Response, url: URL, ctx: ExecutionContext) {
+  if (request.method !== 'GET' || response.status !== 200) return;
+  const { pathname } = url;
+  const docsFile = /\.(md|txt)$/.test(pathname) || pathname.startsWith('/.well-known/') || pathname.startsWith('/api-reference/');
+  if (!docsFile && !isPagePath(pathname)) return;
+  const agent = agentOf(request.headers.get('User-Agent') ?? '');
+  if (!agent) return;
+  const type = response.headers.get('Content-Type') ?? '';
+  const format = type.includes('markdown') ? 'markdown' : type.includes('html') ? 'html' : type.includes('json') ? 'json' : 'text';
+  capture(ctx, 'docs_agent_read', `docs-agent:${agent}`, { agent, path: pathname, format });
+}
+
 /** The scheme the visitor used, as Cloudflare reports it. Local dev reports none. */
 function visitorScheme(request: Request): string | undefined {
   const forwarded = request.headers.get('X-Forwarded-Proto');
@@ -218,6 +244,8 @@ export default {
       url.protocol = 'https:';
       return Response.redirect(url.toString(), 301);
     }
-    return finish(await route(request, env, ctx, url), url, scheme === 'https');
+    const response = finish(await route(request, env, ctx, url), url, scheme === 'https');
+    if (url.hostname === PROD_HOST) countAgentRead(request, response, url, ctx);
+    return response;
   },
 } satisfies ExportedHandler<Env>;
