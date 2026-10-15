@@ -27,6 +27,7 @@ const MAX_MESSAGE_CHARS = 4000;
 const SEARCH_CANDIDATES = 10;
 const PAGE_CANDIDATES = 8;
 const LINKED_CANDIDATES = 6;
+const EXAMPLE_CANDIDATES = 3;
 const EXCERPT_CHARS = 280;
 const MAX_PICKED = 4;
 const SECTION_CHARS = 4000;
@@ -162,7 +163,9 @@ async function linkedSections(env: Env, answer: string | undefined): Promise<Sec
   for (const [, page, anchor] of links) {
     const sections = await pageSections(env, page);
     const match = anchor ? sections.find((s) => s.url.endsWith(`#${anchor}`)) : undefined;
-    out.push(...(match ? [match] : sections.slice(0, 2)));
+    // a page linked as a whole: its opening and its examples (API pages keep their code samples last)
+    const examples = sections.filter((s) => /example|code samples/i.test(s.title)).slice(0, 1);
+    out.push(...(match ? [match] : [...sections.slice(0, 2), ...examples]));
   }
   return out.slice(0, LINKED_CANDIDATES);
 }
@@ -174,13 +177,22 @@ async function gatherCandidates(env: Env, messages: ChatMessage[], page?: string
   const lastAnswer = messages.findLast((m) => m.role === 'assistant')?.content;
   const [hits, followUp, linked, onPage] = await Promise.all([
     searchSections(env, question.slice(0, 500), SEARCH_CANDIDATES),
-    asked.length > 1 ? searchSections(env, `${asked.at(-2)} ${question}`.slice(0, 500), 4) : Promise.resolve([]),
+    asked.length > 1 ? searchSections(env, `${asked.at(-2)} ${question}`.slice(0, 500), 8) : Promise.resolve([]),
     linkedSections(env, lastAnswer),
     page ? pageSections(env, page).then((sections) => sections.slice(0, PAGE_CANDIDATES)) : Promise.resolve([]),
   ]);
+  // API pages keep their request examples in their own section; offer it next to the page's other hits
+  const pages = [...new Set([...hits, ...followUp, ...linked].map((s) => s.page))];
+  const examples = (
+    await Promise.all(
+      pages.map(async (p) => (await pageSections(env, p)).find((s) => /^(example|code samples)$/i.test(s.title.trim()))),
+    )
+  )
+    .filter((s): s is SectionHit => Boolean(s))
+    .slice(0, EXAMPLE_CANDIDATES);
   const seen = new Set<string>();
   const out: SectionHit[] = [];
-  for (const s of [...hits, ...followUp, ...linked, ...onPage]) {
+  for (const s of [...hits, ...followUp, ...linked, ...examples, ...onPage]) {
     if (seen.has(s.url)) continue;
     seen.add(s.url);
     out.push({ title: s.title, url: s.url, page: s.page, content: s.content });
