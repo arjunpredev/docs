@@ -56,6 +56,18 @@ const fsCommands = [
   ['ls /bin', (t) => t.includes('No such file or directory')],
   ['pwd; echo $HOME', (t) => t.includes('/\n/home/user')],
   ['cat /overview.mdx > /dev/null && echo ok', (t) => t.includes('ok')],
+  ['grep -rl webhook / | head -3', (t) => t.includes('\n/agents.mdx') && !t.includes('//')],
+  // API pages carry the operation in brief plus its code samples, not the full YAML
+  ['cat /architect-agent/api/fast-spec.mdx', (t) => t.includes('## POST /fast-spec') && t.includes('### Code samples') && !t.includes('truncated') && !t.includes('openapi: 3')],
+];
+
+// Queries whose canonical section must be in the top 3 results
+const rankedSearches = [
+  ['predev run', '/cli/overview#run-one-task-without-the-app'],
+  ['npx -y @predotdev/mcp setup', '/architect-agent/mcp-setup#set-up-with-one-command'],
+  ['MCP server setup in Cursor', '/architect-agent/mcp-setup#cursor'],
+  ['call fast spec with curl', '/architect-agent/api/fast-spec#openapi'],
+  ['429', '/api-reference/errors#http-errors'],
 ];
 
 async function main() {
@@ -89,6 +101,12 @@ async function main() {
     }
   }
 
+  for (const [query, link] of rankedSearches) {
+    const m = await tool(base, 'search_pre_dev', { query });
+    const links = (m?.result?.content ?? []).map((c) => c.text.match(/^Link: https:\/\/docs\.pre\.dev(.*)$/m)?.[1]);
+    check(`search_pre_dev "${query}" ranks ${link} in the top 3`, links.slice(0, 3).includes(link), links.slice(0, 3).join('  '));
+  }
+
   for (const [command, ok] of fsCommands) {
     const m = await tool(base, 'query_docs_filesystem_pre_dev', { command });
     const t = toolText(m);
@@ -106,7 +124,7 @@ async function main() {
   const fb = await tool(base, 'submit_feedback', { path: '/test/path', feedback: 'test-mcp smoke test, ignore' });
   check('submit_feedback', toolText(fb).startsWith('Thanks'), toolText(fb));
   const fbBad = await tool(base, 'submit_feedback', { path: '', feedback: 'x' });
-  check('submit_feedback rejects empty path', fbBad?.error?.code === -32602);
+  check('submit_feedback: empty path is a tool error the model can see', fbBad?.result?.isError === true && toolText(fbBad).includes('"path"'));
 
   const unknownTool = await tool(base, 'nope', {});
   check('unknown tool -> -32602', unknownTool?.error?.code === -32602);
@@ -155,6 +173,11 @@ async function main() {
     search.ok && Array.isArray(results) && results[0]?.type === 'page' && search.headers.get('cache-control') === 'public, max-age=300',
     `${results.length} results, first ${results[0]?.url}`,
   );
+  // the dialog lists pages with a few rows each, best page first
+  const apiKey = await (await fetch(`${base}/api/search?query=api%20key`)).json();
+  const pages = apiKey.filter((r) => r.type === 'page').map((r) => r.url);
+  const rowsPerPage = Math.max(...pages.map((p) => apiKey.filter((r) => r.type !== 'page' && r.url.split('#')[0] === p).length));
+  check('/api/search "api key" lists Authentication in the top 3 pages', pages.slice(0, 3).includes('/api-reference/authentication') && rowsPerPage <= 3, pages.slice(0, 3).join('  '));
   const empty = await (await fetch(`${base}/api/search?query=a`)).json();
   check('/api/search short query -> []', Array.isArray(empty) && empty.length === 0);
   const data = await fetch(`${base}/data/fs.json`);

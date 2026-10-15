@@ -32,6 +32,22 @@ export function readSpec(document: string): Spec {
   return spec;
 }
 
+/** Follows local `#/...` refs until a real node; undefined for a ref that points nowhere or loops. */
+export function resolveRef(spec: Spec, node: unknown): any {
+  const seen = new Set<string>();
+  let current: any = node;
+  while (current && typeof current === 'object' && typeof current.$ref === 'string') {
+    const ref: string = current.$ref;
+    if (seen.has(ref) || !ref.startsWith('#/')) return undefined;
+    seen.add(ref);
+    current = ref
+      .slice(2)
+      .split('/')
+      .reduce((at: any, key) => at?.[key.replace(/~1/g, '/').replace(/~0/g, '~')], spec);
+  }
+  return current;
+}
+
 /** A copy of `spec` holding one operation and only the components it references. */
 export function extractOperation(spec: Spec, ref: Pick<OpenAPIRef, 'path' | 'method'>): Spec {
   const pathItem = spec.paths?.[ref.path];
@@ -65,7 +81,8 @@ export function extractOperation(spec: Spec, ref: Pick<OpenAPIRef, 'path' | 'met
     }
     queue = next;
   }
-  for (const requirement of operation.security ?? spec.security ?? []) {
+  // the extract keeps the spec-wide security too, so its schemes must come along
+  for (const requirement of [...(operation.security ?? []), ...(spec.security ?? [])]) {
     for (const name of Object.keys(requirement)) {
       const scheme = spec.components?.securitySchemes?.[name];
       if (scheme) (components.securitySchemes ??= {})[name] = scheme;

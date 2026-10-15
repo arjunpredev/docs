@@ -7,7 +7,7 @@ export const tools = [
   {
     "name": "search_pre_dev",
     "title": "Search documentation",
-    "description": "Search across the pre.dev knowledge base to find relevant information, code examples, API references, and guides. Use this tool when you need to answer questions about pre.dev, find specific documentation, understand how features work, or locate implementation details. The search returns contextual content with titles and direct links to the documentation pages. If you need the full content of a specific page, use the query_docs_filesystem tool to `head` or `cat` the page path (append `.mdx` to the path returned from search: a result at `/some/page` is read with `head -200 /some/page.mdx`).",
+    "description": "Search across the pre.dev knowledge base to find relevant information, code examples, API references, and guides. Use this tool when you need to answer questions about pre.dev, find specific documentation, understand how features work, or locate implementation details. The search returns contextual content with titles and direct links to the documentation pages. If you need the full content of a specific page, use the query_docs_filesystem_pre_dev tool to `head` or `cat` the page path (append `.mdx` to the path returned from search: a result at `/some/page` is read with `head -200 /some/page.mdx`).",
     "inputSchema": {
       "type": "object",
       "properties": {

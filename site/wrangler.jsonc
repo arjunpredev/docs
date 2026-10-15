@@ -15,7 +15,7 @@
   // Per-IP limits for the two routes that do work per request
   "ratelimits": [
     { "name": "CHAT_LIMITER", "namespace_id": "4101", "simple": { "limit": 10, "period": 60 } },
-    { "name": "MCP_LIMITER", "namespace_id": "4102", "simple": { "limit": 120, "period": 60 } }
+    { "name": "MCP_LIMITER", "namespace_id": "4102", "simple": { "limit": 600, "period": 60 } }
   ],
   "vars": {
     "ASK_AI_MODEL": "deepseek/deepseek-v4.1-flash",

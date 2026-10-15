@@ -50,6 +50,9 @@ class RpcError extends Error {
   }
 }
 
+/** Bad tool arguments: reported as a tool result with isError, so the model can correct its call. */
+class ToolInputError extends Error {}
+
 function json(body: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -77,7 +80,7 @@ function text(value: string) {
 
 function stringArg(args: Record<string, unknown>, name: string, max: number): string {
   const value = args[name];
-  if (typeof value !== 'string' || value.trim().length === 0) throw new RpcError(-32602, `Invalid arguments: "${name}" must be a non-empty string`);
+  if (typeof value !== 'string' || value.trim().length === 0) throw new ToolInputError(`Invalid arguments: "${name}" must be a non-empty string`);
   return value.length > max ? value.slice(0, max) : value;
 }
 
@@ -102,10 +105,7 @@ async function callTool(name: string, args: Record<string, unknown>, env: Env, c
       };
     }
     case 'query_docs_filesystem_pre_dev': {
-      const command = args.command;
-      if (typeof command !== 'string' || command.trim().length === 0) {
-        throw new RpcError(-32602, 'Invalid arguments: "command" must be a non-empty string');
-      }
+      const command = stringArg(args, 'command', Number.MAX_SAFE_INTEGER);
       const result = await runDocsCommand(env, command);
       return result.isError ? { content: [text(result.text)], isError: true } : { content: [text(result.text)] };
     }
@@ -156,7 +156,12 @@ async function dispatch(message: JsonRpcRequest, env: Env, ctx: ExecutionContext
       if (typeof name !== 'string') throw new RpcError(-32602, 'Invalid params: "name" is required');
       const args = (params.arguments ?? {}) as Record<string, unknown>;
       if (typeof args !== 'object' || args === null || Array.isArray(args)) throw new RpcError(-32602, 'Invalid params: "arguments" must be an object');
-      return callTool(name, args, env, ctx, prod);
+      try {
+        return await callTool(name, args, env, ctx, prod);
+      } catch (error) {
+        if (error instanceof ToolInputError) return { content: [text(error.message)], isError: true };
+        throw error;
+      }
     }
     case 'resources/list': {
       const skill = await readSkill(env);

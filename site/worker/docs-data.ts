@@ -14,6 +14,8 @@ export interface SearchIndexEntry {
   url: string;
   title: string;
   description?: string;
+  /** API reference pages: the operation, e.g. "POST /fast-spec" */
+  operation?: string;
   structuredData: StructuredData;
 }
 

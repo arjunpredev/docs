@@ -98,8 +98,17 @@ export interface ShellResult {
   isError: boolean;
 }
 
+// A docs path at the start of a line, as grep -r, rg and find print them
+const LEADING_PATH = /^\/[^\s:]*\.(?:mdx|json)(?=$|:)/gm;
+
+/** `grep -r x /` joins "/" and "agents.mdx" as "//agents.mdx": print each docs path once-slashed. */
+function tidyPaths(output: string): string {
+  return output.replace(LEADING_PATH, (path) => path.replace(/\/{2,}/g, '/'));
+}
+
 /** Formats like the Mintlify tool: "exit: N", then stdout and stderr blocks when non-empty. */
-function format(exitCode: number, stdout: string, stderr: string): string {
+function format(exitCode: number, rawStdout: string, stderr: string): string {
+  const stdout = tidyPaths(rawStdout);
   const parts = [`exit: ${exitCode}`];
   if (stdout) parts.push(`--- stdout ---\n${stdout}`);
   if (stderr) parts.push(`--- stderr ---\n${stderr}`);
