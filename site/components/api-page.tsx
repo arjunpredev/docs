@@ -1,9 +1,11 @@
 'use client';
+import { createContext, useContext, type ComponentProps, type ReactNode } from 'react';
 import { useComponents } from 'fumadocs-openapi';
 import { useCodeUsage, useOperation } from 'fumadocs-openapi/operation';
 import type { CodeUsageGeneratorRegistry } from 'fumadocs-openapi/requests/generators';
 import { createOpenAPIPage } from 'fumadocs-openapi/ui';
 import { CodeBlockTab, CodeBlockTabs, CodeBlockTabsList, CodeBlockTabsTrigger } from 'fumadocs-ui/components/codeblock';
+import { DocsBody } from 'fumadocs-ui/layouts/notebook/page';
 
 interface CodeSample {
   id?: string;
@@ -105,8 +107,64 @@ function GeneratedSample({ id, lang }: { id: string; lang: string }) {
   return <Sample lang={lang} code={code.replace(/Bearer (?=["'`])/g, `Bearer ${token}`)} />;
 }
 
-export const OpenAPIPage = createOpenAPIPage({
+/** The parts of an API page laid out around the operation: the title block and the page's own text. */
+interface PageParts {
+  intro?: ReactNode;
+  prose?: ReactNode;
+}
+
+const PartsContext = createContext<PageParts>({});
+
+type OperationSlots = Record<
+  'header' | 'description' | 'apiExample' | 'apiPlayground' | 'authSchemes' | 'parameters' | 'body' | 'responses' | 'callbacks',
+  ReactNode
+>;
+
+/**
+ * Once the content area is wide enough (as on Mintlify): the title, the page text and the operation's
+ * reference on the left, and the request samples and example responses on the right, kept in view
+ * below the header. Narrower, one column with the examples right after the page text. The last row
+ * is 1fr so a tall example column never opens gaps between the rows beside it.
+ */
+function OperationLayout({ slots }: { slots: OperationSlots }) {
+  const { intro, prose } = useContext(PartsContext);
+  return (
+    <div className="@container">
+      <div className="grid gap-x-8 gap-y-6 @4xl:grid-cols-[minmax(0,1fr)_25rem] @4xl:grid-rows-[auto_auto_1fr] @6xl:grid-cols-[minmax(0,1fr)_28rem]">
+        <div data-ask-bar-anchor="" className="min-w-0 @4xl:col-start-1 @4xl:row-start-1">
+          {intro}
+        </div>
+        <DocsBody className="min-w-0 @4xl:col-start-1 @4xl:row-start-2">{prose}</DocsBody>
+        {/* beside the text, each code panel scrolls within ~42% of the screen so the request and a response both stay in view */}
+        <div className="min-w-0 @4xl:sticky @4xl:top-[calc(var(--fd-docs-row-3,6rem)+1rem)] @4xl:col-start-2 @4xl:row-span-3 @4xl:row-start-1 @4xl:max-h-[calc(100dvh-var(--fd-docs-row-3,6rem)-2rem)] @4xl:self-start @4xl:overflow-y-auto @4xl:[&_.fd-scroll-container]:max-h-[min(24rem,42dvh)]">
+          {slots.apiExample}
+        </div>
+        <DocsBody id="openapi" className="min-w-0 scroll-mt-28 border-t pt-6 @4xl:col-start-1 @4xl:row-start-3">
+          {slots.header}
+          {slots.apiPlayground}
+          {slots.description}
+          {slots.authSchemes}
+          {slots.parameters}
+          {slots.body}
+          {slots.responses}
+          {slots.callbacks}
+        </DocsBody>
+      </div>
+    </div>
+  );
+}
+
+const BasePage = createOpenAPIPage({
   content: {
     renderAPIExampleUsageTabs: (registry) => <UsageTabs registry={registry} />,
+    renderOperationLayout: (slots) => <OperationLayout slots={slots} />,
   },
 });
+
+export function OpenAPIPage({ intro, prose, ...props }: ComponentProps<typeof BasePage> & PageParts) {
+  return (
+    <PartsContext.Provider value={{ intro, prose }}>
+      <BasePage {...props} />
+    </PartsContext.Provider>
+  );
+}
