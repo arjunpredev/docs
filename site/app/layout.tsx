@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { Provider } from '@/components/provider';
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   applicationName: docsJson.name,
   icons: {
     icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
       { url: '/favicon.ico', sizes: '48x48' },
       { url: '/icon-32.png', type: 'image/png', sizes: '32x32' },
       { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
@@ -24,6 +25,14 @@ export const metadata: Metadata = {
   openGraph: { siteName: docsJson.name, type: 'website' },
   twitter: { card: 'summary_large_image', site: docsJson.seo?.metatags?.['twitter:site'] },
   alternates: { types: { 'application/xml': '/sitemap.xml' } },
+};
+
+// Browser UI color, as on pre.dev
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  ],
 };
 
 const jsonLd = {
