@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/black.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-openapi/css/preset.css';
+
+/* MDX content in the repo root uses Tailwind classes (e.g. light/dark diagram pairs) */
+@source '../../**/*.mdx';
+@source not '../../node_modules';
+@source not '../node_modules';
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Light-mode secondary text at WCAG AA contrast on the page background */
+:root:not(.dark) {
+  --color-fd-muted-foreground: hsl(0, 0%, 38%);
+}
+
+/* Callouts: a tint of their type color (blue note, amber warning, green tip), as on the old site */
+.callout-tinted {
+  background-color: color-mix(in oklab, var(--callout-color) 8%, var(--color-fd-card));
+  border-color: color-mix(in oklab, var(--callout-color) 35%, transparent);
+}
+
+/* Steps: a visible rule joining the numbers */
+.fd-steps {
+  border-inline-start-color: color-mix(in oklab, var(--color-fd-foreground) 18%, transparent);
+}
+
+/* Code blocks: 14px with room between lines */
+figure.shiki .fd-scroll-container {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Tables written with an empty header row (| | |) don't draw an empty bar */
+.prose thead:not(:has(th:not(:empty))) {
+  display: none;
+}
+
+/* Ask AI answers: code wraps inside the narrow panel instead of scrolling sideways */
+.ask-ai-answer pre code {
+  width: auto;
+  min-width: 0;
+}
+.ask-ai-answer pre,
+.ask-ai-answer pre * {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

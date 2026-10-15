@@ -1,6 +1,6 @@
 # pre.dev documentation
 
-Source for [docs.pre.dev](https://docs.pre.dev), built with Mintlify. Changes on `main` deploy automatically; use a feature branch and review before publishing.
+Source for [docs.pre.dev](https://docs.pre.dev). Pages, `docs.json`, snippets and redirects use Mintlify's format; [`site/`](#the-site) renders them as a static Fumadocs build served by a Cloudflare Worker. Changes on `main` deploy automatically; use a feature branch and review before publishing. Every pull request builds and checks the site; preview it locally with `npm run preview`.
 
 ## Preview and validate
 
@@ -19,6 +19,32 @@ npm run dev
 ```
 
 `check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, snippet imports, diagram pairs and their alt text, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
+
+## The site
+
+`site/` is the renderer and server for docs.pre.dev. It reads the MDX, `docs.json` and `snippets/` in place, so content edits never touch it.
+
+```bash
+cd site
+npm ci
+npm run build         # static build in site/out, Markdown twins, OG images, search data
+npm run check:out     # every nav page, internal link, anchor, redirect, image and agent file
+npm run check:worker  # type-check the Worker
+npm run preview       # serve site/out through the Worker at http://localhost:8799
+npm run test:mcp      # exercise /mcp and /api/search against the preview
+```
+
+What it keeps from Mintlify, and where:
+
+- Navigation, tabs, anchors, navbar, footer, redirects, SEO and PostHog come from `docs.json` (`lib/docs-config.ts`, `lib/tree.tsx`, `scripts/prepare.mjs`).
+- Mintlify components (`Card`, `CardGroup`, `Steps`, `Tabs`, `CodeGroup`, `Note`, `Warning`, `Tip`) map to `components/mintlify.tsx`. Add a mapping there before using a new one. Font Awesome icon names map to Lucide in `components/icons.tsx`.
+- Snippet imports are inlined at build time (`lib/remark-mintlify.ts`), so their text reaches the Markdown output too.
+- Heading anchors follow Mintlify's slug rule (`lib/slug.mjs`), so existing deep links keep working.
+- `openapi:` frontmatter renders the operation with an interactive playground (`fumadocs-openapi`).
+- Every page has a Markdown twin at `/<page>.md`, also served for `Accept: text/markdown` and to AI fetchers. `llms-full.txt` is generated; `llms.txt` and `skill.md` are served as written.
+- The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs with two models: Jev, a decision model, turns away off-topic questions and picks the sections that answer the rest, and DeepSeek V4.1 Flash writes the answer from those sections. It has a per-IP rate limit and Turnstile.
+
+Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow deploys from `main` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets in the `production` environment, which only `main` can use, and reads the `TURNSTILE_SITE_KEY` repository variable.
 
 When sibling product repositories are available, also run:
 
@@ -55,7 +81,7 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 - OpenAPI is the machine-readable public reference; product handlers determine actual behavior. Record backend defects separately from public documentation.
 - Write product guides in the present tense. Keep audit dates, "checked on" notes, and "at the time of writing" caveats out of published docs. Keep estimates in their canonical guide, label them as estimates, and update facts when the product changes. Dates belong in release history and versioned protocol identifiers.
 - The pre.dev API key is the workspace `pdk_` key on **Integrations → Built-in** (`https://pre.dev/projects/integrations?tab=built-in`). State its location only through `snippets/api-key-location.mdx`. Legacy keys still authenticate, but never send readers to the legacy key page. Third-party service keys belong in the Integrations **API Keys** tab.
-- Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is `https://docs.pre.dev/mcp`, hosted by Mintlify. The local pre.dev MCP server is the open-source npm package `@predotdev/mcp` (`npx -y @predotdev/mcp setup`, source `github.com/predotdev/mcp`): it passes through every hosted tool on the user's key and adds Browser Agents Local's `chrome_*` tools. Lead MCP install instructions with the setup command, and keep the hosted URL as the alternative.
+- Product MCP executes tools at `https://api.pre.dev/mcp`; documentation search MCP is `https://docs.pre.dev/mcp`, served by the site's Worker (`site/worker/mcp.ts`). The local pre.dev MCP server is the open-source npm package `@predotdev/mcp` (`npx -y @predotdev/mcp setup`, source `github.com/predotdev/mcp`): it passes through every hosted tool on the user's key and adds Browser Agents Local's `chrome_*` tools. Lead MCP install instructions with the setup command, and keep the hosted URL as the alternative.
 - Match examples to a published SDK version. Check Python dictionary/object responses, file MIME types, stream termination, and terminal task outcomes.
 - Say each repeated fact once, in a `snippets/*.mdx` file imported where it is needed: key location (`api-key-location`), base URLs, auth headers, SDK install lines, MCP URL, credit value, the browser credit floor, and limits. Change the snippet, not a copy.
 - Draw diagrams as SVG light and dark pairs with alt text (see [Visuals](#visuals)), and state every fact a diagram shows in the page's prose or a table, so Markdown exports carry the facts. Do not add JSX components: Markdown exports inline their source.
@@ -67,7 +93,7 @@ Source comments and type declarations can lag runtime behavior. Compare handlers
 - Keep internal infrastructure, credentials, and private audit findings out of public pages.
 - Labs pages carry no counts of tasks, environments, or repositories, no prices or rates, and no names of labs, buyers, sellers, or source repositories. Samples are walked through on a call, never offered for download.
 - Add product-release changelog entries only for verified releases. Label documentation-only updates accordingly. No prices and no vendor or upstream names in the changelog. `node scripts/changelog-gaps.mjs` lists in-app changelog entries (`https://pre.dev/changelog.json`, or `--source-root ..` for a sibling checkout) dated after the latest docs entry; add `--details`, `--type feature,improvement`, `--since YYYY-MM-DD` or `--json`. It never edits files.
-- `llms.txt`, `skill.md`, and the AI Gateway OpenAPI file at the repo root and in `api-reference/` are written by hand and served in place of Mintlify's generated versions. When you add, move, or rename a page, add it to `llms.txt` under its tab with a unique title (`npm run check` fails otherwise), and update `skill.md` if a fact it states changes.
+- `llms.txt`, `skill.md`, and the AI Gateway OpenAPI file at the repo root and in `api-reference/` are written by hand and served as they are. When you add, move, or rename a page, add it to `llms.txt` under its tab with a unique title (`npm run check` fails otherwise), and update `skill.md` if a fact it states changes.
 - `agents.mdx` sorts first in the path-ordered `llms-full.txt` on purpose, so agents read it first; keep that path.
 
 ## Visuals
