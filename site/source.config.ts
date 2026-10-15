@@ -3,6 +3,7 @@ import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { z } from 'zod';
 import { remarkMintlify } from './lib/remark-mintlify';
+import { remarkImageSize } from './lib/remark-image-size';
 import { createSlugger } from './lib/slug.mjs';
 import { rehypeSmartQuotes } from './lib/smart-quotes.mjs';
 
@@ -32,7 +33,7 @@ export const docs = defineDocs({
 
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: (plugins) => [[remarkMintlify, { root }], ...plugins],
+    remarkPlugins: (plugins) => [[remarkMintlify, { root }], [remarkImageSize, { root }], ...plugins],
     remarkImageOptions: false,
     remarkHeadingOptions: {
       slug: (root, _heading, text) => {

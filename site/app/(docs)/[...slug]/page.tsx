@@ -58,6 +58,21 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const spec = ref ? extractOperation(readSpec(ref.document), ref) : undefined;
   const pathSlug = pageSlug(page);
 
+  const intro = (
+    <>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-sm font-medium text-fd-primary/70">{placeOf(pathSlug)?.group}</p>
+          <DocsTitle className="text-3xl leading-tight tracking-tight sm:text-[2.25rem]">{page.data.title}</DocsTitle>
+        </div>
+        <PageActions markdownUrl={`/${pathSlug}.md`} pageUrl={`${siteUrl}/${pathSlug}`} />
+      </div>
+      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+      {ref && spec ? <EndpointBar spec={spec} ref_={ref} /> : null}
+    </>
+  );
+  const body = <MDX components={getMDXComponents({ a: createRelativeLink(source, page) })} />;
+
   return (
     <DocsPage toc={page.data.toc} full={Boolean(ref)} breadcrumb={{ enabled: false }} id="main-content">
       <script
@@ -74,27 +89,21 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
           ),
         }}
       />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="mb-1 text-sm font-medium text-fd-primary/70">{placeOf(pathSlug)?.group}</p>
-          <DocsTitle className="text-3xl leading-tight tracking-tight sm:text-[2.25rem]">{page.data.title}</DocsTitle>
-        </div>
-        <PageActions markdownUrl={`/${pathSlug}.md`} pageUrl={`${siteUrl}/${pathSlug}`} />
-      </div>
-      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      {ref && spec ? <EndpointBar spec={spec} ref_={ref} /> : null}
-      <DocsBody>
-        <MDX components={getMDXComponents({ a: createRelativeLink(source, page) })} />
-        {ref && spec ? (
-          <div id="openapi" className="mt-10 scroll-mt-28 border-t pt-6">
-            <OpenAPIPage
-              document={ref.document}
-              operations={[{ path: ref.path, method: ref.method as never }]}
-              preloaded={{ docs: { [ref.document]: forInteractivePage(spec) as never } }}
-            />
-          </div>
-        ) : null}
-      </DocsBody>
+      {ref && spec ? (
+        // API pages: the operation's layout places the title and text beside the request and response examples
+        <OpenAPIPage
+          intro={intro}
+          prose={body}
+          document={ref.document}
+          operations={[{ path: ref.path, method: ref.method as never }]}
+          preloaded={{ docs: { [ref.document]: forInteractivePage(spec) as never } }}
+        />
+      ) : (
+        <>
+          {intro}
+          <DocsBody>{body}</DocsBody>
+        </>
+      )}
       <Feedback page={page.url} />
       <PageFooter file={page.path} />
       <ImageZoom container="main-content" />

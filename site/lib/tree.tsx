@@ -45,6 +45,8 @@ function folderNode(group: NavGroup, parentId: string): PageTree.Folder {
   };
 }
 
+const VAGUE = new Set(['start', 'more', 'here', 'go', 'this']);
+
 let cached: PageTree.Root | undefined;
 
 export function getTree(): PageTree.Root {
@@ -57,7 +59,16 @@ export function getTree(): PageTree.Root {
       nodes.push({ $id: `${$id}/${group.group}`, type: 'separator', name: group.group });
       nodes.push(...itemNodes(group.pages, `${$id}/${group.group}`));
     }
-    return { $id, type: 'folder', name: tab.tab, root: true, children: nodes };
+    // A one-word tab like "Start" is vague out of context: screen readers (and link-text audits) get "Start with pre.dev"
+    const name = VAGUE.has(tab.tab.toLowerCase()) ? (
+      <>
+        {tab.tab}
+        <span className="sr-only"> with {docsJson.name}</span>
+      </>
+    ) : (
+      tab.tab
+    );
+    return { $id, type: 'folder', name, root: true, children: nodes };
   });
   cached = { $id: 'root', name: docsJson.name, children };
   return cached;

@@ -11,6 +11,8 @@ export function initAnalytics(apiKey: string, apiHost?: string) {
         api_host: apiHost ?? 'https://us.i.posthog.com',
         capture_pageview: 'history_change',
         disable_session_recording: true,
+        // the docs run no surveys; this skips a 33 KB script
+        disable_surveys: true,
         persistence: 'localStorage+cookie',
       });
       return posthog;

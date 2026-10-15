@@ -234,16 +234,47 @@ function QuestionInput({ placeholder, autoFocus, disabled }: { placeholder: stri
   );
 }
 
+/**
+ * The reading column the question bar centers on: an element marked data-ask-bar-anchor (the text
+ * column of an API page, so the bar stays clear of the examples beside it), else the article.
+ */
+function useReadingColumn() {
+  const pathname = usePathname();
+  const [column, setColumn] = useState<{ center: number; width: number } | null>(null);
+  useEffect(() => {
+    const article = document.getElementById('main-content');
+    const update = () => {
+      const el = document.querySelector<HTMLElement>('[data-ask-bar-anchor]') ?? article;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      setColumn({ center: rect.left + rect.width / 2, width: rect.width });
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    if (article) observer.observe(article);
+    window.addEventListener('resize', update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [pathname]);
+  return column;
+}
+
 function AskAIBar() {
   const { open, setOpen } = useAskAI();
+  const column = useReadingColumn();
   if (open) return null;
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 max-md:hidden">
-        <div className="pointer-events-auto w-full max-w-xl">
+      {column ? (
+        <div
+          className="fixed bottom-4 z-30 max-md:hidden"
+          style={{ left: column.center, width: `min(36rem, ${Math.max(column.width - 16, 280)}px)`, transform: 'translateX(-50%)' }}
+        >
           <QuestionInput placeholder="Ask a question..." />
         </div>
-      </div>
+      ) : null}
       <button
         type="button"
         onClick={() => setOpen(true)}
