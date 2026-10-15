@@ -13,7 +13,14 @@ export const metadata: Metadata = {
   title: { default: docsJson.name, template: `%s - ${docsJson.name}` },
   description: docsJson.description,
   applicationName: docsJson.name,
-  icons: { icon: docsJson.favicon ?? '/favicon.ico' },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/icon-32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+  },
   openGraph: { siteName: docsJson.name, type: 'website' },
   twitter: { card: 'summary_large_image', site: docsJson.seo?.metatags?.['twitter:site'] },
   alternates: { types: { 'application/xml': '/sitemap.xml' } },

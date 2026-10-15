@@ -36,6 +36,8 @@ copy('skill.md');
 copy('skill.md', '.well-known/agent-skills/predev/skill.md');
 copy('skill.md', '.well-known/skills/predev/SKILL.md');
 if (docs.favicon) copy(docs.favicon.replace(/^\//, ''), 'favicon.ico');
+// PNG icons (home screen, tabs that prefer PNG), made from the same favicon
+for (const icon of ['apple-touch-icon.png', 'icon-192.png', 'icon-32.png']) copy(`site/assets/${icon}`, icon);
 const openapi = [docs.api?.openapi ?? []].flat();
 for (const file of openapi) copy(file);
 
