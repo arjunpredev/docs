@@ -114,4 +114,33 @@ write(
 );
 write('.well-known/mcp/server-card.json', JSON.stringify(mcpServerCard(docs.name, mcpUrl)));
 
+// RFC 9727 API catalog, served by the Worker at /.well-known/api-catalog as application/linkset+json.
+// One entry per public API: where it answers, its OpenAPI description and its docs.
+const API_DOCS = {
+  'api-reference/openapi.json': { anchor: 'https://api.pre.dev', doc: 'api-reference/overview' },
+  'api-reference/ai-gateway.openapi.json': { anchor: 'https://api.pre.dev/v1', doc: 'ai-gateway/overview' },
+};
+const linkset = openapi.map((file) => {
+  const entry = API_DOCS[file];
+  if (!entry) throw new Error(`prepare: add ${file} to API_DOCS for the API catalog`);
+  const title = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')).info?.title;
+  return {
+    anchor: entry.anchor,
+    'service-desc': [{ href: `${siteUrl}/${file}`, type: 'application/vnd.oai.openapi+json', title }],
+    'service-doc': [{ href: `${siteUrl}/${entry.doc}`, type: 'text/html' }],
+  };
+});
+linkset.push(
+  {
+    anchor: 'https://api.pre.dev/mcp',
+    'service-doc': [{ href: `${siteUrl}/mcp/tools`, type: 'text/html', title: 'pre.dev MCP server' }],
+  },
+  {
+    anchor: mcpUrl,
+    'service-desc': [{ href: `${siteUrl}/.well-known/mcp/server-card.json`, type: 'application/json', title: `${docs.name} docs MCP server` }],
+    'service-doc': [{ href: `${siteUrl}/agents`, type: 'text/html' }],
+  },
+);
+write('.well-known/api-catalog.json', JSON.stringify({ linkset }, null, 2));
+
 console.log(`prepare: public/ ready (${redirects.length} redirects, ${openapi.length} OpenAPI files)`);

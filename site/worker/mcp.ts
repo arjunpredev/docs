@@ -2,6 +2,7 @@
 // Tool names, schemas and output formats match the server Mintlify hosted here,
 // so agents that were already connected keep working.
 import docsJson from '../../docs.json';
+import { capture } from './analytics';
 import { serverInstructions, tools } from './mcp-tools.mjs';
 import { readSkill } from './docs-data';
 import { searchSections } from './sections';
@@ -94,6 +95,8 @@ async function callTool(name: string, args: Record<string, unknown>, env: Env, c
     case 'search_pre_dev': {
       const query = stringArg(args, 'query', 500);
       const hits = await searchSections(env, query, SEARCH_RESULTS);
+      // what agents look for, and what finds nothing (content gaps)
+      if (prod) capture(ctx, 'docs_mcp_search', 'docs-mcp', { query, results: hits.length });
       if (hits.length === 0) {
         return { content: [text(`No results found for "${query}". Try other keywords, or run \`rg -il "<keyword>" /\` with query_docs_filesystem_pre_dev.`)] };
       }
@@ -113,21 +116,7 @@ async function callTool(name: string, args: Record<string, unknown>, env: Env, c
       const path = stringArg(args, 'path', 500).trim();
       const feedback = stringArg(args, 'feedback', 5000).trim();
       // only production feedback reaches PostHog; previews and local runs just answer
-      const apiKey = docsJson.integrations?.posthog?.apiKey;
-      if (apiKey && prod) {
-        ctx.waitUntil(
-          fetch('https://us.i.posthog.com/capture/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              api_key: apiKey,
-              event: 'docs_mcp_feedback',
-              distinct_id: 'docs-mcp',
-              properties: { path, feedback, source: 'docs-mcp', $process_person_profile: false },
-            }),
-          }).catch(() => undefined),
-        );
-      }
+      if (prod) capture(ctx, 'docs_mcp_feedback', 'docs-mcp', { path, feedback, source: 'docs-mcp' });
       return { content: [text(`Thanks. Your feedback about ${path} was sent to the pre.dev docs team.`)] };
     }
     default:

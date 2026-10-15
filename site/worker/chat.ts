@@ -12,8 +12,8 @@
 // completions URL) and ASK_AI_KEY for the writer, ASK_AI_JEV_KEY for Jev.
 // The reply streams back as small SSE events:
 //   {"sources":[{title,url}]}  then  {"t":"text delta"}...  then  {"done":true}
-import docsJson from '../../docs.json';
 import type { Env } from './index';
+import { capture } from './analytics';
 import { askJev, type JevQuestion, type JevResult } from './jev';
 import { readDocsFile, searchSections, type SectionHit } from './search';
 import { splitPage } from './sections';
@@ -117,23 +117,6 @@ async function verifyTurnstile(env: Env, token: unknown, ip: string): Promise<bo
   return outcome.success === true;
 }
 
-function capture(ctx: ExecutionContext, ip: string, properties: Record<string, unknown>) {
-  const apiKey = docsJson.integrations?.posthog?.apiKey;
-  if (!apiKey) return;
-  const host = docsJson.integrations?.posthog?.apiHost ?? 'https://us.i.posthog.com';
-  ctx.waitUntil(
-    fetch(`${host}/capture/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: apiKey,
-        event: 'docs_ask_ai',
-        distinct_id: `docs-ask-ai:${ip || 'unknown'}`,
-        properties: { ...properties, $process_person_profile: false },
-      }),
-    }).catch(() => undefined),
-  );
-}
 
 function excerpt(section: SectionHit): string {
   const text = section.content
@@ -414,7 +397,7 @@ export async function handleChat(request: Request, env: Env, ctx: ExecutionConte
       stats.ms = Date.now() - started;
       console.log('ask-ai', JSON.stringify(stats));
       // only production questions reach PostHog; previews and local runs just log
-      if (new URL(request.url).hostname === 'docs.pre.dev') capture(ctx, ip, stats);
+      if (new URL(request.url).hostname === 'docs.pre.dev') capture(ctx, 'docs_ask_ai', `docs-ask-ai:${ip || 'unknown'}`, stats);
     }
   };
   ctx.waitUntil(pump());

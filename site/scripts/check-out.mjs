@@ -1,7 +1,7 @@
 // Checks the static build in out/: every docs.json page has HTML and Markdown,
 // every internal link and anchor resolves, every image exists and has alt text,
-// every redirect lands on a page, llms.txt links resolve, and the agent
-// discovery files exist.
+// every redirect lands on a page, llms.txt and API catalog links resolve, and
+// the agent discovery files exist.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -110,12 +110,22 @@ for (const file of [
   '.well-known/llms.txt',
   '.well-known/mcp.json',
   '.well-known/mcp/server-card.json',
+  '.well-known/api-catalog.json',
   '.well-known/agent-card.json',
   '.well-known/agent-skills/index.json',
   '.well-known/skills/index.json',
   ...[docs.api?.openapi ?? []].flat(),
 ]) {
   if (!fs.existsSync(path.join(out, file))) errors.push(`missing ${file}`);
+}
+
+// 6. Every docs link in the API catalog resolves
+const catalog = JSON.parse(fs.readFileSync(path.join(out, '.well-known/api-catalog.json'), 'utf8'));
+for (const entry of catalog.linkset) {
+  for (const link of [...(entry['service-desc'] ?? []), ...(entry['service-doc'] ?? [])]) {
+    const p = new URL(link.href).pathname;
+    if (!(path.extname(p) ? fs.existsSync(path.join(out, p)) : resolve(p))) errors.push(`api-catalog: broken link ${link.href}`);
+  }
 }
 
 const full = fs.readFileSync(path.join(out, 'llms-full.txt'), 'utf8');
