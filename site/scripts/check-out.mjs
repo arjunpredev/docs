@@ -1,6 +1,7 @@
 // Checks the static build in out/: every docs.json page has HTML and Markdown,
-// every internal link and anchor resolves, every redirect lands on a page,
-// llms.txt links resolve, and the agent discovery files exist.
+// every internal link and anchor resolves, every image exists and has alt text,
+// every redirect lands on a page, llms.txt links resolve, and the agent
+// discovery files exist.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -80,6 +81,9 @@ for (const slug of navPages) {
   for (const [, src] of article.matchAll(/\ssrc="(\/[^"]+)"/g)) {
     if (src.startsWith('/_next/')) continue;
     if (!fs.existsSync(path.join(out, decodeURI(src.split('?')[0])))) errors.push(`${slug}: missing image ${src}`);
+  }
+  for (const [tag] of article.matchAll(/<img\b[^>]*>/g)) {
+    if (!/\salt="[^"]+"/.test(tag)) errors.push(`${slug}: image without alt text ${tag.match(/\ssrc="([^"]+)"/)?.[1] ?? tag}`);
   }
 }
 

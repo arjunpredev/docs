@@ -6,12 +6,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "mint dev --no-open",
+    "dev": "npm --prefix site run dev",
     "check": "node scripts/check-docs.mjs",
     "diagrams": "node scripts/diagrams/build.mjs",
-    "validate": "mint validate",
-    "links": "mint broken-links --check-anchors --check-redirects --check-snippets",
-    "a11y": "mint a11y",
     "check:node": "node scripts/check-node-examples.mjs",
     "check:python": "python3 scripts/check-python-examples.py"
   },
@@ -20,7 +17,6 @@
     "@types/node": "26.5.0",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
-    "mint": "4.2.876",
     "predev-api": "1.1.0",
     "typescript": "6.0.3"
   }

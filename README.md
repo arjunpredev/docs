@@ -1,6 +1,6 @@
 # pre.dev documentation
 
-Source for [docs.pre.dev](https://docs.pre.dev). Pages, `docs.json`, snippets and redirects use Mintlify's format; [`site/`](#the-site) renders them as a static Fumadocs build served by a Cloudflare Worker. Changes on `main` deploy automatically; use a feature branch and review before publishing. Every pull request builds and checks the site; preview it locally with `npm run preview`.
+Source for [docs.pre.dev](https://docs.pre.dev). Pages, `docs.json`, snippets and redirects use Mintlify's content format; [`site/`](#the-site) renders them as a static Fumadocs build served by a Cloudflare Worker. No Mintlify service or CLI is involved. Changes on `main` deploy automatically; use a feature branch and review before publishing. Every pull request builds and checks the site; preview it locally with `npm run dev` or `npm run preview` in `site/`.
 
 ## Preview and validate
 
@@ -12,13 +12,9 @@ npm run check
 npm run check:node
 # With predev-api==1.1.0 installed in your Python environment:
 npm run check:python
-npm run validate
-npm run links
-npm run a11y
-npm run dev
 ```
 
-`check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, snippet imports, diagram pairs and their alt text, page metadata, navigation coverage, and mirrored redirects. `validate` runs Mintlify's strict build checks; `links` includes anchors and redirect targets. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. Inspect the local preview in light/dark mode and at a narrow viewport after layout changes. Mintlify writes its preview cache under `~/.mintlify`.
+`check` validates both OpenAPI files (every JSON response needs an example that matches its schema), that every operation has exactly one reference page, that `llms.txt` lists every navigation page once with a unique title, lifecycle fixtures, JSON and curl examples, snippet imports, diagram pairs and their alt text, page metadata, navigation coverage, and mirrored redirects. `check:node` compiles and runs the guide snippets against pinned SDK 1.1.0; `check:python` runs the Python snippets. Both mock every HTTP call. The site build then fails on any MDX error, and `check:out` covers links, anchors, redirects, images and alt text (see below). Inspect the local preview in light/dark mode and at a narrow viewport after layout changes.
 
 ## The site
 
@@ -27,6 +23,7 @@ npm run dev
 ```bash
 cd site
 npm ci
+npm run dev           # live preview at http://localhost:3100 (also `npm run dev` from the repo root)
 npm run build         # static build in site/out, Markdown twins, OG images, search data
 npm run check:out     # every nav page, internal link, anchor, redirect, image and agent file
 npm run check:worker  # type-check the Worker
@@ -34,7 +31,7 @@ npm run preview       # serve site/out through the Worker at http://localhost:87
 npm run test:mcp      # exercise /mcp and /api/search against the preview
 ```
 
-What it keeps from Mintlify, and where:
+How it reads the Mintlify-format content, and where:
 
 - Navigation, tabs, anchors, navbar, footer, redirects, SEO and PostHog come from `docs.json` (`lib/docs-config.ts`, `lib/tree.tsx`, `scripts/prepare.mjs`).
 - Mintlify components (`Card`, `CardGroup`, `Steps`, `Tabs`, `CodeGroup`, `Note`, `Warning`, `Tip`) map to `components/mintlify.tsx`. Add a mapping there before using a new one. Font Awesome icon names map to Lucide in `components/icons.tsx`.
@@ -44,7 +41,9 @@ What it keeps from Mintlify, and where:
 - Every page has a Markdown twin at `/<page>.md`, also served for `Accept: text/markdown` and to AI fetchers. `llms-full.txt` is generated; `llms.txt` and `skill.md` are served as written.
 - The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs with two models: Jev, a decision model, turns away off-topic questions and picks the sections that answer the rest, and DeepSeek V4.1 Flash writes the answer from those sections. It has a per-IP rate limit and Turnstile.
 
-Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow deploys from `main` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets in the `production` environment, which only `main` can use, and reads the `TURNSTILE_SITE_KEY` repository variable.
+Worker secrets (`wrangler secret put`): `ASK_AI_KEY` and `ASK_AI_CHAT_URL` (the writer model's key and its OpenAI-compatible chat completions URL), `ASK_AI_JEV_KEY`, and `TURNSTILE_SECRET`. Without `ASK_AI_JEV_KEY`, or with the `ASK_AI_JEV` variable set to `off`, Ask AI answers from keyword search alone. The GitHub workflow deploys from `main` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets in the `production` environment, which only `main` can use, and reads the `TURNSTILE_SITE_KEY` repository variable. `docs.pre.dev` is a Workers custom domain (`site/wrangler.jsonc`), so Cloudflare manages its DNS record and certificate.
+
+To roll back a bad deploy, run `npx wrangler rollback` in `site/` (it restores the previous version; pass a version ID from `npx wrangler versions list` for an older one), then revert the commit on `main` so the next deploy does not bring it back.
 
 When sibling product repositories are available, also run:
 
@@ -104,7 +103,7 @@ Diagrams are SVG pairs in `images/diagrams/`: `<name>-light.svg` and `<name>-dar
 npm run diagrams
 ```
 
-Show a pair with Mintlify's theme classes and alt text that states what the figure shows:
+Show a pair with the theme classes and alt text that states what the figure shows:
 
 ```mdx
 <img className="block dark:hidden" src="/images/diagrams/async-jobs-light.svg" alt="The async job pattern in four steps: submit, save the ID, poll or stream it, and read the result." />
