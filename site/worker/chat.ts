@@ -18,7 +18,7 @@ import { askJev, type JevQuestion, type JevResult } from './jev';
 import { readDocsFile, searchSections, type SectionHit } from './search';
 import { splitPage } from './sections';
 
-const DEFAULT_WRITER = 'deepseek/deepseek-v4.1-flash';
+const DEFAULT_WRITER = 'deepseek/deepseek-v4.1-flash-1017';
 const DEFAULT_JEV = 'jev-1.13.0';
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_CHARS = 4000;
