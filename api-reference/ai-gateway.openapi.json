@@ -83,7 +83,7 @@
                 "basic": {
                   "summary": "One question",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "max_tokens": 100,
                     "stream": false,
                     "reasoning": {
@@ -100,7 +100,7 @@
                 "streaming": {
                   "summary": "Streaming",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "max_tokens": 100,
                     "stream": true,
                     "reasoning": {
@@ -117,7 +117,7 @@
                 "json_output": {
                   "summary": "Structured JSON output",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "max_tokens": 200,
                     "reasoning": {
                       "enabled": false
@@ -155,7 +155,7 @@
                 "fallbacks": {
                   "summary": "Fallback models",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "models": [
                       "google/gemini-3.8-flash"
                     ],
@@ -198,7 +198,7 @@
                   "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
                   "object": "chat.completion",
                   "created": 1790500000,
-                  "model": "deepseek/deepseek-v4.1-flash",
+                  "model": "deepseek/deepseek-v4.1-flash-1017",
                   "choices": [
                     {
                       "index": 0,
@@ -221,7 +221,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Hello there,\"},\"finish_reason\":null}]}\n\n: processing\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"content\":\" nice to meet you.\"},\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"system_fingerprint\":null,\"choices\":[],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":8,\"total_tokens\":20}}\n\ndata: [DONE]\n"
+                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Hello there,\"},\"finish_reason\":null}]}\n\n: processing\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"content\":\" nice to meet you.\"},\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"chat.completion.chunk\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"system_fingerprint\":null,\"choices\":[],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":8,\"total_tokens\":20}}\n\ndata: [DONE]\n"
               }
             }
           },
@@ -254,17 +254,17 @@
           {
             "lang": "cURL",
             "label": "cURL",
-            "source": "curl --fail-with-body https://api.pre.dev/v1/chat/completions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\":\"deepseek/deepseek-v4.1-flash\",\"max_tokens\":100,\"stream\":false,\"reasoning\":{\"enabled\":false},\"messages\":[{\"role\":\"user\",\"content\":\"Say hello in five words.\"}]}'"
+            "source": "curl --fail-with-body https://api.pre.dev/v1/chat/completions \\\n  -H \"Authorization: Bearer $PREDEV_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"max_tokens\":100,\"stream\":false,\"reasoning\":{\"enabled\":false},\"messages\":[{\"role\":\"user\",\"content\":\"Say hello in five words.\"}]}'"
           },
           {
             "lang": "Python",
             "label": "Python (OpenAI SDK)",
-            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\ncompletion = client.chat.completions.create(\n    model=\"deepseek/deepseek-v4.1-flash\",\n    max_tokens=100,\n    extra_body={\"reasoning\": {\"enabled\": False}},\n    messages=[{\"role\": \"user\", \"content\": \"Say hello in five words.\"}],\n)\nprint(completion.choices[0].message.content)"
+            "source": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.pre.dev/v1\", api_key=os.environ[\"PREDEV_API_KEY\"])\n\ncompletion = client.chat.completions.create(\n    model=\"deepseek/deepseek-v4.1-flash-1017\",\n    max_tokens=100,\n    extra_body={\"reasoning\": {\"enabled\": False}},\n    messages=[{\"role\": \"user\", \"content\": \"Say hello in five words.\"}],\n)\nprint(completion.choices[0].message.content)"
           },
           {
             "lang": "JavaScript",
             "label": "Node.js (OpenAI SDK)",
-            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst completion = await client.chat.completions.create({\n  model: 'deepseek/deepseek-v4.1-flash',\n  max_tokens: 100,\n  reasoning: { enabled: false },\n  messages: [{ role: 'user', content: 'Say hello in five words.' }],\n});\nconsole.log(completion.choices[0].message.content);"
+            "source": "import OpenAI from 'openai';\n\nconst client = new OpenAI({ baseURL: 'https://api.pre.dev/v1', apiKey: process.env.PREDEV_API_KEY });\n\nconst completion = await client.chat.completions.create({\n  model: 'deepseek/deepseek-v4.1-flash-1017',\n  max_tokens: 100,\n  reasoning: { enabled: false },\n  messages: [{ role: 'user', content: 'Say hello in five words.' }],\n});\nconsole.log(completion.choices[0].message.content);"
           }
         ]
       }
@@ -290,7 +290,7 @@
                 "$ref": "#/components/schemas/CompletionRequest"
               },
               "example": {
-                "model": "deepseek/deepseek-v4.1-flash",
+                "model": "deepseek/deepseek-v4.1-flash-1017",
                 "prompt": "The sky is blue because",
                 "max_tokens": 40,
                 "stream": false
@@ -321,7 +321,7 @@
                   "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
                   "object": "text_completion",
                   "created": 1790500000,
-                  "model": "deepseek/deepseek-v4.1-flash",
+                  "model": "deepseek/deepseek-v4.1-flash-1017",
                   "choices": [
                     {
                       "index": 0,
@@ -340,7 +340,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[{\"index\":0,\"text\":\" sunlight scatters\",\"finish_reason\":null}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[{\"index\":0,\"text\":\" off air molecules.\",\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"choices\":[],\"usage\":{\"prompt_tokens\":6,\"completion_tokens\":7,\"total_tokens\":13}}\n\ndata: [DONE]\n"
+                "example": "data: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"choices\":[{\"index\":0,\"text\":\" sunlight scatters\",\"finish_reason\":null}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"choices\":[{\"index\":0,\"text\":\" off air molecules.\",\"finish_reason\":\"stop\"}]}\n\ndata: {\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"text_completion\",\"created\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"choices\":[],\"usage\":{\"prompt_tokens\":6,\"completion_tokens\":7,\"total_tokens\":13}}\n\ndata: [DONE]\n"
               }
             }
           },
@@ -395,7 +395,7 @@
                 "basic": {
                   "summary": "One question",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "input": "Say hello in five words.",
                     "max_output_tokens": 100,
                     "reasoning": {
@@ -407,7 +407,7 @@
                 "streaming": {
                   "summary": "Streaming",
                   "value": {
-                    "model": "deepseek/deepseek-v4.1-flash",
+                    "model": "deepseek/deepseek-v4.1-flash-1017",
                     "input": "Say hello in five words.",
                     "max_output_tokens": 100,
                     "reasoning": {
@@ -443,7 +443,7 @@
                   "id": "pdg-043293a6-d1a8-4695-81fe-603ad4661ebb",
                   "object": "response",
                   "created_at": 1790500000,
-                  "model": "deepseek/deepseek-v4.1-flash",
+                  "model": "deepseek/deepseek-v4.1-flash-1017",
                   "status": "completed",
                   "output": [
                     {
@@ -468,7 +468,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "example": "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"status\":\"in_progress\",\"output\":[]}}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\"Hello there,\"}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\" nice to meet you.\"}\n\nevent: response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash\",\"status\":\"completed\",\"output\":[{\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"output_text\",\"text\":\"Hello there, nice to meet you.\"}]}],\"usage\":{\"input_tokens\":12,\"output_tokens\":8,\"total_tokens\":20}}}\n"
+                "example": "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"status\":\"in_progress\",\"output\":[]}}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\"Hello there,\"}\n\nevent: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"output_index\":0,\"content_index\":0,\"delta\":\" nice to meet you.\"}\n\nevent: response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"pdg-043293a6-d1a8-4695-81fe-603ad4661ebb\",\"object\":\"response\",\"created_at\":1790500000,\"model\":\"deepseek/deepseek-v4.1-flash-1017\",\"status\":\"completed\",\"output\":[{\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"output_text\",\"text\":\"Hello there, nice to meet you.\"}]}],\"usage\":{\"input_tokens\":12,\"output_tokens\":8,\"total_tokens\":20}}}\n"
               }
             }
           },
@@ -2525,7 +2525,7 @@
                       "errors": 0
                     },
                     {
-                      "model": "deepseek/deepseek-v4.1-flash",
+                      "model": "deepseek/deepseek-v4.1-flash-1017",
                       "path": "/chat/completions",
                       "requests": 1702,
                       "credits": 41.2,
@@ -2962,7 +2962,7 @@
                     "message": "The model returned an error",
                     "code": 429,
                     "metadata": {
-                      "raw": "deepseek/deepseek-v4.1-flash is temporarily rate-limited."
+                      "raw": "deepseek/deepseek-v4.1-flash-1017 is temporarily rate-limited."
                     }
                   }
                 }
@@ -3587,7 +3587,7 @@
           "model": {
             "type": "string",
             "description": "A model id exactly as listed by `GET /v1/models`.",
-            "example": "deepseek/deepseek-v4.1-flash"
+            "example": "deepseek/deepseek-v4.1-flash-1017"
           },
           "models": {
             "type": "array",
@@ -3864,7 +3864,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "example": "deepseek/deepseek-v4.1-flash"
+            "example": "deepseek/deepseek-v4.1-flash-1017"
           },
           "prompt": {
             "oneOf": [
@@ -3964,7 +3964,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "example": "deepseek/deepseek-v4.1-flash"
+            "example": "deepseek/deepseek-v4.1-flash-1017"
           },
           "input": {
             "description": "A string, or an array of input items (messages, function call outputs, and so on). Send the whole conversation: responses are not stored, and `previous_response_id` is not supported.",

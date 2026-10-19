@@ -6,7 +6,7 @@ description: "Send a chat completion through api.pre.dev/v1 with curl or a stock
 
 import ApiKeyLocation from "/snippets/api-key-location.mdx";
 
-Send one chat completion to `deepseek/deepseek-v4.1-flash` and read the credits it charged.
+Send one chat completion to `deepseek/deepseek-v4.1-flash-1017` and read the credits it charged.
 
 ## Before you start
 
@@ -23,7 +23,7 @@ Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway ca
       -H "Authorization: Bearer $PREDEV_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "model": "deepseek/deepseek-v4.1-flash",
+        "model": "deepseek/deepseek-v4.1-flash-1017",
         "messages": [{ "role": "user", "content": "Say hello in five words." }]
       }'
     ```
@@ -40,7 +40,7 @@ Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway ca
     });
 
     const completion = await client.chat.completions.create({
-      model: 'deepseek/deepseek-v4.1-flash',
+      model: 'deepseek/deepseek-v4.1-flash-1017',
       messages: [{ role: 'user', content: 'Say hello in five words.' }],
     });
     console.log(completion.choices[0].message.content);
@@ -59,7 +59,7 @@ Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway ca
     )
 
     completion = client.chat.completions.create(
-        model="deepseek/deepseek-v4.1-flash",
+        model="deepseek/deepseek-v4.1-flash-1017",
         messages=[{"role": "user", "content": "Say hello in five words."}],
     )
     print(completion.choices[0].message.content)
@@ -78,7 +78,7 @@ Store it as `PREDEV_API_KEY`. A Free workspace can spend 5 credits on gateway ca
     });
 
     const { text } = await generateText({
-      model: predev('deepseek/deepseek-v4.1-flash'),
+      model: predev('deepseek/deepseek-v4.1-flash-1017'),
       prompt: 'Say hello in five words.',
     });
     console.log(text);

@@ -33,7 +33,7 @@ const res = await fetch('/predev-ai/chat/completions', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    model: 'deepseek/deepseek-v4.1-flash',
+    model: 'deepseek/deepseek-v4.1-flash-1017',
     max_tokens: 1024,
     messages: [{ role: 'user', content: 'Summarize this note in three bullets: …' }],
   }),
@@ -60,7 +60,7 @@ const client = new OpenAI({
 // POST /api/summarize  { text: string }
 export async function summarize(text: string) {
   const completion = await client.chat.completions.create({
-    model: 'deepseek/deepseek-v4.1-flash',
+    model: 'deepseek/deepseek-v4.1-flash-1017',
     messages: [
       { role: 'system', content: 'Summarize the user text in three bullets.' },
       { role: 'user', content: text },
@@ -83,7 +83,7 @@ client = OpenAI(
 # POST /api/summarize  {"text": "..."}
 def summarize(text: str) -> str:
     completion = client.chat.completions.create(
-        model="deepseek/deepseek-v4.1-flash",
+        model="deepseek/deepseek-v4.1-flash-1017",
         messages=[
             {"role": "system", "content": "Summarize the user text in three bullets."},
             {"role": "user", "content": text},
