@@ -102,7 +102,7 @@ You can bring in what Claude Code, Codex, Cursor, and other coding agents rememb
 predev memory import
 ```
 
-`predev memory import` finds the memory files that Claude Code, Codex, pi, Hermes, Gemini CLI, Windsurf, Cline, Continue, OpenCode, and Kiro keep on your computer, and imports them. Secrets are removed on your computer before anything uploads. Files you wrote are used right away. Notes an agent wrote for itself, such as Hermes's memory, wait in Memory for you to accept them. Claude Code's notes for a folder are not imported: the CLI uses them in place (see [Claude Code's memory in the CLI](#claude-codes-memory-in-the-cli)). Add `--dry-run` to see what would come in without uploading anything.
+`predev memory import` finds the memory files that Claude Code, Codex, pi, Hermes, Gemini CLI, Windsurf, Cline, Continue, OpenCode, and Kiro keep on your computer, and imports them. Secrets are removed on your computer before anything uploads. Files you wrote are used right away. Notes an agent wrote for itself, such as Hermes's memory, wait in Memory for you to accept them. Claude Code's notes for a folder are not imported: the CLI uses them in place (see [Claude Code memory in the CLI](#claude-code-memory-in-the-cli)). Add `--dry-run` to see what would come in without uploading anything.
 
 Inside the CLI, `/memory import` shows what it found and lets you review it before anything is saved. The first time you start the CLI, it offers the same screen once. Changes to files you imported come in on your next import, and the CLI also picks them up when it starts.
 
@@ -163,7 +163,7 @@ After the first reply in a chat, the CLI shows one line such as `memory · 4 thi
 | `/memory undo` | Take back the newest change from this chat. An imported file counts as one change |
 | `/forget <words>` | Find an entry by its words and delete it after you confirm |
 
-### Claude Code's memory in the CLI
+### Claude Code memory in the CLI
 
 If you use Claude Code, the CLI can use what it remembers: your `~/.claude/CLAUDE.md` and the notes Claude Code keeps for the folder you are in. The first time you open pre.dev in a folder that has notes, it asks once whether to use them.
 
