@@ -102,7 +102,7 @@ You can bring in what Claude Code, Codex, Cursor, and other coding agents rememb
 predev memory import
 ```
 
-`predev memory import` finds the memory files that Claude Code, Codex, pi, Hermes, Gemini CLI, Windsurf, Cline, Continue, OpenCode, and Kiro keep on your computer, and imports them. Secrets are removed on your computer before anything uploads. Files you wrote are used right away. Notes an agent wrote for itself, such as Claude Code's project memory, wait in Memory for you to accept them. Add `--dry-run` to see what would come in without uploading anything.
+`predev memory import` finds the memory files that Claude Code, Codex, pi, Hermes, Gemini CLI, Windsurf, Cline, Continue, OpenCode, and Kiro keep on your computer, and imports them. Secrets are removed on your computer before anything uploads. Files you wrote are used right away. Notes an agent wrote for itself, such as Hermes's memory, wait in Memory for you to accept them. Claude Code's notes for a folder are not imported: the CLI uses them in place (see [Claude Code memory in the CLI](#claude-code-memory-in-the-cli)). Add `--dry-run` to see what would come in without uploading anything.
 
 Inside the CLI, `/memory import` shows what it found and lets you review it before anything is saved. The first time you start the CLI, it offers the same screen once. Changes to files you imported come in on your next import, and the CLI also picks them up when it starts.
 
@@ -158,9 +158,22 @@ After the first reply in a chat, the CLI shows one line such as `memory · 4 thi
 | `/memory import <file>` | Import one file, such as `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, or any `.md` or `.txt` file, after a review |
 | `/memory search <words>` | Search this project's memory. `--all` searches your other projects too |
 | `/memory export [--me]` | Write this project's memory into the marked pre.dev block of `AGENTS.md` at the repository root. `--me` adds your personal memory |
+| `/memory claude on`, `/memory claude off` | Use Claude Code's memory in this folder, or stop. `/memory claude` says which |
 | `/memory pause`, `/memory resume` | Stop or restart learning from this chat |
 | `/memory undo` | Take back the newest change from this chat. An imported file counts as one change |
 | `/forget <words>` | Find an entry by its words and delete it after you confirm |
+
+### Claude Code memory in the CLI
+
+If you use Claude Code, the CLI can use what it remembers: your `~/.claude/CLAUDE.md` and the notes Claude Code keeps for the folder you are in. The first time you open pre.dev in a folder that has notes, it asks once whether to use them.
+
+pre.dev then reads them the way Claude Code does. Each run gets the folder's `MEMORY.md` index, and pre.dev opens a note when a question needs more than its line in the index. Nothing is copied into your pre.dev memory, so notes Claude Code writes later count right away. The CLI says so when Claude Code has added notes since your last run.
+
+- Change your answer for a folder in `/memory`, or with `/memory claude on` and `/memory claude off`.
+- `predev -p` uses Claude Code's memory in folders where you said yes. Elsewhere it prints a one-line hint and runs without it.
+- Set `PREDEV_CLAUDE_MEMORY=1` to use it in every folder without asking, or `PREDEV_CLAUDE_MEMORY=0` to never use it.
+- A folder inside a workspace you run Claude Code from, such as a repository under `~/work`, uses the workspace's notes when it has none of its own.
+- Runs on the web cannot read files on your computer. To use your Claude Code instructions there, import `~/.claude/CLAUDE.md`.
 
 ## Limits
 
