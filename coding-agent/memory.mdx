@@ -29,6 +29,8 @@ Changes apply from the next message.
 
 Everything pre.dev saves shows as a line under the reply, such as **Saved to project memory** or **Saved to your memory**, with who can see it and **Undo**. You can edit, archive, or delete any entry. Archived entries are not used; restore one to use it again.
 
+When you ask pre.dev to remember something for your team, it waits as a suggestion until an admin approves it on the **Team** tab. What pre.dev saves is never pinned; pin it yourself if you want it first. Before saving to your personal memory, pre.dev also checks that the instruction came from you: one that came from a web page or file it read, such as sending your data somewhere or running a script from the internet, is not saved.
+
 <Note>
 Memory never stores secrets. pre.dev refuses passwords, API keys, tokens, and private keys, and never saves them.
 </Note>
@@ -50,7 +52,7 @@ Open **Memory** in the sidebar.
 | **Export** | Downloads a project's memory as `AGENTS.md`, with or without your personal memory |
 | **Archived** | Entries that are not used. Restore one to use it again |
 
-Each entry shows where it applies and where it came from: **You**, **Learned in** a chat (a link to that reply), **Saved by pre.dev**, or **From** Claude Code or another source. Select where it applies to move it between **This project** and **All my projects**. **Pin to top** puts an entry first.
+Each entry shows where it applies and where it came from: **You**, **Learned in** a chat (a link to that reply), **Saved by pre.dev**, or **From** Claude Code or another source. Select where it applies to move it between **This project** and **All my projects**. Only the person who added a project entry can move it into their own memory; anyone else can archive it, which everyone on the project sees. **Pin to top** puts an entry first.
 
 ### In a chat
 
@@ -167,3 +169,4 @@ After the first reply in a chat, the CLI shows one line such as `memory · 4 thi
 | Entry length | 1,000 characters |
 | Title length | 80 characters |
 | Entries | 200 each for a project's memory, your personal memory, and a team's memory. Adding one past that archives the entry unused the longest. Pinned and Required entries are kept |
+| Pinned entries | 20 each for a project's memory and your personal memory |
