@@ -1,13 +1,13 @@
 ---
 title: "MCP tool reference"
-description: "The eight primary pre.dev tools, exact input names, result formats, and deprecated aliases."
+description: "The twelve primary pre.dev tools, including memory, exact input names, result formats, and deprecated aliases."
 ---
 
 import McpUrl from "/snippets/mcp-url.mdx";
 
 <McpUrl />
 
-Connect once to use specification generation, project plans and browser automation: run `npx -y @predotdev/mcp setup` to add the local server to every coding agent on your Mac, or connect the hosted server. [Setup instructions](/architect-agent/mcp-setup) cover both, with authentication and client configuration.
+Connect once to use specification generation, project plans, browser automation and [memory](/coding-agent/memory): run `npx -y @predotdev/mcp setup` to add the local server to every coding agent on your Mac, or connect the hosted server. [Setup instructions](/architect-agent/mcp-setup) cover both, with authentication and client configuration.
 
 Call **`tools/list`** after initialization for the live input schemas. `GET /mcp/info` is a human-readable service inventory; it is not the protocol's tool-discovery method.
 
@@ -23,8 +23,12 @@ Call **`tools/list`** after initialization for the live input schemas. `GET /mcp
 | `browser_agent` | Run browser tasks | Text summary or an async run ID |
 | `browser_agent_get` | Retrieve browser task results | JSON text and `structuredContent` |
 | `browser_agent_list` | Paginated browser history | Text and `structuredContent` |
+| `memory_list` | What pre.dev remembers about the user, and with `project`, that project's memory and the team's | Text lines, each with an `[id]` |
+| `memory_search` | Keyword search across the user's memory | Text lines, each with an `[id]` and where it lives |
+| `memory_remember` | Save one lasting preference | Text with the saved entry's `[id]` |
+| `memory_forget` | Remove one entry by id | Text confirmation |
 
-Generation and browser execution consume credits. Retrieval and listing do not launch new work. The server marks browser execution as potentially destructive because a task can click, submit forms, or change data on external sites.
+Generation and browser execution consume credits. Retrieval and listing do not launch new work. The memory tools use no credits and work on every plan, Free included. The server marks browser execution as potentially destructive because a task can click, submit forms, or change data on external sites.
 
 <Note>
 The local pre.dev MCP server (`npx -y @predotdev/mcp setup`) lists these tools, passed through on your key, alongside 17 `chrome_*` tools that drive the Chrome on your own computer, with your profiles and logins; see [Browser Agents Local](/browser-agents/local#tools). The `browser_agent` tools always run tasks on pre.dev's cloud browsers.
@@ -204,6 +208,49 @@ Save the ID from the returned text, then call `browser_agent_get` every few seco
 | `status` | String | All | `processing`, `completed` |
 
 The structured result contains `total` and `batches`. Each batch has `id`, `status`, `total`, `completed`, and `totalCreditsUsed`. Unlike REST listing, this tool does **not** return `hasMore`; compare your offset and page length with `total`.
+
+## memory_list
+
+```json
+{ "project": "Billing dashboard" }
+```
+
+`project` is optional: a pre.dev project name or id, up to 200 characters. A name matches exactly first, then in part; when more than one project matches, the result lists them and asks for the id.
+
+Without `project`, the result is your memory for all your projects, then the projects that have their own memory, with how many entries each holds. With `project`, it is exactly what pre.dev uses in a chat there: your team's entries (Required ones marked `[REQUIRED]`), the project's memory, then yours. Required team entries win, and project or team memory wins over personal memory when they disagree.
+
+Each entry is one text line that starts with its 24-character id, for example `- [65f0c3a1b2c4d5e6f7a8b9c0] Use pnpm, not npm`. A long list ends with how many entries were left out; find those with `memory_search`. The server's instructions ask agents to call `memory_list` at the start of a task and follow it.
+
+## memory_search
+
+```json
+{ "query": "package manager" }
+```
+
+`query` is required, 1 to 500 characters of keywords. It searches your memory, the memory of your projects, and your team's, and returns up to 20 matching lines. Each line has the entry's `[id]` and where it lives: `(the user)`, `(project <name>)`, `(team)`, or `(team, REQUIRED)`.
+
+## memory_remember
+
+```json
+{ "text": "Use pnpm, not npm.", "project": "Billing dashboard" }
+```
+
+| Parameter | Required | Type | Meaning |
+| --- | --- | --- | --- |
+| `text` | Yes | String, 1 to 1,000 characters | One lasting preference or fact, in one or two short sentences |
+| `project` | No | String | A pre.dev project name or id, to save it to that project instead of your memory for all your projects |
+
+Without `project`, the entry goes to your memory for all your projects; signed in to a team, it applies to that team's projects only. The result names where it was saved and the new entry's `[id]`. Text that is already in memory is not saved twice, and passwords, API keys, tokens, and private keys are refused. Use it for preferences the user states, not for notes about a single task.
+
+## memory_forget
+
+```json
+{ "id": "65f0c3a1b2c4d5e6f7a8b9c0" }
+```
+
+`id` is required: an entry id from `memory_list` or `memory_search`, with or without its brackets. The entry is archived, not deleted, so the user can restore it from **Archived** on the Memory page.
+
+Memory belongs to one person, so the memory tools act as whoever signed in or owns the key. A key shared by a whole team gets an error result that says so. Refusals, such as a secret or an unknown project, return `isError: true` with the reason in text. See [Memory](/coding-agent/memory) for what each kind of memory is and who can see it.
 
 ## Notifications and errors
 

@@ -30,15 +30,16 @@ Run `npx -y @predotdev/mcp setup` with a 10 minute timeout and tell me what to c
 | --- | --- |
 | [`fast_spec`, `deep_spec`, `get_spec`, `list_specs`, `get_plan`](/mcp/tools) | Specifications and project plans |
 | [`browser_agent`, `browser_agent_get`, `browser_agent_list`](/mcp/tools#browser_agent) | Cloud Browser Agents: tasks on pre.dev's browsers with structured results |
+| [`memory_list`, `memory_search`, `memory_remember`, `memory_forget`](/mcp/tools#memory_list) | [Memory](/coding-agent/memory): what you told pre.dev to remember, in every agent |
 | [`chrome_*`](/browser-agents/local#tools) | Browser Agents Local: your agent drives the Chrome you already have open, with your profiles and logins |
 
-The specification, plan, and cloud browser tools are the hosted server's tools, passed through on your key. They accept personal accounts on a paid plan and team workspaces; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access). The Chrome tools run on your computer. For manual configuration of each agent, commands such as `check`, `login`, and `uninstall`, and troubleshooting, see [Browser Agents Local](/browser-agents/local).
+The specification, plan, and cloud browser tools are the hosted server's tools, passed through on your key. They accept personal accounts on a paid plan and team workspaces; see [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access). The memory tools work on every plan, Free included. The Chrome tools run on your computer. For manual configuration of each agent, commands such as `check`, `login`, and `uninstall`, and troubleshooting, see [Browser Agents Local](/browser-agents/local).
 
 ## No Node.js? Connect the hosted server
 
 <McpUrl />
 
-One connection exposes [eight primary tools](/mcp/tools) for specifications, project plans and cloud browser automation, without the Chrome tools. It accepts the same accounts as the local server.
+One connection exposes [twelve primary tools](/mcp/tools) for specifications, project plans, cloud browser automation and memory, without the Chrome tools. It accepts the same accounts as the local server.
 
 <Tabs>
   <Tab title="Claude Code">
@@ -93,13 +94,19 @@ Use pre.dev browser_agent to read https://example.com and extract
 its main heading. Fetch the complete structured result afterward.
 ```
 
+Or save a preference to your [memory](/coding-agent/memory):
+
+```text
+Use pre.dev memory_remember to remember that I use pnpm, not npm.
+```
+
 With the local server, try [your own Chrome](/browser-agents/local):
 
 ```text
 List my Chrome profiles and the tabs I have open.
 ```
 
-Tool execution uses your account's credits and access. Connecting a server does not change your plan. A Free account can use browser REST and the local Chrome tools, but not the hosted tools; see [authentication](/api-reference/authentication#which-accounts-each-interface-accepts).
+Tool execution uses your account's credits and access. Connecting a server does not change your plan. A Free account can use browser REST, the local Chrome tools, and the memory tools, but not the other hosted tools; see [authentication](/api-reference/authentication#which-accounts-each-interface-accepts).
 
 ## Connection lifecycle
 

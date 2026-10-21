@@ -90,6 +90,16 @@ The agent decides whether to answer, plan, or build. Use `/sprint <feature>` for
 
 Review file changes with `git status` and `git diff`. `/undo` puts the files back the way they were before your last message or sprint, and `/redo` brings the change back.
 
+## Memory
+
+The agent remembers how you like to work and what matters in this project, the same memory you see on the web. Say "remember ..." or type `/remember <text>` to save something, and `/memory` to see, edit, import, or export what it remembers. After the first reply in a chat, one line says how much it remembers: `memory · 4 things remembered for this project · /memory`.
+
+```bash
+predev memory import
+```
+
+`predev memory import` brings in what Claude Code, Codex, Gemini CLI, Windsurf, and other agents on this computer remember, with secrets removed before anything uploads. Add `--dry-run` to see what would come in. See [Memory](/coding-agent/memory#in-the-cli) for every command.
+
 ## Your laptop or the cloud
 
 A session you start in the CLI runs on your machine. The web shows the same session, and a message typed there runs on your laptop while the CLI is connected. When the app's dev server is running, the owner can see it live in the web Preview.

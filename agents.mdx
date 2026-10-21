@@ -37,7 +37,7 @@ Projects built on pre.dev already have the key as `PREDEV_API_KEY`. It spends th
 
 ## Plan access
 
-Browser tasks and AI Gateway calls work on every plan, Free included: a Free personal account can spend 2 credits on browser tasks, and a Free workspace 5 credits on AI calls, before it needs a plan. Specifications and the MCP server need Premium, Pro, Team or Enterprise; Plus and team workspaces without a plan get 3 trial specifications. See [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
+Browser tasks and AI Gateway calls work on every plan, Free included: a Free personal account can spend 2 credits on browser tasks, and a Free workspace 5 credits on AI calls, before it needs a plan. Specifications and the MCP server need Premium, Pro, Team or Enterprise; Plus and team workspaces without a plan get 3 trial specifications. The MCP memory tools work on every plan, Free included, and use no credits. See [API and MCP access](/coding-agent/plans-and-credits#api-and-mcp-access).
 
 ## Choose an interface
 
@@ -51,6 +51,8 @@ Browser tasks and AI Gateway calls work on every plan, Free included: a Free per
 | Retrieve a specification | `GET /spec-status/{specId}` | `get_spec` |
 | Read a project's plan | `GET /get-plan` | `get_plan` |
 | Browse specification history | `GET /list-specs` | `list_specs` |
+| Read what the user told pre.dev to remember | Use MCP | `memory_list`, `memory_search` |
+| Save or remove one of the user's memories | Use MCP | `memory_remember`, `memory_forget` |
 | Search specification input | `GET /find-specs` | Use REST |
 | Check available credits | `GET /credits-balance` | Use REST |
 | Call a model | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK | Use REST |

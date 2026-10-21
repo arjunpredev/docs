@@ -386,7 +386,8 @@
             "group": "Coding Agent",
             "pages": [
               "coding-agent/overview",
-              "coding-agent/workspace"
+              "coding-agent/workspace",
+              "coding-agent/memory"
             ]
           },
           {

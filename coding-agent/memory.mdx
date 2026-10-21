@@ -1,0 +1,169 @@
+---
+title: "Memory"
+description: "pre.dev remembers how you like to work and what matters in each project, across chats, the web app, the CLI, and your other coding agents."
+---
+
+pre.dev remembers how you like to work and what matters about each project. That memory applies in every chat, on the web and in the [CLI](/cli/overview), and in Claude Code, Cursor, and other coding agents through the [pre.dev MCP server](#use-it-in-claude-code-cursor-and-other-agents). You can see, change, and undo everything it saves.
+
+## Three kinds of memory
+
+| Memory | Who can see it | Where it applies |
+| --- | --- | --- |
+| **This project** | Everyone with access to the project | Every chat in the project |
+| **All my projects** | Only you. Not even admins can see it | Every project you work in. Inside an organization's projects, an entry can be limited to that organization's projects |
+| **Team** | Everyone in your organization can read it, and admins edit it | Every project in the organization |
+
+An admin can mark a team entry **Required**. A Required entry always applies, and it wins over project and personal memory. When project or team memory disagrees with your personal memory, pre.dev follows the project or team.
+
+In an organization, anyone can offer one of their entries to the team with **Suggest to** and the organization's name. An admin approves it on the **Team** tab of the Memory page.
+
+Changes apply from the next message.
+
+## How things get saved
+
+- **Ask in a chat.** Say "remember ..." in any chat, for example `remember we use pnpm, not npm`.
+- **Add one yourself.** Add an entry on the Memory page or in the chat's Memory panel.
+- **Remember a message.** Hover any message in a chat and choose **Remember**. The Memory panel opens with the message's text, ready to trim and save. Nothing is saved until you do.
+- **Import.** Bring in what your other agents and AI apps already know. See [Import](#import).
+- **pre.dev learns on its own.** It saves lasting preferences and corrections from your chats. While it works, it also saves short project facts it has confirmed, such as a command that works or where something lives in the code.
+
+Everything pre.dev saves shows as a line under the reply, such as **Saved to project memory** or **Saved to your memory**, with who can see it and **Undo**. You can edit, archive, or delete any entry. Archived entries are not used; restore one to use it again.
+
+<Note>
+Memory never stores secrets. pre.dev refuses passwords, API keys, tokens, and private keys, and never saves them.
+</Note>
+
+## See and manage memory
+
+### The Memory page
+
+Open **Memory** in the sidebar.
+
+| Part | What it does |
+| --- | --- |
+| **All my projects** | Your personal memory, and the **Learn from my chats** switch |
+| **By project** | Each project's memory |
+| **Team** | In an organization's workspace: team entries, suggestions waiting for an admin, and the organization's memory settings |
+| **Activity** | What was learned, saved, edited, archived, restored, deleted, or undone |
+| Search | Searches every kind of memory at once |
+| **Import** | Brings memory in from other coding agents, AI apps, files, or pasted text |
+| **Export** | Downloads a project's memory as `AGENTS.md`, with or without your personal memory |
+| **Archived** | Entries that are not used. Restore one to use it again |
+
+Each entry shows where it applies and where it came from: **You**, **Learned in** a chat (a link to that reply), **Saved by pre.dev**, or **From** Claude Code or another source. Select where it applies to move it between **This project** and **All my projects**. **Pin to top** puts an entry first.
+
+### In a chat
+
+- The **Memory** button in the project header shows how many entries apply, for example **Memory · 7**. It opens the Memory panel beside the chat, with this project's memory, yours, and your team's. You can add an entry there.
+- **Remembered N things** under a reply shows what pre.dev had in mind for that reply.
+- Hover a message and choose **Remember** to save it, or part of it, as memory.
+- A line under the reply names anything pre.dev saved from it, with **Undo**.
+- In a new user's first chat, a short line over the composer explains memory and links to it.
+
+## Shared projects
+
+When several people work in one project:
+
+- Each person's own memory applies to the messages they send. Runs you set up, such as schedules, loops, and goals, use your memory too.
+- Other people in the project see the replies, never your memory list.
+- pre.dev learns something personal only from your own messages.
+- Project memory is shared with everyone in the project. Its save line says how many people can see it.
+
+## Controls
+
+| Control | Where | What it does |
+| --- | --- | --- |
+| **Learn from my chats** | Memory page, **All my projects** | Turns learning from your chats on or off |
+| **Use what I saved for all my projects** | Project setup, **Memory** tab | Loads your personal memory in this project's chats |
+| **Use team memory here** | Project setup, **Memory** tab | Loads your organization's team memory here. When off, only Required entries load |
+| **Learn from sessions in this project** | Project setup, **Memory** tab | Lets pre.dev save what it learns in this project's chats |
+| **Use memory in this chat** and **Learn from this chat** | The composer's **+** menu | The same choices for one chat |
+
+Open Project setup from the composer's **+** menu or with `/integrations`. Only people who can edit a project can change its memory settings.
+
+Organization admins set policy for every project in the organization, on the **Team** tab of the Memory page:
+
+| Setting | When it is off |
+| --- | --- |
+| **Memory** | No memory loads in the organization's projects, and nothing new is saved |
+| **Learning** | pre.dev does not save what it learns in the organization's projects |
+| **Imports** | Nobody can import memory from other agents into the organization's projects |
+| **Personal memory from** the organization's projects | Nothing from the organization's projects goes into anyone's personal memory |
+
+## Import
+
+You can bring in what Claude Code, Codex, Cursor, and other coding agents remember, and what ChatGPT, Claude, or Gemini knows about you. Secrets are removed before anything is saved.
+
+### From the CLI
+
+```bash
+predev memory import
+```
+
+`predev memory import` finds the memory files that Claude Code, Codex, pi, Hermes, Gemini CLI, Windsurf, Cline, Continue, OpenCode, and Kiro keep on your computer, and imports them. Secrets are removed on your computer before anything uploads. Files you wrote are used right away. Notes an agent wrote for itself, such as Claude Code's project memory, wait in Memory for you to accept them. Add `--dry-run` to see what would come in without uploading anything.
+
+Inside the CLI, `/memory import` shows what it found and lets you review it before anything is saved. The first time you start the CLI, it offers the same screen once. Changes to files you imported come in on your next import, and the CLI also picks them up when it starts.
+
+### On the web
+
+On the Memory page, choose **Import**:
+
+- **From Claude Code, Codex, Cursor and other coding agents**: run the CLI command above, or upload the files. Import takes `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.windsurfrules`, or any `.md` or `.txt` file, up to 20 at a time. On a Mac, press Cmd+Shift+. in the file picker to see hidden folders such as `~/.claude`.
+- **From ChatGPT, Claude or Gemini**: copy the prompt pre.dev gives you, paste it into that app, then paste its answer back.
+- **Paste text or upload a file**: notes, rules, or preferences, one per line.
+
+You review what comes in before it is saved, and choose whether each entry applies to **All my projects** or **This project**.
+
+Cursor keeps its User Rules in its settings, not in a file. Copy them from Cursor and paste them into Import, or add them with `/remember` in the CLI.
+
+## Export to AGENTS.md
+
+On the Memory page, **Export** downloads a project's memory as `AGENTS.md`, for agents that read that file. In the CLI, `/memory export` writes it into a marked pre.dev block of `AGENTS.md` at the repository root and creates the file if it is missing. A new export replaces the block and leaves the rest of the file as it is.
+
+## Use it in Claude Code, Cursor, and other agents
+
+The pre.dev MCP server gives other coding agents your memory, on your own account:
+
+| Tool | What it does |
+| --- | --- |
+| [`memory_list`](/mcp/tools#memory_list) | What pre.dev remembers about you; with `project`, that project's memory and your team's |
+| [`memory_search`](/mcp/tools#memory_search) | Keyword search across your memory |
+| [`memory_remember`](/mcp/tools#memory_remember) | Saves one lasting preference, for all your projects or for one project |
+| [`memory_forget`](/mcp/tools#memory_forget) | Removes one entry, archived so you can undo it in pre.dev |
+
+The server tells connected agents to read your memory at the start of a task and to save lasting preferences you state. The memory tools work on every plan, Free included, and use no credits.
+
+Add pre.dev to Claude Code:
+
+```bash
+claude mcp add --transport http predev https://api.pre.dev/mcp
+```
+
+Claude Code asks you to sign in through your browser the first time. To add pre.dev to Claude Code, Codex, Cursor, and many other agents at once, run `npx -y @predotdev/mcp setup` (macOS, Node.js 22 or later). See [Connect the MCP server](/architect-agent/mcp-setup) for every option.
+
+What other agents save shows on the Memory page as **Saved from** that agent.
+
+## In the CLI
+
+After the first reply in a chat, the CLI shows one line such as `memory · 4 things remembered for this project · /memory`. When pre.dev saves something from the chat, a line such as `memory +1 · <the entry> · /memory to undo` follows.
+
+| Command | Action |
+| --- | --- |
+| `/memory` | The list: this project's memory, yours, and your team's. The top rows add, import, and export. Press Enter on an entry to edit, pin, move, or delete it. The list also opens this folder's `CLAUDE.md` in your editor |
+| `/memory add <text>` | Save an entry for this project. The same as `/remember <text>` |
+| `/remember --me <text>` | Save an entry for all your projects. Inside an organization's project, it applies to that organization's projects |
+| `/memory import` | Find what your other coding agents remember on this computer, review it, and import it |
+| `/memory import <file>` | Import one file, such as `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, or any `.md` or `.txt` file, after a review |
+| `/memory search <words>` | Search this project's memory. `--all` searches your other projects too |
+| `/memory export [--me]` | Write this project's memory into the marked pre.dev block of `AGENTS.md` at the repository root. `--me` adds your personal memory |
+| `/memory pause`, `/memory resume` | Stop or restart learning from this chat |
+| `/memory undo` | Take back the newest change from this chat. An imported file counts as one change |
+| `/forget <words>` | Find an entry by its words and delete it after you confirm |
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Entry length | 1,000 characters |
+| Title length | 80 characters |
+| Entries | 200 each for a project's memory, your personal memory, and a team's memory. Adding one past that archives the entry unused the longest. Pinned and Required entries are kept |

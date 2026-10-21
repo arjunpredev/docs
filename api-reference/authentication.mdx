@@ -45,9 +45,9 @@ Authentication and feature access are separate checks.
 | --- | --- |
 | Browser Agents REST | Every account, including Free. Task submission then applies its own trial, credit, and queue checks. |
 | AI Gateway | Every account, including Free. Free workspaces have a small lifetime allowance for gateway calls. |
-| Architect REST and the MCP server | Personal accounts on a paid plan, and team workspaces |
+| Architect REST and the MCP server | Personal accounts on a paid plan, and team workspaces. The MCP server also accepts Free accounts, for the memory tools |
 
-A Free account can call Browser Agents and the AI Gateway, while an Architect REST or MCP call returns `401`. Which plans can generate specifications is covered in [plans, credits, and pricing](/coding-agent/plans-and-credits#api-and-mcp-access). Read the response message for the required action.
+A Free account can call Browser Agents, the AI Gateway, and the MCP memory tools, while an Architect REST call returns `401` and the other MCP tools return an error result with a link to subscribe. Which plans can generate specifications is covered in [plans, credits, and pricing](/coding-agent/plans-and-credits#api-and-mcp-access). Read the response message for the required action.
 
 ## Account and team context
 

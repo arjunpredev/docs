@@ -76,6 +76,6 @@ For integrations, [GET /credits-balance](/architect-agent/api/credits-balance) r
 
 ## API and MCP access
 
-The Architect API and the MCP server are included with the Premium, Pro, Team, and Enterprise plans. Plus accounts, and team workspaces without an active plan, can connect and generate 3 specifications as a trial; after that, generation returns `403`. Free accounts cannot authenticate to the Architect API or MCP.
+The Architect API and the MCP server are included with the Premium, Pro, Team, and Enterprise plans. Plus accounts, and team workspaces without an active plan, can connect and generate 3 specifications as a trial; after that, generation returns `403`. Free accounts cannot authenticate to the Architect API. They can connect to MCP for the [memory tools](/mcp/tools#memory_list), which work on every plan and use no credits; the other MCP tools answer with a link to subscribe.
 
 Browser Agents REST and the AI Gateway accept every account, including Free. See [authentication](/api-reference/authentication) for how each interface checks keys and [errors and retries](/api-reference/errors) for access errors.

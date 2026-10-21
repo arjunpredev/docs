@@ -31,6 +31,7 @@
 
 - [Coding Agent overview](https://docs.pre.dev/coding-agent/overview.md): Build and maintain software in the web workspace or a local terminal.
 - [The workspace](https://docs.pre.dev/coding-agent/workspace.md): Agent chat, plans, code, preview, and project settings.
+- [Memory](https://docs.pre.dev/coding-agent/memory.md): What pre.dev remembers for you, each project, and your team; how it learns, Undo, controls, import from Claude Code, Codex and Cursor, export to AGENTS.md, and the memory MCP tools.
 - [Create a project](https://docs.pre.dev/coding-agent/projects/creating-a-project.md): Start from a prompt or an existing repository.
 - [Import a repository](https://docs.pre.dev/coding-agent/projects/importing-repos.md): Build on an existing GitHub codebase and its conventions.
 - [GitHub integration](https://docs.pre.dev/coding-agent/projects/github-integration.md): Connect GitHub, import code, and review branch changes.
@@ -119,7 +120,7 @@
 - [Node.js SDK](https://docs.pre.dev/architect-agent/sdks/node.md): The predev-api TypeScript client.
 - [Python SDK](https://docs.pre.dev/architect-agent/sdks/python.md): The predev-api Python package.
 - [Connect the MCP server](https://docs.pre.dev/architect-agent/mcp-setup.md): One command adds every pre.dev tool, plus the user's own Chrome, to every coding agent; or connect the hosted server.
-- [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The eight tools, exact input names, results, and deprecated aliases.
+- [MCP tool reference](https://docs.pre.dev/mcp/tools.md): The twelve tools, including memory, exact input names, results, and deprecated aliases.
 
 ## Labs
 
