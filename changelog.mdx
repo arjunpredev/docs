@@ -7,6 +7,19 @@ User-facing changes to the pre.dev API, SDKs, and dashboard. Subscribe via
 the [GitHub releases page](https://github.com/predotdev/predev-api/releases)
 to get notified on every SDK bump.
 
+## 2026-10-21
+
+### Memory
+
+- **pre.dev remembers how you work.** [Memory](/coding-agent/memory) has three kinds: **This project**, for everyone with access to the project; **All my projects**, yours only, not even admins can see it; and **Team**, which everyone in an organization reads, admins edit, and an admin can mark **Required** so it always applies.
+- **It learns from your chats.** pre.dev saves lasting preferences and corrections from your chats, and short project facts it confirms while working, such as a command that works or where something lives. Every save shows under the reply with **Undo**, and you can edit, archive, or delete any entry. Say "remember ..." in any chat to save something yourself.
+- **Remembered N things** under a reply shows what pre.dev had in mind for it, and the project header's **Memory** button opens the Memory panel.
+- **Shared projects work per person.** Each person's own memory applies to the messages they send, nobody else sees your memory list, and pre.dev learns something personal only from your own messages.
+- **Import** what Claude Code, Codex, Gemini CLI, Windsurf, and other coding agents remember with `predev memory import`. On the web, upload `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, and other files, or paste Cursor's User Rules, and a guide brings memory over from ChatGPT, Claude, or Gemini. Secrets are refused and never saved.
+- **Export** a project's memory to `AGENTS.md`.
+- **Memory in Claude Code and Cursor.** The [pre.dev MCP server](/architect-agent/mcp-setup) adds [`memory_list`, `memory_search`, `memory_remember`, and `memory_forget`](/mcp/tools#memory_list), free on every plan. Add it to Claude Code with `claude mcp add --transport http predev https://api.pre.dev/mcp`.
+- **In the CLI**, `/memory` lists, edits, imports, and exports memory, `/remember` and `/forget` add and remove entries, and `/memory undo` takes back the newest change. See [CLI commands](/cli/commands#memory).
+
 ## 2026-10-19
 
 ### Coding agent on DeepSeek V4.1 Flash 1017

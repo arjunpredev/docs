@@ -36,6 +36,23 @@ A message that starts with `>>` also forks a task. Separate sessions use separat
 
 Escape returns from project views to chat. Views require the corresponding project data.
 
+## Memory
+
+| Command | Action |
+| --- | --- |
+| `/memory` | List this project's memory, yours, and your team's; add, import, or export, and press Enter on an entry to edit, pin, move, or delete it |
+| `/memory add <text>`, `/remember <text>` | Remember something for this project |
+| `/remember --me <text>` | Remember something for all your projects |
+| `/memory import` | Review and import what your other coding agents remember on this computer |
+| `/memory import <file>` | Import one file, such as `CLAUDE.md` or `AGENTS.md` |
+| `/memory search <words>` | Search this project's memory; `--all` searches your other projects too |
+| `/memory export [--me]` | Write this project's memory, and with `--me` yours, into `AGENTS.md` at the repository root |
+| `/memory pause`, `/memory resume` | Stop or restart learning from this chat |
+| `/memory undo` | Take back the newest memory change from this chat |
+| `/forget <words>` | Find an entry and delete it after you confirm |
+
+See [Memory](/coding-agent/memory) for what each kind of memory is, who can see it, and how pre.dev learns.
+
 ## Session
 
 | Command | Action |
@@ -98,4 +115,5 @@ In the Skills and MCP panels, press Enter or Space to toggle an entry, `d` to re
 | `predev --help` or `predev -h` | Print launch help and exit |
 | `predev run "<prompt>"` | Run one request without the app, then exit. See [Run one task without the app](/cli/overview#run-one-task-without-the-app) |
 | `predev logout` | Forget the saved login on this computer; with `PREDEV_API_KEY` set, the CLI then signs in with the key |
+| `predev memory import` | Import what your other coding agents remember on this computer, then exit. `--dry-run` shows what would come in. See [Import](/coding-agent/memory#import) |
 | `predev mcp setup` | Add the [pre.dev MCP server](/architect-agent/mcp-setup) to your other coding agents, such as Claude Code, Codex, and Cursor. Needs Node.js 22 or later |
