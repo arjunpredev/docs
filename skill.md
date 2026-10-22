@@ -26,7 +26,7 @@ pre.dev is the Long Horizon Coding Agent: it plans, builds, verifies and ships s
 | Call a model (AI Gateway): chat, embeddings, images, video, speech | `https://api.pre.dev/v1` with an OpenAI or Anthropic SDK |
 | Plan software before building it | `POST https://api.pre.dev/fast-spec` or `/deep-spec`, or the `fast_spec` MCP tool |
 | Give an agent pre.dev tools, plus the user's own Chrome, profiles, and logins | The pre.dev MCP server: `npx -y @predotdev/mcp setup` signs in to pre.dev and adds it to every coding agent on the Mac (run it with a 10 minute timeout and tell the user what to click). Without Node.js, the hosted server `https://api.pre.dev/mcp` has every tool except the Chrome ones. See https://docs.pre.dev/browser-agents/local.md |
-| Follow what the user told pre.dev to remember, or save a lasting preference they state | The MCP tools `memory_list` (call it at the start of a task), `memory_search`, `memory_remember`, and `memory_forget`. See https://docs.pre.dev/coding-agent/memory.md |
+| Follow what the user told pre.dev to remember, or save a lasting preference they state | The MCP tools `memory_list` (call it before you answer or write anything), `memory_search`, `memory_remember`, and `memory_forget`. See https://docs.pre.dev/coding-agent/memory.md |
 | Take payments in an app built on pre.dev | The Stripe SDK, pointed at `STRIPE_API_HOST` |
 | Build or change code | The coding agent, on the web or in the CLI; `predev run` with `PREDEV_API_KEY` runs one task unattended |
 | Search these docs | Docs MCP server `https://docs.pre.dev/mcp` (no key) |

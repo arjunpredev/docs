@@ -133,7 +133,15 @@ The pre.dev MCP server gives other coding agents your memory, on your own accoun
 | [`memory_remember`](/mcp/tools#memory_remember) | Saves one lasting preference, for all your projects or for one project |
 | [`memory_forget`](/mcp/tools#memory_forget) | Removes one entry, archived so you can undo it in pre.dev |
 
-The server tells connected agents to read your memory at the start of a task and to save lasting preferences you state. The memory tools work on every plan, Free included, and use no credits.
+The server tells connected agents to check your memory before they answer or write anything, and to save lasting preferences you state. The memory tools work on every plan, Free included, and use no credits.
+
+Some agents, Codex among them, don't act on a server's instructions. Add this line to the agent's `AGENTS.md` (`CLAUDE.md` for Claude Code) so it checks your memory every time:
+
+```text
+Before you start a task, check pre.dev memory: call memory_list (with project set to the pre.dev project named like this folder) and follow what it returns. When I state a lasting preference, save it with memory_remember.
+```
+
+Name the folder like your pre.dev project (the CLI names a project after its folder), so the agent finds that project's memory.
 
 Add pre.dev to Claude Code:
 
