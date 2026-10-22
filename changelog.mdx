@@ -15,6 +15,10 @@ to get notified on every SDK bump.
 - **Scripted runs refuse those actions unless you allow them.** `predev run` and `predev -p` take `--allow writes,secrets,prod,kill,browser,integrations` (or `all`, or `PREDEV_ALLOW`); they also leave your Chrome and connected accounts alone unless allowed. See [What a run may do beyond this folder](/cli/overview#what-a-run-may-do-beyond-this-folder).
 - pre.dev never changes your agent, shell or git settings or credentials, and command output that looks like a secret is redacted before the agent sees it.
 
+### Memory
+
+- **Other agents check your memory before every answer.** The [pre.dev MCP server](/coding-agent/memory#use-it-in-claude-code-cursor-and-other-agents) now tells connected agents to read your memory before they answer or write anything, code, commit messages and tests included, not only at the start of a task. For agents that don't act on a server's instructions, such as Codex, add the one line on that page to `AGENTS.md`.
+
 ## 2026-10-21
 
 ### Memory

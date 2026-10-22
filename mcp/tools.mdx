@@ -219,7 +219,7 @@ The structured result contains `total` and `batches`. Each batch has `id`, `stat
 
 Without `project`, the result is your memory for all your projects, then the projects that have their own memory, with how many entries each holds. With `project`, it is exactly what pre.dev uses in a chat there: your team's entries (Required ones marked `[REQUIRED]`), the project's memory, then yours. Required team entries win, and project or team memory wins over personal memory when they disagree.
 
-Each entry is one text line that starts with its 24-character id, for example `- [65f0c3a1b2c4d5e6f7a8b9c0] Use pnpm, not npm`. A long list ends with how many entries were left out; find those with `memory_search`. The server's instructions ask agents to call `memory_list` at the start of a task and follow it.
+Each entry is one text line that starts with its 24-character id, for example `- [65f0c3a1b2c4d5e6f7a8b9c0] Use pnpm, not npm`. A long list ends with how many entries were left out; find those with `memory_search`. The server's instructions ask agents to call `memory_list` before they answer or write anything, with the project named like the folder they are in, and to follow it.
 
 ## memory_search
 
