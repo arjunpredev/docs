@@ -84,6 +84,28 @@ predev run --new "scaffold a command-line tool in Go"
 
 To answer a question, run `predev run "<your answer>"` in the same directory. The conversation continues from there.
 
+### What a run may do beyond this folder
+
+Some actions reach past the project the agent works on. In the app, pre.dev asks before it does them: **Allow once**, or **Allow for the rest of this session**. `predev run` and `predev -p` have nobody to ask, so they refuse these unless you allow them with `--allow`:
+
+| `--allow` | What it lets a run do |
+| --- | --- |
+| `writes` | Write files outside the current directory (temporary folders are always fine) |
+| `secrets` | Read `.env` and key files, or print secrets (`doppler secrets`, `doppler configure get`, the keychain) |
+| `prod` | Use Doppler with a `prd`, `prod` or `production` config |
+| `kill` | Stop processes by name or from a process list (`pkill`, `killall`, `kill $(pgrep ...)`) |
+| `browser` | Use your own Chrome through pre.dev's Chrome connection |
+| `integrations` | Use the accounts you connected to pre.dev, such as Gmail or Slack |
+
+```bash
+predev -p --allow writes,kill "clean up the build output and restart the dev server"
+```
+
+- `--allow all` allows every kind. `PREDEV_ALLOW=writes,kill` in the environment works too.
+- In the app, your browser and connected accounts work as before; only scripted runs need `browser` or `integrations`.
+- pre.dev never changes your agent, shell or git settings or credentials, such as `~/.claude`, `~/.ssh`, `~/.zshrc` or `~/.gitconfig`, with or without `--allow`.
+- Command output that looks like a secret (`API_KEY=...`, known key formats) is redacted before the agent sees it, and searches skip `.env` and key files unless secrets are allowed.
+
 ## Work in the terminal
 
 The agent decides whether to answer, plan, or build. Use `/sprint <feature>` for a dedicated sprint and `/fork <task>` for a separate session. `/kanban`, `/roadmap`, and `/arch` open project views in the terminal. `/usage` shows what the project's credits went on, and `/publish` puts the app at its permanent address.
