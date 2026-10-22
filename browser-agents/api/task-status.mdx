@@ -66,7 +66,7 @@ curl --fail-with-body "https://api.pre.dev/browser-agent/$BATCH_ID?includeEvents
 
 An event uses `{ type, timestamp, iteration?, data }`, where `timestamp` is Unix time in milliseconds. Types include `navigation`, `plan`, `action`, `screenshot`, `validation`, `done`, `error`, and lifecycle events. Accept unfamiliar event types and inspect their payloads instead of assuming a closed list.
 
-Screenshot payloads can contain inline image data rather than a URL. Events vary by execution path and are not guaranteed for every step. Timelines can be large, so omit them from routine status checks. The [existing-run stream](/browser-agents/api/stream-task) provides a snapshot followed by live updates.
+Screenshot payloads can contain inline image data rather than a URL. A screenshot URL is a private signed link that works for at least seven days; fetch the run again for fresh links, and download any image you need to keep. Events vary by execution path and are not guaranteed for every step. Timelines can be large, so omit them from routine status checks. The [existing-run stream](/browser-agents/api/stream-task) provides a snapshot followed by live updates.
 
 ## Errors
 
