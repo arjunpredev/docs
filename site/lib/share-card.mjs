@@ -6,7 +6,7 @@
  *
  *   predev-app   frontend/scripts/og/share-card.mjs (the original)
  *                backend/src/helpers/share_card.ts
- *   masthead     packages/server/src/card-layout.ts (the "pre.dev" design)
+ *   masthead     packages/server/src/card-left.ts (a port, the "left" design)
  *   docs         site/lib/share-card.mjs
  *
  * Change the design here first, copy it to the others, and bump CARD_DESIGN
