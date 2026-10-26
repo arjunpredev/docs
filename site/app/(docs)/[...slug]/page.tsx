@@ -15,6 +15,7 @@ import { placeOf } from '@/lib/groups';
 import { lastModified } from '@/lib/last-modified';
 import { PageFooter } from '@/components/page-footer';
 import { ImageZoom } from '@/components/image-zoom';
+import { cardImage, cardText } from '@/lib/og-card';
 
 /** schema.org data for the page: an article (or API reference) and its breadcrumb trail. */
 function structuredData(page: { title: string; description?: string; slug: string; api: boolean; modified?: string }) {
@@ -120,10 +121,12 @@ export async function generateMetadata(props: { params: Promise<{ slug: string[]
   const page = source.getPage(slug);
   if (!page) notFound();
   const pathSlug = pageSlug(page);
-  const image = `/og/${pathSlug}/image.png`;
+  // the page's share card (lib/og-card.ts): its address changes whenever what it shows does
+  const image = cardImage(page);
+  const description = cardText(page);
   return {
     title: page.data.title,
-    description: page.data.description,
+    description,
     alternates: {
       canonical: `/${pathSlug}`,
       types: { 'text/markdown': `/${pathSlug}.md` },
@@ -134,16 +137,16 @@ export async function generateMetadata(props: { params: Promise<{ slug: string[]
       siteName: docsJson.name,
       url: `/${pathSlug}`,
       title: page.data.title,
-      description: page.data.description,
-      images: { url: image, width: 1200, height: 630 },
+      description,
+      images: image,
       ...(lastModified(page.path) ? { modifiedTime: lastModified(page.path) } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       site: docsJson.seo?.metatags?.['twitter:site'],
       title: page.data.title,
-      description: page.data.description,
-      images: { url: image, width: 1200, height: 630 },
+      description,
+      images: image,
     },
   };
 }

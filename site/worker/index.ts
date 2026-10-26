@@ -95,6 +95,8 @@ const CSP = [
 /** Browser cache lifetime by path; everything else revalidates on each visit. */
 function cacheControl(pathname: string): string | undefined {
   if (pathname.startsWith('/_next/static/')) return 'public, max-age=31536000, immutable';
+  // share cards: the hash in the name changes whenever the card does
+  if (/^\/og\/.+\/[0-9a-f]{10}\.png$/.test(pathname)) return 'public, max-age=31536000, immutable';
   if (pathname.startsWith('/og/') || pathname.startsWith('/images/') || pathname === '/favicon.ico') {
     return 'public, max-age=86400, stale-while-revalidate=604800';
   }

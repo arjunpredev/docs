@@ -24,8 +24,8 @@ npm run check:python
 cd site
 npm ci
 npm run dev           # live preview at http://localhost:3100 (also `npm run dev` from the repo root)
-npm run build         # static build in site/out, Markdown twins, OG images, search data
-npm run check:out     # every nav page, internal link, anchor, redirect, image and agent file
+npm run build         # static build in site/out, Markdown twins, share cards, search data
+npm run check:out     # every nav page, share card, internal link, anchor, redirect, image and agent file
 npm run check:worker  # type-check the Worker
 npm run preview       # serve site/out through the Worker at http://localhost:8799
 npm run test:mcp      # exercise /mcp and /api/search against the preview
@@ -38,6 +38,7 @@ How it reads the Mintlify-format content, and where:
 - Snippet imports are inlined at build time (`lib/remark-mintlify.ts`), so their text reaches the Markdown output too.
 - Heading anchors follow Mintlify's slug rule (`lib/slug.mjs`), so existing deep links keep working.
 - `openapi:` frontmatter renders the operation with an interactive playground (`fumadocs-openapi`).
+- Every page has a share card, the pre.dev card design (`lib/share-card.mjs`, an exact copy of the card spec in `predev-app`; change the spec there first, then copy it here) filled with the page's section, title and description (`lib/og-card.ts`). The build draws each one with satori and resvg (`app/og/[...slug]/route.ts`) at `/og/<page>/<hash>.png`. The hash covers what the card shows and the design version, so a changed card gets a new URL and link previews fetch it again; `/og/<page>/image.png` serves the current card too. The section is the page's group in `docs.json`, at most two levels below its tab.
 - Every page has a Markdown twin at `/<page>.md`, also served for `Accept: text/markdown` and to AI fetchers. `llms-full.txt` is generated; `llms.txt` and `skill.md` are served as written.
 - The Worker (`worker/`) answers `/api/search`, the docs MCP server at `/mcp` (`search_pre_dev`, `query_docs_filesystem_pre_dev`, `submit_feedback`), and Ask AI at `/api/chat`. Ask AI answers from these docs with two models: Jev, a decision model, turns away off-topic questions and picks the sections that answer the rest, and DeepSeek V4.1 Flash writes the answer from those sections. It has a per-IP rate limit and Turnstile.
 

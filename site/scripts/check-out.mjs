@@ -1,7 +1,7 @@
-// Checks the static build in out/: every docs.json page has HTML and Markdown,
-// every internal link and anchor resolves, every image exists and has alt text,
-// every redirect lands on a page, llms.txt and API catalog links resolve, and
-// the agent discovery files exist.
+// Checks the static build in out/: every docs.json page has HTML, Markdown and
+// its own share card with alt text, every internal link and anchor resolves,
+// every image exists and has alt text, every redirect lands on a page, llms.txt
+// and API catalog links resolve, and the agent discovery files exist.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,7 +39,48 @@ function resolve(urlPath) {
 for (const slug of navPages) {
   if (!fs.existsSync(path.join(out, `${slug}.html`))) errors.push(`missing HTML for nav page ${slug}`);
   if (!fs.existsSync(path.join(out, `${slug}.md`))) errors.push(`missing Markdown for nav page ${slug}`);
-  if (!fs.existsSync(path.join(out, 'og', slug, 'image.png'))) errors.push(`missing OG image for ${slug}`);
+}
+
+// 1b. Share cards: each page's og:image and twitter:image are its own card at
+// /og/<page>/<hash>.png, a 1200x630 PNG in the build, with alt text and the full tag set
+const metaTag = (html, key) => html.match(new RegExp(`<meta (?:property|name)="${key}" content="([^"]*)"`))?.[1];
+const decodeHtml = (text) =>
+  text.replace(/&(?:#x([0-9a-f]+)|#(\d+)|(amp|lt|gt|quot|apos));/gi, (_, hex, dec, name) =>
+    hex ? String.fromCodePoint(parseInt(hex, 16)) : dec ? String.fromCodePoint(Number(dec)) : { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[name.toLowerCase()],
+  );
+let cardCount = 0;
+for (const slug of navPages) {
+  const file = path.join(out, `${slug}.html`);
+  if (!fs.existsSync(file)) continue;
+  const html = fs.readFileSync(file, 'utf8');
+  const tag = (key) => metaTag(html, key);
+  const problem = (text) => errors.push(`${slug}: ${text}`);
+  const title = tag('og:title');
+  if (!title) problem('no og:title');
+  else if (html.match(/<title>([^<]*)<\/title>/)?.[1] !== `${title} - ${docs.name}`) problem(`og:title "${title}" is not the page title alone`);
+  if (tag('og:site_name') !== docs.name) problem(`og:site_name should be ${docs.name}`);
+  const image = tag('og:image');
+  const expected = new RegExp(`^https://docs\\.pre\\.dev/og/${slug}/[0-9a-f]{10}\\.png$`);
+  if (!image || !expected.test(image)) {
+    problem(`og:image ${image ?? '(none)'} is not the page's card at /og/${slug}/<hash>.png`);
+    continue;
+  }
+  const png = path.join(out, new URL(image).pathname);
+  if (!fs.existsSync(png)) problem(`card missing from the build: ${new URL(image).pathname}`);
+  else {
+    const head = fs.readFileSync(png).subarray(0, 24);
+    const size = head.toString('latin1', 12, 16) === 'IHDR' ? `${head.readUInt32BE(16)}x${head.readUInt32BE(20)}` : 'not a PNG';
+    if (size !== '1200x630') problem(`card ${new URL(image).pathname} is ${size}, should be 1200x630`);
+    else cardCount++;
+  }
+  if (tag('og:image:width') !== '1200' || tag('og:image:height') !== '630') problem('og:image:width/height should be 1200/630');
+  const alt = tag('og:image:alt');
+  if (!alt?.trim()) problem('no og:image:alt');
+  else if (!alt.startsWith(title ?? '') || decodeHtml(alt).length > 420) problem(`og:image:alt should start with the title and stay under 420 characters: ${alt}`);
+  if (tag('twitter:card') !== 'summary_large_image') problem('twitter:card should be summary_large_image');
+  if (tag('twitter:image') !== image) problem(`twitter:image ${tag('twitter:image') ?? '(none)'} should be ${image}`);
+  if (tag('twitter:image:alt') !== alt) problem('twitter:image:alt should match og:image:alt');
+  if (!fs.existsSync(path.join(out, 'og', slug, 'image.png'))) problem(`missing /og/${slug}/image.png (the card's old address)`);
 }
 
 // 2. Redirects land on real pages and never hide one
@@ -137,4 +178,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  ${e}`);
   process.exit(1);
 }
-console.log(`check-out: ${navPages.length} pages, ${redirects.size} redirects, ${linkCount} internal links OK`);
+console.log(`check-out: ${navPages.length} pages, ${cardCount} share cards, ${redirects.size} redirects, ${linkCount} internal links OK`);
