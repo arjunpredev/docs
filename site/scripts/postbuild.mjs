@@ -1,4 +1,5 @@
-// Moves the build-time Markdown routes to /<page>.md and checks the output.
+// Moves the build-time Markdown routes to /<page>.md, gives each share card its
+// old address too, and checks the output.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +19,15 @@ for (const entry of fs.readdirSync(mdDir, { recursive: true, withFileTypes: true
 }
 fs.rmSync(mdDir, { recursive: true, force: true });
 
+// Share cards live at /og/<page>/<hash>.png. The address before hashed cards,
+// /og/<page>/image.png, keeps answering with the page's current card.
+let cards = 0;
+for (const entry of fs.readdirSync(path.join(out, 'og'), { recursive: true, withFileTypes: true })) {
+  if (!entry.isFile() || !/^[0-9a-f]{10}\.png$/.test(entry.name)) continue;
+  fs.copyFileSync(path.join(entry.parentPath, entry.name), path.join(entry.parentPath, 'image.png'));
+  cards++;
+}
+
 // Every HTML page needs its Markdown twin
 const missing = [];
 for (const entry of fs.readdirSync(out, { recursive: true, withFileTypes: true })) {
@@ -30,4 +40,4 @@ if (missing.length) {
   console.error(`postbuild: pages without Markdown: ${missing.join(', ')}`);
   process.exit(1);
 }
-console.log(`postbuild: ${moved} Markdown pages in place`);
+console.log(`postbuild: ${moved} Markdown pages in place, ${cards} share cards`);
