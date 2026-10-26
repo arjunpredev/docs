@@ -1,7 +1,7 @@
 // Checks the static build in out/: every docs.json page has HTML, Markdown and
-// its own share card with alt text, every internal link and anchor resolves, every image exists and has alt text,
-// every redirect lands on a page, llms.txt and API catalog links resolve, and
-// the agent discovery files exist.
+// its own share card with alt text, every internal link and anchor resolves,
+// every image exists and has alt text, every redirect lands on a page, llms.txt
+// and API catalog links resolve, and the agent discovery files exist.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
